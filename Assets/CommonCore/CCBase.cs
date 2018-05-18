@@ -14,18 +14,28 @@ namespace CommonCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void OnGameStart()
         {
+            if (!CCParams.AutoInit)
+                return;
+
             Debug.Log("Initializing CommonCore...");
 
-            HookSceneLoad();
+            HookApplicationQuit();
+            HookSceneLoad();            
 
-            //TODO initialize modules
+            InitializeModules();
 
             Debug.Log("...done!");
+        }
+
+        private static void InitializeModules()
+        {
+            //TODO initialize modules, try using reflection
         }
 
         private static void HookSceneLoad()
         {            
             SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
             Debug.Log("Hooked scene load!");
         }
 
@@ -34,5 +44,16 @@ namespace CommonCore
             Debug.Log("OnSceneLoaded: " + scene.name);
             Debug.Log(mode);
         }
+
+        static void OnSceneUnloaded(Scene current)
+        {
+            Debug.Log("OnSceneUnloaded: " + current);
+        }
+
+        private static void HookApplicationQuit()
+        {
+            //TODO hook application unload (will be a bit hacky)
+        }
+
     }
 }
