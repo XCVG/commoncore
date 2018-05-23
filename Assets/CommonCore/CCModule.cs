@@ -17,7 +17,7 @@ namespace CommonCore
         public virtual void OnGameEnd() { }
     }
 
-    public class CCExplictModule : System.Attribute
+    public class CCExplicitModule : System.Attribute
     {
 
     }

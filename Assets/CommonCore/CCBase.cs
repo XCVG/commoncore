@@ -1,7 +1,9 @@
-﻿using CommonCore.Messaging;
+﻿using CommonCore.Console;
+using CommonCore.Messaging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -29,8 +31,11 @@ namespace CommonCore
 
             Modules = new List<CCModule>();
 
-            InitializeEarlyModules();
-            InitializeModules();
+            if (CCParams.AutoloadModules)
+            {
+                InitializeEarlyModules();
+                InitializeModules();
+            }
 
             Initialized = true;
             Debug.Log("...done!");
@@ -39,13 +44,33 @@ namespace CommonCore
         private static void InitializeEarlyModules()
         {
             //TODO initialize Debug, Config, Console, MessageBus
-
+            Modules.Add(new ConsoleModule());
             Modules.Add(new QdmsMessageBus());
         }
 
         private static void InitializeModules()
         {
-            //TODO initialize other modules using reflection
+            //initialize other modules using reflection
+
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany((assembly) => assembly.GetTypes())
+                .Where((type) => typeof(CCModule).IsAssignableFrom(type))
+                .Where((type) => (!type.IsAbstract && !type.IsGenericTypeDefinition))
+                .Where((type) => null != type.GetConstructor(new Type[0]))
+                .Where((type) => type.GetCustomAttributes(typeof(CCExplicitModule),true).Length == 0)
+                .ToArray();
+
+            foreach (var t in types)
+            {
+                try
+                {
+                    Modules.Add((CCModule)Activator.CreateInstance(t));
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e);
+                }
+            }
         }
 
         private static void HookSceneEvents()
@@ -134,10 +159,15 @@ namespace CommonCore
 
         private static void HookApplicationQuit()
         {
-            //TODO hook application unload (will be a bit hacky)
+            //hook application unload (a bit hacky)
+            GameObject hookObject = new GameObject();
+            CCExitHook hookScript = hookObject.AddComponent<CCExitHook>();
+            hookScript.OnApplicationQuitDelegate = new LifecycleEventDelegate(OnApplicationQuit);
+
+            Debug.Log("Hooked application quit!");
         }
 
-        static void OnApplicationQuit()
+        internal static void OnApplicationQuit()
         {
             Debug.Log("Cleaning up CommonCore...");
 

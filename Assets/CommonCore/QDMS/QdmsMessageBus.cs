@@ -6,7 +6,7 @@ using UnityEngine;
 namespace CommonCore.Messaging
 {
 
-    [CCExplictModule]
+    [CCExplicitModule]
     public class QdmsMessageBus: CCModule
     {
         public static QdmsMessageBus Instance

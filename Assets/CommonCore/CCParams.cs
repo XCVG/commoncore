@@ -11,12 +11,32 @@ namespace CommonCore
     public static class CCParams
     {
         //version info
-        public const int VersionCode = 1;
+        public const int VersionCode = 1; //will change to major/minor/patch struct soon
         public const string VersionName = "Arroyo";
 
         //baseline config settings
         public const bool AutoInit = true;
         public const bool AutoloadModules = true;
 
+        //automatic environment params
+        public static bool IsDebug
+        {
+            get
+            {
+                return Debug.isDebugBuild; //may change to PDC (#define DEVELOPMENT_BUILD)
+            }
+        }
+
+        public static bool IsEditor
+        {
+            get
+            {
+                #if UNITY_EDITOR
+                return true;
+                #else
+                return false;
+                #endif
+            }
+        }
     }
 }
