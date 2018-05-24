@@ -1,4 +1,6 @@
-﻿using CommonCore.Console;
+﻿using CommonCore.Config;
+using CommonCore.Console;
+using CommonCore.DebugLog;
 using CommonCore.Messaging;
 using System;
 using System.Collections;
@@ -44,6 +46,8 @@ namespace CommonCore
         private static void InitializeEarlyModules()
         {
             //TODO initialize Debug, Config, Console, MessageBus
+            Modules.Add(new DebugModule());
+            Modules.Add(new ConfigModule());
             Modules.Add(new ConsoleModule());
             Modules.Add(new QdmsMessageBus());
         }

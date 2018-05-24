@@ -38,5 +38,12 @@ namespace CommonCore
                 #endif
             }
         }
+        public static string PersistentDataPath
+        {
+            get
+            {
+                return Application.persistentDataPath;
+            }
+        }
     }
 }

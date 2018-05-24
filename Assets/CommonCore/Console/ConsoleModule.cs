@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace CommonCore.Console
 {
+    /*
+     * CommonCore Console Integration Module
+     * Provides lifecycle management and integration of third-party command console
+     */
     [CCExplicitModule]
     public class ConsoleModule : CCModule
     {
