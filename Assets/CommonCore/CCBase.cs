@@ -45,7 +45,7 @@ namespace CommonCore
 
         private static void InitializeEarlyModules()
         {
-            //TODO initialize Debug, Config, Console, MessageBus
+            //initialize Debug, Config, Console, MessageBus
             Modules.Add(new DebugModule());
             Modules.Add(new ConfigModule());
             Modules.Add(new ConsoleModule());

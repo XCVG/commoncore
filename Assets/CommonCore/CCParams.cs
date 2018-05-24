@@ -10,15 +10,22 @@ namespace CommonCore
      */
     public static class CCParams
     {
-        //version info
-        public const int VersionCode = 1; //will change to major/minor/patch struct soon
-        public const string VersionName = "Arroyo";
+        //*****version info
+        public static readonly SemanticVersion VersionCode = new SemanticVersion(1,0,0); //1.0.0
+        public const string VersionName = "Arroyo"; //start with A, locations from RPGs
+        public static string UnityVersion
+        {
+            get
+            {
+                return Application.unityVersion;
+            }
+        }
 
-        //baseline config settings
+        //*****baseline config settings
         public const bool AutoInit = true;
         public const bool AutoloadModules = true;
 
-        //automatic environment params
+        //*****automatic environment params
         public static bool IsDebug
         {
             get
@@ -44,6 +51,28 @@ namespace CommonCore
             {
                 return Application.persistentDataPath;
             }
+        }
+    }
+
+    /*
+     * Just your basic Semantic Version struct
+     */
+    public struct SemanticVersion
+    {
+        public readonly int Major;
+        public readonly int Minor;
+        public readonly int Patch;
+
+        public SemanticVersion(int major, int minor, int patch)
+        {
+            Major = major;
+            Minor = minor;
+            Patch = patch;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}.{1}.{2}", Major, Minor, Patch);
         }
     }
 }

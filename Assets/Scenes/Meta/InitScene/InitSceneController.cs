@@ -13,6 +13,7 @@ public class InitSceneController : MonoBehaviour
 		if(CCBase.Initialized)
         {
             GameObject.Find("Text").GetComponent<Text>().text = "Loaded!";
+            SceneManager.LoadScene("MainMenuScene");
         }
 	}
 
