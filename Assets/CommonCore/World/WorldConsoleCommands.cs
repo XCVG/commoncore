@@ -57,7 +57,7 @@ namespace CommonCore.World
         static void Restore()
         {
             MetaState.Instance.TransitionType = SceneTransitionType.LoadGame;
-            BaseSceneController bsc = SceneUtils.GetSceneController();
+            BaseSceneController bsc = WorldUtils.GetSceneController();
             bsc.Restore();
         }
 
@@ -65,7 +65,7 @@ namespace CommonCore.World
         [Command]
         static void Save()
         {
-            BaseSceneController bsc = SceneUtils.GetSceneController();
+            BaseSceneController bsc = WorldUtils.GetSceneController();
             bsc.Save();
         }
 
@@ -139,7 +139,7 @@ namespace CommonCore.World
         [Command]
         static void Warp(string scene, string spawnPoint)
         {
-            SceneUtils.ChangeScene(scene, spawnPoint, Vector3.zero, Vector3.zero);
+            WorldUtils.ChangeScene(scene, spawnPoint, Vector3.zero, Vector3.zero);
         }
 
         [Command]
@@ -151,19 +151,19 @@ namespace CommonCore.World
         [Command]
         static void Warp(string scene, Vector3 position, Vector3 rotation)
         {
-            SceneUtils.ChangeScene(scene, null, position, rotation);
+            WorldUtils.ChangeScene(scene, null, position, rotation);
         }
 
         [Command]
         static void WarpEx(string scene, bool hideloading)
         {
-            SceneUtils.ChangeScene(scene, null, Vector3.zero, Vector3.zero, hideloading, null);
+            WorldUtils.ChangeScene(scene, null, Vector3.zero, Vector3.zero, hideloading, null);
         }
 
         [Command]
         static void WarpEx(string scene, bool hideloading, string overrideobject)
         {
-            SceneUtils.ChangeScene(scene, null, Vector3.zero, Vector3.zero, hideloading, overrideobject);
+            WorldUtils.ChangeScene(scene, null, Vector3.zero, Vector3.zero, hideloading, overrideobject);
         }
 
         //***** OBJECT MANIPULATION
@@ -172,7 +172,7 @@ namespace CommonCore.World
         [Command]
         static void Prid(string fid)
         {
-            var objs = SceneUtils.FindObjectsWithFormID(fid);
+            var objs = WorldUtils.FindObjectsWithFormID(fid);
             if (objs == null || objs.Length < 1)
             {
                 DevConsole.singleton.LogWarning("No refs found with form id!");
@@ -198,7 +198,7 @@ namespace CommonCore.World
         [Command]
         static void Prbt(string tag)
         {
-            var objs = SceneUtils.FindObjectsWithTag(tag);
+            var objs = WorldUtils.FindObjectsWithTag(tag);
             if (objs == null || objs.Length < 1)
             {
                 DevConsole.singleton.LogWarning("No refs found with tag!");
@@ -224,7 +224,7 @@ namespace CommonCore.World
         [Command]
         static void Pick(string tid)
         {
-            var obj = SceneUtils.FindObjectByTID(tid);
+            var obj = WorldUtils.FindObjectByTID(tid);
             if (obj == null)
             {
                 DevConsole.singleton.LogWarning("Couldn't find TID!");

@@ -7,7 +7,11 @@ using CommonCore.State;
 
 namespace CommonCore.World
 {
-    public static class SceneUtils
+    /*
+     * Utility class for world manipulation
+     * Some of these will be moved soon
+     */
+    public static class WorldUtils
     {
 
         public static void GetComponentsInDescendants<T>(Transform root, List<T> components)
@@ -156,7 +160,7 @@ namespace CommonCore.World
                 mgs.PlayerIntent = new PlayerSpawnIntent(position, Quaternion.Euler(rotation));
             mgs.LoadSave = null;
             mgs.TransitionType = SceneTransitionType.ChangeScene;
-            SceneUtils.GetSceneController().ExitScene();
+            WorldUtils.GetSceneController().ExitScene();
         }
 
         //spawn object methods

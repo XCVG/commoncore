@@ -45,7 +45,7 @@ namespace CommonCore.World
 
             //get restorable components
             List<RestorableComponent> rcs = new List<RestorableComponent>();
-            SceneUtils.GetComponentsInDescendants(transform, rcs);
+            WorldUtils.GetComponentsInDescendants(transform, rcs);
 
             //purge local object state
             Dictionary<string, RestorableData> localState;
@@ -225,7 +225,7 @@ namespace CommonCore.World
         protected void RestorePlayer(GameState gs)
         {
             MetaState mgs = MetaState.Instance;
-            GameObject player = SceneUtils.GetPlayerObject();
+            GameObject player = WorldUtils.GetPlayerObject();
             RestorableData prd = gs.PlayerWorldState;
             if (prd != null)
             {
@@ -275,7 +275,7 @@ namespace CommonCore.World
             {
                 if (!string.IsNullOrEmpty(mgs.PlayerIntent.SpawnPoint))
                 {
-                    GameObject spawnPoint = SceneUtils.FindObjectByTID(mgs.PlayerIntent.SpawnPoint);
+                    GameObject spawnPoint = WorldUtils.FindObjectByTID(mgs.PlayerIntent.SpawnPoint);
                     player.transform.position = spawnPoint.transform.position;
                     player.transform.rotation = spawnPoint.transform.rotation;
                 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CommonCore.Input;
 
 namespace CommonCore.World
 {
@@ -63,7 +64,7 @@ namespace CommonCore.World
 
             if (PlayerInControl)
             {
-                //HandleMovement();
+                HandleMovement();
                 //HandleInteraction();
             }
         }
@@ -116,7 +117,7 @@ namespace CommonCore.World
         }
         */
 
-        /*
+        //TODO refactor, but I think that was in the cards from the beginning
         protected void HandleMovement()
         {
             bool isMoving = false;
@@ -124,30 +125,28 @@ namespace CommonCore.World
             float vmul = 10f;
             float rmul = 25f;
             float cmul = 0.5f * rmul;
-
-            //TODO: rewrite this to use new input system, and probably literally everything else
             
-            if(Mathf.Abs(cInput.GetAxis("MoveY")) > deadzone)
+            if(Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveY)) > deadzone)
             {
-                CharController.Move(transform.forward * cInput.GetAxis("MoveY") * vmul * Time.deltaTime);
+                CharController.Move(transform.forward * MappedInput.GetAxis(DefaultControls.MoveY) * vmul * Time.deltaTime);
                 isMoving = true;
             }
 
-            if(Mathf.Abs(cInput.GetAxis("MoveX")) > deadzone)
+            if(Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveX)) > deadzone)
             {
-                CharController.Move(transform.right * cInput.GetAxis("MoveX") * vmul * Time.deltaTime);
+                CharController.Move(transform.right * MappedInput.GetAxis(DefaultControls.MoveX) * vmul * Time.deltaTime);
                 isMoving = true;
             }
 
-            if(Mathf.Abs(cInput.GetAxis("LookX")) > deadzone)
+            if(Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookX)) > deadzone)
             {
-                transform.Rotate(Vector3.up, rmul * cInput.GetAxis("LookX") * Time.deltaTime);
+                transform.Rotate(Vector3.up, rmul * MappedInput.GetAxis(DefaultControls.LookX) * Time.deltaTime);
                 isMoving = true;
             }
 
-            if (Mathf.Abs(cInput.GetAxis("LookY")) > deadzone)
+            if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookY)) > deadzone)
             {
-                CameraRoot.transform.Rotate(Vector3.left, cmul * cInput.GetAxis("LookY") * Time.deltaTime);
+                CameraRoot.transform.Rotate(Vector3.left, cmul * MappedInput.GetAxis(DefaultControls.LookY) * Time.deltaTime);
             }
 
             //handle gravity
@@ -163,7 +162,7 @@ namespace CommonCore.World
                 {
 
                     //ac.Play("Run_Rifle_Foreward", 0);
-                    AnimController.CrossFade("Run_Rifle_Foreward", 0f);
+                    AnimController.CrossFade("Run", 0f);
                     isAnimating = true;
                     //stepSound.Play();
                 }
@@ -182,6 +181,6 @@ namespace CommonCore.World
 
 
         }
-        */
+        
     }
 }
