@@ -30,7 +30,7 @@ namespace UI
         public void OnClickContinue()
         {
             //for debugging purposes, load test scene directly
-            SceneManager.LoadScene("TestScene0");
+            SceneManager.LoadScene("TestScene");
         }
 
         public void OnClickNew()
