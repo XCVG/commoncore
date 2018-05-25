@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
-using CommonCore.World;
 using CommonCore.State;
 
-namespace CommonCore
+namespace CommonCore.World
 {
     public static class SceneUtils
     {
@@ -134,34 +133,31 @@ namespace CommonCore
             return foundObjects.ToArray();
         }
 
-        //TODO reimplement once dependencies are restored
-        /*
         public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Vector3 rotation, bool skipLoading, string objectOverride)
         {
-            MetaGameState.Instance.LoadingScreenPropOverride = objectOverride;
+            MetaState.Instance.LoadingScreenPropOverride = objectOverride;
             ChangeScene(scene, spawnPoint, position, rotation, skipLoading);
         }
 
         public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Vector3 rotation, bool skipLoading)
         {
-            MetaGameState.Instance.SkipLoadingScreen = skipLoading;
+            MetaState.Instance.SkipLoadingScreen = skipLoading;
             ChangeScene(scene, spawnPoint, position, rotation);
         }
 
         public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Vector3 rotation)
         {
-            MetaGameState mgs = MetaGameState.Instance;
+            MetaState mgs = MetaState.Instance;
             mgs.PreviousScene = SceneManager.GetActiveScene().name;
             mgs.NextScene = scene;
             if (!string.IsNullOrEmpty(spawnPoint))
-                mgs.PlayerIntent = new Intents.PlayerSpawnIntent(spawnPoint);
+                mgs.PlayerIntent = new PlayerSpawnIntent(spawnPoint);
             else
-                mgs.PlayerIntent = new Intents.PlayerSpawnIntent(position, Quaternion.Euler(rotation));
+                mgs.PlayerIntent = new PlayerSpawnIntent(position, Quaternion.Euler(rotation));
             mgs.LoadSave = null;
             mgs.TransitionType = SceneTransitionType.ChangeScene;
             SceneUtils.GetSceneController().ExitScene();
         }
-        */
 
         //spawn object methods
         //TODO make it fail gracefully

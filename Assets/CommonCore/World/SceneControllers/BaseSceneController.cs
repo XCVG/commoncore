@@ -118,6 +118,7 @@ namespace CommonCore.World
         protected void RestoreBlankObjects(GameState gs, string name)
         {
             //TODO restore blank objecs using local store
+            //I forget what this is supposed to do, so... yeah
         }
 
         protected void RestoreLocalObjects(GameState gs, string name)
