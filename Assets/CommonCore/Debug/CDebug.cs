@@ -81,7 +81,7 @@ namespace CommonCore.DebugLog
         }
         
         //new unified log method
-        public static void LogEx(string message, LogType type, System.Object context)
+        public static void LogEx(string message, LogType type, System.Object context) //TODO make our own LogType because we need higher levels
         {
             switch (type)
             {

@@ -8,6 +8,7 @@ using CommonCore.State;
 
 namespace CommonCore.World
 {
+    //TODO: probably 90% should be moved into WorldSceneController
     public abstract class BaseSceneController : MonoBehaviour
     {
         public Dictionary<string, string> LocalStore { get; protected set; }

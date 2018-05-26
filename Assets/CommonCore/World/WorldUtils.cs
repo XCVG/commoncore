@@ -102,7 +102,7 @@ namespace CommonCore.World
 
         public static GameObject FindObjectByTID(string TID)
         {
-            return GameObject.Find("WorldRoot").transform.Find(TID).gameObject;
+            return GameObject.Find("WorldRoot").transform.FindDeepChild(TID).gameObject;
         }
 
         public static GameObject[] FindObjectsWithFormID(string formID)

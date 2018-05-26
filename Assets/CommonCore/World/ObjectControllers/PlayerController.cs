@@ -65,7 +65,7 @@ namespace CommonCore.World
             if (PlayerInControl)
             {
                 HandleMovement();
-                //HandleInteraction();
+                HandleInteraction();
             }
         }
 
@@ -83,12 +83,13 @@ namespace CommonCore.World
             body.velocity = pushDir * PushFactor;
         }
 
-        /*
+
         private void HandleInteraction()
         {
             //get thing, probe and display tooltip, check use
+            //TODO handle tooltips
 
-            HUDScript.ClearTarget();
+            //HUDScript.ClearTarget();
 
             int layerMask = LayerMask.GetMask("Default","InteractionHitbox");
 
@@ -103,10 +104,10 @@ namespace CommonCore.World
                     if(ic != null)
                     {
                         //Debug.Log("Detected: " + ic.Tooltip);
-                        HUDScript.SetTargetMessage(ic.Tooltip);
+                        //HUDScript.SetTargetMessage(ic.Tooltip);
 
-                        //TODO actual use
-                        if(cInput.GetKeyDown("Use"))
+                        //actual use
+                        if(MappedInput.GetButtonDown("Use"))
                         {
                             ic.OnActivate(this.gameObject);
                         }
@@ -115,7 +116,7 @@ namespace CommonCore.World
 
             }
         }
-        */
+        
 
         //TODO refactor, but I think that was in the cards from the beginning
         protected void HandleMovement()
