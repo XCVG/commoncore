@@ -10,8 +10,8 @@ namespace CommonCore.Input
      */
     public static class DefaultControls
     {
-        public const string MoveX = "MoveX";
-        public const string MoveY = "MoveY";
+        public const string MoveX = "Horizontal";
+        public const string MoveY = "Vertical";
         public const string LookX = "LookX";
         public const string LookY = "LookY";
 

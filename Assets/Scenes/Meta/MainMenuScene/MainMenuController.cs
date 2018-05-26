@@ -1,4 +1,5 @@
-﻿using CommonCore.UI;
+﻿using CommonCore.State;
+using CommonCore.UI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -36,14 +37,12 @@ namespace UI
         public void OnClickNew()
         {
             //start a new game the normal way
-            /*
-            MetaGameState mgs = MetaGameState.Instance;
+            MetaState mgs = MetaState.Instance;
             mgs.Intents = new List<Intent>();
             mgs.LoadSave = null;
             mgs.NextScene = null;
             mgs.TransitionType = SceneTransitionType.NewGame;
             SceneManager.LoadScene("LoadingScene");
-            */
         }
 
         public void OnClickLoad()
