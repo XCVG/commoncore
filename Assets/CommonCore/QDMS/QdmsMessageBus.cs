@@ -30,6 +30,7 @@ namespace CommonCore.Messaging
 
             Debug.Log("QDMS bus created!");
             Receivers = new List<QdmsMessageInterface>();
+            _Instance = this;
         }
 
         ~QdmsMessageBus()

@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CommonCore.Input;
+using CommonCore.UI;
+using UnityEngine.EventSystems;
 
 namespace CommonCore.World
 {
     public class PlayerController : ActorController
     {
+        public bool AutoinitHud = true;
 
         public bool PlayerInControl;
         public bool Clipping;
@@ -15,7 +18,7 @@ namespace CommonCore.World
         public float MaxProbeDist;
         public float MaxUseDist;
 
-        //public HUDController HUDScript;
+        public WorldHUDController HUDScript;
         public CharacterController CharController;
         public Animator AnimController;
         public Transform CameraRoot;
@@ -43,12 +46,20 @@ namespace CommonCore.World
                 AnimController = GetComponent<Animator>();
             }
 
-            /*
             if(!HUDScript)
             {
-                HUDScript = SceneUtils.GetHUDController();
+                HUDScript = WorldHUDController.Instance;
             }
-            */
+            
+            if(!HUDScript && AutoinitHud)
+            {
+                Instantiate<GameObject>(Resources.Load<GameObject>("UI/DefaultWorldHUD"));
+                if (EventSystem.current == null)
+                    Instantiate(Resources.Load("UI/DefaultEventSystem"));
+
+                HUDScript = WorldHUDController.Instance;
+            }
+            
 
             isAnimating = false;
         }
@@ -89,7 +100,7 @@ namespace CommonCore.World
             //get thing, probe and display tooltip, check use
             //TODO handle tooltips
 
-            //HUDScript.ClearTarget();
+            HUDScript.ClearTarget();
 
             int layerMask = LayerMask.GetMask("Default","InteractionHitbox");
 
@@ -104,7 +115,7 @@ namespace CommonCore.World
                     if(ic != null)
                     {
                         //Debug.Log("Detected: " + ic.Tooltip);
-                        //HUDScript.SetTargetMessage(ic.Tooltip);
+                        HUDScript.SetTargetMessage(ic.Tooltip);
 
                         //actual use
                         if(MappedInput.GetButtonDown("Use"))
@@ -119,6 +130,7 @@ namespace CommonCore.World
         
 
         //TODO refactor, but I think that was in the cards from the beginning
+        //TODO handle jumping, flying, noclip, crouching(?)
         protected void HandleMovement()
         {
             bool isMoving = false;
