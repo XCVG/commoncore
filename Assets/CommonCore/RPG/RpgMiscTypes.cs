@@ -53,6 +53,6 @@ namespace CommonCore.Rpg
     //base class for permanent and temporary status conditions
     public abstract class Condition
     {
-
+        public abstract void Apply(StatsSet original, StatsSet target);
     }
 }

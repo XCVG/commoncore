@@ -9,8 +9,13 @@ namespace CommonCore.State
 
     }
 
+    public abstract class BlankRestorableData : RestorableData
+    {
+
+    }
+
     //dummy class for times when you don't actually want to store the data here
-    public class BlankRestorableData : RestorableData
+    public class EmptyRestorableData : BlankRestorableData
     {
 
     }

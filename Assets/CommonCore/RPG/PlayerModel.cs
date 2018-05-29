@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace CommonCore.Rpg
 { 
-    //temporary blank PlayerModel, will be completely rewritten anyway
+    //TODO split into PlayerModel and CharacterModel
     public class PlayerModel
     {
         public float Health
@@ -39,6 +39,7 @@ namespace CommonCore.Rpg
         public void UpdateStats()
         {
             //TODO update stats
+            DerivedStats = new StatsSet(); //for now
         }
 
         

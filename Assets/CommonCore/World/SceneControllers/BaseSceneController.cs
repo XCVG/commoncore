@@ -11,7 +11,7 @@ namespace CommonCore.World
     //TODO: probably 90% should be moved into WorldSceneController
     public abstract class BaseSceneController : MonoBehaviour
     {
-        public Dictionary<string, string> LocalStore { get; protected set; }
+        public Dictionary<string, System.Object> LocalStore { get; protected set; }
 
         public virtual void Awake()
         {
@@ -101,7 +101,7 @@ namespace CommonCore.World
             Debug.Log("Restoring scene: " + name);
 
             //restore local store
-            LocalStore = gs.LocalDataState.ContainsKey(name) ? gs.LocalDataState[name] : new Dictionary<string, string>();
+            LocalStore = gs.LocalDataState.ContainsKey(name) ? gs.LocalDataState[name] : new Dictionary<string, System.Object>();
 
             //restore local object state
             RestoreLocalObjects(gs, name);
