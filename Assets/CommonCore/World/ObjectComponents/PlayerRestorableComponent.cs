@@ -6,7 +6,7 @@ using System;
 namespace CommonCore.World
 {
 
-    public class PlayerRestorableComponent : RestorableComponent
+    public class PlayerRestorableComponent : DynamicRestorableComponent
     {
 
     }

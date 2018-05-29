@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CommonCore.State;
 
 namespace CommonCore.World
 {
 
-    public class MotileRestorableComponent : RestorableComponent
+    public class MotileRestorableComponent : DynamicRestorableComponent
     {
         public override RestorableData Save()
         {

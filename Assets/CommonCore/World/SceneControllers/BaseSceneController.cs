@@ -64,8 +64,7 @@ namespace CommonCore.World
             foreach (RestorableComponent rc in rcs)
             {
                 RestorableData rd = rc.Save();
-                //TODO handle passing localstore, blank restorable components?
-                if (rc is LocalRestorableComponent)
+                if (rc is LocalRestorableComponent || rc is BlankRestorableComponent)
                 {
                     localState[rc.gameObject.name] = rd;
                 }
@@ -101,8 +100,7 @@ namespace CommonCore.World
 
             Debug.Log("Restoring scene: " + name);
 
-            //restore blank restorables/local store
-            RestoreBlankObjects(gs, name);
+            //restore local store
             LocalStore = gs.LocalDataState.ContainsKey(name) ? gs.LocalDataState[name] : new Dictionary<string, string>();
 
             //restore local object state
@@ -116,12 +114,6 @@ namespace CommonCore.World
 
         }
 
-        protected void RestoreBlankObjects(GameState gs, string name)
-        {
-            //TODO restore blank objecs using local store
-            //I forget what this is supposed to do, so... yeah
-        }
-
         protected void RestoreLocalObjects(GameState gs, string name)
         {
             if (gs.LocalObjectState.ContainsKey(name))
@@ -130,53 +122,10 @@ namespace CommonCore.World
 
                 foreach (KeyValuePair<string, RestorableData> kvp in localState)
                 {
-                    RestorableData rd = kvp.Value;
-
-                    Transform t = transform.FindDeepChild(kvp.Key);
-
-                    if (t != null)
-                    {
-                        GameObject go = t.gameObject;
-
-                        //if it exists, restore it
-                        RestorableComponent rc = go.GetComponent<RestorableComponent>();
-                        if (rc != null)
-                        {
-                            rc.Restore(rd);
-                        }
-                        else
-                        {
-                            Debug.LogWarning("Local object " + go.name + " has no restorable component!");
-                        }
-                    }
+                    if (kvp.Value is DynamicRestorableData)
+                        RestoreLocalObject(kvp);
                     else
-                    {
-                        //if it doesn't, create it
-                        try
-                        {
-                            GameObject go = Instantiate(Resources.Load("entities/" + rd.FormID), transform) as GameObject;
-
-                            if (go != null)
-                            {
-                                go.name = kvp.Key;
-
-                                RestorableComponent rc = go.GetComponent<RestorableComponent>();
-                                if (rc != null)
-                                {
-                                    rc.Restore(rd);
-                                }
-                                else
-                                {
-                                    Debug.LogWarning("Local object " + go.name + " has no restorable component!");
-                                }
-                            }
-                        }
-                        catch (ArgumentException)
-                        {
-                            Debug.LogWarning("Tried to spawn " + rd.FormID + " but couldn't find prefab!");
-                        }
-                    }
-
+                        RestoreBlankObject(kvp);
                 }
             }
             else
@@ -186,11 +135,90 @@ namespace CommonCore.World
             }
         }
 
+        private void RestoreBlankObject(KeyValuePair<string, RestorableData> kvp)
+        {
+            Transform t = transform.FindDeepChild(kvp.Key);
+            if (t != null)
+            {
+                GameObject go = t.gameObject;
+
+                //if it exists, restore it
+                BlankRestorableComponent rc = go.GetComponent<BlankRestorableComponent>();
+                if (rc != null)
+                {
+                    rc.Restore(kvp.Value);
+                }
+                else
+                {
+                    Debug.LogWarning("Blank object " + go.name + " has no restorable component!");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Attempted to restore " + kvp.Key + " but object doesn't exist!");
+            }
+        }
+
+        private void RestoreLocalObject(KeyValuePair<string, RestorableData> kvp)
+        {
+            DynamicRestorableData rd = kvp.Value as DynamicRestorableData;
+
+            Transform t = transform.FindDeepChild(kvp.Key);
+
+            if (t != null)
+            {
+                GameObject go = t.gameObject;
+
+                //if it exists, restore it
+                LocalRestorableComponent rc = go.GetComponent<LocalRestorableComponent>();
+                if (rc != null)
+                {
+                    rc.Restore(rd);
+                }
+                else
+                {
+                    Debug.LogWarning("Local object " + go.name + " has no restorable component!");
+                }
+            }
+            else
+            {
+                //if it doesn't, create it
+                try
+                {
+                    GameObject go = Instantiate(Resources.Load("entities/" + rd.FormID), transform) as GameObject;
+
+                    if (go != null)
+                    {
+                        go.name = kvp.Key;
+
+                        LocalRestorableComponent rc = go.GetComponent<LocalRestorableComponent>();
+                        if (rc != null)
+                        {
+                            rc.Restore(rd);
+                        }
+                        else
+                        {
+                            Debug.LogWarning("Local object " + go.name + " has no restorable component!");
+                        }
+                    }
+                }
+                catch (ArgumentException)
+                {
+                    Debug.LogWarning("Tried to spawn " + rd.FormID + " but couldn't find prefab!");
+                }
+            }
+        }
+
         protected void RestoreMotileObjects(GameState gs, string name)
         {
             foreach (KeyValuePair<string, RestorableData> kvp in gs.MotileObjectState)
             {
-                RestorableData rd = kvp.Value;
+                DynamicRestorableData rd = kvp.Value as DynamicRestorableData;
+
+                if (rd == null)
+                {
+                    Debug.LogError("Local object " + kvp.Key + " has invalid data!");
+                }
 
                 //is it in this scene
                 string objectSceneName = rd.Scene;
