@@ -80,7 +80,7 @@ namespace CommonCore.State
         public Dictionary<string, RestorableData> MotileObjectState;
         public RestorableData PlayerWorldState;
         public PlayerModel PlayerRpgState;
-
+        public string CurrentScene;
 
     }
 

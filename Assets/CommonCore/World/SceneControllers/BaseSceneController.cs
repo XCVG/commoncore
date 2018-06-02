@@ -30,7 +30,10 @@ namespace CommonCore.World
 
         public virtual void ExitScene()
         {
-            //for now, assume something else set up metagamestate
+            //whatever triggered the exit is responsible for setting up most of metastate
+            //TODO gather intents here
+            MetaState.Instance.PreviousScene = SceneManager.GetActiveScene().name;
+            MetaState.Instance.TransitionType = SceneTransitionType.ChangeScene;
             Debug.Log("Exiting scene: ");
             Save();
             SceneManager.LoadScene("LoadingScene");

@@ -54,7 +54,7 @@ namespace CommonCore.State
             }
         }
 
-        //TODO actual instance data
+        //actual instance data
         public SceneTransitionType TransitionType { get; set; }
         public string PreviousScene { get; set; }
         public string NextScene { get; set; }

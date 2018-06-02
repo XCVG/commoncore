@@ -30,12 +30,14 @@ namespace SceneControllers
             {
                 MetaState.Instance.IntentsExecuteLoading();
                 //we are merely changing scenes, go straight to loading the next scene
+                GameState.Instance.CurrentScene = MetaState.Instance.NextScene;
                 SceneManager.LoadScene(MetaState.Instance.NextScene);
             }
             else if(MetaState.Instance.TransitionType == SceneTransitionType.LoadGame)
             {
                 //we are loading a game, so load the game data and then load the next scene (which is part of save data)
                 Loader.LoadGame();
+                MetaState.Instance.NextScene = GameState.Instance.CurrentScene;
                 SceneManager.LoadScene(MetaState.Instance.NextScene);
             }
             else if(MetaState.Instance.TransitionType == SceneTransitionType.NewGame)

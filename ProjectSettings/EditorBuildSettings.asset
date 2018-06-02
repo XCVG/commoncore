@@ -20,3 +20,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/World/World_Ext_TestIsland.unity
     guid: 01de1d149f02f8a46a27e720ece4bb18
+  - enabled: 1
+    path: Assets/Scenes/World/World_Ext_MichaelCity.unity
+    guid: 07529644afcd4144b9d872abd3fac110

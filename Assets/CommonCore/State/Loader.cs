@@ -19,6 +19,7 @@ namespace CommonCore.State
         public static void LoadGame()
         {
             Debug.Log("Loading game: " + MetaState.Instance.LoadSave);
+            GameState.DeserializeFromFile(MetaState.Instance.LoadSave);
         }
 
         public static void LoadSceneData()

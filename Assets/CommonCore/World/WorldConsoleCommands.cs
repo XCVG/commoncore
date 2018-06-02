@@ -40,7 +40,10 @@ namespace CommonCore.World
         [Command]
         static void Load(string name)
         {
-            throw new NotImplementedException();
+            MetaState.Instance.TransitionType = SceneTransitionType.LoadGame;
+            MetaState.Instance.LoadSave = Application.persistentDataPath + @"\" + name;
+            MetaState.Instance.Intents.Clear();
+            SceneManager.LoadScene("LoadingScene");
         }
 
         //force loading from file
