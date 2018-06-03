@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -14,7 +15,7 @@ namespace CommonCore
     public static class CCBaseUtil
     {
         //this seems absolutely pointless but will make sense when eXPostFacto (mod support) is added
-        public static T LoadResource<T>(string path) where T: Object
+        public static T LoadResource<T>(string path) where T: UnityEngine.Object
         {
             return Resources.Load<T>(path);
         }
@@ -41,6 +42,28 @@ namespace CommonCore
                 TypeNameHandling = TypeNameHandling.Auto
             });
             File.WriteAllText(path, json);
+        }
+
+        /*
+         * Converts a string to an int or a float with correct type
+         * (limitation: literally int or float, no long or double etc)
+         */
+        public static object StringToNumericAuto(string input)
+        {
+            //check if it is integer first
+            int iResult;
+            bool isInteger = int.TryParse(input, out iResult);
+            if (isInteger)
+                return iResult;
+
+            //then check if it could be decimal
+            float fResult;
+            bool isFloat = float.TryParse(input, out fResult);
+            if (isFloat)
+                return fResult;
+
+            //else return null
+            return null;
         }
     }
 }
