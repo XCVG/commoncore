@@ -1,0 +1,52 @@
+{
+  "m1911": {
+    "NiceName": "M1911",
+    "Image": "m1911",
+    "Description": "A recoil-operated, semi-automatic pistol designed by John Moses Browning, chambered in .45 ACP and adopted by the US military to replace underpowered revolvers."
+  },
+  "revolver": {
+    "NiceName": "Official Police",
+    "Image": "revolver",
+    "Description": "A police revolver with six shots of .38 Special, providing a decent balance of firepower and size."
+  },
+  "rifle1": {
+    "NiceName": "Model 8",
+    "Image": "model8",
+    "Description": "A recoil-operated self-loading rifle chambered in the powerful .35 round, with a small magazine and middline firing rate."
+  },
+  "rifle2": {
+    "NiceName": "Monitor",
+    "Image": "bar",
+    "Description": "A gas-operated select-fire rifle derived from a military arm, with a deep magazine of powerful .30-06 rounds."
+  },
+  "smg1": {
+    "NiceName": "Schnellfeuer",
+    "Image": "broomhandle",
+    "Description": "A converted German military pistol capable of firing full-auto, but still firing the weak 7.62mm cartridge."
+  },
+  "smg2": {
+    "NiceName": "Tommygun",
+    "Image": "thompson",
+    "Description": "A heavy but powerful submachine gun chambered in .45 ACP with a massive drum magazine, popular with lawmen and lawbreakers alike."
+  },
+  "shotgun1": {
+    "NiceName": "Pump Shotgun",
+    "Image": "m1912",
+    "Description": "A standard pump-action shotgun firing 12 gauge shells, deadly at close range but less effective farther out."
+  },
+  "shotgun2": {
+    "NiceName": "Auto Shotgun",
+    "Image": "auto5",
+    "Description": "An automatic shotgun firing 12 gauge shells, with an extended tube for greater capacity. Can deal an incredible amount of damage, but only up close."
+  },
+  "stimpack": {
+    "NiceName": "Stimpack",
+    "Image": "stimpack",
+    "Description": "A quick fix for minor injuries restoring a small amount of health."
+  },
+  "medkit": {
+    "NiceName": "Medkit",
+    "Image": "medkit",
+    "Description": "A kit of first aid supplies for fixing major injuries to restore a large amount of health."
+  }
+}

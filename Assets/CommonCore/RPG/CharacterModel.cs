@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using Newtonsoft.Json;
+using CommonCore.Messaging;
 
 namespace CommonCore.Rpg
 { 
     //TODO split into PlayerModel and CharacterModel
-    public class PlayerModel
+    public class CharacterModel
     {
+        public string FormID { get; set; }
+        public string DisplayName { get; set; }
+
         public float Health
         {
             get
@@ -28,7 +32,9 @@ namespace CommonCore.Rpg
 
         public List<Condition> Conditions { get; private set; }
 
-        public PlayerModel()
+        public InventoryModel Inventory { get; private set; }
+
+        public CharacterModel() //TODO with a model base parameter
         {
             Conditions = new List<Condition>();
 
@@ -47,8 +53,9 @@ namespace CommonCore.Rpg
             {
                 c.Apply(BaseStats, DerivedStats);
             }
-        }
 
+        }
+                
         public void SetAV<T>(string av, T value)
         {
             SetAV(av, value, null); //null=auto

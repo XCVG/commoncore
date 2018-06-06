@@ -20,7 +20,7 @@ namespace CommonCore.State
             LocalDataState = new Dictionary<string, Dictionary<string, object>>();
             LocalObjectState = new Dictionary<string, Dictionary<string, RestorableData>>(); //maps will have to deal with initialization/non-initialization themselves or on load
             MotileObjectState = new Dictionary<string, RestorableData>();
-            PlayerRpgState = new PlayerModel();
+            PlayerRpgState = new CharacterModel();
         }
 
         public static GameState Instance
@@ -79,7 +79,7 @@ namespace CommonCore.State
         public Dictionary<string, Dictionary<string, RestorableData>> LocalObjectState;        
         public Dictionary<string, RestorableData> MotileObjectState;
         public RestorableData PlayerWorldState;
-        public PlayerModel PlayerRpgState;
+        public CharacterModel PlayerRpgState;
         public string CurrentScene;
 
     }

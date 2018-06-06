@@ -6,5 +6,7 @@ namespace CommonCore.World
 {
     public abstract class ActorController : BaseController
     {
+        public string CharacterModelIdOverride;
+
     }
 }

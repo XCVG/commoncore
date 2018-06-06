@@ -78,5 +78,7 @@ namespace CommonCore.Rpg
             }
         }
 
+        //***** Inventory manipulation (TODO)
+
     }
 }
