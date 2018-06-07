@@ -16,7 +16,7 @@ namespace CommonCore.Input
 
         internal static void SetMapper(InputMapper newMapper)
         {
-            CDebug.LogEx(string.Format("Set mapper to {0}", newMapper.GetType().Name), LogType.Log, typeof(MappedInput));
+            CDebug.LogEx(string.Format("Set mapper to {0}", newMapper.GetType().Name), LogLevel.Message, typeof(MappedInput));
             Mapper = newMapper;
         }
 

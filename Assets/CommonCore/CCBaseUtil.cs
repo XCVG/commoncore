@@ -20,6 +20,11 @@ namespace CommonCore
             return Resources.Load<T>(path);
         }
 
+        //same with this one
+        public static T[] LoadResources<T>(string path) where T: UnityEngine.Object
+        {
+            return Resources.LoadAll<T>(path);
+        }
         
         public static T LoadExternalJson<T>(string path)
         {

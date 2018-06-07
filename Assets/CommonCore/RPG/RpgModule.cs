@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using CommonCore.DebugLog;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,7 +16,7 @@ namespace CommonCore.Rpg
             LoadCharacterModels();
             LoadInventoryModels();
 
-            Debug.Log("RPG module loaded!");
+            CDebug.Log("RPG module loaded!");
         }
 
         private void LoadCharacterModels()
@@ -25,7 +26,7 @@ namespace CommonCore.Rpg
 
         private void LoadInventoryModels()
         {
-            InventoryModel.Load();
+            InventoryModel.Load();           
         }
        
     }

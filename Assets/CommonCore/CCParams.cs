@@ -21,9 +21,12 @@ namespace CommonCore
             }
         }
 
-        //*****baseline config settings
+        //*****basic config settings
         public const bool AutoInit = true;
         public const bool AutoloadModules = true;
+
+        //*****additional config settings
+        public const bool UseVerboseLogging = true;
 
         //*****automatic environment params
         public static bool IsDebug

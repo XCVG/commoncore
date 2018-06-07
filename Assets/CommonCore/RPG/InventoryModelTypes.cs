@@ -18,7 +18,7 @@ namespace CommonCore.Rpg
 
     public enum AidType //are there even any other stats?
     {
-        Health
+        None, Health
     }
 
     public enum RestoreType
@@ -156,7 +156,7 @@ namespace CommonCore.Rpg
         public readonly float ReloadTime;
         public readonly AmmoType AType;
         public readonly DamageType DType;
-        public readonly string FireEffect;
+        public readonly string FireEffect; //TODO eliminate this tight interdependency, move to "world model" kind of system
         public readonly string ReloadEffect;
 
         public WeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential,

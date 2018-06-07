@@ -81,43 +81,45 @@ namespace CommonCore.DebugLog
         }
         
         //new unified log method
-        public static void LogEx(string message, LogType type, System.Object context) //TODO make our own LogType because we need higher levels
+        public static void LogEx(string message, LogLevel type, System.Object context) //TODO make our own LogType because we need higher levels
         {
             switch (type)
             {
-                case LogType.Error:
+                case LogLevel.Error:
                     if (context is UnityEngine.Object)
                         Debug.LogError(message, (UnityEngine.Object)context);
                     else
-                        Debug.LogError(string.Format("{0} [{1}]", message, context.ToString()));
+                        Debug.LogError(string.Format("{0} [{1}]", message, context));
                     break;
-                case LogType.Assert:
-                    if (context is UnityEngine.Object)
-                        Debug.LogAssertion(message, (UnityEngine.Object)context);
-                    else
-                        Debug.LogAssertion(string.Format("{0} [{1}]", message, context.ToString()));
-                    break;
-                case LogType.Warning:
+                case LogLevel.Warning:
                     if (context is UnityEngine.Object)
                         Debug.LogWarning(message, (UnityEngine.Object)context);
                     else
-                        Debug.LogWarning(string.Format("{0} [{1}]", message, context.ToString()));
+                        Debug.LogWarning(string.Format("{0} [{1}]", message, context));
                     break;
-                case LogType.Log:
+                case LogLevel.Message:
                     if (context is UnityEngine.Object)
                         Debug.Log(message, (UnityEngine.Object)context);
                     else
-                        Debug.Log(string.Format("{0} [{1}]", message, context.ToString()));
+                        Debug.Log(string.Format("{0} [{1}]", message, context));
                     break;
-                case LogType.Exception:
-                    if (context is UnityEngine.Object)
-                        Debug.LogError(message, (UnityEngine.Object)context);
-                    else
-                        Debug.LogError(string.Format("{0} [{1}]", message, context.ToString()));
+                case LogLevel.Verbose:
+                    if (CCParams.UseVerboseLogging)
+                    {
+                        if (context is UnityEngine.Object)
+                            Debug.Log(message, (UnityEngine.Object)context);
+                        else
+                            Debug.Log(string.Format("{0} [{1}]", message, context));
+                    }
                     break;
             }
         }
 
+    }
 
+
+    public enum LogLevel
+    {
+        Error, Warning, Message, Verbose
     }
 }

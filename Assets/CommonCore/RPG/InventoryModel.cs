@@ -1,12 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using CommonCore.DebugLog;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
-//TODO split this up because, I mean, damn
+
 namespace CommonCore.Rpg
 {
 
@@ -17,41 +19,65 @@ namespace CommonCore.Rpg
         private static Dictionary<string, InventoryItemModel> Models;
         private static Dictionary<string, InventoryItemDef> Defs;
 
+        private static int LoadErrorCount;
+        private static int LoadItemCount;
+        private static int LoadDefCount;
+
         internal static void Load()
         {
             //a bit of a hack, this was originally a static constructor
+
+            LoadErrorCount = 0;
+            LoadItemCount = 0;
+            LoadDefCount = 0;
+
             LoadAllModels();
             LoadAllDefs();
+            LoadAllNew();
+
+            CDebug.LogEx(string.Format("Loaded inventory ({0} items, {1} defs, {2} errors)", LoadItemCount, LoadDefCount, LoadErrorCount), LogLevel.Message, null);
         }
 
         private static void LoadAllModels()
         {
             string data = Resources.Load<TextAsset>("RPGDefs/rpg_items").text;
-            Models = JsonConvert.DeserializeObject<Dictionary<string, InventoryItemModel>>(data, new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto
-            });
+            Models = new Dictionary<string, InventoryItemModel>();
 
-            if(AutocreateModels) //this no longer makes sense for a variety of reasons
+            //first autocreate models (if enabled)
+            if(AutocreateModels)
             {
-
+                CDebug.LogEx("Autocreating item models!", LogLevel.Verbose, null);
                 foreach (AmmoType at in Enum.GetValues(typeof(AmmoType)))
                 {
                     AmmoItemModel aim = new AmmoItemModel(at.ToString(), 0, 1, 1, false, false, at);
                     Models.Add(at.ToString(), aim);
+                    LoadItemCount++;
                 }
-
+                
                 foreach(MoneyType mt in Enum.GetValues(typeof(MoneyType)))
                 {
                     MoneyItemModel mim = new MoneyItemModel(mt.ToString(), 0, 1, 1, false, false, mt);
                     Models.Add(mt.ToString(), mim);
+                    LoadItemCount++;
                 }
             }
 
-            //TODO: loaded models should override autocreated ones
-            //TODO: switch from one big file to more smaller files
-            //TODO: should tolerate malformed entries rather than crashing on one
-
+            //then load legacy models
+            CDebug.LogEx("Loading legacy item models!", LogLevel.Verbose, null);
+            try
+            {
+                var newModels = JsonConvert.DeserializeObject<Dictionary<string, InventoryItemModel>>(data, new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto
+                });
+                newModels.ToList().ForEach(x => Models[x.Key] = x.Value);
+                LoadItemCount += newModels.Count;
+            }
+            catch(Exception e)
+            {
+                CDebug.LogEx(e.ToString(), LogLevel.Verbose, null);
+                LoadErrorCount++;
+            }
         }
 
         private static void LoadAllDefs()
@@ -61,10 +87,58 @@ namespace CommonCore.Rpg
             {
 
                 Defs = JsonConvert.DeserializeObject<Dictionary<string, InventoryItemDef>>(ta.text);
+                LoadDefCount += Defs.Count;
             }
             catch(Exception e)
             {
-                Debug.LogError(e);
+                CDebug.LogError(e);
+                LoadErrorCount++;
+            }
+        }
+
+        private static void LoadAllNew()
+        {
+            //load new model/def/etc file-per-item entries
+            //we've turned our data structures sideways pretty much
+            //we could add more try/catch and make this absolutely bulletproof but I feel it isn't necessary
+            TextAsset[] tas = CCBaseUtil.LoadResources<TextAsset>("Items/");
+            foreach(TextAsset ta in tas)
+            {
+                try
+                {
+                    JObject outerJObject = JObject.Parse(ta.text); //this contains one or more items
+                    foreach(JProperty itemJProperty in outerJObject.Properties())
+                    {
+                        string itemName = itemJProperty.Name;
+                        JToken itemJToken = itemJProperty.Value;
+
+                        //parse model and def
+                        JToken modelJToken = itemJToken["model"];
+                        if(modelJToken != null)
+                        {
+                            Models[itemName] = JsonConvert.DeserializeObject<InventoryItemModel>(modelJToken.ToString(), new JsonSerializerSettings
+                            {
+                                TypeNameHandling = TypeNameHandling.Auto
+                            });
+                            LoadItemCount++;
+                        }
+
+                        JToken defJToken = itemJToken["def"];
+                        if(defJToken != null)
+                        {
+                            Defs[itemName] = JsonConvert.DeserializeObject<InventoryItemDef>(defJToken.ToString(), new JsonSerializerSettings
+                            {
+                                TypeNameHandling = TypeNameHandling.Auto
+                            });
+                            LoadDefCount++;
+                        }
+                    }
+                }
+                catch(Exception e)
+                {
+                    CDebug.LogEx(e.ToString(), LogLevel.Verbose, null);
+                    LoadErrorCount++;
+                }
             }
         }
 
