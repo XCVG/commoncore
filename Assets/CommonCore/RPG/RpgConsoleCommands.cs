@@ -78,7 +78,88 @@ namespace CommonCore.Rpg
             }
         }
 
-        //***** Inventory manipulation (TODO)
+        //***** Inventory manipulation
+
+        [Command]
+        static void ListInventoryModels()
+        {
+            DevConsole.singleton.Log(InventoryModel.GetModelsList());
+        }
+
+        [Command]
+        static void ListInventoryDefs()
+        {
+            DevConsole.singleton.Log(InventoryModel.GetDefsList());
+        }
+
+        [Command(className = "Player")]
+        static void ListItems()
+        {
+            var items = GameState.Instance.PlayerRpgState.Inventory.GetItemsListActual();
+            foreach(var item in items)
+            {
+                DevConsole.singleton.Log(item.ToString());
+            }
+        }
+
+        [Command(className = "Player")]
+        static void CountItem(string item)
+        {
+            try
+            {
+                var quantity = GameState.Instance.PlayerRpgState.Inventory.CountItem(item);
+                DevConsole.singleton.Log(string.Format("{0}:{1}", item, quantity));
+            }
+            catch (Exception e)
+            {
+                DevConsole.singleton.LogError(e.ToString());
+            }
+        }
+
+        [Command(className = "Player")]
+        static void AddItem(string item)
+        {
+            AddItem(item, "1");
+        }
+
+        [Command(className = "Player")]
+        static void AddItem(string item, string quantity)
+        {
+            try
+            {
+                GameState.Instance.PlayerRpgState.Inventory.AddItem(item, int.Parse(quantity));
+            }
+            catch (Exception e)
+            {
+                DevConsole.singleton.LogError(e.ToString());
+            }
+        }
+
+        [Command(className = "Player")]
+        static void RemoveItem(string item)
+        {
+            try
+            {
+                GameState.Instance.PlayerRpgState.Inventory.UseItem(item);
+            }
+            catch (Exception e)
+            {
+                DevConsole.singleton.LogError(e.ToString());
+            }
+        }
+
+        [Command(className = "Player")]
+        static void RemoveItem(string item, string quantity)
+        {
+            try
+            {
+                GameState.Instance.PlayerRpgState.Inventory.UseItem(item, int.Parse(quantity));
+            }
+            catch (Exception e)
+            {
+                DevConsole.singleton.LogError(e.ToString());
+            }
+        }
 
     }
 }

@@ -17,6 +17,9 @@ Wanzyee Studio - Json.NET Converters
 	https://assetstore.unity.com/packages/tools/input-management/json-net-converters-simple-compatible-solution-58621
 	(delete or comment out DictionaryConverter)
 
+Jean Moreno (JMO) - War FX
+	https://www.assetstore.unity3d.com/en/#!/content/5669
+	
 ## Assets/Plugins
 
 Cobo Antonio - DevConsole 2

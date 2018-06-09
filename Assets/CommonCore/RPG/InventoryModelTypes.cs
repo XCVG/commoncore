@@ -147,21 +147,21 @@ namespace CommonCore.Rpg
 
     public class WeaponItemModel : InventoryItemModel //yeah no melee... yet
     {
-        public readonly float Damage;
-        public readonly float DamagePierce;
-        public readonly float Velocity;
-        public readonly float Spread;
-        public readonly float FireRate;
-        public readonly int MagazineSize;
-        public readonly float ReloadTime;
-        public readonly AmmoType AType;
-        public readonly DamageType DType;
-        public readonly string FireEffect; //TODO eliminate this tight interdependency, move to "world model" kind of system
-        public readonly string ReloadEffect;
+        public readonly float Damage; //superclass
+        public readonly float DamagePierce; //superclass
+        public readonly float Velocity; //ranged subclass
+        public readonly float Spread; //ranged subclass
+        public readonly float FireRate; //ranged subclass
+        public readonly int MagazineSize; //ranged subclass
+        public readonly float ReloadTime; //ranged subclass
+        public readonly AmmoType AType; //ranged subclass
+        public readonly DamageType DType; //superclass
+        public readonly string ViewModel; //superclass
+        public readonly string WorldModel; //superclass
 
         public WeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential,
             float damage, float damagePierce, float velocity, float spread, float fireRate,
-            int magazineSize, float reloadTime, AmmoType aType, DamageType dType, string fireEffect, string reloadEffect)
+            int magazineSize, float reloadTime, AmmoType aType, DamageType dType, string viewModel, string worldModel)
             : base(name, weight, value, maxCondition, unique, essential)
         {
             Damage = damage;
@@ -173,8 +173,8 @@ namespace CommonCore.Rpg
             ReloadTime = reloadTime;
             AType = aType;
             DType = dType;
-            FireEffect = fireEffect;
-            ReloadEffect = reloadEffect;
+            ViewModel = viewModel;
+            WorldModel = worldModel;
         }
 
         public override string GetStatsString()

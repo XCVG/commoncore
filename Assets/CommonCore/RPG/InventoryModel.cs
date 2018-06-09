@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 
@@ -153,6 +154,30 @@ namespace CommonCore.Rpg
                 return null;
 
             return Defs[name];
+        }
+
+        public static string GetModelsList()
+        {
+            StringBuilder sb = new StringBuilder(Models.Count * 64);
+
+            foreach(var kvp in Models)
+            {
+                sb.AppendFormat("{0}: {1} \n", kvp.Key, kvp.Value.ToString());
+            }
+
+            return sb.ToString();
+        }
+
+        public static string GetDefsList()
+        {
+            StringBuilder sb = new StringBuilder(Defs.Count * 64);
+
+            foreach (var kvp in Defs)
+            {
+                sb.AppendFormat("{0}: {1} \n", kvp.Key, kvp.Value.ToString());
+            }
+
+            return sb.ToString();
         }
 
         [JsonProperty]

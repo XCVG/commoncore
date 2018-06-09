@@ -36,6 +36,9 @@ namespace CommonCore.Rpg
 
         public CharacterModel() //TODO with a model base parameter
         {
+            HealthFraction = 1.0f;
+
+            Inventory = new InventoryModel();
             Conditions = new List<Condition>();
 
             //create blank stats and derive stats
