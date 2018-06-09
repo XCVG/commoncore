@@ -33,7 +33,7 @@ namespace CommonCore.State
                 }
                 return instance;
             }
-        }
+        }        
 
         public static void Reset()
         {
@@ -81,6 +81,7 @@ namespace CommonCore.State
         public RestorableData PlayerWorldState;
         public CharacterModel PlayerRpgState;
         public string CurrentScene;
+        public bool SaveLocked;
 
     }
 

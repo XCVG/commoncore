@@ -6,6 +6,11 @@ using UnityEngine;
 
 namespace CommonCore.Rpg
 {
+    public enum Sex //we could get into arguments about sex vs gender etc but these are enough for game logic purposes
+    {
+        Undefined, Female, Male, Other
+    }
+
     public enum DamageType
     {
         Normal, Impact, Explosive, Energy, Poison, Radiation

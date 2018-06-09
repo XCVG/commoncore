@@ -48,7 +48,7 @@ namespace CommonCore.World
 
             if(!HUDScript)
             {
-                HUDScript = WorldHUDController.Instance;
+                HUDScript = WorldHUDController.Current;
             }
             
             if(!HUDScript && AutoinitHud)
@@ -57,7 +57,7 @@ namespace CommonCore.World
                 if (EventSystem.current == null)
                     Instantiate(Resources.Load("UI/DefaultEventSystem"));
 
-                HUDScript = WorldHUDController.Instance;
+                HUDScript = WorldHUDController.Current;
             }
             
 

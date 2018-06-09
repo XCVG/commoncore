@@ -13,6 +13,8 @@ namespace CommonCore.Rpg
         public string FormID { get; set; }
         public string DisplayName { get; set; }
 
+        public Sex Gender { get; set; }
+
         public float Health
         {
             get

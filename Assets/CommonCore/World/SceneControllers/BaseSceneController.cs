@@ -4,18 +4,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using CommonCore.State;
-
+using UnityEngine.EventSystems;
 
 namespace CommonCore.World
 {
     //TODO: probably 90% should be moved into WorldSceneController
     public abstract class BaseSceneController : MonoBehaviour
     {
+        public bool AutoinitUi = true;
+
+        public static BaseSceneController Current { get; protected set; }
+
         public Dictionary<string, System.Object> LocalStore { get; protected set; }
 
         public virtual void Awake()
         {
             Debug.Log("Base Scene Controller Awake");
+
+            Current = this;
+            if (AutoinitUi)
+                InitUI();
         }
 
         public virtual void Start()
@@ -37,6 +45,16 @@ namespace CommonCore.World
             Debug.Log("Exiting scene: ");
             Save();
             SceneManager.LoadScene("LoadingScene");
+        }
+
+        protected void InitUI()
+        {
+            if(transform.Find("WorldHUD") == null)
+                Instantiate<GameObject>(Resources.Load<GameObject>("UI/DefaultWorldHUD"), transform).name = "WorldHUD";
+            if(transform.Find("InGameMenu") == null)
+                Instantiate<GameObject>(Resources.Load<GameObject>("UI/IGUI_Menu"), transform).name = "InGameMenu";
+            if(EventSystem.current == null)
+                Instantiate<GameObject>(Resources.Load<GameObject>("UI/DefaultEventSystem"), transform).name = "EventSystem";
         }
 
         public void Save()

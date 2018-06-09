@@ -9,7 +9,7 @@ namespace CommonCore.UI
 {
     public class WorldHUDController : MonoBehaviour
     {
-        public static WorldHUDController Instance { get; private set; }
+        public static WorldHUDController Current { get; private set; }
 
         public Text TargetText;
 
@@ -19,7 +19,7 @@ namespace CommonCore.UI
         void Awake()
         {
             MessageInterface = new QdmsMessageInterface();
-            Instance = this;
+            Current = this;
         }
 
         void Start()
