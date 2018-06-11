@@ -7,7 +7,7 @@ using CommonCore.Messaging;
 
 namespace CommonCore.Rpg
 { 
-    //TODO split into PlayerModel and CharacterModel
+
     public class CharacterModel
     {
         public string FormID { get; set; }

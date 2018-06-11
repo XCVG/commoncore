@@ -192,6 +192,8 @@ namespace CommonCore.Rpg
     //base class for permanent and temporary status conditions
     public abstract class Condition
     {
+        public virtual string NiceName { get; protected set; }
+        public virtual string Description { get; protected set; }
         public abstract void Apply(StatsSet original, StatsSet target);
     }
 }
