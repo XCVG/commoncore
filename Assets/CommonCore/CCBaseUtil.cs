@@ -32,7 +32,13 @@ namespace CommonCore
             {
                 return default(T);
             }
-            return JsonConvert.DeserializeObject<T>(File.ReadAllText(path), new JsonSerializerSettings
+            string text = File.ReadAllText(path);
+            return LoadJson<T>(text);
+        }
+
+        public static T LoadJson<T>(string text)
+        {
+            return JsonConvert.DeserializeObject<T>(text, new JsonSerializerSettings
             {
                 Converters = JsonNetUtility.defaultSettings.Converters,
                 TypeNameHandling = TypeNameHandling.Auto
@@ -41,12 +47,17 @@ namespace CommonCore
 
         public static void SaveExternalJson(string path, System.Object obj)
         {
-            string json = JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings
+            string json = SaveJson(obj);
+            File.WriteAllText(path, json);
+        }
+
+        public static string SaveJson(object obj)
+        {
+            return JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings
             {
                 Converters = JsonNetUtility.defaultSettings.Converters,
                 TypeNameHandling = TypeNameHandling.Auto
             });
-            File.WriteAllText(path, json);
         }
 
         /*
