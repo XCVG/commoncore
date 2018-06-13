@@ -126,11 +126,12 @@ namespace CommonCore.StringSub
 
         internal string GetMacro(string sequence)
         {
+            // l:*:* : Lookup (string substitution) List:String
             // av:* : Player.GetAV
             // inv:* : inventory
-            // cpf:* : Campaign Flag
-            // cpv:* : Campaign Variable
-            // cpv:* : Quest Stage
+            // cpf:* : Campaign Flag TODO
+            // cpv:* : Campaign Variable TODO
+            // cqs:* : Quest Stage TODO
             // general format is *:* where the first part is where to search
             // might eventually add parameters with |
             // TODO figure out returning quest, inventory, etc
@@ -147,8 +148,14 @@ namespace CommonCore.StringSub
                 case ")":
                     result = ">";
                     break;
+                case "l":
+                    result = GetString(sequenceParts[2], sequenceParts[1], false);
+                    break;
                 case "av":
                     result = GameState.Instance.PlayerRpgState.GetAV<object>(sequenceParts[1]).ToString();
+                    break;
+                case "inv":
+                    result = GameState.Instance.PlayerRpgState.Inventory.CountItem(sequenceParts[1]).ToString();
                     break;
                 default:
                     result = string.Format("<MISSING:{0}>", sequence);

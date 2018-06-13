@@ -7,7 +7,7 @@ using CommonCore.State;
 
 namespace CommonCore.Rpg
 {
-    public static class RpgConsoleCommands
+    public static class RpgConsoleCommands //will probably break this up at some point, but maybe not until Balmora
     {
 
         //***** Player Manipulation
@@ -161,5 +161,73 @@ namespace CommonCore.Rpg
             }
         }
 
+        //***** Quest model/def manipulation
+        [Command]
+        static void ListQuestDefs()
+        {
+            DevConsole.singleton.Log(QuestModel.GetDefsList());
+        }
+
+        [Command]
+        static void GetQuestDef(string questDef)
+        {
+            DevConsole.singleton.Log(QuestModel.GetDef(questDef).ToLongString());
+        }
+
+        //***** Campaign manipulation
+
+        [Command(className = "Campaign")]
+        static void GetVar(string varName)
+        {
+            DevConsole.singleton.Log(GameState.Instance.CampaignState.GetVar(varName));
+        }
+
+        [Command(className = "Campaign")]
+        static void SetVar(string varName, string newValue)
+        {
+            GameState.Instance.CampaignState.SetVar(varName, newValue);
+        }
+
+        [Command(className = "Campaign")]
+        static void ListAllVars()
+        {
+            DevConsole.singleton.Log(GameState.Instance.CampaignState.ListAllVars());
+        }
+
+        [Command(className = "Campaign")]
+        static void GetFlag(string flagName)
+        {
+            DevConsole.singleton.Log(GameState.Instance.CampaignState.HasFlag(flagName).ToString());
+        }
+
+        [Command(className = "Campaign")]
+        static void SetFlag(string flagName, string flagState)
+        {
+            GameState.Instance.CampaignState.SetFlag(flagName, Convert.ToBoolean(flagState));
+        }
+
+        [Command(className = "Campaign")]
+        static void ListAllFlags()
+        {
+            DevConsole.singleton.Log(GameState.Instance.CampaignState.ListAllFlags());
+        }
+
+        [Command(className = "Campaign")]
+        static void GetQuestStage(string questName)
+        {
+            DevConsole.singleton.Log(GameState.Instance.CampaignState.GetQuestStage(questName).ToString());
+        }
+
+        [Command(className = "Campaign")]
+        static void SetQuestStage(string questName, string questStage)
+        {
+            GameState.Instance.CampaignState.SetQuestStage(questName, Convert.ToInt32(questStage));
+        }
+
+        [Command(className = "Campaign")]
+        static void ListAllQuests()
+        {
+            DevConsole.singleton.Log(GameState.Instance.CampaignState.ListAllQuests());
+        }
     }
 }

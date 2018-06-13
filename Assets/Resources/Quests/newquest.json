@@ -1,0 +1,15 @@
+{
+	"TestNewQuest": {
+		"def": {
+			"NiceName": "New Style Quest",
+			"Image": "quest_placeholder",
+			"Description": "A quest using a 'new' definition",
+			"Stages": {
+				"0": "Quest not started, this should never show up :(",
+				"1": "Quest started! Yay!",
+				"900": "Quest stages are arbitrary, it's actually backed by a Dictionary",
+				"-1": "Quest finished! Yay!"
+			}
+		}
+	}
+}

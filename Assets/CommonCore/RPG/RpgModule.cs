@@ -15,6 +15,7 @@ namespace CommonCore.Rpg
         {
             LoadCharacterModels();
             LoadInventoryModels();
+            LoadQuestModels();
 
             CDebug.Log("RPG module loaded!");
         }
@@ -27,6 +28,11 @@ namespace CommonCore.Rpg
         private void LoadInventoryModels()
         {
             InventoryModel.Load();           
+        }
+
+        private void LoadQuestModels()
+        {
+            QuestModel.Load();
         }
        
     }

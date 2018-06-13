@@ -16,6 +16,8 @@ namespace CommonCore.UI
         public GameObject MainPanel;
         public GameObject ContainerPanel;
 
+        private string CurrentPanel;
+
         public override void Start()
         {
             base.Start();
@@ -106,6 +108,7 @@ namespace CommonCore.UI
                     childPanel.gameObject.SetActive(true);
                     childPanel.GetComponent<PanelController>().SignalPaint();
                 }
+                CurrentPanel = menuName;
             }
             catch(Exception e)
             {
