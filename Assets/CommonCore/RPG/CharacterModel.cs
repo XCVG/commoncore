@@ -199,7 +199,7 @@ namespace CommonCore.Rpg
             else
             {
                 //search and get property
-                GetType().GetProperty(av).GetValue(this, null);
+                return (T)GetType().GetProperty(av).GetValue(this, null);
             }
 
             //fail

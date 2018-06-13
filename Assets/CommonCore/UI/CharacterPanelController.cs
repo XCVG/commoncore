@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using CommonCore.Rpg;
 using CommonCore.State;
-using System.Text;
+using CommonCore.StringSub;
+
 
 namespace CommonCore.UI
 {
 
     public class CharacterPanelController : PanelController
     {
+        private const string SubList = "IGUI_STATS";
+
         public Text StatsText;
         public Text ConditionsText;
         public Text SkillsText;
@@ -37,7 +41,7 @@ namespace CommonCore.UI
                 string name = Enum.GetName(typeof(StatType), value);
                 int baseValue = baseStats.Stats[value];
                 int derivedValue = derivedStats.Stats[value];
-                statsSB.AppendFormat("{0}: {1} [{2}]\n", name, baseValue, derivedValue);
+                statsSB.AppendFormat("{0}: {1} [{2}]\n", Sub.Replace(name, SubList), baseValue, derivedValue);
             }
 
             statsSB.AppendLine();
@@ -86,7 +90,7 @@ namespace CommonCore.UI
                 string name = Enum.GetName(typeof(SkillType), value);
                 int baseSkill = baseStats.Skills[value];
                 int derivedSkill = derivedStats.Skills[value];
-                skillsSB.AppendFormat("{0}: {1} [{2}]\n", name, baseSkill, derivedSkill);
+                skillsSB.AppendFormat("{0}: {1} [{2}]\n", Sub.Replace(name, SubList), baseSkill, derivedSkill);
             }
 
             SkillsText.text = skillsSB.ToString();
