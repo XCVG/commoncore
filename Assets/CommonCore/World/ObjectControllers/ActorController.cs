@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CommonCore.World
 {
-    public abstract class ActorController : BaseController
+    public class ActorController : BaseController
     {
         public string CharacterModelIdOverride;
 

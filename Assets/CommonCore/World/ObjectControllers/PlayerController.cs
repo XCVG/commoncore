@@ -136,7 +136,7 @@ namespace CommonCore.World
             bool isMoving = false;
             float deadzone = 0.1f;
             float vmul = 10f;
-            float rmul = 25f;
+            float rmul = 60f;
             float cmul = 0.5f * rmul;
             
             if(Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveY)) > deadzone)

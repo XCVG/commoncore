@@ -30,6 +30,18 @@ Cobo Antonio - DevConsole 2
 
 HONETi - Free Animated Space Man
 	https://www.assetstore.unity3d.com/en/?stay#!/content/61548
+	Animator probably needs to be modified for state names to match up
+	
+EnsenaSoft, S.A. de C.V. - Village Buildings 5
+	https://www.assetstore.unity3d.com/en/?stay#!/content/99911
+	Remove the EnsenaSoft folder, full path should be "Assets/Objects/ThirdParty/Village Buildings 5"
+	
+3DMondra - Traditional water well
+	https://www.assetstore.unity3d.com/en/#!/content/4477
+	Put in Assets/Objects/ThirdParty instead of Standard Assets
+	
+davidbinformatique - Modern People
+	https://www.assetstore.unity3d.com/en/?stay#!/content/73497	
 
 # Third Party Assets (included in repository)
 
@@ -50,3 +62,7 @@ n4 - Seamless Beach Sand [CC0]
 LuminousDragonGames - Simple Seamless tiles of dirt and sand
 	https://opengameart.org/content/simple-seamless-tiles-of-dirt-and-sand
 	Assets/Shared/Textures/dirt_10.png
+	
+para - real asphalt texture pack [CC0]
+	https://opengameart.org/content/real-asphalt-texture-pack
+	Assets/Shared/Textures/ground_asphalt_old_05a.png
