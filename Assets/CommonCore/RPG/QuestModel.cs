@@ -127,6 +127,14 @@ namespace CommonCore.Rpg
             Stages = stageText;
         }
 
+        public string GetStageText(int stage)
+        {
+            if (Stages.ContainsKey(stage))
+                return Stages[stage];
+            else
+                return null;
+        }
+
         public override string ToString()
         {
             return string.Format("{0}: {1}", NiceName, Description);

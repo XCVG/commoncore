@@ -5,7 +5,7 @@
 		"Description": "A quest using a 'classic' definition",
 		"Stages": {
 			"0": "Quest not started, this should never show up :(",
-			"1": "Quest started! Yay!",
+			"1": "Quest started! Yay! <(><)>",
 			"-1": "Quest finished! Yay!"
 		}
 	}

@@ -112,7 +112,7 @@ namespace CommonCore.UI
             {
                 SelectedItemText.text = itemDef.NiceName;
                 SelectedItemDescription.text = itemDef.Description;
-                Texture2D tex = Resources.Load<Texture2D>("InventoryIcon/" + itemDef.Image);
+                Texture2D tex = Resources.Load<Texture2D>("UI/Icons/" + itemDef.Image);
                 if (tex != null)
                     SelectedItemImage.texture = tex;
             }

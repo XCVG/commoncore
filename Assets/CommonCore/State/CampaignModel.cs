@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
@@ -44,6 +45,11 @@ namespace CommonCore.State
                 return (T)Convert.ChangeType(value, typeof(T));
         }
 
+        public KeyValuePair<string, string>[] GetAllVars()
+        {
+            return Vars.ToArray();
+        }
+
         public void SetVar(string varName, string value)
         {
             Vars[varName] = value;
@@ -62,6 +68,11 @@ namespace CommonCore.State
         public bool HasFlag(string flagName)
         {
             return Flags.Contains(flagName);
+        }
+
+        public string[] GetAllFlags()
+        {
+            return Flags.ToArray();
         }
 
         public void SetFlag(string flagName, bool flagState)
@@ -160,6 +171,11 @@ namespace CommonCore.State
                 return Quests[questName] < 0;
             }
             return false;
+        }
+
+        public KeyValuePair<string, int>[] GetAllQuests()
+        {
+            return Quests.ToArray();
         }
 
         public string ListAllQuests()
