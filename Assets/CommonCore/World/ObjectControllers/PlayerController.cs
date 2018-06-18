@@ -112,7 +112,7 @@ namespace CommonCore.World
                 if(go != null)
                 {
                     var ic = go.GetComponent<InteractableComponent>();
-                    if(ic != null)
+                    if(ic != null && ic.enabled)
                     {
                         //Debug.Log("Detected: " + ic.Tooltip);
                         HUDScript.SetTargetMessage(ic.Tooltip);

@@ -26,6 +26,8 @@ namespace SceneControllers
 
             }
 
+            System.GC.Collect();
+
             if(MetaState.Instance.TransitionType == SceneTransitionType.ChangeScene)
             {
                 MetaState.Instance.IntentsExecuteLoading();

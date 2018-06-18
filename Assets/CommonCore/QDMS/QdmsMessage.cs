@@ -61,4 +61,14 @@ namespace CommonCore.Messaging
         }
     }
 
+    public class HUDPushMessage : QdmsMessage
+    {
+        public readonly string Contents;
+
+        public HUDPushMessage(string contents) : base()
+        {
+            Contents = contents;
+        }
+    }
+
 }

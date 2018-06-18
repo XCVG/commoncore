@@ -9,9 +9,15 @@ namespace CommonCore.ObjectActions
 
         void Start()
         {
+            RestoreState();
 
-            ActionInvokerData d = new ActionInvokerData();
-            Special.Invoke(d);
+            if(!Triggered)
+            {
+                ActionInvokerData d = new ActionInvokerData();
+                Special.Invoke(d);
+                Triggered = true;
+                SaveState();
+            }            
 
         }
 

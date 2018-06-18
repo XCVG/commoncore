@@ -29,30 +29,30 @@ namespace CommonCore.Messaging
             }
 
             Debug.Log("QDMS bus created!");
-            Receivers = new List<QdmsMessageInterface>();
+            Receivers = new List<IQdmsMessageReceiver>();
             _Instance = this;
         }
 
         ~QdmsMessageBus()
         {
-            foreach(QdmsMessageInterface r in Receivers)
+            foreach(IQdmsMessageReceiver r in Receivers)
             {
                 if (r != null)
-                    r.Valid = false;
+                    r.IsValid = false;
             }
 
             Debug.Log("QDMS bus destroyed!");
         }
 
-        private List<QdmsMessageInterface> Receivers;
+        private List<IQdmsMessageReceiver> Receivers;
 
         internal void PushBroadcast(QdmsMessage msg) //internal doesn't work the way I thought it did, gah
         {
-            foreach(QdmsMessageInterface r in Receivers)
+            foreach(IQdmsMessageReceiver r in Receivers)
             {
                 try
                 {
-                    r.MessageQueue.Enqueue(msg);
+                    r.ReceiveMessage(msg);
                 }
                 catch(Exception e) //steamroll errors
                 {
@@ -61,12 +61,12 @@ namespace CommonCore.Messaging
             }
         }
 
-        internal void RegisterReceiver(QdmsMessageInterface receiver)
+        internal void RegisterReceiver(IQdmsMessageReceiver receiver)
         {
             Receivers.Add(receiver);
         }
 
-        internal void UnregisterReceiver(QdmsMessageInterface receiver)
+        internal void UnregisterReceiver(IQdmsMessageReceiver receiver)
         {
             Receivers.Remove(receiver);
         }
@@ -91,5 +91,10 @@ namespace CommonCore.Messaging
             }
         }
         
+    }
+    public interface IQdmsMessageReceiver
+    {
+        bool IsValid { get; set; }
+        void ReceiveMessage(QdmsMessage msg);
     }
 }

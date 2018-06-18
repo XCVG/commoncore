@@ -24,7 +24,6 @@ namespace CommonCore.ObjectActions
         private Light myLight;
         private int framesSinceLast;
 
-        // Use this for initialization
         void Start()
         {
             myLight = gameObject.GetComponent<Light>();
@@ -36,8 +35,6 @@ namespace CommonCore.ObjectActions
             framesSinceLast = 0;
         }
 
-        // Update is called once per frame
-        //we should probably untie flickering from framerate some time
         void FixedUpdate()
         {
 

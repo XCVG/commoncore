@@ -13,11 +13,14 @@ namespace CommonCore.ObjectActions
 
         public bool CheckAllCollisions = false;
 
-        private bool Locked; //TODO: need to have the ability to save/restore this for it to be useful
+        void Start()
+        {
+            RestoreState();
+        }
 
         void OnTriggerEnter(Collider other)
         {
-            if (Locked)
+            if (Triggered)
                 return;
 
             //reject not-player if we're not allowing not-player
@@ -35,7 +38,10 @@ namespace CommonCore.ObjectActions
 
             //lock if not repeatable
             if (!Repeatable)
-                Locked = true;
+            {
+                Triggered = true;
+                SaveState();
+            }                
 
         }
 

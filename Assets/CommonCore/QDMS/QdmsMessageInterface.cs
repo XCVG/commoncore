@@ -6,10 +6,10 @@ namespace CommonCore.Messaging
 {
 
     //not actually an interface
-    public class QdmsMessageInterface
+    public class QdmsMessageInterface: IQdmsMessageReceiver
     {
         internal Queue<QdmsMessage> MessageQueue;
-        public bool Valid { get; internal set; }
+        protected bool Valid { get; set; }
 
         public GameObject Attachment { get; internal set; }
 
@@ -61,6 +61,23 @@ namespace CommonCore.Messaging
         {
             msg.SetSender(this);
             QdmsMessageBus.Instance.PushBroadcast(msg);
+        }
+
+        public void ReceiveMessage(QdmsMessage msg)
+        {
+            MessageQueue.Enqueue(msg);
+        }
+
+        public bool IsValid
+        {
+            get
+            {
+                return Valid;
+            }
+            set
+            {
+                Valid = value;
+            }
         }
 
     }

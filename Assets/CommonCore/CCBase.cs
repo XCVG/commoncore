@@ -47,9 +47,9 @@ namespace CommonCore
         {
             //initialize Debug, Config, Console, MessageBus
             Modules.Add(new DebugModule());
-            Modules.Add(new ConfigModule());
-            Modules.Add(new ConsoleModule());
             Modules.Add(new QdmsMessageBus());
+            Modules.Add(new ConfigModule());
+            Modules.Add(new ConsoleModule());            
         }
 
         private static void InitializeModules()

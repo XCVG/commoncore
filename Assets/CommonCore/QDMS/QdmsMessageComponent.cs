@@ -16,7 +16,7 @@ namespace CommonCore.Messaging
 
         private void LateUpdate()
         {
-            if (!MessageInterface.Valid)
+            if (!MessageInterface.IsValid)
                 MessageInterface = new QdmsMessageInterface();
         }
 

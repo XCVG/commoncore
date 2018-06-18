@@ -11,6 +11,7 @@ namespace CommonCore.ObjectActions
         public BaseController Activator;
     }
 
+    [System.Serializable]
     public class ActionSpecialEvent : UnityEvent<ActionInvokerData> { }
 
     public abstract class ActionSpecial : MonoBehaviour

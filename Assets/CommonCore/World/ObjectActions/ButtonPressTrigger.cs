@@ -11,11 +11,14 @@ namespace CommonCore.ObjectActions
         public bool UseKeyInput;
         public string InputCode;
 
-        private bool Locked;
+        void Start()
+        {
+            RestoreState();
+        }
 
         void Update()
         {
-            if (Locked)
+            if (Triggered)
                 return;
 
             bool inputPressed = false;
@@ -31,7 +34,11 @@ namespace CommonCore.ObjectActions
                 Special.Invoke(d);
 
                 if (!Repeatable)
-                    Locked = true;
+                {
+                    Triggered = true;
+                    SaveState();
+                }
+                    
             }
 
         }

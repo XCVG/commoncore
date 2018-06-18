@@ -16,8 +16,8 @@ namespace CommonCore.World
 
         public override void OnActivate(GameObject activator)
         {
-            //abort if locked
-            if (Locked)
+            //abort if locked or not enabled
+            if (Locked || !enabled)
                 return;
 
             //check eligibility of activator

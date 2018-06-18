@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using SickDev.CommandSystem;
+using CommonCore.Messaging;
 
 namespace CommonCore.Console
 {
@@ -13,6 +14,7 @@ namespace CommonCore.Console
     public class ConsoleModule : CCModule
     {
         private GameObject ConsoleObject;
+        private ConsoleMessagingIntegrationComponent ConsoleMessagingThing;
 
         public ConsoleModule()
         {
@@ -21,12 +23,14 @@ namespace CommonCore.Console
 
             //any hooking into the console could be done here
             AddCommands();
+            ConsoleMessagingThing = new ConsoleMessagingIntegrationComponent();
 
             Debug.Log("Console module loaded!");
         }
 
         public override void OnApplicationQuit()
         {
+            ConsoleMessagingThing = null;
             GameObject.Destroy(ConsoleObject);
             Debug.Log("Console module unloaded!");
         }
@@ -34,7 +38,7 @@ namespace CommonCore.Console
         public void AddCommands()
         {
             DevConsole.singleton.AddCommand(new ActionCommand(Quit) { useClassName = false });
-            DevConsole.singleton.AddCommand(new FuncCommand<string>(GetVersion) {className = "Core"});
+            DevConsole.singleton.AddCommand(new FuncCommand<string>(GetVersion) { className = "Core" });
         }
 
         string GetVersion()
@@ -46,5 +50,40 @@ namespace CommonCore.Console
         {
             Application.Quit();
         }
+
+        private class ConsoleMessagingIntegrationComponent : IQdmsMessageReceiver
+        {
+            public ConsoleMessagingIntegrationComponent()
+            {
+                QdmsMessageBus.Instance.RegisterReceiver(this);
+            }
+
+            ~ConsoleMessagingIntegrationComponent()
+            {
+                QdmsMessageBus.Instance.UnregisterReceiver(this);
+            }
+
+            bool IQdmsMessageReceiver.IsValid //AFAIK this is only used for destroying components
+            {
+                get
+                {
+                    return true;
+                }
+
+                set
+                {
+                    //do nothing
+                }
+            }
+
+            void IQdmsMessageReceiver.ReceiveMessage(QdmsMessage msg)
+            {
+                if(msg is HUDPushMessage)
+                {
+                    DevConsole.singleton.Log(string.Format("{0} : {1}", "*HUD PUSH MESSAGE*", ((HUDPushMessage)msg).Contents));
+                }
+            }
+        }
+
     }
 }
