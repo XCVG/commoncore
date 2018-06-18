@@ -21,7 +21,8 @@ namespace CommonCore.ObjectActions
 
             QdmsMessageBus.Instance.PushBroadcast(new HUDPushMessage(UseSubstitution ? Sub.Macro(Message) : Message));
 
-            Locked = true;
+            if (!Repeatable)
+                Locked = true;
         }
     }
 }

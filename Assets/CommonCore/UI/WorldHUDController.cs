@@ -12,6 +12,8 @@ namespace CommonCore.UI
         public static WorldHUDController Current { get; private set; }
 
         public Text TargetText;
+        public Text MessageText;
+        public ScrollRect MessageScrollRect;
 
         
         private QdmsMessageInterface MessageInterface;
@@ -24,7 +26,7 @@ namespace CommonCore.UI
 
         void Start()
         {
-
+            MessageText.text = string.Empty;
         }
         
         void Update()
@@ -38,7 +40,12 @@ namespace CommonCore.UI
 
         private void HandleMessage(QdmsMessage message)
         {
-            //TODO handle messages
+            if(message is HUDPushMessage)
+            {
+                MessageText.text = MessageText.text + "\n" + ((HUDPushMessage)message).Contents;
+                Canvas.ForceUpdateCanvases();
+                MessageScrollRect.verticalNormalizedPosition = 0;
+            }
         }
 
         internal void ClearTarget()
