@@ -1,0 +1,134 @@
+{
+  "background": "bureau",
+  "music": "academy",
+  "default": "brokenincommoncore",
+  "frames": {
+    "intro1": {
+      "type": "text",
+      "image": "vacuum",
+      "nameText": "J.E. Vacuumcleaner",
+      "next": "this.intro2",
+      "text": "Good morning, Agent Kelley. Please, have a seat."
+    },
+    "intro2": {
+      "type": "choice",
+      "image": "vacuum",
+      "nameText": "J.E. Vacuumcleaner",
+      "choices": [
+        {
+          "text": "*take a seat*",
+          "next": "this.intro3"
+        },
+        {
+          "text": "*remain standing*",
+          "next": "this.intro3"
+        }
+      ]
+    },
+    "intro3": {
+      "type": "text",
+      "image": "vacuum",
+      "nameText": "J.E. Vacuumcleaner",
+      "next": "this.intro4",
+      "text": "That was some nasty business in Boston. A string of bank robberies, ending with a shootout that left three good men dead. That's the first time I've seen it get that bad. I'm still impressed you managed to salvage the situation."
+    },
+    "intro4": {
+      "type": "choice",
+      "image": "vacuum",
+      "nameText": "J.E. Vacuumcleaner",
+      "choices": [
+        {
+          "text": "Well, I certainly wouldn't like to repeat it",
+          "next": "this.intro5"
+        },
+        {
+          "text": "They had to be stopped, and we stopped them",
+          "next": "this.intro6"
+        }
+      ]
+    },
+    "intro5": {
+      "type": "text",
+      "image": "vacuum",
+      "nameText": "J.E. Vacuumcleaner",
+      "next": "this.intro7",
+      "text": "Then you'll probably like your next assignment even less"
+    },
+    "intro6": {
+      "type": "text",
+      "image": "vacuum",
+      "nameText": "J.E. Vacuumcleaner",
+      "next": "this.intro7",
+      "text": "Be that as it may, I'd always prefer a better outcome if it's possible "
+    },
+    "intro7": {
+      "type": "text",
+      "image": "vacuum",
+      "nameText": "J.E. Vacuumcleaner",
+      "next": "this.intro8",
+      "text": "How much do you know about Cal LaPone?"
+    },
+    "intro8": {
+      "type": "choice",
+      "image": "vacuum",
+      "nameText": "J.E. Vacuumcleaner",
+      "choices": [
+        {
+          "text": "An infamous gangster we've been chasing for years",
+          "next": "this.intro9"
+        },
+        {
+          "text": "Big-time mob boss, who we can't touch",
+          "next": "this.intro9"
+        },
+        {
+          "text": "A bastard that deserves to hang",
+          "next": "this.intro9"
+        }
+      ]
+    },
+    "intro9": {
+      "type": "text",
+      "image": "vacuum",
+      "nameText": "J.E. Vacuumcleaner",
+      "next": "this.intro10",
+      "text": "That's about the size of it. We know this guy's dirty, but we've just never been able to prove it. He's got a good accountant, a good lawyer, and half of Chicago in his pocket."
+    },
+    "intro10": {
+      "type": "text",
+      "image": "vacuum",
+      "nameText": "J.E. Vacuumcleaner",
+      "next": "this.intro11",
+      "text": "But I think we can finally nail him. Forensics are a lot better than they were even ten years ago, and we have powerful friends of our own. The rule of law is not a legal fiction.  We have the tools to enforce it."
+    },
+    "intro11": {
+      "type": "text",
+      "image": "vacuum",
+      "nameText": "J.E. Vacuumcleaner",
+      "next": "this.intro12",
+      "text": "While you were in Boston, we received an anonymous tip from inside LaPone's operation. He's got a web of illegitimate enterprises, corrupt connections, and perfidous personalities, and you're going to unravel it starting from that little thread."
+    },
+    "intro12": {
+      "type": "choice",
+      "image": "vacuum",
+      "nameText": "J.E. Vacuumcleaner",
+      "choices": [
+        {
+          "text": "When do I leave, sir?",
+          "next": "this.intro14"
+        },
+        {
+          "text": "Well, this ought to be interesting",
+          "next": "this.intro14"
+        }
+      ]
+    },
+    "intro14": {
+      "type": "text",
+      "image": "vacuum",
+      "nameText": "J.E. Vacuumcleaner",
+      "next": "scene.PlaneCrashScene",
+      "text": "Ever been on an aeroplane before? Time is of the essence, so you'll be leaving tonight. "
+    }
+  }
+}

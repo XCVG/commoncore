@@ -45,6 +45,11 @@ namespace CommonCore.State
                 return (T)Convert.ChangeType(value, typeof(T));
         }
 
+        public bool HasVar(string varName)
+        {
+            return Vars.ContainsKey(varName);
+        }
+
         public KeyValuePair<string, string>[] GetAllVars()
         {
             return Vars.ToArray();
@@ -144,6 +149,11 @@ namespace CommonCore.State
             Quests.TryGetValue(questName, out oldStage);
             if (oldStage == 0)
                 Quests[questName] = initialStage;
+        }
+
+        public bool HasQuest(string questName)
+        {
+            return Quests.ContainsKey(questName);
         }
 
         public bool IsQuestStarted(string questName)

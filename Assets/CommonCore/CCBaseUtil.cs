@@ -81,5 +81,13 @@ namespace CommonCore
             //else return null
             return null;
         }
+
+        public static Transform GetWorldRoot()
+        {
+            GameObject rootGo = GameObject.Find("WorldRoot");
+            if (rootGo == null)
+                return null;
+            return rootGo.transform;
+        }
     }
 }

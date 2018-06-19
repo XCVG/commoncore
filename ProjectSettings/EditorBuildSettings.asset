@@ -18,6 +18,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Other/TestScene.unity
     guid: 0b340932fb43bfa4b86dd20ee1c3e91e
   - enabled: 1
+    path: Assets/Scenes/Other/DialogueScene.unity
+    guid: 186908a1a0aac3547b16d4228e10c68f
+  - enabled: 1
     path: Assets/Scenes/World/World_Ext_TestIsland.unity
     guid: 01de1d149f02f8a46a27e720ece4bb18
   - enabled: 1
