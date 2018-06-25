@@ -61,12 +61,12 @@ namespace CommonCore.Rpg
 
         }
                 
-        public void SetAV<T>(string av, T value)
+        public void SetAV(string av, object value)
         {
             SetAV(av, value, null); //null=auto
         }
 
-        public void SetAV<T>(string av, T value, bool? propagate)
+        public void SetAV(string av, object value, bool? propagate)
         {
             if(av.Contains("."))
             {
@@ -95,19 +95,20 @@ namespace CommonCore.Rpg
             else
             {
                 //search and set property
-                GetType().GetProperty(av).SetValue(this, value, null);
+                var prop = GetType().GetProperty(av);
+                prop.SetValue(this, Convert.ChangeType(value, prop.PropertyType), null);
             }
 
             if(propagate.HasValue && propagate.Value)
                 UpdateStats();
         }
 
-        public void ModAV<T>(string av, T value)
+        public void ModAV(string av, object value)
         {
             ModAV(av, value, null);
         }
 
-        public void ModAV<T>(string av, T value, bool? propagate)
+        public void ModAV(string av, object value, bool? propagate)
         {
             if (av.Contains("."))
             {
@@ -156,12 +157,69 @@ namespace CommonCore.Rpg
             }
             else
             {
-                //search and set property
-                GetType().GetProperty(av).SetValue(this, value, null);
+                //search and modify property
+                var prop = GetType().GetProperty(av);
+                if(CCBaseUtil.IsNumericType(prop.PropertyType))
+                {
+                    decimal newVal = Convert.ToDecimal(prop.GetValue(this, null)) + Convert.ToDecimal(value);
+                    prop.SetValue(this, Convert.ChangeType(newVal, prop.PropertyType), null);
+                }
+                else if(prop.PropertyType == typeof(string))
+                {
+                    string newVal = ((string)prop.GetValue(this, null)) + (string)(object)value;
+                    prop.SetValue(this, newVal, null);
+                }
+                else
+                {
+                    prop.SetValue(this, Convert.ChangeType(value, prop.PropertyType), null);
+                }
+                
             }
 
             if (propagate.HasValue && propagate.Value)
                 UpdateStats();
+        }
+
+        internal object GetAV(string av)
+        {
+            if (av.Contains("."))
+            {
+                string firstPart = av.Substring(0, av.IndexOf('.'));
+                string secondPart = av.Substring(av.IndexOf('.') + 1);
+                if (firstPart == "BaseStats")
+                {
+                    return BaseStats.GetStat(secondPart);
+                }
+                else if (firstPart == "DerivedStats")
+                {
+                    return DerivedStats.GetStat(secondPart);
+                }
+                else if (firstPart == "Conditions")
+                {
+                    string fqConditionName = GetType().Namespace + "." + secondPart.ToString();
+                    Condition newC = (Condition)Activator.CreateInstance(Type.GetType(fqConditionName));
+                    bool found = false;
+
+                    foreach (Condition c in Conditions)
+                    {
+                        if (c.GetType() == newC.GetType())
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    return found;
+                }
+            }
+            else
+            {
+                //search and get property
+                return GetType().GetProperty(av).GetValue(this, null);
+            }
+
+            //fail
+            throw new KeyNotFoundException();
         }
 
         public T GetAV<T>(string av)
@@ -199,7 +257,7 @@ namespace CommonCore.Rpg
             else
             {
                 //search and get property
-                return (T)GetType().GetProperty(av).GetValue(this, null);
+                return (T)Convert.ChangeType(GetType().GetProperty(av).GetValue(this, null), typeof(T));
             }
 
             //fail

@@ -47,7 +47,7 @@ namespace CommonCore.Dialogue
                 catch (Exception e)
                 {
                     Debug.Log("Failed to parse frame!");
-                    Debug.Log(e);
+                    Debug.LogException(e);
                 }
             }
 
@@ -95,7 +95,7 @@ namespace CommonCore.Dialogue
                     }
                     catch (Exception e)
                     {
-                        Debug.LogWarning(e);
+                        Debug.LogException(e);
                     }
                 }
                 conditional = cList.ToArray();

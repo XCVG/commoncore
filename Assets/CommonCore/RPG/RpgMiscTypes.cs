@@ -63,7 +63,7 @@ namespace CommonCore.Rpg
             original.Skills.CopyTo(Skills, 0);            
         }
         
-        public void SetStat<T>(string stat, T value)
+        public void SetStat(string stat, object value)
         {
             if(stat.Contains("."))
             {
@@ -76,28 +76,29 @@ namespace CommonCore.Rpg
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(DamageType), propertyAlias);
                     if (propertyName == "DamageResistance")
-                        DamageResistance[propertyIndex] = (float)(object)value; //YES I AM VERY SURE
+                        DamageResistance[propertyIndex] = Convert.ToSingle(value);
                     else if (propertyName == "DamageThreshold")
-                        DamageThreshold[propertyIndex] = (float)(object)value;
+                        DamageThreshold[propertyIndex] = Convert.ToSingle(value);
                 }
                 else if (propertyName == "Stats")
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(StatType), propertyAlias);
-                    Stats[propertyIndex] = (int)(object)value;
+                    Stats[propertyIndex] = Convert.ToInt32(value);
                 }
                 else if (propertyName == "Skills")
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(SkillType), propertyAlias);
-                    Skills[propertyIndex] = (int)(object)value;
+                    Skills[propertyIndex] = Convert.ToInt32(value);
                 }
             }
             else
             {
-                GetType().GetProperty(stat).SetValue(this, value, null);
+                var prop = GetType().GetProperty(stat);
+                prop.SetValue(this, Convert.ChangeType(value, prop.PropertyType), null);
             }
         }
 
-        public void ModStat<T>(string stat, T value)
+        public void ModStat(string stat, object value)
         {
             if (stat.Contains("."))
             {
@@ -110,47 +111,47 @@ namespace CommonCore.Rpg
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(DamageType), propertyAlias);
                     if (propertyName == "DamageResistance")
-                        DamageResistance[propertyIndex] += (float)(object)value; //YES I AM VERY SURE
+                        DamageResistance[propertyIndex] += Convert.ToSingle(value);
                     else if (propertyName == "DamageThreshold")
-                        DamageThreshold[propertyIndex] += (float)(object)value;
+                        DamageThreshold[propertyIndex] += Convert.ToSingle(value);
                 }
                 else if (propertyName == "Stats")
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(StatType), propertyAlias);
-                    Stats[propertyIndex] += (int)(object)value;
+                    Stats[propertyIndex] += Convert.ToInt32(value);
                 }
                 else if (propertyName == "Skills")
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(SkillType), propertyAlias);
-                    Skills[propertyIndex] += (int)(object)value;
+                    Skills[propertyIndex] += Convert.ToInt32(value);
                 }
             }
             else
             {
-                PropertyInfo property = GetType().GetProperty(stat);
-                T oldValue = (T)property.GetValue(this, null);
-                //TODO consider switching to .net 4 (experimental) and using generics
-                double newValue = ((double)(object)oldValue + (double)(object)value); //as long as it's numeric...
-                if (property.GetType() == typeof(double))
+                var prop = GetType().GetProperty(stat);
+                if (CCBaseUtil.IsNumericType(prop.PropertyType))
                 {
-                    property.SetValue(this, newValue, null);
+                    decimal newVal = Convert.ToDecimal(prop.GetValue(this, null)) + Convert.ToDecimal(value);
+                    prop.SetValue(this, Convert.ChangeType(newVal, prop.PropertyType), null);
                 }
-                else if (property.GetType() == typeof(float))
+                else if (prop.PropertyType == typeof(string))
                 {
-                    property.SetValue(this, (float)newValue, null);
-                }
-                else if(property.GetType() == typeof(int))
-                {
-                    property.SetValue(this, (int)newValue, null);
+                    string newVal = ((string)prop.GetValue(this, null)) + (string)(object)value;
+                    prop.SetValue(this, newVal, null);
                 }
                 else
                 {
-                    property.SetValue(this, (T)(object)newValue, null); //attempt to blindly cast
+                    prop.SetValue(this, Convert.ChangeType(value, prop.PropertyType), null);
                 }
             }
         }
 
         public T GetStat<T>(string stat)
+        {
+            return (T)Convert.ChangeType(GetStat(stat), typeof(T));
+        }
+
+        internal object GetStat(string stat)
         {
             object result = null;
 
@@ -161,7 +162,7 @@ namespace CommonCore.Rpg
                 string propertyAlias = statSplit[1];
 
                 //explicit handling
-                if(propertyName == "DamageResistance" || propertyName == "DamageThreshold")
+                if (propertyName == "DamageResistance" || propertyName == "DamageThreshold")
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(DamageType), propertyAlias);
                     if (propertyName == "DamageResistance")
@@ -169,12 +170,12 @@ namespace CommonCore.Rpg
                     else if (propertyName == "DamageThreshold")
                         result = DamageThreshold[propertyIndex];
                 }
-                else if(propertyName == "Stats")
+                else if (propertyName == "Stats")
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(StatType), propertyAlias);
                     result = Stats[propertyIndex];
                 }
-                else if(propertyName == "Skills")
+                else if (propertyName == "Skills")
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(SkillType), propertyAlias);
                     result = Skills[propertyIndex];
@@ -182,16 +183,16 @@ namespace CommonCore.Rpg
             }
             else
             {
-                result = GetType().GetProperty(stat).GetValue(this, null);                
+                result = GetType().GetProperty(stat).GetValue(this, null);
             }
 
-            return (T)result;
+            return result;
         }
     }
 
     //base class for permanent and temporary status conditions
     public abstract class Condition
-    {
+    { 
         public virtual string NiceName { get; protected set; }
         public virtual string Description { get; protected set; }
         public abstract void Apply(StatsSet original, StatsSet target);

@@ -168,9 +168,9 @@ namespace CommonCore.Dialogue
         public readonly ConditionType Type;
         public readonly string Target;
         public readonly ConditionOption? Option;
-        public readonly int OptionValue; //this should NOT be an int... TODO experiment with IComparable and reflection
+        public readonly IComparable OptionValue; //this should NOT be an int... TODO experiment with IComparable and reflection
 
-        public Condition(ConditionType type, string target, ConditionOption? option, int optionValue)
+        public Condition(ConditionType type, string target, ConditionOption? option, IComparable optionValue)
         {
             Type = type;
             Target = target;
@@ -216,26 +216,26 @@ namespace CommonCore.Dialogue
             }
         }
 
-        private bool EvaluateValueWithOption(int value)
+        private bool EvaluateValueWithOption(IComparable value)
         {
             //technically out of spec but should be fine
             //probably the only instance that will work here but not with Katana
             switch (Option.Value)
             {
                 case ConditionOption.Greater:
-                    return value > OptionValue;
+                    return value.CompareTo(OptionValue) > 0;
                 case ConditionOption.Less:
-                    return value < OptionValue;
+                    return value.CompareTo(OptionValue) < 0;
                 case ConditionOption.Equal:
-                    return value == OptionValue;
+                    return value.CompareTo(OptionValue) == 0;
                 case ConditionOption.GreaterEqual:
-                    return value >= OptionValue;
+                    return value.CompareTo(OptionValue) >= 0;
                 case ConditionOption.LessEqual:
-                    return value <= OptionValue;
+                    return value.CompareTo(OptionValue) <= 0;
                 case ConditionOption.Started:
-                    return value > 0;
+                    return value.CompareTo(0) > 0;
                 case ConditionOption.Finished:
-                    return value < 0;
+                    return value.CompareTo(0) < 0;
                 default:
                     throw new NotSupportedException();
             }
@@ -257,9 +257,9 @@ namespace CommonCore.Dialogue
         public readonly MicroscriptType Type;
         public readonly string Target;
         public readonly MicroscriptAction Action;
-        public readonly int Value;
+        public readonly object Value;
 
-        public MicroscriptNode(MicroscriptType type, string target, MicroscriptAction action, int value)
+        public MicroscriptNode(MicroscriptType type, string target, MicroscriptAction action, object value)
         {
             Type = type;
             Target = target;
@@ -289,11 +289,11 @@ namespace CommonCore.Dialogue
                 case MicroscriptType.Item:
                     if(Action == MicroscriptAction.Give)
                     {
-                        GameState.Instance.PlayerRpgState.Inventory.AddItem(Target, Value);
+                        GameState.Instance.PlayerRpgState.Inventory.AddItem(Target, Convert.ToInt32(Value));
                     }
                     else if(Action == MicroscriptAction.Take)
                     {
-                        GameState.Instance.PlayerRpgState.Inventory.UseItem(Target, Value);
+                        GameState.Instance.PlayerRpgState.Inventory.UseItem(Target, Convert.ToInt32(Value));
                     }
                     else
                     {
@@ -307,8 +307,8 @@ namespace CommonCore.Dialogue
                     }
                     else if(Action == MicroscriptAction.Add)
                     {
-                        int oldVal = GameState.Instance.CampaignState.GetVar<int>(Target);
-                        GameState.Instance.CampaignState.SetVar(Target, (oldVal + Value).ToString());
+                        decimal oldVal = Convert.ToDecimal(GameState.Instance.CampaignState.GetVar(Target));
+                        GameState.Instance.CampaignState.SetVar(Target, (oldVal + Convert.ToDecimal(Value)).ToString()); //this is probably unsafe
                     }
                     else
                     {
@@ -320,11 +320,11 @@ namespace CommonCore.Dialogue
                 case MicroscriptType.Quest:
                     if(Action == MicroscriptAction.Set)
                     {
-                        GameState.Instance.CampaignState.SetQuestStage(Target, Value);
+                        GameState.Instance.CampaignState.SetQuestStage(Target, Convert.ToInt32(Value));
                     }
                     else if(Action == MicroscriptAction.Add)
                     {
-                        GameState.Instance.CampaignState.SetQuestStage(Target, GameState.Instance.CampaignState.GetQuestStage(Target)+Value);
+                        GameState.Instance.CampaignState.SetQuestStage(Target, GameState.Instance.CampaignState.GetQuestStage(Target)+ Convert.ToInt32(Value));
                     }
                     else if(Action == MicroscriptAction.Start)
                     {
@@ -333,17 +333,17 @@ namespace CommonCore.Dialogue
                     else if(Action == MicroscriptAction.Finish)
                     {
                         if(GameState.Instance.CampaignState.IsQuestStarted(Target))
-                            GameState.Instance.CampaignState.SetQuestStage(Target, Value);
+                            GameState.Instance.CampaignState.SetQuestStage(Target, Convert.ToInt32(Value));
                     }
                     break;
                 case MicroscriptType.ActorValue:
                     if (Action == MicroscriptAction.Set)
                     {
-                        GameState.Instance.PlayerRpgState.SetAV<int>(Target, Value);
+                        GameState.Instance.PlayerRpgState.SetAV(Target, Value);
                     }
                     else if (Action == MicroscriptAction.Add)
                     {
-                        GameState.Instance.PlayerRpgState.ModAV<int>(Target, Value);
+                        GameState.Instance.PlayerRpgState.ModAV(Target, Value);
                     }
                     else
                     {
