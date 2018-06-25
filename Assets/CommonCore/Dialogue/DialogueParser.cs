@@ -8,6 +8,7 @@ namespace CommonCore.Dialogue
 {
     internal static class DialogueParser
     {
+
         public static Dictionary<string, Frame> LoadDialogue(string dialogueName)
         {
             TextAsset ta = CCBaseUtil.LoadResource<TextAsset>("Dialogue/" + dialogueName);
@@ -34,6 +35,7 @@ namespace CommonCore.Dialogue
 
             //parse frames
             Dictionary<string, Frame> frames = new Dictionary<string, Frame>();
+            frames.Add(dialogueName, baseFrame);
             JObject jf = (JObject)jo["frames"];
             foreach (var x in jf)
             {

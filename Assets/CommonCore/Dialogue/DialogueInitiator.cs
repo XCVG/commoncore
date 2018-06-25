@@ -20,6 +20,13 @@ namespace CommonCore.Dialogue
             GameObject.Instantiate<GameObject>(prefab, CCBaseUtil.GetWorldRoot());
         }
 
+        [Command(alias = "Test", className = "Monologue")]
+        static void TestMonologue(string monologue)
+        {
+            Monologue m = new Monologue(monologue);
+            DevConsole.singleton.Log(m.GetLineRandom());
+        }
+
         [Command(alias="TestStandalone", className="Dialogue")]
         static void TestDialogueStandalone(string dialogue)
         {

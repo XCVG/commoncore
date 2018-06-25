@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using CommonCore.State;
+using CommonCore.StringSub;
 
 namespace CommonCore.Dialogue
 {
@@ -63,8 +64,8 @@ namespace CommonCore.Dialogue
         {
 
             //present text
-            TextTitle.text = f.NameText;
-            TextMain.text = f.Text;
+            TextTitle.text = Sub.Macro(f.NameText);
+            TextMain.text = Sub.Macro(f.Text);
 
             //present buttons
             foreach(Button b in ButtonsChoice)
@@ -93,7 +94,7 @@ namespace CommonCore.Dialogue
                     {
                         Button b = ButtonsChoice[j];
                         b.gameObject.SetActive(true);
-                        b.transform.Find("Text").GetComponent<Text>().text = cn.Text;
+                        b.transform.Find("Text").GetComponent<Text>().text = Sub.Macro(cn.Text);
                         j++;
                     }
                     

@@ -1,0 +1,65 @@
+{
+  "monologue": [
+    {
+      "line": "I see you have completed my quest",
+      "conditions": [
+        {
+          "quest": "AmbientDialogueQuest",
+          "finished": true
+        }
+      ]
+    },
+    {
+      "line": "Hey, that's a nice pistol you have there!",
+      "conditions": [
+        {
+          "item": "m1911",
+          "greater": 0
+        }
+      ]
+    },
+    {
+      "line": "Nice, you're between quest stage 4 and 7!",
+      "conditions": [
+        {
+          "quest": "AmbientDialogueQuest",
+          "greater": 4
+        },
+        {
+          "quest": "AmbientDialogueQuest",
+          "less": 7
+        }
+      ]
+    },
+    {
+      "line": "Potentially, you can always get this line (no condition)"
+    },
+    {
+      "line": "Potentially, you can always also get this line (empty condition)",
+      "conditions": []
+    },
+    {
+      "line": "I see you have started (but not completed) my quest!",
+      "conditions": [
+        {
+          "quest": "AmbientDialogueQuest",
+          "started": true
+        }
+      ]
+    },
+    {
+      "line": "I'm only going to say this once!",
+      "conditions": [
+        {
+          "noflag": "TestAmbientDialogueFlag"
+        }
+      ],
+      "microscripts": [
+        {
+          "flag": "TestAmbientDialogueFlag",
+          "set": true
+        }
+      ]
+    }
+  ]
+}

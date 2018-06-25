@@ -168,7 +168,7 @@ namespace CommonCore.Dialogue
         public readonly ConditionType Type;
         public readonly string Target;
         public readonly ConditionOption? Option;
-        public readonly IComparable OptionValue; //this should NOT be an int... TODO experiment with IComparable and reflection
+        public readonly IComparable OptionValue;
 
         public Condition(ConditionType type, string target, ConditionOption? option, IComparable optionValue)
         {
