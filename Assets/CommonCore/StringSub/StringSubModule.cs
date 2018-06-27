@@ -129,12 +129,12 @@ namespace CommonCore.StringSub
             // l:*:* : Lookup (string substitution) List:String
             // av:* : Player.GetAV
             // inv:* : inventory
-            // cpf:* : Campaign Flag TODO
-            // cpv:* : Campaign Variable TODO
-            // cqs:* : Quest Stage TODO
+            // cpf:* : Campaign Flag 
+            // cpv:* : Campaign Variable 
+            // cqs:* : Quest Stage 
             // general format is *:* where the first part is where to search
             // might eventually add parameters with |
-            // TODO figure out returning quest, inventory, etc
+            // TODO figure out inventory, etc
             // TODO (but this is for like... Balmora) switch to messaging or dynamic modules so we're not dependent on other modules
 
             string[] sequenceParts = sequence.Split(':');
@@ -156,6 +156,27 @@ namespace CommonCore.StringSub
                     break;
                 case "inv":
                     result = GameState.Instance.PlayerRpgState.Inventory.CountItem(sequenceParts[1]).ToString();
+                    break;
+                case "cpf":
+                    result = GameState.Instance.CampaignState.HasFlag(sequenceParts[1]).ToString();
+                    break;
+                case "cpv":
+                    result = GameState.Instance.CampaignState.GetVar(sequenceParts[1]);
+                    break;
+                case "cqs":
+                    result = GameState.Instance.CampaignState.GetQuestStage(sequenceParts[1]).ToString();
+                    break;
+                case "strong":
+                    result = "<b>"; //handling dialogue written for proper html
+                    break;
+                case "/strong":
+                    result = "</b>"; //handling dialogue written for proper html
+                    break;
+                case "em":
+                    result = "<i>"; //handling dialogue written for proper html
+                    break;
+                case "/em":
+                    result = "</i>"; //handling dialogue written for proper html
                     break;
                 default:
                     result = string.Format("<MISSING:{0}>", sequence);

@@ -259,7 +259,7 @@ namespace CommonCore.Dialogue
 
             //options
             ConditionOption? option = null;
-            int optionValue = 0;
+            IComparable optionValue = 0;
             if (type == ConditionType.Item)
             {
                 //check for "consume"
@@ -275,27 +275,27 @@ namespace CommonCore.Dialogue
                 if (jt["greater"] != null)
                 {
                     option = ConditionOption.Greater;
-                    optionValue = jt["greater"].Value<int>();
+                    optionValue = (IComparable)CCBaseUtil.StringToNumericAuto(jt["greater"].Value<string>());
                 }
                 else if (jt["less"] != null)
                 {
                     option = ConditionOption.Less;
-                    optionValue = jt["less"].Value<int>();
+                    optionValue = (IComparable)CCBaseUtil.StringToNumericAuto(jt["less"].Value<string>());
                 }
                 else if (jt["equal"] != null)
                 {
                     option = ConditionOption.Equal;
-                    optionValue = jt["equal"].Value<int>();
+                    optionValue = (IComparable)CCBaseUtil.StringToNumericAuto(jt["equal"].Value<string>());
                 }
                 else if (jt["greaterEqual"] != null)
                 {
                     option = ConditionOption.GreaterEqual;
-                    optionValue = jt["greaterEqual"].Value<int>();
+                    optionValue = (IComparable)CCBaseUtil.StringToNumericAuto(jt["greaterEqual"].Value<string>());
                 }
                 else if (jt["lessEqual"] != null)
                 {
                     option = ConditionOption.LessEqual;
-                    optionValue = jt["lessEqual"].Value<int>();
+                    optionValue = (IComparable)CCBaseUtil.StringToNumericAuto(jt["lessEqual"].Value<string>());
                 }
                 else if (jt["started"] != null)
                 {
@@ -347,7 +347,7 @@ namespace CommonCore.Dialogue
             }
 
             MicroscriptAction action;
-            int value = 0;
+            object value = 0;
             if (jt["set"] != null)
             {
                 action = MicroscriptAction.Set;
@@ -363,27 +363,27 @@ namespace CommonCore.Dialogue
             else if (jt["add"] != null)
             {
                 action = MicroscriptAction.Add;
-                value = jt["add"].Value<int>();
+                value = CCBaseUtil.StringToNumericAuto(jt["add"].Value<string>());
             }
             else if (jt["give"] != null)
             {
                 action = MicroscriptAction.Give;
-                value = jt["give"].Value<int>();
+                value = CCBaseUtil.StringToNumericAuto(jt["give"].Value<string>());
             }
             else if (jt["take"] != null)
             {
                 action = MicroscriptAction.Take;
-                value = jt["take"].Value<int>();
+                value = CCBaseUtil.StringToNumericAuto(jt["take"].Value<string>());
             }
             else if (jt["start"] != null)
             {
                 action = MicroscriptAction.Start;
-                value = jt["start"].Value<int>();
+                value = CCBaseUtil.StringToNumericAuto(jt["start"].Value<string>());
             }
             else if (jt["finish"] != null)
             {
                 action = MicroscriptAction.Finish;
-                value = jt["finish"].Value<int>();
+                value = CCBaseUtil.StringToNumericAuto(jt["finish"].Value<string>());
             }
             else
             {

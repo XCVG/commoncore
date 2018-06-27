@@ -78,8 +78,8 @@ namespace CommonCore
             if (isFloat)
                 return fResult;
 
-            //else return null
-            return null;
+            //else return what we started with
+            return input;
         }
 
         public static bool IsNumericType(Type type)
