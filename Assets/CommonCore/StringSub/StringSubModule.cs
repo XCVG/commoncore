@@ -133,7 +133,7 @@ namespace CommonCore.StringSub
             // cpv:* : Campaign Variable 
             // cqs:* : Quest Stage 
             // general format is *:* where the first part is where to search
-            // might eventually add parameters with |
+            // might eventually add parameters with | (deferred until at least Balmora)
             // TODO figure out inventory, etc
             // TODO (but this is for like... Balmora) switch to messaging or dynamic modules so we're not dependent on other modules
 

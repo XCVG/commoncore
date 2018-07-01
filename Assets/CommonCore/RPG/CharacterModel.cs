@@ -28,6 +28,8 @@ namespace CommonCore.Rpg
         }
 
         public float HealthFraction { get; set; }
+        public int Experience { get; set; }
+        public int Level { get; set; }
 
         public StatsSet BaseStats { get; private set; }
         public StatsSet DerivedStats { get; private set; }
