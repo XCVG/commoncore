@@ -46,7 +46,7 @@ namespace CommonCore.Rpg
             }
             catch(Exception e)
             {
-                DevConsole.singleton.LogError(e.ToString());
+                DevConsole.singleton.LogError(e.ToString() + e.StackTrace);
             }
         }
 
@@ -72,6 +72,14 @@ namespace CommonCore.Rpg
             {
                 DevConsole.singleton.LogError(e.ToString());
             }
+        }
+
+        [Command(className = "Player")]
+        static void LevelUp()
+        {
+            var player = GameState.Instance.PlayerRpgState;
+            player.Experience = RpgValues.XPToNext(player.Level);
+            player.CheckLevelUp();
         }
 
         //***** Inventory manipulation

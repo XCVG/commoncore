@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using CommonCore.State;
 using CommonCore.StringSub;
+using CommonCore.LockPause;
 
 namespace CommonCore.Dialogue
 {
@@ -192,6 +193,7 @@ namespace CommonCore.Dialogue
         private void CloseDialogue()
         {
             CurrentDialogue = null;
+            LockPauseModule.UnpauseGame(this.gameObject);
             Destroy(this.gameObject);
             if(CurrentCallback != null)
             {

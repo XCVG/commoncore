@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CommonCore.LockPause;
 
 namespace CommonCore.UI
 {
@@ -9,7 +10,6 @@ namespace CommonCore.UI
     {
         public string DefaultPanel;
 
-        public bool AllowMenu;
         public bool HandlePause = true;
         public bool Autohide = true;
 
@@ -84,13 +84,14 @@ namespace CommonCore.UI
 
         private void DoPause()
         {
-            Time.timeScale = 0;
-            
+            LockPauseModule.PauseGame(PauseLockType.AllowMenu, this);
+            LockPauseModule.LockControls(InputLockType.GameOnly, this);
         }
 
         private void DoUnpause()
         {
-            Time.timeScale = 1.0f;
+            LockPauseModule.UnlockControls(this);
+            LockPauseModule.UnpauseGame(this);
         }
 
         public void OnClickSelectButton(string menuName)
@@ -113,6 +114,15 @@ namespace CommonCore.UI
             catch(Exception e)
             {
                 Debug.LogError(e);
+            }
+        }
+
+        private bool AllowMenu
+        {
+            get
+            {
+                var lockState = LockPauseModule.GetInputLockState();
+                return (lockState == null || lockState.Value >= InputLockType.GameOnly);
             }
         }
     }

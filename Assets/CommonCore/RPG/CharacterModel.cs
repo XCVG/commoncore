@@ -7,7 +7,10 @@ using CommonCore.Messaging;
 
 namespace CommonCore.Rpg
 { 
-
+    /*
+     * This is a complete character model, right now used only for players
+     * Members can be smartly accessed by name via reflection
+     */
     public class CharacterModel
     {
         public string FormID { get; set; }
@@ -264,6 +267,15 @@ namespace CommonCore.Rpg
 
             //fail
             throw new KeyNotFoundException();
+        }
+
+        public void CheckLevelUp()
+        {
+            if(Experience >= RpgValues.XPToNext(Level))
+            {
+                QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RPG_LevelUp"));
+                QdmsMessageBus.Instance.PushBroadcast(new HUDPushMessage("<l:IGUI_MESSAGE:LevelUp>"));
+            }
         }
 
         

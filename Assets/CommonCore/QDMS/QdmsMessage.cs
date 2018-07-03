@@ -6,11 +6,6 @@ using UnityEngine;
 namespace CommonCore.Messaging
 {
 
-    public enum QdmsFlag
-    {
-
-    }
-
     public abstract class QdmsMessage
     {
         public QdmsMessageInterface Sender { get; private set; }
@@ -53,9 +48,9 @@ namespace CommonCore.Messaging
 
     public class QdmsFlagMessage : QdmsMessage
     {
-        public readonly QdmsFlag Flag;
+        public readonly string Flag;
 
-        public QdmsFlagMessage(QdmsFlag flag)
+        public QdmsFlagMessage(string flag)
         {
             Flag = flag;
         }

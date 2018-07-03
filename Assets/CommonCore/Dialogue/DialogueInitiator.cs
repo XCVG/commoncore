@@ -2,8 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SickDev.CommandSystem;
 using UnityEngine.SceneManagement;
+using SickDev.CommandSystem;
+using CommonCore.LockPause;
 
 namespace CommonCore.Dialogue
 {
@@ -15,9 +16,11 @@ namespace CommonCore.Dialogue
         {
             DialogueController.CurrentDialogue = dialogue;
             DialogueController.CurrentCallback = callback;
-            //TODO pause, have to rework the way pausing/unpausing works
             var prefab = Resources.Load<GameObject>("UI/DialogueSystem");
-            GameObject.Instantiate<GameObject>(prefab, CCBaseUtil.GetWorldRoot());
+            var go = GameObject.Instantiate<GameObject>(prefab, CCBaseUtil.GetWorldRoot());
+            if (pause)
+                LockPauseModule.PauseGame(PauseLockType.All, go);
+
         }
 
         [Command(alias = "Test", className = "Monologue")]

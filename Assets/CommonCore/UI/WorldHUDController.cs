@@ -1,9 +1,10 @@
-﻿using CommonCore.Messaging;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using CommonCore.Messaging;
+using CommonCore.StringSub;
 
 namespace CommonCore.UI
 {
@@ -42,7 +43,7 @@ namespace CommonCore.UI
         {
             if(message is HUDPushMessage)
             {
-                MessageText.text = MessageText.text + "\n" + ((HUDPushMessage)message).Contents;
+                MessageText.text = MessageText.text + "\n" + Sub.Macro(((HUDPushMessage)message).Contents);
                 Canvas.ForceUpdateCanvases();
                 MessageScrollRect.verticalNormalizedPosition = 0;
             }

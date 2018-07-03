@@ -35,8 +35,11 @@ namespace CommonCore.UI
             StatsSet baseStats = player.BaseStats;
             StatsSet derivedStats = player.DerivedStats;
 
+            //level and XP
+            statsSB.AppendFormat("Level {0} ({1}/{2})\n\n", player.Level, player.Experience, RpgValues.XPToNext(player.Level));
+
             //base statistics
-            foreach(int value in Enum.GetValues(typeof(StatType)))
+            foreach (int value in Enum.GetValues(typeof(StatType)))
             {
                 string name = Enum.GetName(typeof(StatType), value);
                 int baseValue = baseStats.Stats[value];

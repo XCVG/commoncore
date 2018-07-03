@@ -1,6 +1,23 @@
 {
   "IGUI_STATS": {
+	"MeleeAlacrity": "Alacrity (Melee)",
+	"MeleePrecision": "Precision (Melee)",
+	"MeleePrecision": "Brawn (Melee)",
+	"ArcheryDraw": "Draw (Archery)",
+	"ArcherySteady": "Steady (Archery)",
+	"GunsAccuracy": "Accuracy (Guns)",
+	"GunsRapidity": "Rapidity (Guns)",
+	"AthleticsFurtive": "Furtiveness",
+	"AthleticsFleet": "Fleetness",
+	"MagicForce": "Force Magic",
+	"MagicElemental": "Elemental Magic",
+	"MagicDark": "Dark Magic",
+	"SocialExchange": "Exchange",
+	"SocialLeverage": "Leverage",
     "SecurityMechanisms": "Mechanisms",
     "SecurityComputers": "Computers"
+  },
+  "IGUI_MESSAGE" : {
+	"LevelUp": "You can level up now!"
   }
 }
