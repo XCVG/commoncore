@@ -697,12 +697,12 @@ Prefab:
     - target: {fileID: 224259548548557048, guid: d8faa095f4a287249a857510caf0f6cd,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000018305796
+      value: -0.000080352154
       objectReference: {fileID: 0}
     - target: {fileID: 224259548548557048, guid: d8faa095f4a287249a857510caf0f6cd,
         type: 2}
       propertyPath: m_AnchoredPosition.x
-      value: 0.00024414062
+      value: 0.000061035156
       objectReference: {fileID: 0}
     - target: {fileID: 114340846478528928, guid: d8faa095f4a287249a857510caf0f6cd,
         type: 2}
@@ -1027,6 +1027,10 @@ Prefab:
     - target: {fileID: 1698115802512828, guid: a9320c2e33affc642a2b494257f82247, type: 2}
       propertyPath: m_Name
       value: InGameMenu
+      objectReference: {fileID: 0}
+    - target: {fileID: 1608960183910602, guid: a9320c2e33affc642a2b494257f82247, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a9320c2e33affc642a2b494257f82247, type: 2}

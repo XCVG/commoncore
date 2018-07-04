@@ -44,6 +44,7 @@ namespace CommonCore.Rpg
         public CharacterModel() //TODO with a model base parameter
         {
             HealthFraction = 1.0f;
+            Level = 1;
 
             Inventory = new InventoryModel();
             Conditions = new List<Condition>();
@@ -57,6 +58,9 @@ namespace CommonCore.Rpg
         {
             //copy base stats
             DerivedStats = new StatsSet(BaseStats);
+
+            //recalculate max health
+            DerivedStats.MaxHealth = RpgValues.MaxHealthForLevel(Level);
 
             //apply conditions
             foreach(Condition c in Conditions)
