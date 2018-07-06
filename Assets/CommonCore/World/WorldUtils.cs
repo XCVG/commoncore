@@ -164,15 +164,26 @@ namespace CommonCore.World
         }
 
         //spawn object methods
-        //TODO make it fail gracefully
+        [Obsolete]
         public static GameObject SpawnObject(string formID, Vector3 position, Vector3 rotation)
         {
-            return UnityEngine.Object.Instantiate(Resources.Load("entities/" + formID), position, Quaternion.Euler(rotation)) as GameObject;
+            return UnityEngine.Object.Instantiate(Resources.Load("entities/" + formID), position, Quaternion.Euler(rotation), CCBaseUtil.GetWorldRoot()) as GameObject;
         }
-
+        [Obsolete]
         public static GameObject SpawnObject(Transform parent, string formID, Vector3 position, Vector3 rotation)
         {
             return UnityEngine.Object.Instantiate(Resources.Load("entities/" + formID),position,Quaternion.Euler(rotation), parent) as GameObject;
+        }
+
+        public static GameObject SpawnObject(string formID, string thingID, Vector3 position, Vector3 rotation, Transform parent)
+        {
+            if (parent == null)
+                parent = CCBaseUtil.GetWorldRoot();
+            var go = UnityEngine.Object.Instantiate(Resources.Load("entities/" + formID), position, Quaternion.Euler(rotation), parent) as GameObject;
+            if (string.IsNullOrEmpty(thingID))
+                thingID = string.Format("{0}_{1}", go.name.Replace("(Clone)", "").Trim(), GameState.Instance.NextUID);
+            go.name = thingID;
+            return go;
         }
 
         //from StackOverflow, an extension method

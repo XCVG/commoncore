@@ -83,6 +83,10 @@ namespace CommonCore.State
         public string CurrentScene;
         public bool SaveLocked;
 
+        [JsonProperty]
+        private int CurrentUID;
+        public int NextUID { get { return ++CurrentUID; } }
+
     }
 
 }

@@ -611,6 +611,7 @@ GameObject:
   - component: {fileID: 4081335477419244}
   - component: {fileID: 95443514302475540}
   - component: {fileID: 114344645711853442}
+  - component: {fileID: 143273174468923978}
   m_Layer: 0
   m_Name: npc_testactor
   m_TagString: Untagged
@@ -1220,6 +1221,23 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1867053224390974
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4123349071705718}
+  - component: {fileID: 136791134321787142}
+  - component: {fileID: 114410195566636778}
+  m_Layer: 0
+  m_Name: InteractionHitBox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1869928112755856
 GameObject:
   m_ObjectHideFlags: 0
@@ -1619,9 +1637,23 @@ Transform:
   - {fileID: 4362400946791478}
   - {fileID: 4290211547435252}
   - {fileID: 4305612300752060}
+  - {fileID: 4123349071705718}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!4 &4123349071705718
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1867053224390974}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4081335477419244}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4130422699637866
 Transform:
   m_ObjectHideFlags: 1
@@ -2759,7 +2791,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: c8ca467e24fb85e4e9ce84671eae591c, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
@@ -2778,14 +2810,51 @@ MonoBehaviour:
   EditorFormID: npc_testactor
   Tags: []
   CharacterModelIdOverride: 
-  Interaction: 0
-  InteractionTarget: 
+  CharController: {fileID: 0}
+  AnimController: {fileID: 0}
+  InteractComponent: {fileID: 0}
+  Interaction: 2
+  InteractionTarget: TestAmbient
   InteractionSpecial: {fileID: 0}
   AlternateCondition:
     Type: 0
     Target: 
     Option: 0
     OptionValue: 
+  AltInteraction: 0
+  AltInteractionTarget: 
+  AltInteractionSpecial: {fileID: 0}
+  TooltipOverride: 
+--- !u!114 &114410195566636778
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1867053224390974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8149f4fbf242a644b0d152ef173eef2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerCanActivate: 0
+  NpcCanActivate: 0
+  Tooltip: 
+  TooltipObject: {fileID: 0}
+  TooltipFacesPlayer: 0
+  TooltipSprite: {fileID: 0}
+--- !u!136 &136791134321787142
+CapsuleCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1867053224390974}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!137 &137039504516992738
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1
@@ -3591,3 +3660,20 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.03224369, y: -0.1670188, z: 0.6734394}
     m_Extent: {x: 0.013701931, y: 0.010653675, z: 0.0143787265}
   m_DirtyAABB: 0
+--- !u!143 &143273174468923978
+CharacterController:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1376773696147856}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 1, z: 0}

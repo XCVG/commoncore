@@ -110,12 +110,18 @@ namespace CommonCore
             else return val;
         }
 
+
+        private static Transform WorldRoot;
         public static Transform GetWorldRoot() //TODO really ought to cache this
         {
-            GameObject rootGo = GameObject.Find("WorldRoot");
-            if (rootGo == null)
-                return null;
-            return rootGo.transform;
+            if (WorldRoot == null)
+            {
+                GameObject rootGo = GameObject.Find("WorldRoot");
+                if (rootGo == null)
+                    return null;
+                WorldRoot = rootGo.transform;
+            }
+            return WorldRoot;
         }
 
     }

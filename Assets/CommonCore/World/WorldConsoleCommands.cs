@@ -81,56 +81,6 @@ namespace CommonCore.World
             GameState.SerializeToFile(Application.persistentDataPath + @"\" + name);
         }
 
-        //***** STAT/RPG MANIPULATION
-        //will be replaced by new setAV/base/derived system and probably moved
-
-        /*
-        [Command]
-        static void AddStat(string stat)
-        {
-            var s = (Stat)Enum.Parse(typeof(Stat), stat);
-            var pm = GameState.Instance.PlayerRpgState;
-            pm.InvestPoints(s);
-        }
-
-        [Command]
-        static void AddXP(int xp)
-        {
-            GameState.Instance.PlayerRpgState.XP += xp;
-        }
-
-        [Command]
-        static void GetAllStats()
-        {
-            var pm = GameState.Instance.PlayerRpgState;
-            string str = string.Empty;
-
-            foreach (Stat s in Enum.GetValues(typeof(Stat)))
-            {
-                string name = s.ToString();
-                int value = pm.GetStat(s);
-                str += string.Format("{0} : {1}\n", name, value);
-            }
-
-            DevConsole.Console.Log(str);
-        }
-
-        [Command]
-        static void GetStat(string stat)
-        {
-            var s = (Stat)Enum.Parse(typeof(Stat), stat);
-            var pm = GameState.Instance.PlayerRpgState;
-            DevConsole.Console.Log(s.ToString() + ":" + pm.GetStat(s));
-        }
-
-        [Command]
-        static void GetXP()
-        {
-            DevConsole.Console.Log(GameState.Instance.PlayerRpgState.XP);
-        }
-
-        */
-
         //***** SCENE WARP
 
         [Command]
@@ -170,6 +120,12 @@ namespace CommonCore.World
         }
 
         //***** OBJECT MANIPULATION
+
+        [Command]
+        static void Spawn(string fid)
+        {
+            WorldUtils.SpawnObject(fid, null, (WorldUtils.GetPlayerObject().transform.position + (WorldUtils.GetPlayerObject().transform.forward * 1.0f)), Vector3.zero, null);
+        }
 
         //pick object by form id
         [Command]

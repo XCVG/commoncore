@@ -41,7 +41,9 @@ EnsenaSoft, S.A. de C.V. - Village Buildings 5
 	Put in Assets/Objects/ThirdParty instead of Standard Assets
 	
 davidbinformatique - Modern People
-	https://www.assetstore.unity3d.com/en/?stay#!/content/73497	
+	https://www.assetstore.unity3d.com/en/?stay#!/content/73497
+
+animations from Firefighter VR, but these will be removed/replaced soon	
 
 # Third Party Assets (included in repository)
 

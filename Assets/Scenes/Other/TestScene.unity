@@ -209,19 +209,9 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 95443514302475540, guid: 3f6f1049247585146b5f703e29829950,
         type: 2}
-      propertyPath: m_ApplyRootMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114344645711853442, guid: 3f6f1049247585146b5f703e29829950,
-        type: 2}
-      propertyPath: Interaction
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 114344645711853442, guid: 3f6f1049247585146b5f703e29829950,
-        type: 2}
-      propertyPath: InteractionTarget
-      value: TestAmbient
-      objectReference: {fileID: 0}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: d7dbe25864372ce48ad1ff4d5595e15e, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3f6f1049247585146b5f703e29829950, type: 2}
   m_IsPrefabParent: 0
@@ -230,88 +220,6 @@ Transform:
   m_PrefabParentObject: {fileID: 4081335477419244, guid: 3f6f1049247585146b5f703e29829950,
     type: 2}
   m_PrefabInternal: {fileID: 183910586}
---- !u!1 &565975249
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 565975250}
-  - component: {fileID: 565975252}
-  - component: {fileID: 565975251}
-  m_Layer: 0
-  m_Name: InteractionHitBox
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &565975250
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 565975249}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 183910587}
-  m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &565975251
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 565975249}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8149f4fbf242a644b0d152ef173eef2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PlayerCanActivate: 0
-  NpcCanActivate: 0
-  Tooltip: 
-  TooltipObject: {fileID: 0}
-  TooltipFacesPlayer: 0
-  TooltipSprite: {fileID: 0}
---- !u!136 &565975252
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 565975249}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
---- !u!1 &664544987 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1376773696147856, guid: 3f6f1049247585146b5f703e29829950,
-    type: 2}
-  m_PrefabInternal: {fileID: 183910586}
---- !u!143 &664544988
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 664544987}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Height: 2
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &681029979
 GameObject:
   m_ObjectHideFlags: 0
@@ -842,7 +750,7 @@ Prefab:
     - target: {fileID: 224259548548557048, guid: d8faa095f4a287249a857510caf0f6cd,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000047883725
+      value: -0.0000050482176
       objectReference: {fileID: 0}
     - target: {fileID: 224259548548557048, guid: d8faa095f4a287249a857510caf0f6cd,
         type: 2}
