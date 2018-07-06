@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using CommonCore.State;
 
 namespace CommonCore.Dialogue
 {
@@ -188,13 +189,13 @@ namespace CommonCore.Dialogue
                 conditionals = cList.ToArray();
             }
 
-            Condition showCondition = null;
+            Conditional showCondition = null;
             if (jt["showCondition"] != null)
             {
                 showCondition = ParseSingleCondition(jt["showCondition"]);
             }
 
-            Condition hideCondition = null;
+            Conditional hideCondition = null;
             if (jt["hideCondition"] != null)
             {
                 hideCondition = ParseSingleCondition(jt["hideCondition"]);
@@ -208,7 +209,7 @@ namespace CommonCore.Dialogue
             //next and list of conditions
             string next = jt["next"].Value<string>();
             JArray ja = (JArray)jt["conditions"];
-            List<Condition> conditions = new List<Condition>();
+            List<Conditional> conditions = new List<Conditional>();
             foreach (var x in ja)
             {
                 conditions.Add(ParseSingleCondition(x));
@@ -217,7 +218,7 @@ namespace CommonCore.Dialogue
             return new ConditionNode(next, conditions.ToArray());
         }
 
-        public static Condition ParseSingleCondition(JToken jt)
+        public static Conditional ParseSingleCondition(JToken jt)
         {
             //types
             ConditionType type;
@@ -309,7 +310,7 @@ namespace CommonCore.Dialogue
                 }
             }
 
-            return new Condition(type, target, option, optionValue);
+            return new Conditional(type, target, option, optionValue);
         }
 
         public static MicroscriptNode ParseMicroscript(JToken jt)

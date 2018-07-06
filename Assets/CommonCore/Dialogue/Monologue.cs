@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json.Linq;
+using CommonCore.State;
 
 namespace CommonCore.Dialogue
 {
@@ -41,19 +42,21 @@ namespace CommonCore.Dialogue
     internal class MonologueNode
     {
         public readonly string Line;
-        public readonly Condition[] Conditions;
+        public readonly string Audio;
+        public readonly Conditional[] Conditions;
         public readonly MicroscriptNode[] Microscripts;
 
-        public MonologueNode(string line, Condition[] conditions, MicroscriptNode[] microscripts)
+        public MonologueNode(string line, string audio, Conditional[] conditions, MicroscriptNode[] microscripts)
         {
             Line = line;
+            Audio = audio;
             Conditions = conditions;
             Microscripts = microscripts;
         }
 
         public bool CheckConditions()
         {
-            foreach (Condition c in Conditions)
+            foreach (Conditional c in Conditions)
             {
                 if (!c.Evaluate())
                     return false;
@@ -100,11 +103,15 @@ namespace CommonCore.Dialogue
         public static MonologueNode ParseNode(JToken jt)
         {
             string line = string.Empty;
+            string audio = null;
 
             if (jt["line"] != null)
                 line = jt["line"].Value<string>();
 
-            List<Condition> cList = new List<Condition>();
+            if (jt["audio"] != null)
+                audio = jt["audio"].Value<string>();
+
+            List<Conditional> cList = new List<Conditional>();
             if (jt["conditions"] != null)
             {
                 JArray conditionJArray = (JArray)jt["conditions"];
@@ -138,7 +145,7 @@ namespace CommonCore.Dialogue
                 }
             }
 
-            return new MonologueNode(line, cList.ToArray(), mList.ToArray());
+            return new MonologueNode(line, audio, cList.ToArray(), mList.ToArray());
         }
 
     }

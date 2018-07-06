@@ -9,6 +9,8 @@ namespace CommonCore.Rpg
      */
     public static class RpgValues
     {
+        public const bool UseCustomLevelling = true; //TODO hook this up for generic levelling dialog
+
         public static int XPToNext(int level)
         {
             return level * 10 + 100; //for now

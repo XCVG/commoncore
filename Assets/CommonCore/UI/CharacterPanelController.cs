@@ -72,7 +72,7 @@ namespace CommonCore.UI
         {
             var conditions = GameState.Instance.PlayerRpgState.Conditions;
             StringBuilder conditionsSB = new StringBuilder(conditions.Count * 16);
-            foreach(Condition c in conditions)
+            foreach(var c in conditions)
             {
                 conditionsSB.AppendLine(c.NiceName);
             }

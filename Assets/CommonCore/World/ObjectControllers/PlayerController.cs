@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 
 namespace CommonCore.World
 {
-    public class PlayerController : ActorController
+    public class PlayerController : BaseController
     {
         public bool AutoinitHud = true;
 
