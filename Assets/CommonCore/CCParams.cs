@@ -24,6 +24,7 @@ namespace CommonCore
         //*****basic config settings
         public const bool AutoInit = true;
         public const bool AutoloadModules = true;
+        private const DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
 
         //*****additional config settings
         public const bool UseVerboseLogging = true;
@@ -55,6 +56,23 @@ namespace CommonCore
                 return Application.persistentDataPath;
             }
         }
+
+        public static DataLoadPolicy LoadPolicy
+        {
+            get
+            {
+                if (LoadData == DataLoadPolicy.Auto)
+                {
+                    #if UNITY_EDITOR
+                    return DataLoadPolicy.OnDemand;
+                    #else
+                    return DataLoadPolicy.OnStart;
+                    #endif
+                }
+                else
+                    return LoadData;
+            }
+        }
     }
 
     /*
@@ -77,5 +95,10 @@ namespace CommonCore
         {
             return string.Format("{0}.{1}.{2}", Major, Minor, Patch);
         }
+    }
+
+    public enum DataLoadPolicy
+    {
+        Auto, OnDemand, OnStart, Cached
     }
 }

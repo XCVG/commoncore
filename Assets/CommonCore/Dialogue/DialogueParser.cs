@@ -10,10 +10,15 @@ namespace CommonCore.Dialogue
     internal static class DialogueParser
     {
 
-        public static Dictionary<string, Frame> LoadDialogue(string dialogueName)
+        public static DialogueScene LoadDialogue(string dialogueName)
         {
             TextAsset ta = CCBaseUtil.LoadResource<TextAsset>("Dialogue/" + dialogueName);
-            JObject jo = JObject.Parse(ta.text);
+            return LoadDialogueFromString(dialogueName, ta.text);
+        }
+
+        public static DialogueScene LoadDialogueFromString(string dialogueName, string text)
+        {
+            JObject jo = JObject.Parse(text);
             //Debug.Log(jo);
 
             //parse root node (scene)
@@ -54,7 +59,7 @@ namespace CommonCore.Dialogue
                 }
             }
 
-            return frames;
+            return new DialogueScene(frames, sNext);
         }
 
         public static Frame ParseSingleFrame(JToken jt, Frame baseFrame)

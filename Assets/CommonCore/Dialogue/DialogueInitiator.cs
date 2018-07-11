@@ -26,7 +26,7 @@ namespace CommonCore.Dialogue
         [Command(alias = "Test", className = "Monologue")]
         static void TestMonologue(string monologue)
         {
-            Monologue m = new Monologue(monologue);
+            Monologue m = DialogueModule.GetMonologue(monologue);
             DevConsole.singleton.Log(m.GetLineRandom());
         }
 

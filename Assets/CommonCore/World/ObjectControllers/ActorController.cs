@@ -78,7 +78,7 @@ namespace CommonCore.World
                     special.Execute(data);
                     break;
                 case InteractionType.AmbientMonologue:
-                    string msg = new Monologue(target).GetLineRandom(); //VERY inefficient, will fix later
+                    string msg = DialogueModule.GetMonologue(target).GetLineRandom(); //VERY inefficient, will fix later
                     QdmsMessageBus.Instance.PushBroadcast(new HUDPushMessage(msg));//also a very temporary display
                     //and we need to rework Monologue and implement an audio manager before we can do speech
                     break;

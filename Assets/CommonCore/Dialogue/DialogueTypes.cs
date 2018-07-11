@@ -4,6 +4,18 @@ using CommonCore.State;
 
 namespace CommonCore.Dialogue
 {
+    internal class DialogueScene
+    {
+        public Dictionary<string, Frame> Frames { get; private set; }
+        public string Default;
+
+        public DialogueScene(Dictionary<string, Frame> frames, string defaultFrame)
+        {
+            Frames = frames;
+            Default = defaultFrame;
+        }
+    }
+
     internal enum FrameType
     {
         ChoiceFrame, TextFrame

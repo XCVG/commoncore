@@ -16,9 +16,9 @@ namespace CommonCore.Dialogue
             Nodes = new List<MonologueNode>();
         }
 
-        public Monologue(string sourceName) : this()
+        internal Monologue(List<MonologueNode> nodes)
         {
-            Nodes = MonologueParser.LoadMonologue(sourceName);
+            Nodes = nodes;
         }
 
         public string GetLineRandom()
@@ -75,29 +75,34 @@ namespace CommonCore.Dialogue
 
     internal static class MonologueParser
     {
-        public static List<MonologueNode> LoadMonologue(string monologueName)
+        public static Monologue LoadMonologue(string monologueName)
         {
             TextAsset ta = CCBaseUtil.LoadResource<TextAsset>("Monologue/" + monologueName);
-            JObject jo = JObject.Parse(ta.text);
+            return LoadMonologueFromString(ta.text);
+        }
+
+        public static Monologue LoadMonologueFromString(string text)
+        {
+            JObject jo = JObject.Parse(text);
 
             List<MonologueNode> nodes = new List<MonologueNode>();
 
             //get all monologue entries
             JArray ja = (JArray)jo["monologue"];
-            foreach(var jt in ja) //ja das ist gut
+            foreach (var jt in ja) //ja das ist gut
             {
                 try
                 {
                     nodes.Add(ParseNode(jt));
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Debug.LogWarning("Failed to parse monologue node!");
                     Debug.LogException(e);
                 }
             }
 
-            return nodes;
+            return new Monologue(nodes);
         }
 
         public static MonologueNode ParseNode(JToken jt)

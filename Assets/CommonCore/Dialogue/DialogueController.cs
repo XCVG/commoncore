@@ -23,7 +23,8 @@ namespace CommonCore.Dialogue
         public Button[] ButtonsChoice;
 
         private string CurrentSceneName;
-        private Dictionary<string, Frame> CurrentSceneFrames;
+        private DialogueScene CurrentScene;
+        private Dictionary<string, Frame> CurrentSceneFrames { get { return CurrentScene.Frames; } }
 
         //private string CurrentFrameName;
         private Frame CurrentFrameObject;
@@ -37,22 +38,18 @@ namespace CommonCore.Dialogue
         {
             //GameState.Instance.CurrentDialogue = "intro.intro1";
 
-            var loc = ParseLocation(CurrentDialogue);
+            var loc = ParseLocation(CurrentDialogue); //TODO we actually need to parse it "backwards" here...
 
             LoadScene(loc.Key);
 
             PresentNewFrame(loc.Value);
-        }
 
-        // Update is called once per frame
-        void Update()
-        {
-
+            //TODO use defaults if necessary
         }
 
         private void LoadScene(string scene)
         {
-            CurrentSceneFrames = DialogueParser.LoadDialogue(scene);
+            CurrentScene = DialogueModule.GetDialogue(scene);
             CurrentSceneName = scene;
         }
 
