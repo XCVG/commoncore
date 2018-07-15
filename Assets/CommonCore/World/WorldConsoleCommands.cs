@@ -233,6 +233,31 @@ namespace CommonCore.World
             SelectedObject = null;
         }
 
+        //***** ACTOR MANIPULATION
+        [Command]
+        static void SetAiState(string newState)
+        {
+
+        }
+
+        [Command]
+        static void SetAnimState(string newState)
+        {
+
+        }
+
+        [Command]
+        static void Kill()
+        {
+
+        }
+
+        [Command]
+        static void Resurrect()
+        {
+
+        }
+
 
     }
 }

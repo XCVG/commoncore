@@ -112,7 +112,7 @@ namespace CommonCore
 
 
         private static Transform WorldRoot;
-        public static Transform GetWorldRoot() //TODO really ought to cache this
+        public static Transform GetWorldRoot() //TODO really ought to move this
         {
             if (WorldRoot == null)
             {
@@ -122,6 +122,43 @@ namespace CommonCore
                 WorldRoot = rootGo.transform;
             }
             return WorldRoot;
+        }
+
+        public static Vector2 ToFlatVec(this Vector3 vec3)
+        {
+            return new Vector2(vec3.x, vec3.z);
+        }
+
+        public static Vector3 ToSpaceVec(this Vector2 vec2)
+        {
+            return new Vector3(vec2.x, 0, vec2.y);
+        }
+
+        public static Vector3 GetFlatVectorToTarget(Vector3 pos, Vector3 target)
+        {
+            if (target == null)
+            {
+                return Vector3.zero;
+            }
+
+            Vector3 dir = target - pos;
+            return new Vector3(dir.x, 0, dir.z);
+        }
+
+        public static Vector2 GetRandomVector(Vector2 center, Vector2 extents)
+        {
+            return new Vector2(
+                UnityEngine.Random.Range(-extents.x, extents.x) + center.x,
+                UnityEngine.Random.Range(-extents.y, extents.y) + center.y
+                );
+        }
+
+        public static float CalculateDamage(float Damage, float Pierce, float Threshold, float Resistance) //this is a dumb spot and we will move it later
+        {
+            float d1 = Damage * ((100f - Mathf.Min(Resistance, 99f)) / 100f);
+            float dt = Mathf.Max(0, Threshold - Pierce);
+            float d2 = Mathf.Max(d1 - dt, Damage * 0.1f);
+            return d2;
         }
 
     }

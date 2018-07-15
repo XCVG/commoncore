@@ -612,6 +612,7 @@ GameObject:
   - component: {fileID: 95443514302475540}
   - component: {fileID: 114344645711853442}
   - component: {fileID: 143273174468923978}
+  - component: {fileID: 195249824099961224}
   m_Layer: 0
   m_Name: npc_testactor
   m_TagString: Untagged
@@ -2788,7 +2789,7 @@ Animator:
   m_GameObject: {fileID: 1376773696147856}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 1044983ee7acb814c93ef64ed5f96c96, type: 3}
-  m_Controller: {fileID: 9100000, guid: c8ca467e24fb85e4e9ce84671eae591c, type: 2}
+  m_Controller: {fileID: 9100000, guid: d7dbe25864372ce48ad1ff4d5595e15e, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2813,6 +2814,18 @@ MonoBehaviour:
   CharController: {fileID: 0}
   AnimController: {fileID: 0}
   InteractComponent: {fileID: 0}
+  NavComponent: {fileID: 0}
+  BaseAiState: 0
+  CurrentAiState: 2
+  LockAiState: 0
+  CurrentAnimState: 0
+  LockAnimState: 0
+  Target: {fileID: 0}
+  AltTarget: {x: 0, y: 0, z: 0}
+  Health: 1
+  DieImmediately: 0
+  DestroyOnDeath: 0
+  Aggressive: 0
   Interaction: 2
   InteractionTarget: TestAmbient
   InteractionSpecial: {fileID: 0}
@@ -2825,6 +2838,12 @@ MonoBehaviour:
   AltInteractionTarget: 
   AltInteractionSpecial: {fileID: 0}
   TooltipOverride: 
+  ForceNavmeshOff: 0
+  UseControllerGravity: 1
+  WalkSpeed: 1
+  RunSpeed: 2
+  WanderThreshold: 1
+  WanderRadius: {x: 10, y: 10}
 --- !u!114 &114410195566636778
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3677,3 +3696,24 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!195 &195249824099961224
+NavMeshAgent:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1376773696147856}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
