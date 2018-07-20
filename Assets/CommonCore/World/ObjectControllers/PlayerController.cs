@@ -6,7 +6,8 @@ using CommonCore.Input;
 using CommonCore.UI;
 using CommonCore.LockPause;
 using CommonCore.DebugLog;
-
+using CommonCore.State;
+using CommonCore.Rpg;
 
 namespace CommonCore.World
 {
@@ -80,6 +81,8 @@ namespace CommonCore.World
             
 
             isAnimating = false;
+
+            SetDefaultPlayerView();
         }
 
         //TODO: still unsure about the state system, but I'll likely rewrite this whole class
@@ -93,6 +96,7 @@ namespace CommonCore.World
 
             if (PlayerInControl && !LockPauseModule.IsInputLocked())
             {
+                HandleView();
                 HandleMovement();
                 HandleInteraction();
                 HandleWeapons();
@@ -113,6 +117,61 @@ namespace CommonCore.World
             body.velocity = pushDir * PushFactor;
         }
 
+        private void SetDefaultPlayerView()
+        {
+            GameObject tpCamera = CameraRoot.Find("Main Camera").gameObject;
+            GameObject fpCamera = CameraRoot.Find("FP Camera").gameObject;
+
+            switch (CCParams.DefaultPlayerView)
+            {
+                case PlayerViewType.PreferFirst:
+                    tpCamera.SetActive(false);
+                    fpCamera.SetActive(true);
+                    break;
+                case PlayerViewType.PreferThird:
+                    tpCamera.SetActive(true);
+                    fpCamera.SetActive(false);
+                    break;
+                case PlayerViewType.ForceFirst:
+                    tpCamera.SetActive(false);
+                    fpCamera.SetActive(true);
+                    break;
+                case PlayerViewType.ForceThird:
+                    tpCamera.SetActive(true);
+                    fpCamera.SetActive(false);
+                    break;
+                case PlayerViewType.ExplicitOther:
+                    tpCamera.SetActive(false);
+                    fpCamera.SetActive(false);
+                    break;
+            }
+        }
+
+        private void HandleView()
+        {
+            if (!(CCParams.DefaultPlayerView == PlayerViewType.PreferFirst || CCParams.DefaultPlayerView == PlayerViewType.PreferThird))
+                return;
+
+            if(MappedInput.GetButtonDown("ChangeView")) 
+            {
+                //slow and stupid but it'll work for now
+
+                GameObject tpCamera = CameraRoot.Find("Main Camera").gameObject;
+                GameObject fpCamera = CameraRoot.Find("FP Camera").gameObject;
+
+                if(tpCamera.activeSelf)
+                {
+                    fpCamera.SetActive(true);
+                    tpCamera.SetActive(false);
+                }
+                else
+                {
+                    fpCamera.SetActive(false);
+                    tpCamera.SetActive(true);
+
+                }
+            }
+        }
 
         private void HandleInteraction()
         {
@@ -243,7 +302,7 @@ namespace CommonCore.World
                     var ahgo = go.GetComponent<ActorHitboxComponent>();
                     if(ahgo != null)
                     {
-                        ac = ahgo.ParentController;
+                        ac = (ActorController)ahgo.ParentController; //this works as long as we don't go MP or do Voodoo Dolls
                         break;
                     }
                     var acgo = go.GetComponent<ActorController>();
@@ -265,6 +324,24 @@ namespace CommonCore.World
                 }
             }
         }
-        
+
+        public void TakeDamage(ActorHitInfo data)
+        {
+            CharacterModel playerModel = GameState.Instance.PlayerRpgState;
+
+            //damage model is very stupid right now, we will make it better later
+            float dt = playerModel.DerivedStats.DamageThreshold[(int)data.DType];
+            float dr = playerModel.DerivedStats.DamageResistance[(int)data.DType];
+            float damageTaken = CCBaseUtil.CalculateDamage(data.Damage, data.DamagePierce, dt, dr);
+
+            if (data.HitLocation == ActorBodyPart.Head)
+                damageTaken *= 2.0f;
+            else if (data.HitLocation == ActorBodyPart.LeftArm || data.HitLocation == ActorBodyPart.LeftLeg || data.HitLocation == ActorBodyPart.RightArm || data.HitLocation == ActorBodyPart.RightLeg)
+                damageTaken *= 0.75f;
+
+            playerModel.Health -= damageTaken;
+
+        }
+
     }
 }

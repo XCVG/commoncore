@@ -26,7 +26,7 @@ namespace CommonCore.Rpg
             }
             set
             {
-                HealthFraction = Health / DerivedStats.MaxHealth;
+                HealthFraction = value / DerivedStats.MaxHealth;
             }
         }
 

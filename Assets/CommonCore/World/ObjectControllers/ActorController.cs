@@ -432,7 +432,8 @@ namespace CommonCore.World
         private void DoAttack()
         {
             Vector3 shootPos = ShootPoint == null ? (transform.position + (transform.forward * 0.6f) + (transform.up * 1.25f)) : ShootPoint.position;
-            Vector3 shootVec = (ShootPoint == null ? transform.forward : ShootPoint.forward).normalized; //are these already normalized?
+            Vector3 shootVec = (Target.position - shootPos).normalized; //I screwed this up the first time
+            //TODO spread
 
             var modHit = AttackHit;
             modHit.Originator = this;
@@ -442,7 +443,7 @@ namespace CommonCore.World
                 //melee path (raycast)
                 LayerMask lm = LayerMask.GetMask("Default", "ActorHitbox");
                 var rc = Physics.RaycastAll(shootPos, shootVec, AttackRange, lm, QueryTriggerInteraction.Collide);
-                ActorController ac = null;
+                BaseController ac = null;
                 foreach (var r in rc)
                 {
                     var go = r.collider.gameObject;
@@ -460,7 +461,13 @@ namespace CommonCore.World
                     }
                 }
                 if (ac != null)
-                    ac.TakeDamage(modHit);
+                {
+                    if(ac is ActorController)
+                        ((ActorController)ac).TakeDamage(modHit);
+                    else if (ac is PlayerController)
+                        ((PlayerController)ac).TakeDamage(modHit);
+                }
+                    
 
             }
             else if(BulletPrefab != null)
@@ -685,7 +692,7 @@ namespace CommonCore.World
             switch (type)
             {
                 case ActorInteractionType.None:
-                    throw new InvalidOperationException();
+                    break; //do nothing
                 case ActorInteractionType.Special:
                     special.Execute(data);
                     break;
@@ -709,7 +716,7 @@ namespace CommonCore.World
         {
             //damage model is very stupid right now, we will make it better later
             float dt = DamageThreshold[(int)data.DType];
-            float dr = DamageThreshold[(int)data.DType];
+            float dr = DamageResistance[(int)data.DType];
             float damageTaken = CCBaseUtil.CalculateDamage(data.Damage, data.DamagePierce, dt, dr);
 
             if (data.HitLocation == ActorBodyPart.Head)

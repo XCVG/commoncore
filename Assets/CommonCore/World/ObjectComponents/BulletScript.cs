@@ -19,6 +19,14 @@ namespace CommonCore.World
 
         void OnCollisionEnter(Collision collision)
         {
+            var ahc = collision.gameObject.GetComponent<ActorHitboxComponent>();
+            if (ahc != null)
+            {
+                //we'll let the other component handle the collision...
+
+                return; //...but we won't destroy this one 
+            }
+
             var ac = collision.gameObject.GetComponent<ActorController>();
             if(ac != null)
             {
@@ -30,13 +38,16 @@ namespace CommonCore.World
                 return;
             }
 
-            var ahc = collision.gameObject.GetComponent<ActorHitboxComponent>();
-            if(ahc != null)
+            var pc = collision.gameObject.GetComponent<PlayerController>();
+            if(pc != null)
             {
-                //we'll let the other component handle the collision...
+                if (pc == HitInfo.Originator)
+                    return;
 
-                return; //...but we won't destroy this one 
-            }
+                pc.TakeDamage(HitInfo);
+                Destroy(this.gameObject);
+                return;
+            }            
 
             Destroy(this.gameObject);
         }
