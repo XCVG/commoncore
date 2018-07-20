@@ -216,6 +216,7 @@ namespace CommonCore.World
             float vmul = 10f;
             float rmul = 60f;
             float cmul = 0.5f * rmul;
+            float lmul = 180f;
             
             if(Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveY)) > deadzone)
             {
@@ -231,13 +232,13 @@ namespace CommonCore.World
 
             if(Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookX)) > deadzone)
             {
-                transform.Rotate(Vector3.up, rmul * MappedInput.GetAxis(DefaultControls.LookX) * Time.deltaTime);
+                transform.Rotate(Vector3.up, lmul * MappedInput.GetAxis(DefaultControls.LookX) * Time.deltaTime);
                 isMoving = true;
             }
 
             if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookY)) > deadzone)
             {
-                CameraRoot.transform.Rotate(Vector3.left, cmul * MappedInput.GetAxis(DefaultControls.LookY) * Time.deltaTime);
+                CameraRoot.transform.Rotate(Vector3.left, lmul * MappedInput.GetAxis(DefaultControls.LookY) * Time.deltaTime);
             }
 
             //handle gravity

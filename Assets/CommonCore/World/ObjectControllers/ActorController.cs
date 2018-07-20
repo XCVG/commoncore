@@ -431,9 +431,14 @@ namespace CommonCore.World
 
         private void DoAttack()
         {
+            //hardcoded spread for now
+            Vector3 aimPoint = Target.position;
+            aimPoint.y += UnityEngine.Random.Range(0.5f, 1.5f); //so we don't aim at feet
+            aimPoint.x += UnityEngine.Random.Range(-0.25f, 0.25f);
+            aimPoint.z += UnityEngine.Random.Range(-0.25f, 0.25f);
+
             Vector3 shootPos = ShootPoint == null ? (transform.position + (transform.forward * 0.6f) + (transform.up * 1.25f)) : ShootPoint.position;
-            Vector3 shootVec = (Target.position - shootPos).normalized; //I screwed this up the first time
-            //TODO spread
+            Vector3 shootVec = (aimPoint - shootPos).normalized; //I screwed this up the first time
 
             var modHit = AttackHit;
             modHit.Originator = this;
