@@ -309,10 +309,13 @@ Prefab:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 137620573441421010, guid: cd005af43e73e74428bc7e6a16566c7f,
-        type: 2}
-      propertyPath: m_Enabled
+    - target: {fileID: 1150011844830580, guid: cd005af43e73e74428bc7e6a16566c7f, type: 2}
+      propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1896938070193184, guid: cd005af43e73e74428bc7e6a16566c7f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cd005af43e73e74428bc7e6a16566c7f, type: 2}
@@ -667,7 +670,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4996700236209934, guid: 86893ec197c6f004fb863088a06bb607, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 87.98
+      value: 95.99
       objectReference: {fileID: 0}
     - target: {fileID: 4996700236209934, guid: 86893ec197c6f004fb863088a06bb607, type: 2}
       propertyPath: m_LocalPosition.y
@@ -675,7 +678,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4996700236209934, guid: 86893ec197c6f004fb863088a06bb607, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 144.46
+      value: 139.23
       objectReference: {fileID: 0}
     - target: {fileID: 4996700236209934, guid: 86893ec197c6f004fb863088a06bb607, type: 2}
       propertyPath: m_LocalRotation.x
@@ -800,6 +803,62 @@ Transform:
   m_PrefabParentObject: {fileID: 4996700236209934, guid: 86893ec197c6f004fb863088a06bb607,
     type: 2}
   m_PrefabInternal: {fileID: 1165839697}
+--- !u!1 &1254482854
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1254482855}
+  - component: {fileID: 1254482857}
+  - component: {fileID: 1254482856}
+  m_Layer: 8
+  m_Name: Hitbox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1254482855
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1254482854}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 268085042}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &1254482856
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1254482854}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.4
+  m_Height: 1.75
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.75, z: 0}
+--- !u!114 &1254482857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1254482854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bec0e6254da4994e946d945735474b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ParentController: {fileID: 1572627813}
+  BodyPartOverride: 0
 --- !u!1001 &1333214796
 Prefab:
   m_ObjectHideFlags: 0
@@ -976,6 +1035,12 @@ Terrain:
   m_BakeLightProbesForTrees: 1
   m_ScaleInLightmap: 0.0512
   m_LightmapParameters: {fileID: 15203, guid: 0000000000000000f000000000000000, type: 0}
+--- !u!114 &1572627813 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114399906522207162, guid: cd005af43e73e74428bc7e6a16566c7f,
+    type: 2}
+  m_PrefabInternal: {fileID: 268085041}
+  m_Script: {fileID: 11500000, guid: 49a772e8f02c1404eaa72eea9955f8cd, type: 3}
 --- !u!1 &1583672631
 GameObject:
   m_ObjectHideFlags: 0

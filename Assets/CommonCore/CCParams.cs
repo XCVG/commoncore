@@ -29,6 +29,10 @@ namespace CommonCore
         //*****additional config settings
         public const bool UseVerboseLogging = true;
 
+        //*****game config settings
+        public const bool UseTreeLeveling = true; //TODO actually implement alternate levelling
+        public const PlayerViewType DefaultPlayerView = PlayerViewType.PreferFirst;
+
         //*****automatic environment params
         public static bool IsDebug
         {
@@ -83,30 +87,5 @@ namespace CommonCore
         }
     }
 
-    /*
-     * Just your basic Semantic Version struct
-     */
-    public struct SemanticVersion
-    {
-        public readonly int Major;
-        public readonly int Minor;
-        public readonly int Patch;
 
-        public SemanticVersion(int major, int minor, int patch)
-        {
-            Major = major;
-            Minor = minor;
-            Patch = patch;
-        }
-
-        public override string ToString()
-        {
-            return string.Format("{0}.{1}.{2}", Major, Minor, Patch);
-        }
-    }
-
-    public enum DataLoadPolicy
-    {
-        Auto, OnDemand, OnStart, Cached
-    }
 }
