@@ -213,6 +213,15 @@ Prefab:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 1376773696147856, guid: 3f6f1049247585146b5f703e29829950, type: 2}
+      propertyPath: m_Name
+      value: TestDude
+      objectReference: {fileID: 0}
+    - target: {fileID: 114344645711853442, guid: 3f6f1049247585146b5f703e29829950,
+        type: 2}
+      propertyPath: Health
+      value: 40
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3f6f1049247585146b5f703e29829950, type: 2}
   m_IsPrefabParent: 0
@@ -263,6 +272,11 @@ Prefab:
     - target: {fileID: 1274874638556274, guid: cd005af43e73e74428bc7e6a16566c7f, type: 2}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 137620573441421010, guid: cd005af43e73e74428bc7e6a16566c7f,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cd005af43e73e74428bc7e6a16566c7f, type: 2}
@@ -1308,6 +1322,11 @@ Prefab:
     - target: {fileID: 1736047968135330, guid: d63581e0ff9d9fa4ea068664c42d93f9, type: 2}
       propertyPath: m_Name
       value: WaterLady
+      objectReference: {fileID: 0}
+    - target: {fileID: 114004260747151668, guid: d63581e0ff9d9fa4ea068664c42d93f9,
+        type: 2}
+      propertyPath: DestroyOnDeath
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d63581e0ff9d9fa4ea068664c42d93f9, type: 2}

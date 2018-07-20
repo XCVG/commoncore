@@ -57,6 +57,14 @@ namespace CommonCore
             }
         }
 
+        public static string SavePath
+        {
+            get
+            {
+                return PersistentDataPath + "/saves";
+            }
+        }
+
         public static DataLoadPolicy LoadPolicy
         {
             get

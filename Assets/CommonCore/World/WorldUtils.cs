@@ -14,6 +14,18 @@ namespace CommonCore.World
      */
     public static class WorldUtils
     {
+        public static List<GameObject> FindAllGameObjects(string name)
+        {
+            var goList = new List<GameObject>();
+
+            foreach (GameObject go in GameObject.FindObjectsOfType(typeof(GameObject)))
+            {
+                if (go.name == name)
+                    goList.Add(go);
+            }
+
+            return goList;
+        }
 
         public static void GetComponentsInDescendants<T>(Transform root, List<T> components)
         {

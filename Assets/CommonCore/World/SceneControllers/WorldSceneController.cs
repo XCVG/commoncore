@@ -11,6 +11,7 @@ namespace CommonCore.World
 
     public class WorldSceneController : BaseSceneController
     {
+        public bool AutoGameover = true;
         public bool Autoload = true;
         
         public override void Awake()
@@ -28,6 +29,17 @@ namespace CommonCore.World
                 MetaState.Instance.IntentsExecutePreload();
                 Restore();
                 MetaState.Instance.IntentsExecutePostload();
+            }
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            if(AutoGameover && GameState.Instance.PlayerRpgState.Health <= 0)
+            {
+                MetaState.Instance.NextScene = SceneManager.GetActiveScene().name; //in case we need it...
+                SceneManager.LoadScene("GameOverScene");
             }
         }
 

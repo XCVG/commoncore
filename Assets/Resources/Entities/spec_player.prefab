@@ -1716,7 +1716,7 @@ MonoBehaviour:
     DType: 0
     HitLocation: 0
     Originator: {fileID: 114399906522207162}
-  BulletSpeed: 50
+  BulletSpeed: 100
   MeleeEnabled: 1
   MeleeHitInfo:
     Damage: 5

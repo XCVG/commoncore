@@ -13,7 +13,7 @@ using CommonCore.LockPause;
 namespace CommonCore.World
 {
     //TODO restorable, animation, and eventually a full refactor
-    //I say that now, but I bet this will still be mostly the same even in Downwarren
+    //I say that now, but I bet this will still be mostly the same until, say, Downwarren
     public class ActorController : BaseController
     {
         public string CharacterModelIdOverride;
@@ -33,6 +33,7 @@ namespace CommonCore.World
         public bool LockAnimState = false;
         public Transform Target;
         public Vector3 AltTarget;
+        public string SavedTarget = null;
         private float TimeInState;
         private int TotalTickCount;
 
@@ -82,6 +83,7 @@ namespace CommonCore.World
         public float RotateSpeed = 90.0f;
         private bool NavEnabled;
         private bool IsRunning;
+        public float NavThreshold = 1.0f;
         public float WanderThreshold = 1.0f;
         public float WanderTimeout = 10.0f;
         public Vector2 WanderRadius = new Vector2(10.0f, 10.0f);
@@ -164,14 +166,17 @@ namespace CommonCore.World
                     SetAnimation(ActorAnimState.Idle);
                     break;
                 case ActorAiState.Dead:
+                    if (CurrentAiState == ActorAiState.Dead) //fix for glitchy looking behaviour
+                        break;
+
                     AbortNav();
                     if (DieImmediately)
                         SetAnimation(ActorAnimState.Dead);
                     else
-                        SetAnimation(ActorAnimState.Dying);                       
+                        SetAnimation(ActorAnimState.Dying);
 
                     if (DestroyOnDeath)
-                        Destroy(this.gameObject);
+                        this.gameObject.SetActive(false); //actually destroying the object breaks saving
 
                     if (OnDeathSpecial != null)
                         OnDeathSpecial.Execute(new ActionInvokerData { Activator = this });
@@ -195,6 +200,16 @@ namespace CommonCore.World
                         var d = Target.position;
                         SetDestination(d);
                     }
+                    break;
+                case ActorAiState.ScriptedMoveTo:
+                    if (RunOnChase)
+                    {
+                        IsRunning = true;
+                        SetAnimation(ActorAnimState.Running);
+                    }
+                    else
+                        SetAnimation(ActorAnimState.Walking);
+                    SetDestination(AltTarget);
                     break;
                 case ActorAiState.Attacking:
                     break;
@@ -235,12 +250,37 @@ namespace CommonCore.World
                 }
             }
 
+            //hack to retrieve swizzled target after a load
+            if(!string.IsNullOrEmpty(SavedTarget))
+            {
+                var goList = WorldUtils.FindAllGameObjects(SavedTarget);
+                if(goList.Count == 1)
+                {
+                    Target = goList[0].transform;
+                }
+                else if(goList.Count == 0)
+                {
+                    CDebug.LogEx(string.Format("Couldn't find target '{0}' when restoring {1}", SavedTarget, this.name), LogLevel.Error, this);
+                }
+                else
+                {
+                    CDebug.LogEx(string.Format("Found multiple target '{0}' when restoring {1}", SavedTarget, this.name), LogLevel.Error, this);
+                }
+
+                SavedTarget = null;
+            }
+
             switch (CurrentAiState)
             {
                 case ActorAiState.Idle:
-                    //TODO aggression
+                    if (Aggressive)
+                    {
+                        //search for targets, select target
+                        SelectTarget();
+                        if (Target != null)
+                            EnterState(ActorAiState.Chasing);
+                    }
                     break;
-
                 case ActorAiState.Wandering:
                     //TODO aggression
                     if((transform.position - AltTarget).magnitude <= WanderThreshold || TimeInState >= WanderTimeout)
@@ -281,6 +321,12 @@ namespace CommonCore.World
                             EnterState(BaseAiState);
                             Target = null;
                         }                        
+                    }
+                    break;
+                case ActorAiState.ScriptedMoveTo:
+                    if((AltTarget - transform.position).magnitude <= NavThreshold) //we made it!
+                    {
+                        EnterState(ActorAiState.Idle); //don't wander off if you were sent there!
                     }
                     break;
                 case ActorAiState.Attacking:
@@ -455,7 +501,7 @@ namespace CommonCore.World
             Vector3 pathForward = dirVec.normalized;
             pathForward.y = 0; //we actually want a flat vector
 
-            if (dirVec.magnitude <= 1.0f) //shouldn't hardcode that threshold!
+            if (dirVec.magnitude <= NavThreshold) //shouldn't hardcode that threshold!
                 return;
 
             //move
@@ -580,6 +626,71 @@ namespace CommonCore.World
             }
             else if(FeelPain)
                 EnterState(ActorAiState.Hurting);
+        }
+
+        //these are both done stupidly and could probably be done through reflection instead but for now...
+
+        public override Dictionary<string, object> GetExtraData()
+        {
+            var extraData = base.GetExtraData(); //not sure if we should keep this here...
+
+            var actorData = new ActorExtraData();
+
+            //save!
+            actorData.CurrentAiState = CurrentAiState;
+            actorData.LastAiState = LastAiState;
+            actorData.LockAiState = LockAiState;
+            actorData.CurrentAnimState = CurrentAnimState;
+            actorData.LockAnimState = LockAnimState;
+            actorData.SavedTarget = Target.name;
+            actorData.AltTarget = AltTarget;
+            actorData.TimeInState = TimeInState;
+
+            actorData.Health = Health;
+            actorData.BeenHit = BeenHit;
+
+            actorData.IsRunning = IsRunning;
+
+            extraData["Actor"] = actorData;
+
+            return extraData;
+        }
+
+        public override void SetExtraData(Dictionary<string, object> data)
+        {
+            base.SetExtraData(data);
+
+            if(data.ContainsKey("Actor"))
+            {
+                ActorExtraData actorData = data["Actor"] as ActorExtraData;
+                if(actorData != null)
+                {
+                    //restore!
+
+                    CurrentAiState = actorData.CurrentAiState;
+                    LastAiState = actorData.LastAiState;
+                    LockAiState = actorData.LockAiState;
+                    CurrentAnimState = actorData.CurrentAnimState;
+                    LockAnimState = actorData.LockAnimState;
+                    SavedTarget = actorData.SavedTarget;
+                    AltTarget = actorData.AltTarget;
+                    TimeInState = actorData.TimeInState;
+
+                    Health = actorData.Health;
+                    BeenHit = actorData.BeenHit;
+
+                    IsRunning = actorData.IsRunning;
+
+                }
+                else
+                {
+                    CDebug.LogEx(string.Format("Invalid actor data for {0} found on restore!", this.name), LogLevel.Error, this);
+                }
+            }
+            else
+            {
+                CDebug.LogEx(string.Format("No actor data for {0} found on restore!", this.name), LogLevel.Error, this);
+            }
         }
 
     }

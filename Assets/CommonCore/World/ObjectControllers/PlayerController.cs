@@ -121,7 +121,7 @@ namespace CommonCore.World
 
             HUDScript.ClearTarget();
 
-            int layerMask = LayerMask.GetMask("Default","InteractionHitbox");
+            int layerMask = LayerMask.GetMask("Default","ActorHitbox");
 
             RaycastHit probeHit;
             if(Physics.Raycast(CameraRoot.transform.position,CameraRoot.transform.forward,out probeHit,MaxProbeDist,layerMask,QueryTriggerInteraction.Collide))

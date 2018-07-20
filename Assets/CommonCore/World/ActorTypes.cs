@@ -17,7 +17,7 @@ namespace CommonCore.World
 
     public enum ActorAiState
     {
-        Idle, Dead, Wandering, Chasing, Hurting, Attacking, Covering, Fleeing
+        Idle, Dead, Wandering, Chasing, Hurting, Attacking, Covering, Fleeing, ScriptedMoveTo
     }
 
     public enum ActorBodyPart
@@ -41,6 +41,32 @@ namespace CommonCore.World
             DType = dtype;
             HitLocation = hitlocation;
             Originator = originator;
+        }
+    }
+
+    //this is in flux, we may change what data we store in the future
+    public class ActorExtraData
+    {
+        //state information (very important, so we save most of it)
+        public ActorAiState CurrentAiState { get; set; }
+        public ActorAiState LastAiState { get; set; }
+        public bool LockAiState { get; set; }
+        public ActorAnimState CurrentAnimState { get; set; }
+        public bool LockAnimState { get; set; }
+        public string SavedTarget { get; set; }
+        public Vector3 AltTarget { get; set; }
+        public float TimeInState { get; set; }
+
+        //health 
+        public float Health { get; set; }
+        public bool BeenHit { get; set; }
+
+        //navigation
+        public bool IsRunning { get; set; }
+
+        public ActorExtraData()
+        {
+
         }
     }
 }
