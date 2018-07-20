@@ -41,7 +41,7 @@ namespace CommonCore.World
         static void Load(string name)
         {
             MetaState.Instance.TransitionType = SceneTransitionType.LoadGame;
-            MetaState.Instance.LoadSave = Application.persistentDataPath + @"\" + name;
+            MetaState.Instance.LoadSave = CCParams.SavePath + @"\" + name;
             MetaState.Instance.Intents.Clear();
             SceneManager.LoadScene("LoadingScene");
         }
@@ -50,7 +50,7 @@ namespace CommonCore.World
         [Command]
         static void Restore(string name)
         {
-            GameState.DeserializeFromFile(Application.persistentDataPath + @"\" + name);
+            GameState.DeserializeFromFile(CCParams.SavePath + @"\" + name);
 
             Restore();
         }
@@ -78,7 +78,7 @@ namespace CommonCore.World
         {
             Save();
 
-            GameState.SerializeToFile(Application.persistentDataPath + @"\" + name);
+            GameState.SerializeToFile(CCParams.SavePath + @"\" + name);
         }
 
         //***** SCENE WARP

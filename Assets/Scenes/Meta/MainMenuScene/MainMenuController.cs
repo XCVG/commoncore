@@ -10,6 +10,11 @@ namespace UI
 
     public class MainMenuController : BaseMenuController
     {
+        [Header("Panel")]
+        public GameObject CurrentPanel;
+        public GameObject LoadPanel;
+        public GameObject OptionsPanel;
+        public GameObject HelpPanel;        
 
         public override void Awake()
         {
@@ -47,17 +52,50 @@ namespace UI
 
         public void OnClickLoad()
         {
-            //TODO show load panel
+            //show load panel
+
+            if(CurrentPanel != null)         
+                CurrentPanel.SetActive(false);    
+
+            if(CurrentPanel != LoadPanel)
+            {
+                CurrentPanel = LoadPanel;
+                CurrentPanel.SetActive(true);
+            }
+            else
+                CurrentPanel = null;
         }
 
         public void OnClickOptions()
         {
-            //TODO show options panel
+            //show options panel
+
+            if (CurrentPanel != null)
+                CurrentPanel.SetActive(false);
+
+            if (CurrentPanel != OptionsPanel)
+            {
+                CurrentPanel = OptionsPanel;
+                CurrentPanel.SetActive(true);
+            }
+            else
+                CurrentPanel = null;
         }
 
         public void OnClickHelp()
         {
-            //TODO show help panel
+            //show help panel
+
+            if (CurrentPanel != null)
+                CurrentPanel.SetActive(false);
+
+            if (CurrentPanel != HelpPanel)
+            {
+                CurrentPanel = HelpPanel;
+                CurrentPanel.SetActive(true);
+            }
+            else
+                CurrentPanel = null;
         }
 
         public void OnClickExit()
