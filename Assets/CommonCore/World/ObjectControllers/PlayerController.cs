@@ -220,9 +220,9 @@ namespace CommonCore.World
             if(MappedInput.GetButtonDown("Fire1") && ShootingEnabled)
             {
                 //shoot
-                var bullet = Instantiate<GameObject>(BulletPrefab, ShootPoint.position, ShootPoint.rotation, transform.root);
+                var bullet = Instantiate<GameObject>(BulletPrefab, ShootPoint.position + (ShootPoint.forward.normalized * 0.25f), ShootPoint.rotation, transform.root);
                 var bulletRigidbody = bullet.GetComponent<Rigidbody>();
-                bulletRigidbody.velocity = ShootPoint.forward * BulletSpeed;
+                bulletRigidbody.velocity = (ShootPoint.forward.normalized * BulletSpeed);
                 bullet.GetComponent<BulletScript>().HitInfo = BulletHitInfo;
                 if (BulletFireEffect != null)
                     Instantiate(BulletFireEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);

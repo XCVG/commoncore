@@ -22,6 +22,9 @@ namespace CommonCore.World
             var ac = collision.gameObject.GetComponent<ActorController>();
             if(ac != null)
             {
+                if (ac == HitInfo.Originator) //no friendly fire for now
+                    return;
+
                 ac.TakeDamage(HitInfo);
                 Destroy(this.gameObject);
                 return;

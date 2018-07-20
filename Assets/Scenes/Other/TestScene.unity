@@ -748,7 +748,7 @@ Prefab:
     - target: {fileID: 224259548548557048, guid: d8faa095f4a287249a857510caf0f6cd,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00005059996
+      value: -0.000084418505
       objectReference: {fileID: 0}
     - target: {fileID: 224259548548557048, guid: d8faa095f4a287249a857510caf0f6cd,
         type: 2}
@@ -1249,30 +1249,9 @@ Prefab:
       propertyPath: m_Name
       value: InGameMenu
       objectReference: {fileID: 0}
-    - target: {fileID: 114667931422099482, guid: a9320c2e33affc642a2b494257f82247,
-        type: 2}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1829139171}
-    - target: {fileID: 114667931422099482, guid: a9320c2e33affc642a2b494257f82247,
-        type: 2}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnClickLoad
-      objectReference: {fileID: 0}
-    - target: {fileID: 114667931422099482, guid: a9320c2e33affc642a2b494257f82247,
-        type: 2}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a9320c2e33affc642a2b494257f82247, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &1829139171 stripped
-MonoBehaviour:
-  m_PrefabParentObject: {fileID: 114724856968969478, guid: a9320c2e33affc642a2b494257f82247,
-    type: 2}
-  m_PrefabInternal: {fileID: 1829139169}
-  m_Script: {fileID: 11500000, guid: 10330e08d67f60c48baba6f2f1b557f1, type: 3}
 --- !u!4 &1940817042 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4866294606358458, guid: cd005af43e73e74428bc7e6a16566c7f,

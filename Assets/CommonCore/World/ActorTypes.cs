@@ -17,7 +17,7 @@ namespace CommonCore.World
 
     public enum ActorAiState
     {
-        Idle, Dead, Wandering, Chasing, Hurting, Attacking, Covering, Fleeing, ScriptedMoveTo
+        Idle, Dead, Wandering, Chasing, Hurting, Attacking, Covering, Fleeing, ScriptedMoveTo, ScriptedHalt
     }
 
     public enum ActorBodyPart
@@ -63,6 +63,9 @@ namespace CommonCore.World
 
         //navigation
         public bool IsRunning { get; set; }
+
+        //interaction
+        public bool InteractionForceDisabled { get; set; }
 
         public ActorExtraData()
         {

@@ -59,7 +59,22 @@ namespace CommonCore.World
         public bool UseLineOfSight = false;
         public float SearchRadius = 25.0f;
         public int SearchInterval = 70;
+        public bool DisableInteractionOnHit = true;
         private bool BeenHit = false;
+
+        [Header("Attack")]
+        public bool UseMelee = true;
+        public float AttackRange = 1.0f;
+        public float AttackStateDelay = 1.0f;
+        public float AttackInterval = 1.0f;
+        public float BulletSpeed = 100;
+        public ActorHitInfo AttackHit;
+        public GameObject BulletPrefab;
+        public GameObject AttackEffectPrefab;
+        public Transform ShootPoint;
+        public string AttackAnimationOverride;
+
+        private float LastAttackTime = -1;
 
         [Header("Interaction")]
         public ActorInteractionType Interaction;
@@ -71,6 +86,7 @@ namespace CommonCore.World
         public string AltInteractionTarget;
         public ActionSpecial AltInteractionSpecial;
 
+        public bool InteractionForceDisabled;
         public string TooltipOverride;
 
         [Header("Movement")]
@@ -212,6 +228,11 @@ namespace CommonCore.World
                     SetDestination(AltTarget);
                     break;
                 case ActorAiState.Attacking:
+                    //set animation, fire projectile, set timer
+                    SetAnimation(UseMelee ? ActorAnimState.Punching : ActorAnimState.Shooting);
+                    transform.forward = CCBaseUtil.GetFlatVectorToTarget(transform.position, Target.position); //ugly but workable
+                    DoAttack(); //waaaaay too complicated to cram here
+                    LastAttackTime = Time.time;
                     break;
                 case ActorAiState.Covering:
                     break;
@@ -304,6 +325,13 @@ namespace CommonCore.World
                         EnterState(BaseAiState);
                         break;
                     }
+
+                    if((Time.time - LastAttackTime >= AttackInterval) && (Target.position - transform.position).magnitude <= AttackRange)
+                    {
+                        EnterState(ActorAiState.Attacking);
+                        return;
+                    }
+                    else
                     {
                         //set target
                         var d = Target.position;
@@ -330,7 +358,19 @@ namespace CommonCore.World
                     }
                     break;
                 case ActorAiState.Attacking:
-                    //TODO actually attack, return
+                    //wait...
+                    if(TimeInState >= AttackStateDelay)
+                    {
+                        //just return
+                        if (!WorldUtils.TargetIsAlive(Target))
+                        {
+                            EnterState(BaseAiState);
+                        }
+                        else
+                        {
+                            EnterState(ActorAiState.Chasing);
+                        }
+                    }
                     break;
                 case ActorAiState.Hurting:
                     if(TimeInState >= PainWaitTime)
@@ -340,9 +380,6 @@ namespace CommonCore.World
                         else
                             EnterState(LastAiState);
                     }
-                    break;
-                case ActorAiState.Covering:
-                    //TODO 
                     break;
                 case ActorAiState.Fleeing:
                     //stop running if far enough away, or target is gone
@@ -392,6 +429,60 @@ namespace CommonCore.World
             }
         }
 
+        private void DoAttack()
+        {
+            Vector3 shootPos = ShootPoint == null ? (transform.position + (transform.forward * 0.6f) + (transform.up * 1.25f)) : ShootPoint.position;
+            Vector3 shootVec = (ShootPoint == null ? transform.forward : ShootPoint.forward).normalized; //are these already normalized?
+
+            var modHit = AttackHit;
+            modHit.Originator = this;
+
+            if(UseMelee)
+            {
+                //melee path (raycast)
+                LayerMask lm = LayerMask.GetMask("Default", "ActorHitbox");
+                var rc = Physics.RaycastAll(shootPos, shootVec, AttackRange, lm, QueryTriggerInteraction.Collide);
+                ActorController ac = null;
+                foreach (var r in rc)
+                {
+                    var go = r.collider.gameObject;
+                    var ahgo = go.GetComponent<ActorHitboxComponent>();
+                    if (ahgo != null)
+                    {
+                        ac = ahgo.ParentController;
+                        break;
+                    }
+                    var acgo = go.GetComponent<ActorController>();
+                    if (acgo != null)
+                    {
+                        ac = acgo;
+                        break;
+                    }
+                }
+                if (ac != null)
+                    ac.TakeDamage(modHit);
+
+            }
+            else if(BulletPrefab != null)
+            {
+                //bullet path (shoot)
+                var bullet = Instantiate<GameObject>(BulletPrefab, shootPos + (shootVec * 0.25f), Quaternion.identity, transform.root);
+                var bulletRigidbody = bullet.GetComponent<Rigidbody>();
+                bulletRigidbody.velocity = (shootVec * BulletSpeed);
+                bullet.GetComponent<BulletScript>().HitInfo = modHit;
+            }
+            else
+            {
+                CDebug.LogEx(string.Format("{0} tried to shoot a bullet, but has no prefab defined!", name), LogLevel.Error, this);
+            }
+
+            //show the effect, if applicable
+            if(AttackEffectPrefab != null)
+            {
+                Instantiate(AttackEffectPrefab, shootPos, Quaternion.identity, (ShootPoint == null ? transform : ShootPoint));
+            }
+        }
+
         private void SelectTarget()
         {
             if (TotalTickCount % SearchInterval != 0)
@@ -435,7 +526,7 @@ namespace CommonCore.World
                 var potentialTargets = transform.root.GetComponentsInChildren<ActorController>();
                 foreach (var potentialTarget in potentialTargets)
                 {
-                    if((potentialTarget.transform.position - transform.position).magnitude <= SearchRadius)
+                    if(WorldUtils.TargetIsAlive(potentialTarget.transform) && (potentialTarget.transform.position - transform.position).magnitude <= SearchRadius)
                     {
                         if (UseLineOfSight)
                         {
@@ -535,8 +626,17 @@ namespace CommonCore.World
                 return;
 
             if(AnimController != null)
-                AnimController.Play(GetNameForAnimation(state));
-            //TODO sounds, eventually
+            {
+                string stateName = GetNameForAnimation(state);
+
+                if (string.IsNullOrEmpty(AttackAnimationOverride) && (state == ActorAnimState.Punching || state == ActorAnimState.Shooting))
+                    stateName = AttackAnimationOverride;
+
+                AnimController.Play(stateName);
+
+                //TODO sounds, eventually
+            }
+
         }
 
         private static string GetNameForAnimation(ActorAnimState state)
@@ -549,6 +649,8 @@ namespace CommonCore.World
                     return "fall_flat_fast";
                 case ActorAnimState.Dying:
                     return "fall_flat";
+                case ActorAnimState.Hurting:
+                    return "pain";
                 case ActorAnimState.Walking:
                     return "walk";
                 case ActorAnimState.Talking:
@@ -564,6 +666,9 @@ namespace CommonCore.World
 
         public void OnInteract(ActionInvokerData data)
         {
+            if (InteractionForceDisabled)
+                return;
+
             if(AltInteraction != ActorInteractionType.None && AlternateCondition.Parse().Evaluate())
             {
                 ExecuteInteraction(AltInteraction, AltInteractionTarget, AltInteractionSpecial, data);
@@ -614,10 +719,16 @@ namespace CommonCore.World
 
             Health -= damageTaken;
 
+            if (CurrentAiState == ActorAiState.Dead) //abort if we're already dead
+                return;
+
             if(Defensive && data.Originator != null)
             {
                 Target = data.Originator.transform;
                 BeenHit = true;
+
+                if (DisableInteractionOnHit)
+                    InteractionForceDisabled = true;
 
                 if (FeelPain)
                     EnterState(ActorAiState.Hurting);
@@ -651,6 +762,8 @@ namespace CommonCore.World
 
             actorData.IsRunning = IsRunning;
 
+            actorData.InteractionForceDisabled = InteractionForceDisabled;
+
             extraData["Actor"] = actorData;
 
             return extraData;
@@ -680,6 +793,8 @@ namespace CommonCore.World
                     BeenHit = actorData.BeenHit;
 
                     IsRunning = actorData.IsRunning;
+
+                    InteractionForceDisabled = actorData.InteractionForceDisabled;
 
                 }
                 else
