@@ -145,36 +145,57 @@ namespace CommonCore.Rpg
         }
     }
 
-    public class WeaponItemModel : InventoryItemModel //yeah no melee... yet
+    public abstract class WeaponItemModel : InventoryItemModel
     {
         public readonly float Damage; //superclass
         public readonly float DamagePierce; //superclass
+        public readonly DamageType DType; //superclass
+        public readonly string ViewModel; //superclass
+        public readonly string WorldModel; //superclass
+
+        public WeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, float damage, float damagePierce, DamageType dType, string viewModel, string worldModel)
+            : base(name, weight, value, maxCondition, unique, essential)
+        {
+            Damage = damage;
+            DamagePierce = damagePierce;
+            DType = dType;
+            ViewModel = viewModel;
+            WorldModel = worldModel;
+        }
+    }
+
+    public class MeleeWeaponItemModel : WeaponItemModel
+    {
+        public readonly float Reach;
+
+        public MeleeWeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, float damage, float damagePierce, float reach, DamageType dType, string viewModel, string worldModel) 
+            : base(name, weight, value, maxCondition, unique, essential, damage, damagePierce, dType, viewModel, worldModel)
+        {
+            Reach = reach;
+        }
+    }
+
+    public class RangedWeaponItemModel : WeaponItemModel //yeah no melee... yet
+    {        
         public readonly float Velocity; //ranged subclass
         public readonly float Spread; //ranged subclass
         public readonly float FireRate; //ranged subclass
         public readonly int MagazineSize; //ranged subclass
         public readonly float ReloadTime; //ranged subclass
-        public readonly AmmoType AType; //ranged subclass
-        public readonly DamageType DType; //superclass
-        public readonly string ViewModel; //superclass
-        public readonly string WorldModel; //superclass
+        public readonly AmmoType AType; //ranged subclass        
 
-        public WeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential,
+        public RangedWeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential,
             float damage, float damagePierce, float velocity, float spread, float fireRate,
             int magazineSize, float reloadTime, AmmoType aType, DamageType dType, string viewModel, string worldModel)
-            : base(name, weight, value, maxCondition, unique, essential)
+            : base(name, weight, value, maxCondition, unique, essential, damage, damagePierce, dType, viewModel, worldModel)
         {
-            Damage = damage;
-            DamagePierce = damagePierce;
             Velocity = velocity;
             Spread = spread;
             FireRate = fireRate;
             MagazineSize = magazineSize;
             ReloadTime = reloadTime;
             AType = aType;
-            DType = dType;
-            ViewModel = viewModel;
-            WorldModel = worldModel;
+            
         }
 
         public override string GetStatsString()

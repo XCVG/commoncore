@@ -40,6 +40,7 @@ namespace CommonCore.Rpg
         public List<Condition> Conditions { get; private set; }
 
         public InventoryModel Inventory { get; private set; }
+        public Dictionary<EquipSlot, InventoryItemInstance> Equipped { get; private set; }
 
         public CharacterModel() //TODO with a model base parameter
         {
@@ -48,6 +49,7 @@ namespace CommonCore.Rpg
 
             Inventory = new InventoryModel();
             Conditions = new List<Condition>();
+            Equipped = new Dictionary<EquipSlot, InventoryItemInstance>();
 
             //create blank stats and derive stats
             BaseStats = new StatsSet(); //TODO load defaults

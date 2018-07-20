@@ -235,21 +235,45 @@ namespace CommonCore.World
 
         //***** ACTOR MANIPULATION
         [Command]
-        static void SetAiState(string newState)
+        static void SetAiState(string newState, bool lockState)
         {
-
+            var ac = SelectedObject.GetComponent<ActorController>();
+            bool wasLocked = ac.LockAiState;
+            if (wasLocked)
+                ac.LockAiState = false;
+            ac.EnterState((ActorAiState)Enum.Parse(typeof(ActorAiState), newState));
+            ac.LockAiState = wasLocked || lockState;
         }
 
         [Command]
-        static void SetAnimState(string newState)
+        static void SetAnimState(string newState, bool lockState)
         {
-
+            var ac = SelectedObject.GetComponent<ActorController>();
+            bool wasLocked = ac.LockAnimState;
+            if (wasLocked)
+                ac.LockAnimState = false;
+            ac.SetAnimation((ActorAnimState)Enum.Parse(typeof(ActorAnimState), newState));
+            ac.LockAnimState = wasLocked || lockState;
         }
 
         [Command]
         static void Kill()
         {
+            var ac = SelectedObject.GetComponent<ActorController>();
+            ac.Health = 0;
+        }
 
+        [Command]
+        static void Disable()
+        {
+            var ac = SelectedObject.GetComponent<ActorController>();
+            ac.gameObject.SetActive(false);
+        }
+
+        [Command]
+        static void Destroy()
+        {
+            GameObject.Destroy(SelectedObject);
         }
 
         [Command]

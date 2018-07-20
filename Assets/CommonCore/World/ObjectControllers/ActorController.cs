@@ -8,10 +8,12 @@ using CommonCore.State;
 using CommonCore.DebugLog;
 using CommonCore.Dialogue;
 using CommonCore.Messaging;
+using CommonCore.LockPause;
 
 namespace CommonCore.World
 {
     //TODO restorable, animation, and eventually a full refactor
+    //I say that now, but I bet this will still be mostly the same even in Downwarren
     public class ActorController : BaseController
     {
         public string CharacterModelIdOverride;
@@ -25,15 +27,18 @@ namespace CommonCore.World
         [Header("State")]
         public ActorAiState BaseAiState = ActorAiState.Idle;
         public ActorAiState CurrentAiState = ActorAiState.Idle;
+        private ActorAiState LastAiState;
         public bool LockAiState = false;
         public ActorAnimState CurrentAnimState = ActorAnimState.Idle;
         public bool LockAnimState = false;
         public Transform Target;
         public Vector3 AltTarget;
         private float TimeInState;
+        private int TotalTickCount;
 
         [Header("Damage")]
         public float Health = 1.0f;
+        private float MaxHealth;
         public bool DieImmediately = false;
         public bool DestroyOnDeath = false;
         [Tooltip("Normal, Impact, Explosive, Energy, Poison, Radiation")]
@@ -41,12 +46,19 @@ namespace CommonCore.World
         [Tooltip("Normal, Impact, Explosive, Energy, Poison, Radiation")]
         public float[] DamageThreshold = { 0, 0, 0, 0, 0, 0 };
         public ActionSpecial OnDeathSpecial;
+        public bool FeelPain = true;
+        public float PainWaitTime = 1.0f;
 
         [Header("Aggression")]
         public bool Aggressive = false;
+        public bool TargetPlayer = false;
+        public bool TargetNpc = false; //TODO factions, but not yet
+        public bool Defensive = true;        
         public bool Relentless = false;
         public bool UseLineOfSight = false;
         public float SearchRadius = 25.0f;
+        public int SearchInterval = 70;
+        private bool BeenHit = false;
 
         [Header("Interaction")]
         public ActorInteractionType Interaction;
@@ -75,7 +87,7 @@ namespace CommonCore.World
         public Vector2 WanderRadius = new Vector2(10.0f, 10.0f);
         private Vector3 InitialPosition;
 
-        public override void Start()
+        public override void Start() //TODO register into a list for AI and stuff
         {
             base.Start();
 
@@ -113,7 +125,9 @@ namespace CommonCore.World
             else
             {
                 CDebug.LogEx(name + " couldn't find ActorInteractableComponent", LogLevel.Error, this);
-            }            
+            }
+
+            MaxHealth = Health;
 
             EnterState(CurrentAiState);
         }
@@ -122,16 +136,23 @@ namespace CommonCore.World
         {
             base.Update();
 
+            if (LockPauseModule.IsPaused())
+                return;
+
+            TotalTickCount++;
+
             TimeInState += Time.deltaTime;
             UpdateState();
             EmulateNav();
         }
 
         //TODO handle aggression
-        private void EnterState(ActorAiState newState)
+        public void EnterState(ActorAiState newState)
         {
             if (LockAiState)
                 return;
+
+            LastAiState = CurrentAiState;
 
             ExitState(CurrentAiState); //good place or no?
 
@@ -147,7 +168,8 @@ namespace CommonCore.World
                     if (DieImmediately)
                         SetAnimation(ActorAnimState.Dead);
                     else
-                        SetAnimation(ActorAnimState.Dying);
+                        SetAnimation(ActorAnimState.Dying);                       
+
                     if (DestroyOnDeath)
                         Destroy(this.gameObject);
 
@@ -177,6 +199,9 @@ namespace CommonCore.World
                 case ActorAiState.Attacking:
                     break;
                 case ActorAiState.Covering:
+                    break;
+                case ActorAiState.Hurting:
+                    SetAnimation(ActorAnimState.Hurting);
                     break;
                 case ActorAiState.Fleeing:
                     if (RunOnFlee)
@@ -224,23 +249,63 @@ namespace CommonCore.World
                         SetDestination(newpos.ToSpaceVec());
                         TimeInState = 0;
                     }
+                    if(Aggressive)
+                    {
+                        //search for targets, select target
+                        SelectTarget();
+                        if (Target != null)
+                            EnterState(ActorAiState.Chasing);
+                    }
                     break;
                 case ActorAiState.Chasing:
-                    //TODO update dest, go to attack
+                    //TODO actually go to attack
+                    if(!WorldUtils.TargetIsAlive(Target))
+                    {
+                        EnterState(BaseAiState);
+                        break;
+                    }
                     {
                         //set target
                         var d = Target.position;
                         SetDestination(d);
                     }
+                    if(!Relentless)
+                    {
+                        //break off if we are too far away or too badly hurt
+                        if(Health <= (MaxHealth * 0.2f))
+                        {
+                            EnterState(ActorAiState.Fleeing);                            
+                        }
+                        else if((Target.position - transform.position).magnitude > SearchRadius)
+                        {
+                            EnterState(BaseAiState);
+                            Target = null;
+                        }                        
+                    }
                     break;
                 case ActorAiState.Attacking:
-                    //TODO actually attack
+                    //TODO actually attack, return
+                    break;
+                case ActorAiState.Hurting:
+                    if(TimeInState >= PainWaitTime)
+                    {
+                        if (BeenHit && Target != null)
+                            EnterState(ActorAiState.Chasing);
+                        else
+                            EnterState(LastAiState);
+                    }
                     break;
                 case ActorAiState.Covering:
                     //TODO 
                     break;
                 case ActorAiState.Fleeing:
-                    //TODO update dest?
+                    //stop running if far enough away, or target is gone
+                    if(!WorldUtils.TargetIsAlive(Target) || (Target.position - transform.position).magnitude > SearchRadius)
+                    {
+                        EnterState(BaseAiState);
+                        Target = null;
+                        break;
+                    }
                     {
                         //set target
                         var d = transform.position + ((Target.position - transform.position).normalized * -1);
@@ -281,6 +346,76 @@ namespace CommonCore.World
             }
         }
 
+        private void SelectTarget()
+        {
+            if (TotalTickCount % SearchInterval != 0)
+                return;
+
+            //check player first since it's (relatively) cheap
+            if(TargetPlayer)
+            {
+                var playerObj = GameObject.FindGameObjectWithTag("Player");
+                if(playerObj != null)
+                {
+                    if((playerObj.transform.position - transform.position).magnitude <= SearchRadius)
+                    {
+                        if(UseLineOfSight)
+                        {
+                            //additional check
+                            RaycastHit hitinfo;
+                            if(Physics.Raycast(transform.position + new Vector3(0, 1.0f, 0), (playerObj.transform.position - transform.position), out hitinfo))
+                            {
+                                if (hitinfo.collider.gameObject == playerObj)
+                                {
+                                    Target = playerObj.transform;
+                                    return;
+                                }                                    
+                            }
+                        }
+                        else
+                        {
+                            //otherwise, close enough
+                            Target = playerObj.transform;
+                            return;
+                        }
+                    }
+                }
+            }            
+
+            //stupid and inefficient; we'll fix it later
+            //should work well enough as long as n is small and your computer is fast enough
+            if(TargetNpc)
+            {
+                var potentialTargets = transform.root.GetComponentsInChildren<ActorController>();
+                foreach (var potentialTarget in potentialTargets)
+                {
+                    if((potentialTarget.transform.position - transform.position).magnitude <= SearchRadius)
+                    {
+                        if (UseLineOfSight)
+                        {
+                            //additional check
+                            RaycastHit hitinfo;
+                            if (Physics.Raycast(transform.position + new Vector3(0, 1.0f, 0), (potentialTarget.transform.position - transform.position), out hitinfo))
+                            {
+                                if (hitinfo.collider.gameObject == potentialTarget.gameObject)
+                                {
+                                    Target = potentialTarget.transform;
+                                    return;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //otherwise, close enough
+                            Target = potentialTarget.transform;
+                            return;
+                        }
+                    }
+                }
+            }
+            
+        }
+
         private void SetDestination(Vector3 dest)
         {
             AltTarget = dest;
@@ -288,6 +423,10 @@ namespace CommonCore.World
             {
                 NavComponent.SetDestination(dest);
                 NavComponent.enabled = true;
+                if(IsRunning)
+                    NavComponent.speed = RunSpeed;
+                else
+                    NavComponent.speed = WalkSpeed;
             }
                 
         }
@@ -295,6 +434,7 @@ namespace CommonCore.World
         private void AbortNav()
         {
             IsRunning = false;
+            AltTarget = transform.position;
             if(NavEnabled)
             {
                 NavComponent.destination = transform.position;
@@ -311,8 +451,12 @@ namespace CommonCore.World
             CharController.Move(Physics.gravity * Time.deltaTime);
 
             //get vector to target
-            Vector3 pathForward = (AltTarget - transform.position).normalized;
+            Vector3 dirVec = (AltTarget - transform.position);
+            Vector3 pathForward = dirVec.normalized;
             pathForward.y = 0; //we actually want a flat vector
+
+            if (dirVec.magnitude <= 1.0f) //shouldn't hardcode that threshold!
+                return;
 
             //move
             CharController.Move(Time.deltaTime * (IsRunning ? RunSpeed : WalkSpeed) * pathForward);
@@ -331,19 +475,21 @@ namespace CommonCore.World
             if (NavComponent != null && !ForceNavmeshOff)
             {
                 NavComponent.enabled = false;
-                //TODO set nav parameters
+                NavComponent.speed = WalkSpeed;
+                NavComponent.angularSpeed = RotateSpeed;
 
                 if (NavComponent.isOnNavMesh)
                     NavEnabled = true;
             }                
         }
 
-        private void SetAnimation(ActorAnimState state)
+        public void SetAnimation(ActorAnimState state)
         {
             if (LockAnimState)
                 return;
 
-            AnimController.Play(GetNameForAnimation(state));
+            if(AnimController != null)
+                AnimController.Play(GetNameForAnimation(state));
             //TODO sounds, eventually
         }
 
@@ -421,6 +567,19 @@ namespace CommonCore.World
                 damageTaken *= 0.75f;
 
             Health -= damageTaken;
+
+            if(Defensive && data.Originator != null)
+            {
+                Target = data.Originator.transform;
+                BeenHit = true;
+
+                if (FeelPain)
+                    EnterState(ActorAiState.Hurting);
+                else
+                    EnterState(ActorAiState.Chasing);
+            }
+            else if(FeelPain)
+                EnterState(ActorAiState.Hurting);
         }
 
     }

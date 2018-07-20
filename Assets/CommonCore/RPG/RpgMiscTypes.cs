@@ -35,6 +35,11 @@ namespace CommonCore.Rpg
         Security, SecurityMechanisms, SecurityComputers
     }
 
+    public enum EquipSlot
+    {
+        None, RangedWeapon, MeleeWeapon, Body
+    }
+
     //character model will have two of these: base and derived
     public class StatsSet
     {

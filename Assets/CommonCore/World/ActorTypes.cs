@@ -25,19 +25,22 @@ namespace CommonCore.World
         Unspecified, Torso, Head, LeftArm, LeftLeg, RightArm, RightLeg
     }
 
+    [System.Serializable]
     public struct ActorHitInfo
     {
-        public readonly float Damage;
-        public readonly float DamagePierce;
-        public readonly DamageType DType;
-        public readonly ActorBodyPart HitLocation;
+        public float Damage;
+        public float DamagePierce;
+        public DamageType DType;
+        public ActorBodyPart HitLocation;
+        public BaseController Originator;
 
-        public ActorHitInfo(float damage, float damagePierce, DamageType dtype, ActorBodyPart hitlocation)
+        public ActorHitInfo(float damage, float damagePierce, DamageType dtype, ActorBodyPart hitlocation, BaseController originator)
         {
             Damage = damage;
             DamagePierce = damagePierce;
             DType = dtype;
             HitLocation = hitlocation;
+            Originator = originator;
         }
     }
 }

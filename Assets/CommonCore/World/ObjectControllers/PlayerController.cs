@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using CommonCore.Input;
 using CommonCore.UI;
-using UnityEngine.EventSystems;
+using CommonCore.LockPause;
+using CommonCore.DebugLog;
+
 
 namespace CommonCore.World
 {
@@ -11,6 +14,7 @@ namespace CommonCore.World
     {
         public bool AutoinitHud = true;
 
+        [Header("Interactivity")]
         public bool PlayerInControl;
         public bool Clipping;
         public float PushFactor;
@@ -18,10 +22,24 @@ namespace CommonCore.World
         public float MaxProbeDist;
         public float MaxUseDist;
 
+        [Header("Components")]
         public WorldHUDController HUDScript;
         public CharacterController CharController;
         public Animator AnimController;
         public Transform CameraRoot;
+
+        [Header("Shooting")]
+        public bool ShootingEnabled = true;
+        public bool AttemptToUseStats = false;
+        public GameObject BulletPrefab;
+        public GameObject BulletFireEffect;
+        public ActorHitInfo BulletHitInfo;
+        public float BulletSpeed = 50.0f;
+        public bool MeleeEnabled = true;
+        public ActorHitInfo MeleeHitInfo;
+        public float MeleeProbeDist = 1.5f;
+        public GameObject MeleeEffect;
+        public Transform ShootPoint;
 
         private bool isAnimating;
 
@@ -70,13 +88,14 @@ namespace CommonCore.World
         {
 
 
-            if (Time.timeScale == 0)
+            if (Time.timeScale == 0 || LockPauseModule.IsPaused())
                 return;
 
-            if (PlayerInControl)
+            if (PlayerInControl || LockPauseModule.IsInputLocked())
             {
                 HandleMovement();
                 HandleInteraction();
+                HandleWeapons();
             }
         }
 
@@ -193,6 +212,58 @@ namespace CommonCore.World
             }
 
 
+        }
+
+        //handle weapons (very temporary)
+        protected void HandleWeapons()
+        {
+            if(MappedInput.GetButtonDown("Fire1") && ShootingEnabled)
+            {
+                //shoot
+                var bullet = Instantiate<GameObject>(BulletPrefab, ShootPoint.position, ShootPoint.rotation, transform.root);
+                var bulletRigidbody = bullet.GetComponent<Rigidbody>();
+                bulletRigidbody.velocity = ShootPoint.forward * BulletSpeed;
+                bullet.GetComponent<BulletScript>().HitInfo = BulletHitInfo;
+                if (BulletFireEffect != null)
+                    Instantiate(BulletFireEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
+                if (AttemptToUseStats)
+                {
+                    CDebug.LogEx("Weapon stats not implemented!", LogLevel.Warning, this);
+                }
+            }
+            else if(MappedInput.GetButtonDown("Fire2") && MeleeEnabled)
+            {
+                //punch
+                LayerMask lm = LayerMask.GetMask("Default", "ActorHitbox");
+                var rc = Physics.RaycastAll(ShootPoint.position, ShootPoint.forward, MeleeProbeDist, lm, QueryTriggerInteraction.Collide);
+                ActorController ac = null;
+                foreach(var r in rc)
+                {
+                    var go = r.collider.gameObject;
+                    var ahgo = go.GetComponent<ActorHitboxComponent>();
+                    if(ahgo != null)
+                    {
+                        ac = ahgo.ParentController;
+                        break;
+                    }
+                    var acgo = go.GetComponent<ActorController>();
+                    if(acgo != null)
+                    {
+                        ac = acgo;
+                        break;
+                    }
+                }                
+                if (ac != null)
+                    ac.TakeDamage(MeleeHitInfo);
+
+                if (MeleeEffect != null)
+                    Instantiate(MeleeEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
+                
+                if (AttemptToUseStats)
+                {
+                    CDebug.LogEx("Weapon stats not implemented!", LogLevel.Warning, this);
+                }
+            }
         }
         
     }
