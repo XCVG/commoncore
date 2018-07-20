@@ -1,0 +1,141 @@
+{
+  "WorldState": {
+    "RealTimeElapsed": 0.0,
+    "RpgDaysElapsed": 0.0,
+    "RpgSecondsElapsed": 0.0,
+    "RpgTimeScale": 0.0
+  },
+  "CampaignState": {
+    "Vars": {},
+    "Flags": [],
+    "Quests": {}
+  },
+  "LocalDataState": {},
+  "LocalObjectState": {},
+  "MotileObjectState": {},
+  "PlayerWorldState": null,
+  "PlayerRpgState": {
+    "FormID": null,
+    "DisplayName": null,
+    "Gender": "Undefined",
+    "Health": 110.0,
+    "HealthFraction": 1.0,
+    "Experience": 0,
+    "Level": 1,
+    "BaseStats": {
+      "MaxHealth": 0.0,
+      "DamageResistance": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "DamageThreshold": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Stats": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "Skills": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "DerivedStats": {
+      "MaxHealth": 110.0,
+      "DamageResistance": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "DamageThreshold": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Stats": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "Skills": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "Conditions": [],
+    "Inventory": {
+      "Items": []
+    },
+    "Equipped": {}
+  },
+  "CurrentScene": null,
+  "SaveLocked": false,
+  "CurrentUID": 0,
+  "NextUID": 1
+}

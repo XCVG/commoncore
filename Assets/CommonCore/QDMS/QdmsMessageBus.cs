@@ -33,15 +33,17 @@ namespace CommonCore.Messaging
             _Instance = this;
         }
 
-        ~QdmsMessageBus()
+        public override void OnApplicationQuit()
         {
-            foreach(IQdmsMessageReceiver r in Receivers)
+            foreach (IQdmsMessageReceiver r in Receivers)
             {
                 if (r != null)
                     r.IsValid = false;
             }
 
             Debug.Log("QDMS bus destroyed!");
+
+            _Instance = null;
         }
 
         private List<IQdmsMessageReceiver> Receivers;

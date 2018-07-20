@@ -27,6 +27,11 @@ namespace CommonCore.LockPause
             Type = type;
             Owner = owner;
         }
+
+        public override string ToString()
+        {
+            return string.Format("{0} [{2}:{1}]", Type.ToString(), Owner.ToString(), Owner.GetType().Name);
+        }
     }
 
     public class PauseLock
@@ -40,9 +45,14 @@ namespace CommonCore.LockPause
             Owner = owner;
         }
 
+        public override string ToString()
+        {
+            return string.Format("{0} [{2}:{1}]", Type.ToString(), Owner.ToString(), Owner.GetType().Name);
+        }
+
     }
 
-    public class LockPauseModule : CCModule
+    public partial class LockPauseModule : CCModule
     {
 
         private static LockPauseModule Instance;

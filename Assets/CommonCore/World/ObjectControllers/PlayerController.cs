@@ -91,7 +91,7 @@ namespace CommonCore.World
             if (Time.timeScale == 0 || LockPauseModule.IsPaused())
                 return;
 
-            if (PlayerInControl || LockPauseModule.IsInputLocked())
+            if (PlayerInControl && !LockPauseModule.IsInputLocked())
             {
                 HandleMovement();
                 HandleInteraction();

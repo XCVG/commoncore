@@ -10,7 +10,7 @@ using CommonCore;
 using CommonCore.DebugLog;
 using CommonCore.State;
 
-namespace UI
+namespace CommonCore.UI
 {
 
     public class LoadGamePanelController : MonoBehaviour
@@ -52,7 +52,7 @@ namespace UI
         {
             string savePath = CCParams.SavePath;
             DirectoryInfo saveDInfo = new DirectoryInfo(savePath);
-            FileInfo[] savesFInfo = saveDInfo.GetFiles();
+            FileInfo[] savesFInfo = saveDInfo.GetFiles().OrderBy(f => f.CreationTime).Reverse().ToArray();
 
             List<SaveItem> allSaves = new List<SaveItem>(savesFInfo.Length); //we don't go straight into the array in case of invalids...
 
@@ -121,7 +121,16 @@ namespace UI
             if (SelectedSave == null)
                 return;
 
-            GameState.DeserializeFromFile(CCParams.SavePath + @"/" + SelectedSave.FileName);
+            try
+            {
+                GameState.DeserializeFromFile(CCParams.SavePath + @"/" + SelectedSave.FileName);
+            }
+            catch(Exception e)
+            {
+                Modal.PushMessageModal(string.Format("An error occurred loading save {0}\n{1}", SelectedSave.FileName, e.ToString()), "Load Error", null, null);
+                CDebug.LogException(e);
+                return;
+            }
 
             MetaState mgs = MetaState.Instance;
             mgs.Intents = new List<Intent>();

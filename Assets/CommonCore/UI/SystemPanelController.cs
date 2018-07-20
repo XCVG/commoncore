@@ -11,24 +11,70 @@ namespace CommonCore.UI
     public class SystemPanelController : PanelController
     {
         public Text MessageText;
+        public GameObject ContainerPanel;
+        public GameObject LoadPanel;
+        public GameObject SavePanel;
+        public InputField SaveInputField;
 
         public override void SignalPaint()
         {
+            HidePanels();
+        }
+
+        public void OnClickLoad()
+        {
+            if(LoadPanel.activeSelf)
+            {
+                HidePanels();
+            }
+            else
+            {
+                HidePanels();
+                LoadPanel.SetActive(true);
+            }
             
         }
 
         public void OnClickSave()
         {
-            if(!GameState.Instance.SaveLocked)
+            if (!GameState.Instance.SaveLocked)
             {
-                GameState.SerializeToFile("test_save");
-                MessageText.text = "Saved successfully!";
+                if (SavePanel.activeSelf)
+                {
+                    HidePanels();
+                }
+                else
+                {
+                    HidePanels();
+                    SavePanel.SetActive(true);
+                }
+            }
+            else
+            {
+                Modal.PushMessageModal("You can't save here!", "Saving Disabled", null, null);
+            }
+        }
+
+        public void OnClickActualSave()
+        {
+            if (!GameState.Instance.SaveLocked)
+            {
+                if(!string.IsNullOrEmpty(SaveInputField.text))
+                {
+                    GameState.SerializeToFile(SaveInputField.text + ".json");
+                    Modal.PushMessageModal("", "Saved Successfully", null, null);
+                }
+                else
+                {
+                    Modal.PushMessageModal("You need to enter a filename!", "Save Failed", null, null);
+                }
+                
             }
             else
             {
                 //can't save!
-                Debug.Log("Can't save here!");
-                MessageText.text = "Can't save here!";
+                
+                HidePanels();
             }
         }
 
@@ -37,6 +83,14 @@ namespace CommonCore.UI
             Time.timeScale = 1;
             //BaseSceneController.Current.("MainMenuScene");
             SceneManager.LoadScene("MainMenuScene");
+        }
+
+        private void HidePanels()
+        {
+            foreach (Transform child in ContainerPanel.transform)
+            {
+                child.gameObject.SetActive(false);
+            }
         }
     }
 }

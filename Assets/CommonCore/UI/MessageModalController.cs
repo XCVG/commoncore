@@ -36,7 +36,7 @@ namespace CommonCore.UI
             ResultTag = tag;
 
             if (callback == null)
-                CDebug.LogEx("MessageModal was passed null callback!", LogLevel.Warning, this);
+                CDebug.LogEx("MessageModal was passed null callback!", LogLevel.Verbose, this);
             else
                 Callback = callback;
 

@@ -1,9 +1,14 @@
-﻿using CommonCore.State;
-using CommonCore.UI;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using CommonCore;
+using CommonCore.State;
+using CommonCore.UI;
+using CommonCore.DebugLog;
 
 namespace UI
 {
@@ -35,8 +40,28 @@ namespace UI
 
         public void OnClickContinue()
         {
-            //for debugging purposes, load test scene directly
-            SceneManager.LoadScene("TestScene");
+            string savePath = CCParams.SavePath;
+            DirectoryInfo saveDInfo = new DirectoryInfo(savePath);
+            FileInfo saveFInfo = saveDInfo.GetFiles().OrderBy(f => f.CreationTime).Last();
+
+            try
+            {
+                GameState.DeserializeFromFile(CCParams.SavePath + @"/" + saveFInfo.Name);
+            }
+            catch (Exception e)
+            {
+                Modal.PushMessageModal(string.Format("An error occurred loading save {0}\n{1}", saveFInfo.Name, e.ToString()), "Load Error", null, null);
+                CDebug.LogException(e);
+                return;
+            }
+
+            MetaState mgs = MetaState.Instance;
+            mgs.Intents = new List<Intent>();
+            mgs.LoadSave = null;
+            mgs.NextScene = null;
+            mgs.TransitionType = SceneTransitionType.NewGame;
+
+            SceneManager.LoadScene("LoadingScene");
         }
 
         public void OnClickNew()
