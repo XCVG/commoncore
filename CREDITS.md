@@ -73,6 +73,14 @@ para - real asphalt texture pack [CC0]
 	https://opengameart.org/content/real-asphalt-texture-pack
 	Assets/Shared/Textures/ground_asphalt_old_05a.png
 	
+Kenney.nl - Crosshair pack (200x) [CC0]
+	https://opengameart.org/content/crosshair-pack-200%C3%97
+	Assets/UI/Graphics/crosshair.png
+
+pixabella - Red Glossy Valentine Heart [CC0]
+	https://openclipart.org/detail/21281/red-glossy-valentine-heart
+	Assets/UI/Graphics/heart.png
+	
 Luis Zuno (@ansimuz) - Mountain at Dusk Background [CC0] [modified]
 	https://opengameart.org/content/mountain-at-dusk-background
 	Assets/Scenes/Meta/GameOverScene/gameover_bg.png

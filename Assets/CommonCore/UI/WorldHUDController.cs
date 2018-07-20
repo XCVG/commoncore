@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using CommonCore.Messaging;
 using CommonCore.StringSub;
+using CommonCore.State;
+using CommonCore.Rpg;
 
 namespace CommonCore.UI
 {
@@ -16,6 +18,8 @@ namespace CommonCore.UI
         public Text MessageText;
         public ScrollRect MessageScrollRect;
 
+        public Slider HealthSlider;
+        public Text HealthText;
         
         private QdmsMessageInterface MessageInterface;
 
@@ -32,11 +36,14 @@ namespace CommonCore.UI
         
         void Update()
         {
-            
+            //this is all slow and dumb and temporary... which means it'll probably be untouched until Ferelden
+
             while(MessageInterface.HasMessageInQueue)
             {
                 HandleMessage(MessageInterface.PopFromQueue());
             }
+
+            UpdateStatusDisplays();
         }
 
         private void HandleMessage(QdmsMessage message)
@@ -47,6 +54,13 @@ namespace CommonCore.UI
                 Canvas.ForceUpdateCanvases();
                 MessageScrollRect.verticalNormalizedPosition = 0;
             }
+        }
+
+        private void UpdateStatusDisplays()
+        {
+            var player = GameState.Instance.PlayerRpgState;
+            HealthText.text = player.Health.ToString("f0");
+            HealthSlider.value = player.HealthFraction;
         }
 
         internal void ClearTarget()
