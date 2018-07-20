@@ -613,6 +613,7 @@ GameObject:
   - component: {fileID: 114344645711853442}
   - component: {fileID: 143273174468923978}
   - component: {fileID: 195249824099961224}
+  - component: {fileID: 114701041469413924}
   m_Layer: 0
   m_Name: npc_testactor
   m_TagString: Untagged
@@ -2822,10 +2823,51 @@ MonoBehaviour:
   LockAnimState: 0
   Target: {fileID: 0}
   AltTarget: {x: 0, y: 0, z: 0}
+  SavedTarget: 
   Health: 1
   DieImmediately: 0
   DestroyOnDeath: 0
+  DamageResistance:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  DamageThreshold:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  OnDeathSpecial: {fileID: 0}
+  FeelPain: 1
+  PainWaitTime: 1
   Aggressive: 0
+  TargetPlayer: 0
+  TargetNpc: 0
+  Defensive: 1
+  Relentless: 0
+  UseLineOfSight: 0
+  SearchRadius: 25
+  SearchInterval: 70
+  DisableInteractionOnHit: 1
+  UseMelee: 1
+  AttackRange: 1
+  AttackStateDelay: 1
+  AttackInterval: 1
+  BulletSpeed: 100
+  AttackHit:
+    Damage: 0
+    DamagePierce: 0
+    DType: 0
+    HitLocation: 0
+    Originator: {fileID: 0}
+  BulletPrefab: {fileID: 0}
+  AttackEffectPrefab: {fileID: 0}
+  ShootPoint: {fileID: 0}
+  AttackAnimationOverride: 
   Interaction: 2
   InteractionTarget: TestAmbient
   InteractionSpecial: {fileID: 0}
@@ -2837,12 +2879,18 @@ MonoBehaviour:
   AltInteraction: 0
   AltInteractionTarget: 
   AltInteractionSpecial: {fileID: 0}
+  InteractionForceDisabled: 0
   TooltipOverride: 
   ForceNavmeshOff: 0
   UseControllerGravity: 1
+  RunOnChase: 1
+  RunOnFlee: 1
   WalkSpeed: 1
   RunSpeed: 2
+  RotateSpeed: 90
+  NavThreshold: 1
   WanderThreshold: 1
+  WanderTimeout: 10
   WanderRadius: {x: 10, y: 10}
 --- !u!114 &114410195566636778
 MonoBehaviour:
@@ -2861,6 +2909,17 @@ MonoBehaviour:
   TooltipObject: {fileID: 0}
   TooltipFacesPlayer: 0
   TooltipSprite: {fileID: 0}
+--- !u!114 &114701041469413924
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1376773696147856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cc1722732543fb4cb6b971824529671, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!136 &136791134321787142
 CapsuleCollider:
   m_ObjectHideFlags: 1

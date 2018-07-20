@@ -755,7 +755,7 @@ namespace CommonCore.World
 
         public override Dictionary<string, object> GetExtraData()
         {
-            var extraData = base.GetExtraData(); //not sure if we should keep this here...
+            Dictionary<string, object> extraData = new Dictionary<string, object>();
 
             var actorData = new ActorExtraData();
 
@@ -765,7 +765,7 @@ namespace CommonCore.World
             actorData.LockAiState = LockAiState;
             actorData.CurrentAnimState = CurrentAnimState;
             actorData.LockAnimState = LockAnimState;
-            actorData.SavedTarget = Target.name;
+            actorData.SavedTarget = Target != null ? Target.name : string.Empty; //damn it!
             actorData.AltTarget = AltTarget;
             actorData.TimeInState = TimeInState;
 
@@ -783,7 +783,6 @@ namespace CommonCore.World
 
         public override void SetExtraData(Dictionary<string, object> data)
         {
-            base.SetExtraData(data);
 
             if(data.ContainsKey("Actor"))
             {

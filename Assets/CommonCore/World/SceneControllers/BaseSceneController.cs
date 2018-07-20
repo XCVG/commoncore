@@ -61,6 +61,7 @@ namespace CommonCore.World
 
             Scene scene = SceneManager.GetActiveScene();
             string name = scene.name;
+            gs.CurrentScene = name;
             Debug.Log("Saving scene: " + name);
 
             //purge and copy local data store

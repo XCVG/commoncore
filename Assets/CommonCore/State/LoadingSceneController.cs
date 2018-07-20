@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace SceneControllers
+namespace CommonCore.State
 {
     
     public class LoadingSceneController : MonoBehaviour
@@ -38,13 +38,14 @@ namespace SceneControllers
             else if(MetaState.Instance.TransitionType == SceneTransitionType.LoadGame)
             {
                 //we are loading a game, so load the game data and then load the next scene (which is part of save data)
-                Loader.LoadGame();
+                GameState.DeserializeFromFile(CCParams.SavePath + @"\" + MetaState.Instance.LoadSave);
                 MetaState.Instance.NextScene = GameState.Instance.CurrentScene;
                 SceneManager.LoadScene(MetaState.Instance.NextScene);
             }
             else if(MetaState.Instance.TransitionType == SceneTransitionType.NewGame)
             {
-                Loader.CreateNewGame();
+                MetaState.Instance.NextScene = CCParams.InitialScene;
+                GameState.Instance.CurrentScene = MetaState.Instance.NextScene;
                 SceneManager.LoadScene(MetaState.Instance.NextScene);
             }
 

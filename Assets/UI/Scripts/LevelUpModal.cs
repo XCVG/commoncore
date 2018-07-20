@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using CommonCore;
+using CommonCore.UI;
 using CommonCore.Rpg;
 using CommonCore.State;
 using CommonCore.LockPause;
 using CommonCore.DebugLog;
 
-namespace CommonCore.UI
+namespace GameUI
 {
     
 
@@ -57,7 +59,7 @@ namespace CommonCore.UI
         public Button ComputersButton;
 
         //self-explanatory
-        protected LevelUpModalCallback Callback;
+        public LevelUpModalCallback Callback;
 
         //private state
         private StatsSet NewStats;
@@ -84,7 +86,7 @@ namespace CommonCore.UI
             int levels = RpgValues.LevelsForExperience(player);
             for (int i=0, tLevel = player.Level; i < levels; i++, tLevel++)
             {
-                PotentialPoints += RpgValues.SkillPointsForLevel(tLevel, player);
+                PotentialPoints += RpgValues.PotentialPointsForLevel(tLevel, player);
             }
 
             NewLevel = player.Level + levels;
@@ -353,13 +355,6 @@ namespace CommonCore.UI
         }
 
 
-        private const string Prefab = "UI/IGUI_LevelUp";
-        public delegate void LevelUpModalCallback();
-        public static void PushModal(LevelUpModalCallback callback)
-        {
-            var go = Instantiate<GameObject>(Resources.Load<GameObject>(Prefab), CCBaseUtil.GetWorldRoot());
-            var modal = go.GetComponent<LevelUpModal>();
-            modal.Callback = callback;
-        }
+        
     }
 }

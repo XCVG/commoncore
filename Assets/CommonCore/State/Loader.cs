@@ -8,24 +8,7 @@ namespace CommonCore.State
     public static class Loader
     {
 
-        public static void CreateNewGame()
-        {
-            Debug.Log("Creating a new game!"); //doesn't do anything yet
-            //TODO: initialize gamestate here
-            //for debugging:
-            MetaState.Instance.NextScene = "World_Ext_TestIsland";
-        }
 
-        public static void LoadGame()
-        {
-            Debug.Log("Loading game: " + MetaState.Instance.LoadSave);
-            GameState.DeserializeFromFile(MetaState.Instance.LoadSave);
-        }
-
-        public static void LoadSceneData()
-        {
-            //I guess we can put this here
-        }
 
     }
 

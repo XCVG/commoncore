@@ -10,7 +10,7 @@ using CommonCore.State;
 using CommonCore.UI;
 using CommonCore.DebugLog;
 
-namespace UI
+namespace GameUI
 {
 
     public class MainMenuController : BaseMenuController

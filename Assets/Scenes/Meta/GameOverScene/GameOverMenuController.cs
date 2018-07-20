@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 using CommonCore.UI;
 using CommonCore.State;
 
-namespace UI
+namespace GameUI
 {
 
     public class GameOverMenuController : BaseMenuController

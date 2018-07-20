@@ -121,22 +121,10 @@ namespace CommonCore.UI
             if (SelectedSave == null)
                 return;
 
-            try
-            {
-                GameState.DeserializeFromFile(CCParams.SavePath + @"/" + SelectedSave.FileName);
-            }
-            catch(Exception e)
-            {
-                Modal.PushMessageModal(string.Format("An error occurred loading save {0}\n{1}", SelectedSave.FileName, e.ToString()), "Load Error", null, null);
-                CDebug.LogException(e);
-                return;
-            }
-
+            MetaState.Reset();
             MetaState mgs = MetaState.Instance;
-            mgs.Intents = new List<Intent>();
-            mgs.LoadSave = null;
-            mgs.NextScene = null;
-            mgs.TransitionType = SceneTransitionType.NewGame;
+            mgs.LoadSave = SelectedSave.FileName;
+            mgs.TransitionType = SceneTransitionType.LoadGame;
 
             SceneManager.LoadScene("LoadingScene");
         }

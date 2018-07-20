@@ -1136,6 +1136,7 @@ GameObject:
   - component: {fileID: 4109642343416712}
   - component: {fileID: 95238501001204272}
   - component: {fileID: 114004260747151668}
+  - component: {fileID: 114889219305496994}
   m_Layer: 0
   m_Name: npc_testgirl
   m_TagString: Untagged
@@ -2807,6 +2808,97 @@ MonoBehaviour:
   EditorFormID: npc_testgirl
   Tags: []
   CharacterModelIdOverride: 
+  CharController: {fileID: 0}
+  AnimController: {fileID: 0}
+  InteractComponent: {fileID: 0}
+  NavComponent: {fileID: 0}
+  BaseAiState: 0
+  CurrentAiState: 0
+  LockAiState: 0
+  CurrentAnimState: 0
+  LockAnimState: 0
+  Target: {fileID: 0}
+  AltTarget: {x: 0, y: 0, z: 0}
+  SavedTarget: 
+  Health: 1
+  DieImmediately: 0
+  DestroyOnDeath: 0
+  DamageResistance:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  DamageThreshold:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  OnDeathSpecial: {fileID: 0}
+  FeelPain: 1
+  PainWaitTime: 1
+  Aggressive: 0
+  TargetPlayer: 0
+  TargetNpc: 0
+  Defensive: 1
+  Relentless: 0
+  UseLineOfSight: 0
+  SearchRadius: 25
+  SearchInterval: 70
+  DisableInteractionOnHit: 1
+  UseMelee: 1
+  AttackRange: 1
+  AttackStateDelay: 1
+  AttackInterval: 1
+  BulletSpeed: 100
+  AttackHit:
+    Damage: 0
+    DamagePierce: 0
+    DType: 0
+    HitLocation: 0
+    Originator: {fileID: 0}
+  BulletPrefab: {fileID: 0}
+  AttackEffectPrefab: {fileID: 0}
+  ShootPoint: {fileID: 0}
+  AttackAnimationOverride: 
+  Interaction: 0
+  InteractionTarget: 
+  InteractionSpecial: {fileID: 0}
+  AlternateCondition:
+    Type: 0
+    Target: 
+    Option: 0
+    OptionValue: 
+  AltInteraction: 0
+  AltInteractionTarget: 
+  AltInteractionSpecial: {fileID: 0}
+  InteractionForceDisabled: 0
+  TooltipOverride: 
+  ForceNavmeshOff: 0
+  UseControllerGravity: 1
+  RunOnChase: 1
+  RunOnFlee: 1
+  WalkSpeed: 1
+  RunSpeed: 2
+  RotateSpeed: 90
+  NavThreshold: 1
+  WanderThreshold: 1
+  WanderTimeout: 10
+  WanderRadius: {x: 10, y: 10}
+--- !u!114 &114889219305496994
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1736047968135330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cc1722732543fb4cb6b971824529671, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!137 &137228629616168506
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

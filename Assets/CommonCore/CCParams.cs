@@ -30,7 +30,8 @@ namespace CommonCore
         public const bool UseVerboseLogging = true;
 
         //*****game config settings
-        public const bool UseTreeLeveling = true; //TODO actually implement alternate levelling
+        public const string InitialScene = "World_Ext_TestIsland";
+        public const bool UseCustomLeveling = false;
         public const PlayerViewType DefaultPlayerView = PlayerViewType.PreferFirst;
 
         //*****automatic environment params

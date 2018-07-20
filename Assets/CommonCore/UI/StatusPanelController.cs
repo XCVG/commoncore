@@ -35,7 +35,7 @@ namespace CommonCore.UI
         {
             if(CheckLevelUp && GameState.Instance.PlayerRpgState.Experience >= RpgValues.XPToNext(GameState.Instance.PlayerRpgState.Level))
             {
-                LevelUpModal.PushModal(OnLevelUpDone);
+                DefaultLevelUpModal.PushModal(OnLevelUpDone);
             }
         }
 
@@ -46,7 +46,7 @@ namespace CommonCore.UI
 
         public void OnClickOpenLevelDialog()
         {
-            LevelUpModal.PushModal(SignalPaint);
+            DefaultLevelUpModal.PushModal(SignalPaint);
         }
 
     }

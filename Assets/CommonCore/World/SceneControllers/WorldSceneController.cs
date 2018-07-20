@@ -60,6 +60,7 @@ namespace CommonCore.World
 
             Scene scene = SceneManager.GetActiveScene();
             string name = scene.name;
+            gs.CurrentScene = name;
             Debug.Log("Saving scene: " + name);
 
             //get restorable components
@@ -81,22 +82,30 @@ namespace CommonCore.World
 
             foreach (RestorableComponent rc in rcs)
             {
-                RestorableData rd = rc.Save();
-                if (rc is LocalRestorableComponent || rc is BlankRestorableComponent)
+                try
                 {
-                    localState[rc.gameObject.name] = rd;
+                    RestorableData rd = rc.Save();
+                    if (rc is LocalRestorableComponent || rc is BlankRestorableComponent)
+                    {
+                        localState[rc.gameObject.name] = rd;
+                    }
+                    else if (rc is MotileRestorableComponent)
+                    {
+                        gs.MotileObjectState[rc.gameObject.name] = rd;
+                    }
+                    else if (rc is PlayerRestorableComponent)
+                    {
+                        gs.PlayerWorldState = rd;
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Unknown restorable type in " + rc.gameObject.name);
+                    }
                 }
-                else if (rc is MotileRestorableComponent)
+                catch(Exception e)
                 {
-                    gs.MotileObjectState[rc.gameObject.name] = rd;
-                }
-                else if (rc is PlayerRestorableComponent)
-                {
-                    gs.PlayerWorldState = rd;
-                }
-                else
-                {
-                    Debug.LogWarning("Unknown restorable type in " + rc.gameObject.name);
+                    Debug.LogError("Failed to save an object!");
+                    Debug.LogException(e);
                 }
             }
 
@@ -140,10 +149,18 @@ namespace CommonCore.World
 
                 foreach (KeyValuePair<string, RestorableData> kvp in localState)
                 {
-                    if (kvp.Value is DynamicRestorableData)
-                        RestoreLocalObject(kvp);
-                    else
-                        RestoreBlankObject(kvp);
+                    try
+                    {
+                        if (kvp.Value is DynamicRestorableData)
+                            RestoreLocalObject(kvp);
+                        else
+                            RestoreBlankObject(kvp);
+                    }
+                    catch(Exception e)
+                    {
+                        Debug.LogError("Failed to restore an object!");
+                        Debug.LogException(e);
+                    }
                 }
             }
             else
@@ -231,40 +248,48 @@ namespace CommonCore.World
         {
             foreach (KeyValuePair<string, RestorableData> kvp in gs.MotileObjectState)
             {
-                DynamicRestorableData rd = kvp.Value as DynamicRestorableData;
-
-                if (rd == null)
+                try
                 {
-                    Debug.LogError("Local object " + kvp.Key + " has invalid data!");
-                }
+                    DynamicRestorableData rd = kvp.Value as DynamicRestorableData;
 
-                //is it in this scene
-                string objectSceneName = rd.Scene;
-                if (objectSceneName == name)
-                {
-                    //we have a match! since it's motile, we'll have to create a new object
-                    try
+                    if (rd == null)
                     {
-                        GameObject go = Instantiate(Resources.Load("entities/" + rd.FormID), transform) as GameObject;
-                        {
-                            go.name = kvp.Key;
+                        Debug.LogError("Local object " + kvp.Key + " has invalid data!");
+                    }
 
-                            MotileRestorableComponent mrc = go.GetComponent<MotileRestorableComponent>();
-                            if (mrc != null)
+                    //is it in this scene
+                    string objectSceneName = rd.Scene;
+                    if (objectSceneName == name)
+                    {
+                        //we have a match! since it's motile, we'll have to create a new object
+                        try
+                        {
+                            GameObject go = Instantiate(Resources.Load("entities/" + rd.FormID), transform) as GameObject;
                             {
-                                mrc.Restore(rd);
-                            }
-                            else
-                            {
-                                Debug.LogWarning("Motile object " + go.name + " has no restorable component!");
+                                go.name = kvp.Key;
+
+                                MotileRestorableComponent mrc = go.GetComponent<MotileRestorableComponent>();
+                                if (mrc != null)
+                                {
+                                    mrc.Restore(rd);
+                                }
+                                else
+                                {
+                                    Debug.LogWarning("Motile object " + go.name + " has no restorable component!");
+                                }
                             }
                         }
-                    }
-                    catch (ArgumentException)
-                    {
-                        Debug.LogWarning("Tried to spawn " + rd.FormID + " but couldn't find prefab!");
-                    }
+                        catch (ArgumentException)
+                        {
+                            Debug.LogWarning("Tried to spawn " + rd.FormID + " but couldn't find prefab!");
+                        }
 
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("Failed to restore an object!");
+                    Debug.LogException(e);
                 }
             }
         }

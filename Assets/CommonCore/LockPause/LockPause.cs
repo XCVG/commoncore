@@ -150,7 +150,8 @@ namespace CommonCore.LockPause
 
         private void ApplyInputLock(InputLockType newState)
         {
-            QdmsMessageBus.Instance.PushBroadcast(new InputLockMessage(newState));
+            if (QdmsMessageBus.Instance != null) //it's possible for this to run after the message bus is destroyed
+                QdmsMessageBus.Instance.PushBroadcast(new InputLockMessage(newState));
 
             InputLockState = newState;            
         }
@@ -223,7 +224,8 @@ namespace CommonCore.LockPause
             AudioListener.pause = true;
 
             //send message and set state
-            QdmsMessageBus.Instance.PushBroadcast(new PauseLockMessage(newState));
+            if(QdmsMessageBus.Instance != null) //it's possible for this to run after the message bus is destroyed
+                QdmsMessageBus.Instance.PushBroadcast(new PauseLockMessage(newState));
 
             PauseLockState = newState;
         }

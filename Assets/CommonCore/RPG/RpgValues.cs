@@ -21,12 +21,17 @@ namespace CommonCore.Rpg
             return 100 + level * 10;
         }
 
-        public static int SkillPointsForLevel(int newLevel, CharacterModel character)
+        public static int PotentialPointsForLevel(int newLevel, CharacterModel character)
         {
             return (2
                 + character.BaseStats.Stats[(int)StatType.Erudition]
                 + (int)(0.5f * (float)character.BaseStats.Stats[(int)StatType.Intuition])
                 );
+        }
+
+        public static int SkillGainForPoints(int points)
+        {
+            return points * 10;
         }
 
         public static int LevelsForExperience(CharacterModel character)
