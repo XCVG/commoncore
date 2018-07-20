@@ -27,6 +27,11 @@ namespace CommonCore.State
             }
         }
 
+        public static void Reset()
+        {
+            instance = new MetaState();
+        }
+
         public void IntentsExecutePreload()
         {
             Debug.Log(string.Format("Executing intents preload ({0} total)",Intents.Count));

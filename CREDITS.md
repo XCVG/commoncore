@@ -51,7 +51,11 @@ These are included under permissive or copyleft licenses.
 
 César da Rocha - Fantasy Choir 3 orchestral pieces [CC0]
 	https://opengameart.org/content/fantasy-choir-3-orchestral-pieces
-	Assets/Shared/Music/menu.ogg
+	Assets/Resources/DynamicMusic/menu.ogg
+	
+SeKa - Sad Scene Music (What is Left) [CC0]
+	https://opengameart.org/content/sad-scene-music-what-is-left
+	Assets/Resources/DynamicMusic/gameover.ogg
 	
 athile - Seamless Grass Textures (20 pack) [CC0]
 	https://opengameart.org/content/seamless-grass-textures-20-pack
@@ -68,3 +72,7 @@ LuminousDragonGames - Simple Seamless tiles of dirt and sand
 para - real asphalt texture pack [CC0]
 	https://opengameart.org/content/real-asphalt-texture-pack
 	Assets/Shared/Textures/ground_asphalt_old_05a.png
+	
+Luis Zuno (@ansimuz) - Mountain at Dusk Background [CC0] [modified]
+	https://opengameart.org/content/mountain-at-dusk-background
+	Assets/Scenes/Meta/GameOverScene/gameover_bg.png
