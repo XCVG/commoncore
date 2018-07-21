@@ -44,22 +44,10 @@ namespace GameUI
             DirectoryInfo saveDInfo = new DirectoryInfo(savePath);
             FileInfo saveFInfo = saveDInfo.GetFiles().OrderBy(f => f.CreationTime).Last();
 
-            try
-            {
-                GameState.DeserializeFromFile(CCParams.SavePath + @"/" + saveFInfo.Name);
-            }
-            catch (Exception e)
-            {
-                Modal.PushMessageModal(string.Format("An error occurred loading save {0}\n{1}", saveFInfo.Name, e.ToString()), "Load Error", null, null);
-                CDebug.LogException(e);
-                return;
-            }
-
+            MetaState.Reset();
             MetaState mgs = MetaState.Instance;
-            mgs.Intents = new List<Intent>();
-            mgs.LoadSave = null;
-            mgs.NextScene = null;
-            mgs.TransitionType = SceneTransitionType.NewGame;
+            mgs.LoadSave = saveFInfo.Name;
+            mgs.TransitionType = SceneTransitionType.LoadGame;
 
             SceneManager.LoadScene("LoadingScene");
         }

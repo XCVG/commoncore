@@ -16,6 +16,7 @@ namespace CommonCore.State
         AsyncOperation sceneLoadOperation;
 
 	    // Use this for initialization
+        //TODO handling of errors
 	    void Start ()
         {
             //the loading screen cannot be truly skipped, but it can be hidden

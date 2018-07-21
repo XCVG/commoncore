@@ -147,7 +147,17 @@ namespace CommonCore.World
 
             MaxHealth = Health;
 
-            EnterState(CurrentAiState);
+            if (LockAnimState)
+            {
+                EnterState(CurrentAiState);
+                SetAnimationForced(CurrentAnimState);                
+            }
+            else
+            {
+                SetAnimationForced(CurrentAnimState);
+                EnterState(CurrentAiState);
+            }
+
         }
 
         public override void Update()
@@ -637,7 +647,15 @@ namespace CommonCore.World
             if (LockAnimState)
                 return;
 
-            if(AnimController != null)
+            CurrentAnimState = state;
+
+            SetAnimationForced(state);
+
+        }
+
+        private void SetAnimationForced(ActorAnimState state)
+        {
+            if (AnimController != null)
             {
                 string stateName = GetNameForAnimation(state);
 
@@ -648,7 +666,6 @@ namespace CommonCore.World
 
                 //TODO sounds, eventually
             }
-
         }
 
         private static string GetNameForAnimation(ActorAnimState state)
