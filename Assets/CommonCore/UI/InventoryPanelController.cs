@@ -19,6 +19,7 @@ namespace CommonCore.UI
         public Text SelectedItemDescription;
         public Text SelectedItemStats;
         public Button SelectedItemButton;
+        public Button SelectedItemButton2;
 
         private int SelectedItem;
         private List<InventoryItemInstance> ItemLookupTable;
@@ -99,6 +100,13 @@ namespace CommonCore.UI
             }
         }
 
+        public void OnItemDropped()
+        {
+            //TODO spawn worldobject, remove inventory, have quantity selection using modal dialog
+
+            SignalPaint();
+        }
+
         private void PaintSelectedItem()
         {
             var itemModel = ItemLookupTable[SelectedItem].ItemModel;
@@ -135,8 +143,11 @@ namespace CommonCore.UI
                 SelectedItemButton.gameObject.SetActive(true);
                 SelectedItemButton.transform.Find("Text").GetComponent<Text>().text = "Use";
             }
-            
-            if(itemModel.Stackable)
+
+            if(!itemModel.Essential)
+                SelectedItemButton2.gameObject.SetActive(true);
+
+            if (itemModel.Stackable)
             {
                 int qty = ItemLookupTable[SelectedItem].Quantity;
                 SelectedItemText.text = SelectedItemText.text + string.Format(" {0}", qty);
@@ -151,7 +162,7 @@ namespace CommonCore.UI
             SelectedItemStats.text = string.Empty;
             SelectedItemImage.texture = null;
             SelectedItemButton.gameObject.SetActive(false);
-            SelectedItemButton.gameObject.SetActive(false);
+            SelectedItemButton2.gameObject.SetActive(false);
         }
     }
 }

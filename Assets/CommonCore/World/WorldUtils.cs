@@ -232,5 +232,16 @@ namespace CommonCore.World
             return target.gameObject.activeInHierarchy && healthPass;
         }
 
+        //hacky inventory hack
+        public static void DropItem(this InventoryModel inventory, string item, int quantity, Vector3 position)
+        {
+            //TODO: try to find a more appropriate worldmodel
+
+            var go = SpawnObject("spec_item", "inv_drop_" + GameState.Instance.NextUID, position, Vector3.zero, null);
+            var ic = go.GetComponent<ItemController>();
+            ic.ItemId = item;
+            ic.ItemQuantity = quantity;
+        }
+
     }
 }

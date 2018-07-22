@@ -151,7 +151,7 @@ namespace CommonCore.Rpg
         public readonly float DamagePierce; //superclass
         public readonly DamageType DType; //superclass
         public readonly string ViewModel; //superclass
-        public readonly string WorldModel; //superclass
+        public readonly string WorldModel; //superclass (actually needs to be pushed up higher)
 
         public WeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, float damage, float damagePierce, DamageType dType, string viewModel, string worldModel)
             : base(name, weight, value, maxCondition, unique, essential)

@@ -15,6 +15,9 @@ namespace CommonCore.World
 
         public virtual void Awake()
         {
+            //Unity tag
+            tag = "CCObject";
+
             FormID = EditorFormID;
             Debug.Log("FID: " + FormID + " TID: " + name);
 
