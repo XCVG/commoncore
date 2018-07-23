@@ -513,7 +513,7 @@ namespace CommonCore.World
             //check player first since it's (relatively) cheap
             if(TargetPlayer)
             {
-                var playerObj = GameObject.FindGameObjectWithTag("Player");
+                var playerObj = WorldUtils.GetPlayerObject();
                 if(playerObj != null)
                 {
                     if((playerObj.transform.position - transform.position).magnitude <= SearchRadius)

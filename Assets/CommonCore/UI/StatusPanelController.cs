@@ -26,9 +26,32 @@ namespace CommonCore.UI
             HealthText.text = string.Format("Health: {0}/{1}", (int) pModel.Health, (int) pModel.DerivedStats.MaxHealth);
             ArmorText.text = string.Format("Level: {0} ({1}/{2} XP)\n", pModel.Level, pModel.Experience, RpgValues.XPToNext(pModel.Level));
 
+            string equipText = string.Format("Armor: {0}\nRanged: {1}\nMelee: {2}", 
+                GetNameForSlot(EquipSlot.Body, pModel), GetNameForSlot(EquipSlot.RangedWeapon, pModel), GetNameForSlot(EquipSlot.MeleeWeapon, pModel));
+
+            AmmoText.text = equipText;
+
             //this is now somewhat broken because there are more choices in the struct
             string rid = pModel.Gender == Sex.Female ? "portrait_f" : "portrait_m";
             CharacterImage.texture = Resources.Load<Texture2D>("UI/Portraits/" + rid);
+        }
+
+        //will generalize and move this
+        private string GetNameForSlot(EquipSlot slot, CharacterModel pModel)
+        {
+            if (!pModel.Equipped.ContainsKey(slot))
+                return "none";
+
+            InventoryItemInstance itemInstance = pModel.Equipped[slot];
+            if (itemInstance != null)
+            {
+                var def = InventoryModel.GetDef(itemInstance.ItemModel.Name);
+                if (def != null)
+                    return def.NiceName;
+                else
+                    return itemInstance.ItemModel.Name;
+            }
+            else return "none";
         }
 
         void OnEnable()

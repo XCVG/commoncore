@@ -15,9 +15,6 @@ namespace CommonCore.World
 
         public virtual void Awake()
         {
-            //Unity tag
-            tag = "CCObject";
-
             FormID = EditorFormID;
             Debug.Log("FID: " + FormID + " TID: " + name);
 
@@ -35,7 +32,9 @@ namespace CommonCore.World
         // Use this for initialization
         public virtual void Start()
         {
-
+            //set Unity tag
+            if (tag == null || tag == "Untagged")
+                tag = "CCObject";
         }
 
         // Update is called once per frame

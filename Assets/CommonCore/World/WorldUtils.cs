@@ -67,6 +67,13 @@ namespace CommonCore.World
                 return go;
             }
 
+            go = CCBaseUtil.GetWorldRoot().FindDeepChild("Player").gameObject;
+
+            if (go != null)
+            {
+                return go;
+            }
+
             //Debug.LogWarning("Couldn't find player!");
 
             return null;
@@ -233,7 +240,7 @@ namespace CommonCore.World
         }
 
         //hacky inventory hack
-        public static void DropItem(this InventoryModel inventory, string item, int quantity, Vector3 position)
+        public static void DropItem(string item, int quantity, Vector3 position)
         {
             //TODO: try to find a more appropriate worldmodel
 

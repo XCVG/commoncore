@@ -5,19 +5,21 @@ using UnityEngine;
 using CommonCore.DebugLog;
 using CommonCore.State;
 using CommonCore.Rpg;
+using CommonCore.ObjectActions;
 
 namespace CommonCore.World
 {
-    //TODO: use-to-pickup instead of walkover-to-pickup
-    //oh, it should be an interactable (or have an interactable)
-    //and this should ideally be a setting (global+local override)
+    //pretty hacky but okay
     public class ItemController : ThingController
     {
 
         public string ItemId;
         public int ItemQuantity;
 
-        public bool GrantItem = true;
+        //we'll set these on the spec_item prefab as a "default"
+        //overrides won't work consistently the way it's currently set up but that's okay for now
+        public bool UseWalkoverPickup;
+        public bool UseInteractPickup;
 
         public override void Start()
         {
@@ -25,6 +27,26 @@ namespace CommonCore.World
 
             if (string.IsNullOrEmpty(ItemId) || ItemQuantity == 0)
                 CDebug.LogWarning(string.Format("ItemController on {0} has invalid values (id {1}, qty {2})", name, ItemId, ItemQuantity));
+
+            if(!UseInteractPickup)
+            {
+                //disable interactable (the whole thing is hacky)
+                var iobj = transform.Find("Interactable");
+                if (iobj != null)
+                    iobj.gameObject.SetActive(false);
+            }
+            else
+            {
+                //set tooltip
+                var iobj = transform.Find("Interactable");
+                string itemName = null;
+                var itemDef = InventoryModel.GetDef(ItemId);
+                if (itemDef != null)
+                    itemName = itemDef.NiceName;
+                else
+                    itemName = ItemId;
+                iobj.GetComponent<InteractableComponent>().Tooltip = string.Format("{0} [{1}]", itemName, ItemQuantity);
+            }
         }
 
         void OnCollisionEnter(Collision collision)
@@ -34,18 +56,35 @@ namespace CommonCore.World
 
         void OnTriggerEnter(Collider other)
         {
+            if (!UseWalkoverPickup)
+                return;
+
             var pc = other.GetComponent<PlayerController>();
             if(pc != null)
             {
-                if (string.IsNullOrEmpty(ItemId) || ItemQuantity == 0)
-                {
-                    CDebug.LogError(string.Format("ItemController on {0} has invalid values (id {1}, qty {2})", name, ItemId, ItemQuantity));
-                    return;
-                }
-                    
-                GameState.Instance.PlayerRpgState.Inventory.AddItem(ItemId, ItemQuantity);
+                GrantInventory();
+            }
+        }
 
-                gameObject.SetActive(false);
+        public void GrantInventory()
+        {
+            if (string.IsNullOrEmpty(ItemId) || ItemQuantity == 0)
+            {
+                CDebug.LogError(string.Format("ItemController on {0} has invalid values (id {1}, qty {2})", name, ItemId, ItemQuantity));
+                return;
+            }
+
+            GameState.Instance.PlayerRpgState.Inventory.AddItem(ItemId, ItemQuantity);
+
+            gameObject.SetActive(false);
+            
+        }
+
+        public void InteractableExecute(ActionInvokerData data)
+        {
+            if(UseInteractPickup && data.Activator is PlayerController)
+            {
+                GrantInventory();
             }
         }
 

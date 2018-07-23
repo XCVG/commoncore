@@ -13,6 +13,8 @@ namespace CommonCore.Input
     public class InputModule : CCModule
     {
 
+        //TODO integrate with LockPause and handle mouse capture here
+
         public InputModule()
         {
             //set null mapper

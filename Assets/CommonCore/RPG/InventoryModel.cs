@@ -180,6 +180,18 @@ namespace CommonCore.Rpg
             return sb.ToString();
         }
 
+        public static EquipSlot GetItemSlot(InventoryItemModel item)
+        {
+            if (item is RangedWeaponItemModel)
+                return EquipSlot.RangedWeapon;
+            else if (item is MeleeWeaponItemModel)
+                return EquipSlot.MeleeWeapon;
+            else if (item is ArmorItemModel)
+                return EquipSlot.Body;
+            else
+                return EquipSlot.None;
+        }
+
         [JsonProperty]
         private List<InventoryItemInstance> Items;
         
@@ -226,6 +238,25 @@ namespace CommonCore.Rpg
         public bool RemoveItem(InventoryItemInstance item)
         {
             return Items.Remove(item);
+        }
+
+        public bool RemoveItem(InventoryItemInstance item, int quantity)
+        {
+            if(item.ItemModel.Stackable)
+            {
+                //reduce quantity
+                item.Quantity = Math.Max(0, (item.Quantity - quantity));
+                if (item.Quantity == 0)
+                    return RemoveItem(item);
+                return true;
+            }
+            else
+            {
+                if (quantity == 1)
+                    return RemoveItem(item);
+                else
+                    return false;
+            }
         }
 
         public InventoryItemModel UseItem(string item, int quantity)

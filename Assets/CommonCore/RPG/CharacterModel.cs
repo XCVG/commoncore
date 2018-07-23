@@ -70,8 +70,49 @@ namespace CommonCore.Rpg
                 c.Apply(BaseStats, DerivedStats);
             }
 
+            //TODO apply equipment bonuses (armor basically)
+
         }
-                
+
+        public void EquipItem(InventoryItemInstance item)
+        {
+            if (item.Equipped)
+                throw new InvalidOperationException();
+
+            EquipSlot slot = InventoryModel.GetItemSlot(item.ItemModel);
+
+            if (slot == EquipSlot.None)
+                throw new InvalidOperationException();
+
+            Equipped[slot] = item;
+
+            item.Equipped = true;
+
+            UpdateStats();
+
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgChangeWeapon"));
+        }
+
+        public void UnequipItem(InventoryItemInstance item)
+        {
+            if (!item.Equipped)
+                throw new InvalidOperationException();
+
+            EquipSlot slot = InventoryModel.GetItemSlot(item.ItemModel);
+
+            if (slot != EquipSlot.None)
+            {
+                Equipped[slot] = null;            
+            }           
+            //allow continuing even if it's not actually equippable, for fixing bugs
+
+            item.Equipped = false;
+
+            UpdateStats();
+
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgChangeWeapon"));
+        }
+
         public void SetAV(string av, object value)
         {
             SetAV(av, value, null); //null=auto

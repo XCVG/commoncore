@@ -5,6 +5,7 @@ using CommonCore.Rpg;
 using UnityEngine.UI;
 using CommonCore.Messaging;
 using CommonCore.State;
+using CommonCore.World;
 
 namespace CommonCore.UI
 {
@@ -48,7 +49,7 @@ namespace CommonCore.UI
                 var item = itemList[i];
                 GameObject itemGO = Instantiate<GameObject>(ItemTemplatePrefab, ScrollContent);
                 if(item.Quantity == InventoryItemInstance.UnstackableQuantity)
-                    itemGO.GetComponentInChildren<Text>().text = item.ItemModel.Name; //for now
+                    itemGO.GetComponentInChildren<Text>().text = item.ItemModel.Name + (item.Equipped ? " [E]" : string.Empty); //for now
                 else
                     itemGO.GetComponentInChildren<Text>().text = string.Format("{0} ({1})", item.ItemModel.Name, item.Quantity); //for now
                 Button b = itemGO.GetComponent<Button>();
@@ -74,18 +75,18 @@ namespace CommonCore.UI
                 InventoryItemInstance itemInstance = ItemLookupTable[SelectedItem];
                 InventoryItemModel itemModel = itemInstance.ItemModel;
 
-                if(itemModel is WeaponItemModel)
+                if(itemModel is WeaponItemModel || itemModel is ArmorItemModel)
                 {
-                    if(!itemInstance.Equipped)
+                    if(itemInstance.Equipped)
                     {
-                        //TODO restore this functionality
-                        //GameState.Instance.PlayerRpgState.EquipWeapon(itemInstance);
-                        //QdmsMessageBus.Instance.PushBroadcast(new RpgChangeWeaponMessage());
-
-                        SelectedItemText.text = SelectedItemText.text + " [!]";
+                        GameState.Instance.PlayerRpgState.UnequipItem(itemInstance);                        
                     }
-                    //TODO unequip?
+                    else
+                    {
+                        GameState.Instance.PlayerRpgState.EquipItem(itemInstance);
 
+                        SelectedItemText.text = SelectedItemText.text + " [E]";
+                    }
                 }
                 else if(itemModel is AidItemModel)
                 {
@@ -93,7 +94,8 @@ namespace CommonCore.UI
                     aim.Apply();
                     GameState.Instance.PlayerRpgState.Inventory.RemoveItem(ItemLookupTable[SelectedItem]);
 
-                    //TODO effect or at least a message
+                    string message = string.Format("{0} {1} {2}", aim.RType.ToString(), aim.Amount, aim.AType.ToString()); //temporary, will fix this up with lookups later
+                    Modal.PushMessageModal(message, "Aid Applied", null, null);
                 }
 
                 SignalPaint();
@@ -102,7 +104,44 @@ namespace CommonCore.UI
 
         public void OnItemDropped()
         {
-            //TODO spawn worldobject, remove inventory, have quantity selection using modal dialog
+            if (SelectedItem >= 0)
+            {
+                InventoryItemInstance itemInstance = ItemLookupTable[SelectedItem];
+                InventoryItemModel itemModel = itemInstance.ItemModel;
+
+                if (itemModel.Essential)
+                {
+                    Debug.LogWarning("Tried to drop an essential item!");
+                }
+
+                if (itemModel.Stackable)
+                {
+                    //do quantity selection with modal dialogue if inventory is stackable
+
+                    Modal.PushQuantityModal("Quantity To Drop", 0, itemInstance.Quantity, itemInstance.Quantity, true, string.Empty,
+                        delegate (ModalStatusCode status, string tag, int quantity) { CompleteItemDrop(itemInstance, itemModel, quantity, status); });
+                    //like I don't see why that won't work but holy shit is it ugly
+                
+                }
+                else
+                {
+                    CompleteItemDrop(itemInstance, itemModel, 1, ModalStatusCode.Complete);
+                }
+
+                
+            }
+
+        }
+
+        private void CompleteItemDrop(InventoryItemInstance itemInstance, InventoryItemModel itemModel, int quantity, ModalStatusCode status)
+        {
+            if (quantity == 0 || status != ModalStatusCode.Complete)
+                return;
+
+            GameState.Instance.PlayerRpgState.Inventory.RemoveItem(itemInstance, quantity);
+            Transform playerT = WorldUtils.GetPlayerObject().transform;
+            Vector3 dropPos = (playerT.position + (playerT.forward.normalized * 1.0f));
+            WorldUtils.DropItem(itemModel.Name, quantity, dropPos);
 
             SignalPaint();
         }
@@ -132,7 +171,7 @@ namespace CommonCore.UI
             {
                 if (ItemLookupTable[SelectedItem].Equipped)
                 {
-                    SelectedItemText.text = SelectedItemText.text + " [!]";
+                    SelectedItemText.text = SelectedItemText.text + " [E]";
                 }
 
                 SelectedItemButton.gameObject.SetActive(true);

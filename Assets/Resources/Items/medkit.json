@@ -1,0 +1,20 @@
+{
+  "medkit": {
+    "model": {
+		"$type": "CommonCore.Rpg.AidItemModel, Assembly-CSharp",
+		"AType": "Health",
+		"RType": "Add",
+		"Amount": 50.0,
+		"Name": "medkit",
+		"Weight": 1.0,
+		"MaxCondition": 1.0,
+		"Unique": false,
+		"Essential": false
+    },
+    "def": {
+    "NiceName": "Medkit",
+    "Image": "healthkit",
+    "Description": "A basic medical kit that heals 50 health"
+	}
+  }
+}

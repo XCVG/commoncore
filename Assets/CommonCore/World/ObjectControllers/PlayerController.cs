@@ -47,6 +47,7 @@ namespace CommonCore.World
         // Use this for initialization
         public override void Start()
         {
+            base.Start();
 
             Debug.Log("Player controller start");
 
