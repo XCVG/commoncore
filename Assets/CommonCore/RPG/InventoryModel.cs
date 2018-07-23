@@ -50,14 +50,14 @@ namespace CommonCore.Rpg
                 CDebug.LogEx("Autocreating item models!", LogLevel.Verbose, null);
                 foreach (AmmoType at in Enum.GetValues(typeof(AmmoType)))
                 {
-                    AmmoItemModel aim = new AmmoItemModel(at.ToString(), 0, 1, 1, false, false, at);
+                    AmmoItemModel aim = new AmmoItemModel(at.ToString(), 0, 1, 1, false, false, null, at);
                     Models.Add(at.ToString(), aim);
                     LoadItemCount++;
                 }
                 
                 foreach(MoneyType mt in Enum.GetValues(typeof(MoneyType)))
                 {
-                    MoneyItemModel mim = new MoneyItemModel(mt.ToString(), 0, 1, 1, false, false, mt);
+                    MoneyItemModel mim = new MoneyItemModel(mt.ToString(), 0, 1, 1, false, false, null, mt);
                     Models.Add(mt.ToString(), mim);
                     LoadItemCount++;
                 }

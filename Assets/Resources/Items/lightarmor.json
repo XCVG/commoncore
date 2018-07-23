@@ -1,0 +1,30 @@
+{
+  "lightarmor": {
+    "model": {
+		"$type": "CommonCore.Rpg.ArmorItemModel, Assembly-CSharp",
+		"DamageResistance": {
+			"Normal": 5.0,
+			"Impact": 6.0,
+			"Explosive": 4.0,
+			"Energy": 3.0
+		},
+		"DamageThreshold": {
+			"Normal": 5.0,
+			"Impact": 5.0,
+			"Explosive": 5.0,
+			"Energy": 5.0
+		},
+		"Name": "lightarmor",
+		"Weight": 5.0,
+		"MaxCondition": 1.0,
+		"Unique": false,
+		"Essential": false,
+		"WorldModel": "item_lightarmor"
+    },
+    "def": {
+    "NiceName": "Light Armor",
+    "Image": "lightarmor",
+    "Description": "Simple armor made of boiled and strapped leather"
+	}
+  }
+}

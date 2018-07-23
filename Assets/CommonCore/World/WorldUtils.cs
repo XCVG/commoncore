@@ -52,11 +52,17 @@ namespace CommonCore.World
             }
         }
 
+        private static GameObject PlayerObject;
+
         public static GameObject GetPlayerObject()
         {
+            if (PlayerObject != null)
+                return PlayerObject;
+
             GameObject go = GameObject.FindGameObjectWithTag("Player");
             if(go != null)
             {
+                PlayerObject = go;
                 return go;
             }
 
@@ -64,6 +70,7 @@ namespace CommonCore.World
 
             if(go != null)
             {
+                PlayerObject = go;
                 return go;
             }
 
@@ -71,10 +78,11 @@ namespace CommonCore.World
 
             if (go != null)
             {
+                PlayerObject = go;
                 return go;
             }
 
-            //Debug.LogWarning("Couldn't find player!");
+            Debug.LogError("Couldn't find player!");
 
             return null;
         }
@@ -240,13 +248,20 @@ namespace CommonCore.World
         }
 
         //hacky inventory hack
-        public static void DropItem(string item, int quantity, Vector3 position)
+        public static void DropItem(InventoryItemModel item, int quantity, Vector3 position)
         {
-            //TODO: try to find a more appropriate worldmodel
+            string spawnName = "spec_item";
 
-            var go = SpawnObject("spec_item", "inv_drop_" + GameState.Instance.NextUID, position, Vector3.zero, null);
+            if(!string.IsNullOrEmpty(item.WorldModel))
+            {
+                var ent = Resources.Load("entities/" + item.WorldModel); //yup, you can't check this, you have to try it
+                if (ent != null)
+                    spawnName = item.WorldModel;
+            }
+
+            var go = SpawnObject(spawnName, "inv_drop_" + GameState.Instance.NextUID, position, Vector3.zero, null); //TODO switch to one that works with loaded prefab
             var ic = go.GetComponent<ItemController>();
-            ic.ItemId = item;
+            ic.ItemId = item.Name;
             ic.ItemQuantity = quantity;
         }
 

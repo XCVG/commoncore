@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace CommonCore.Rpg
@@ -112,15 +113,17 @@ namespace CommonCore.Rpg
     //base class for invariant inventory items
     public abstract class InventoryItemModel
     {
-        public readonly string Name;
+        public readonly string Name; //this is incredibly inelegant and we will find a way to autoset this at some point
         public readonly float Weight;
         public readonly float Value;
         public readonly float MaxCondition;
         public readonly bool Unique;
         public readonly bool Essential;
+        public readonly string WorldModel;
+
         public bool Stackable { get; protected set; }
 
-        public InventoryItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential)
+        public InventoryItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string worldModel)
         {
             Name = name;
             Weight = weight;
@@ -128,6 +131,7 @@ namespace CommonCore.Rpg
             Unique = unique;
             Essential = essential;
             Stackable = false;
+            WorldModel = worldModel;
         }
 
         public virtual string GetStatsString()
@@ -139,8 +143,8 @@ namespace CommonCore.Rpg
 
     public class MiscItemModel : InventoryItemModel
     {
-        public MiscItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential)
-            : base(name, weight, value, maxCondition, unique, essential)
+        public MiscItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string worldModel)
+            : base(name, weight, value, maxCondition, unique, essential, worldModel)
         {
         }
     }
@@ -151,16 +155,14 @@ namespace CommonCore.Rpg
         public readonly float DamagePierce; //superclass
         public readonly DamageType DType; //superclass
         public readonly string ViewModel; //superclass
-        public readonly string WorldModel; //superclass (actually needs to be pushed up higher)
 
         public WeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, float damage, float damagePierce, DamageType dType, string viewModel, string worldModel)
-            : base(name, weight, value, maxCondition, unique, essential)
+            : base(name, weight, value, maxCondition, unique, essential, worldModel)
         {
             Damage = damage;
             DamagePierce = damagePierce;
             DType = dType;
             ViewModel = viewModel;
-            WorldModel = worldModel;
         }
     }
 
@@ -207,17 +209,17 @@ namespace CommonCore.Rpg
         }
     }
 
-    public class ArmorItemModel : InventoryItemModel //TODO damage types but I'm lazy
+    public class ArmorItemModel : InventoryItemModel
     {
-        public readonly float DamageResistance;
-        public readonly float DamageThreshold;
+        public readonly Dictionary<DamageType, float> DamageResistance;
+        public readonly Dictionary<DamageType, float> DamageThreshold;
 
-        public ArmorItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential,
-            float damageResistance, float damageThreshold)
-            : base(name, weight, value, maxCondition, unique, essential)
+        public ArmorItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string worldModel,
+            Dictionary<DamageType, float> damageResistance, Dictionary<DamageType, float> damageThreshold)
+            : base(name, weight, value, maxCondition, unique, essential, worldModel)
         {
-            DamageResistance = damageResistance;
-            DamageThreshold = damageThreshold;
+            DamageResistance = new Dictionary<DamageType, float>(damageResistance);
+            DamageThreshold = new Dictionary<DamageType, float>(damageThreshold);
         }
     }
 
@@ -227,9 +229,9 @@ namespace CommonCore.Rpg
         public readonly RestoreType RType;
         public float Amount;
 
-        public AidItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential,
+        public AidItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string worldModel,
             AidType aType, RestoreType rType, float amount)
-            : base(name, weight, value, maxCondition, unique, essential)
+            : base(name, weight, value, maxCondition, unique, essential, worldModel)
         {
             AType = aType;
             RType = rType;
@@ -271,7 +273,7 @@ namespace CommonCore.Rpg
     {
         public readonly MoneyType Type;
 
-        public MoneyItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, MoneyType type) : base(name, weight, value, maxCondition, unique, essential)
+        public MoneyItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string worldModel, MoneyType type) : base(name, weight, value, maxCondition, unique, essential, worldModel)
         {
             Type = type;
             Stackable = true;
@@ -282,7 +284,7 @@ namespace CommonCore.Rpg
     {
         public readonly AmmoType Type;
 
-        public AmmoItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, AmmoType type) : base(name, weight, value, maxCondition, unique, essential)
+        public AmmoItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string worldModel, AmmoType type) : base(name, weight, value, maxCondition, unique, essential, worldModel)
         {
             Type = type;
             Stackable = true;
