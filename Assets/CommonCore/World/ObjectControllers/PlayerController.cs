@@ -41,6 +41,7 @@ namespace CommonCore.World
         public float MeleeProbeDist = 1.5f;
         public GameObject MeleeEffect;
         public Transform ShootPoint;
+        private float TimeToNext;
 
         private bool isAnimating;
 
@@ -278,6 +279,10 @@ namespace CommonCore.World
         //handle weapons (very temporary)
         protected void HandleWeapons()
         {
+            TimeToNext -= Time.deltaTime;
+            if (TimeToNext > 0)
+                return;
+
             //TODO use ammo/magazine
             //TODO fire rate, spread, etc
 
@@ -286,17 +291,26 @@ namespace CommonCore.World
                 //shoot
                 var bullet = Instantiate<GameObject>(BulletPrefab, ShootPoint.position + (ShootPoint.forward.normalized * 0.25f), ShootPoint.rotation, transform.root);
                 var bulletRigidbody = bullet.GetComponent<Rigidbody>();
-
+                
                 bulletRigidbody.velocity = (ShootPoint.forward.normalized * BulletSpeed);                
                 bullet.GetComponent<BulletScript>().HitInfo = BulletHitInfo;
+                TimeToNext = 1.0f;
                 if (AttemptToUseStats)
                 {
-                    RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RangedWeapon].ItemModel as RangedWeaponItemModel;
-                    if(wim != null)
+                    if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.RangedWeapon))
                     {
-                        bullet.GetComponent<BulletScript>().HitInfo = new ActorHitInfo(wim.Damage, wim.DamagePierce, wim.DType, ActorBodyPart.Unspecified, this);
-                        bulletRigidbody.velocity = (ShootPoint.forward.normalized * wim.Velocity);
-                    }                    
+                        RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RangedWeapon].ItemModel as RangedWeaponItemModel;
+                        if (wim != null)
+                        {
+                            //TODO factor in weapon skill, esp for bows
+                            bullet.GetComponent<BulletScript>().HitInfo = new ActorHitInfo(wim.Damage, wim.DamagePierce, wim.DType, ActorBodyPart.Unspecified, this);
+                            Vector3 fireVec = Quaternion.AngleAxis(Random.Range(-wim.Spread, wim.Spread), Vector3.right)
+                                * (Quaternion.AngleAxis(Random.Range(-wim.Spread, wim.Spread), Vector3.up)
+                                * ShootPoint.forward.normalized);
+                            bulletRigidbody.velocity = (fireVec * wim.Velocity);
+                            TimeToNext = wim.FireRate;
+                        }
+                    }      
                 }
 
                 if (BulletFireEffect != null)
@@ -329,12 +343,16 @@ namespace CommonCore.World
                 ActorHitInfo hitInfo = MeleeHitInfo;
                 if (AttemptToUseStats)
                 {
-                    MeleeWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.MeleeWeapon].ItemModel as MeleeWeaponItemModel;
-                    if (wim != null)
+                    if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.MeleeWeapon))
                     {
-                        float calcDamage = RpgValues.GetMeleeDamage(GameState.Instance.PlayerRpgState, wim.Damage);
-                        float calcDamagePierce = RpgValues.GetMeleeDamage(GameState.Instance.PlayerRpgState, wim.DamagePierce);
-                        hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, wim.DType, ActorBodyPart.Unspecified, this);
+                        MeleeWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.MeleeWeapon].ItemModel as MeleeWeaponItemModel;
+                        if (wim != null)
+                        {
+                            float calcDamage = RpgValues.GetMeleeDamage(GameState.Instance.PlayerRpgState, wim.Damage);
+                            float calcDamagePierce = RpgValues.GetMeleeDamage(GameState.Instance.PlayerRpgState, wim.DamagePierce);
+                            hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, wim.DType, ActorBodyPart.Unspecified, this);
+                            TimeToNext = wim.Rate;
+                        }
                     }
                 }
 

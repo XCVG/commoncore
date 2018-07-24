@@ -266,7 +266,7 @@ namespace CommonCore.World
         [Command]
         static void Disable()
         {
-            var ac = SelectedObject.GetComponent<ActorController>();
+            var ac = SelectedObject.GetComponent<BaseController>();
             ac.gameObject.SetActive(false);
         }
 
@@ -279,7 +279,10 @@ namespace CommonCore.World
         [Command]
         static void Resurrect()
         {
-
+            var ac = SelectedObject.GetComponent<ActorController>();
+            ac.gameObject.SetActive(true);
+            ac.Health = ac.MaxHealth;
+            ac.EnterState(ac.BaseAiState);
         }
 
 

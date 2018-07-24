@@ -114,6 +114,11 @@ namespace CommonCore.UI
                     Debug.LogWarning("Tried to drop an essential item!");
                 }
 
+                if (itemInstance.Equipped)
+                {
+                    GameState.Instance.PlayerRpgState.UnequipItem(itemInstance);
+                }
+
                 if (itemModel.Stackable)
                 {
                     //do quantity selection with modal dialogue if inventory is stackable

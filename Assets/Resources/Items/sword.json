@@ -1,0 +1,22 @@
+{
+  "sword": {
+    "model": {
+      "$type": "CommonCore.Rpg.MeleeWeaponItemModel, Assembly-CSharp",
+      "Damage": 6,
+      "DamagePierce": 2,
+	  "Reach": 1.0,
+	  "Rate": 0.8,
+      "DType": "Normal",
+      "Name": "sword",
+      "Weight": 1.5,
+      "MaxCondition": 1,
+      "Unique": false,
+      "Essential": false
+    },
+    "def": {
+    "NiceName": "Steel Sword",
+    "Image": "sword",
+    "Description": "A simple steel sword."
+  }
+  }
+}

@@ -14,7 +14,7 @@ namespace CommonCore.Rpg
 
     public enum AmmoType
     {
-        NoAmmo, Acp32, Spc38, Acp45, R3006 //game dependent, redo for A3
+        NoAmmo, Para9, Acp45, Nato556, Nato762, Sa68, Shot12, Slug, Arrow, Bolt //game dependent, redo for A3
     }
 
     public enum AidType //are there even any other stats?
@@ -169,11 +169,13 @@ namespace CommonCore.Rpg
     public class MeleeWeaponItemModel : WeaponItemModel
     {
         public readonly float Reach;
+        public readonly float Rate;
 
-        public MeleeWeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, float damage, float damagePierce, float reach, DamageType dType, string viewModel, string worldModel) 
+        public MeleeWeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, float damage, float damagePierce, float reach, float rate, DamageType dType, string viewModel, string worldModel) 
             : base(name, weight, value, maxCondition, unique, essential, damage, damagePierce, dType, viewModel, worldModel)
         {
             Reach = reach;
+            Rate = rate;
         }
     }
 

@@ -39,7 +39,7 @@ namespace CommonCore.World
 
         [Header("Damage")]
         public float Health = 1.0f;
-        private float MaxHealth;
+        public float MaxHealth { get; private set; }
         public bool DieImmediately = false;
         public bool DestroyOnDeath = false;
         [Tooltip("Normal, Impact, Explosive, Energy, Poison, Radiation")]

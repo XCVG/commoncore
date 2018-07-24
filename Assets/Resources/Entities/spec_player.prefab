@@ -1882,7 +1882,7 @@ MonoBehaviour:
   AnimController: {fileID: 95084112636074572}
   CameraRoot: {fileID: 4686010376756608}
   ShootingEnabled: 1
-  AttemptToUseStats: 0
+  AttemptToUseStats: 1
   BulletPrefab: {fileID: 1084969536453480, guid: f80d8c4ee49627841b2db2bf6a00027c,
     type: 2}
   BulletFireEffect: {fileID: 1069681291466534, guid: 7dbc392e134c6514b9d3dd13d44ea885,

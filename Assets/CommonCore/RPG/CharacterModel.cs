@@ -70,7 +70,25 @@ namespace CommonCore.Rpg
                 c.Apply(BaseStats, DerivedStats);
             }
 
-            //TODO apply equipment bonuses (armor basically)
+            //apply equipment bonuses (armor basically)
+            if (Equipped.ContainsKey(EquipSlot.Body))
+            {
+                ArmorItemModel aim = Equipped[EquipSlot.Body].ItemModel as ArmorItemModel;
+                if(aim != null)
+                {
+                    for(int i = 0; i < BaseStats.DamageResistance.Length; i++)
+                    {
+                        if (aim.DamageResistance.ContainsKey((DamageType)i))
+                            DerivedStats.DamageResistance[i] = BaseStats.DamageResistance[i] + aim.DamageResistance[(DamageType)i];
+                        if (aim.DamageThreshold.ContainsKey((DamageType)i))
+                            DerivedStats.DamageThreshold[i] = BaseStats.DamageThreshold[i] + aim.DamageThreshold[(DamageType)i];
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("Player has non-armor item in armor slot!");
+                }
+            }
 
         }
 
@@ -83,6 +101,9 @@ namespace CommonCore.Rpg
 
             if (slot == EquipSlot.None)
                 throw new InvalidOperationException();
+
+            if (Equipped.ContainsKey(slot))
+                UnequipItem(Equipped[slot]);
 
             Equipped[slot] = item;
 

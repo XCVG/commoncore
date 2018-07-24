@@ -195,6 +195,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EditorFormID: spec_item
   Tags: []
+  PickupEffect: {fileID: 1520735840525732, guid: e0d47cd200bbc6a4ea5a721fcb8e97bf,
+    type: 2}
   ItemId: 
   ItemQuantity: 0
   UseWalkoverPickup: 0

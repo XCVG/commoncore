@@ -12,7 +12,7 @@ namespace CommonCore.World
     //pretty hacky but okay
     public class ItemController : ThingController
     {
-
+        public GameObject PickupEffect;
         public string ItemId;
         public int ItemQuantity;
 
@@ -77,6 +77,9 @@ namespace CommonCore.World
             GameState.Instance.PlayerRpgState.Inventory.AddItem(ItemId, ItemQuantity);
 
             gameObject.SetActive(false);
+
+            if (PickupEffect != null)
+                Instantiate(PickupEffect, transform.position, Quaternion.identity, transform.root);
             
         }
 
