@@ -90,6 +90,8 @@ namespace CommonCore.Rpg
                 }
             }
 
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgStatsUpdated"));
+
         }
 
         public void EquipItem(InventoryItemInstance item)
@@ -123,7 +125,7 @@ namespace CommonCore.Rpg
 
             if (slot != EquipSlot.None)
             {
-                Equipped[slot] = null;            
+                Equipped.Remove(slot);            
             }           
             //allow continuing even if it's not actually equippable, for fixing bugs
 
@@ -335,6 +337,11 @@ namespace CommonCore.Rpg
 
             //fail
             throw new KeyNotFoundException();
+        }
+
+        public bool IsEquipped(EquipSlot slot)
+        {
+            return (Equipped.ContainsKey(slot) && Equipped[slot] != null);
         }
 
         public void CheckLevelUp()

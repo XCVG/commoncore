@@ -30,7 +30,7 @@ namespace CommonCore
         public const bool UseVerboseLogging = true;
 
         //*****game config settings
-        public const string InitialScene = "World_Ext_TestIsland";
+        public const string InitialScene = "TestScene";
         public const bool UseCustomLeveling = false;
         public const PlayerViewType DefaultPlayerView = PlayerViewType.PreferFirst;
 

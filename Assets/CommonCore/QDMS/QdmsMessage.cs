@@ -16,11 +16,11 @@ namespace CommonCore.Messaging
         }
     }
 
-    public class QdmsKeyValueMessage : QdmsMessage
+    public class QdmsKeyValueMessage : QdmsFlagMessage
     {
         private readonly Dictionary<string, object> _Dictionary;
 
-        public QdmsKeyValueMessage(Dictionary<string, object> values)
+        public QdmsKeyValueMessage(Dictionary<string, object> values, string flag): base(flag)
         {
             _Dictionary = new Dictionary<string, object>();
 

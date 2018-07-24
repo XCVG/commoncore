@@ -156,6 +156,15 @@ namespace CommonCore.Rpg
             return Defs[name];
         }
 
+        public static string GetName(InventoryItemModel item)
+        {
+            var def = GetDef(item.Name);
+            if (def != null)
+                return def.NiceName;
+
+            return item.Name;
+        }
+
         public static string GetModelsList()
         {
             StringBuilder sb = new StringBuilder(Models.Count * 64);

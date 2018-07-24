@@ -8,6 +8,7 @@ using CommonCore.LockPause;
 using CommonCore.DebugLog;
 using CommonCore.State;
 using CommonCore.Rpg;
+using CommonCore.Messaging;
 
 namespace CommonCore.World
 {
@@ -83,6 +84,8 @@ namespace CommonCore.World
             
 
             isAnimating = false;
+
+            LockPauseModule.CaptureMouse = true;
 
             SetDefaultPlayerView();
         }
@@ -279,14 +282,18 @@ namespace CommonCore.World
         //handle weapons (very temporary)
         protected void HandleWeapons()
         {
+            float oldTTN = TimeToNext;
             TimeToNext -= Time.deltaTime;
             if (TimeToNext > 0)
                 return;
 
+            if(oldTTN > 0)
+                QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepReady"));
+
             //TODO use ammo/magazine
             //TODO fire rate, spread, etc
 
-            if(MappedInput.GetButtonDown("Fire1") && ShootingEnabled)
+            if (MappedInput.GetButtonDown("Fire1") && ShootingEnabled)
             {
                 //shoot
                 var bullet = Instantiate<GameObject>(BulletPrefab, ShootPoint.position + (ShootPoint.forward.normalized * 0.25f), ShootPoint.rotation, transform.root);
@@ -315,7 +322,8 @@ namespace CommonCore.World
 
                 if (BulletFireEffect != null)
                     Instantiate(BulletFireEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
-                
+
+                QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepFired"));
             }
             else if(MappedInput.GetButtonDown("Fire2") && MeleeEnabled)
             {
@@ -361,8 +369,8 @@ namespace CommonCore.World
 
                 if (MeleeEffect != null)
                     Instantiate(MeleeEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
-                
-                
+
+                QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepFired"));
             }
         }
 

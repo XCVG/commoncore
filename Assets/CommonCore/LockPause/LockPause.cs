@@ -80,11 +80,13 @@ namespace CommonCore.LockPause
 
         private void ClearAll()
         {
+            EnableMouseCapture = false;
             InputLocks.Clear();
             PauseLocks.Clear();
 
             DoUnlock();
             DoUnpause();
+            DoUncapture();
         }
 
         private void AddInputLock(InputLock iLock)
@@ -219,9 +221,12 @@ namespace CommonCore.LockPause
 
         private void ApplyPauseLock(PauseLockType newState)
         {
-            //stop time (reasonably failsafe)
+            //stop time (not all that failsafe, it turns out)
             Time.timeScale = 0;
             AudioListener.pause = true;
+
+            //uncapture mouse
+            DoUncapture();
 
             //send message and set state
             if(QdmsMessageBus.Instance != null) //it's possible for this to run after the message bus is destroyed
@@ -252,8 +257,43 @@ namespace CommonCore.LockPause
         {
             PauseLockState = null;
             Time.timeScale = 1.0f;
+
+            //recapture mouse (if applicable)
+            if (EnableMouseCapture)
+                DoCapture();
+
             AudioListener.pause = false;
             QdmsMessageBus.Instance.PushBroadcast(new PauseLockMessage(null));
+        }
+
+        private void DoUncapture()
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+
+        private void DoCapture()
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
+        private bool EnableMouseCapture;
+
+        public static bool CaptureMouse
+        {
+            get
+            {
+                return Instance.EnableMouseCapture;
+            }
+            set
+            {
+                Instance.EnableMouseCapture = value;
+                if (Instance.EnableMouseCapture && !IsPaused())
+                    Instance.DoCapture();
+                else
+                    Instance.DoUncapture();
+            }
         }
 
         public static InputLock LockControls(InputLockType type, object token)

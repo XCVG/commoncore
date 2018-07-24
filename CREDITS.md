@@ -7,6 +7,7 @@ You will need to acquire these and place them in the correct directories for the
 These come with the engine and can be unpacked from within the editor.
 
 Environment/Water (Basic)
+	(aesthetic only; can be left out and will still run)
 
 ## Assets/ThirdParty
 
@@ -43,7 +44,8 @@ EnsenaSoft, S.A. de C.V. - Village Buildings 5
 davidbinformatique - Modern People
 	https://www.assetstore.unity3d.com/en/?stay#!/content/73497
 
-animations from Firefighter VR, but these will be removed/replaced soon	
+animations from Firefighter VR, but these will be removed/replaced soon
+	(substitute your own animations, instructions to follow)
 
 # Third Party Assets (included in repository)
 
@@ -65,7 +67,7 @@ n4 - Seamless Beach Sand [CC0]
 	https://opengameart.org/content/seamless-beach-sand
 	Assets/Shared/Textures/beach_sand.png
 	
-LuminousDragonGames - Simple Seamless tiles of dirt and sand
+LuminousDragonGames - Simple Seamless tiles of dirt and sand [CC0]
 	https://opengameart.org/content/simple-seamless-tiles-of-dirt-and-sand
 	Assets/Shared/Textures/dirt_10.png
 	
@@ -80,6 +82,22 @@ Kenney.nl - Crosshair pack (200x) [CC0]
 pixabella - Red Glossy Valentine Heart [CC0]
 	https://openclipart.org/detail/21281/red-glossy-valentine-heart
 	Assets/UI/Graphics/heart.png
+	
+inky2010 - Gold Shield [CC0] [modified]
+	https://openclipart.org/detail/75697/gold-shield
+	Assets/UI/Graphics/shield.png
+	
+bpcomp - Lightning Icon [CC0] [modified]
+	https://openclipart.org/detail/26221/lightning-icon
+	Assets/UI/Graphics/energy.png
+	
+ckhoo - yellow target [CC0] [modified]
+	https://openclipart.org/detail/192457/yellow-target
+	Assets/UI/Graphics/ranged.png
+	
+Designer.io - Sword 2 [CC0] [modified]
+	https://openclipart.org/detail/289643/sword-2
+	Assets/UI/Graphics/melee.png
 	
 Luis Zuno (@ansimuz) - Mountain at Dusk Background [CC0] [modified]
 	https://opengameart.org/content/mountain-at-dusk-background

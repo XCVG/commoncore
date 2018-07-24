@@ -20,8 +20,22 @@ namespace CommonCore.UI
 
         public Slider HealthSlider;
         public Text HealthText;
+
+        public Slider ShieldSlider;
+        public Text ShieldText;
+
+        public Slider EnergySlider;
+        public Text EnergyText;
+
+        public Text RangedWeaponText;
+        public Text AmmoText;
+        public Text MeleeWeaponText;
+        public Image ReadyBarImage;
         
         private QdmsMessageInterface MessageInterface;
+
+        //local state is, as it turns out, unavoidable
+        private bool WeaponReady = true;
 
         void Awake()
         {
@@ -32,6 +46,9 @@ namespace CommonCore.UI
         void Start()
         {
             MessageText.text = string.Empty;
+
+            UpdateStatusDisplays();
+            UpdateWeaponDisplay();
         }
         
         void Update()
@@ -54,6 +71,24 @@ namespace CommonCore.UI
                 Canvas.ForceUpdateCanvases();
                 MessageScrollRect.verticalNormalizedPosition = 0;
             }
+            else if(message is QdmsFlagMessage)
+            {
+                string flag = ((QdmsFlagMessage)message).Flag;
+                switch (flag)
+                {
+                    case "RpgChangeWeapon":
+                        UpdateWeaponDisplay();
+                        break;
+                    case "WepFired":
+                        WeaponReady = false;
+                        UpdateWeaponDisplay();
+                        break;
+                    case "WepReady":
+                        WeaponReady = true;
+                        UpdateWeaponDisplay();
+                        break;
+                }
+            }
         }
 
         private void UpdateStatusDisplays()
@@ -61,6 +96,51 @@ namespace CommonCore.UI
             var player = GameState.Instance.PlayerRpgState;
             HealthText.text = player.Health.ToString("f0");
             HealthSlider.value = player.HealthFraction;
+        }
+
+        private void UpdateWeaponDisplay()
+        {
+            var player = GameState.Instance.PlayerRpgState;
+
+            if(player.IsEquipped(EquipSlot.RangedWeapon))
+            {
+                RangedWeaponText.text = InventoryModel.GetName(player.Equipped[EquipSlot.RangedWeapon].ItemModel);
+                AmmoType atype = ((RangedWeaponItemModel)player.Equipped[EquipSlot.RangedWeapon].ItemModel).AType;
+                if(atype != AmmoType.NoAmmo)
+                {
+                    AmmoText.text = string.Format("{1}/{2} [{0}]", atype.ToString(), "-", player.Inventory.CountItem(atype.ToString()));
+                    //TODO magazine
+                }
+                else
+                {
+                    AmmoText.text = "- / -";
+
+                }
+            }
+            else
+            {
+                RangedWeaponText.text = "Not Equipped";
+                AmmoText.text = "- / -";
+            }
+
+            if (player.IsEquipped(EquipSlot.MeleeWeapon))
+            {
+                MeleeWeaponText.text = InventoryModel.GetName(player.Equipped[EquipSlot.MeleeWeapon].ItemModel);
+            }
+            else
+            {
+                MeleeWeaponText.text = "Not Equipped";
+            }
+
+            //TODO tri-state (disabled)
+            if(WeaponReady)
+            {
+                ReadyBarImage.color = Color.green;
+            }
+            else
+            {
+                ReadyBarImage.color = Color.red;
+            }
         }
 
         internal void ClearTarget()
