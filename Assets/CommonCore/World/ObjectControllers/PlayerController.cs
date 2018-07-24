@@ -278,19 +278,30 @@ namespace CommonCore.World
         //handle weapons (very temporary)
         protected void HandleWeapons()
         {
+            //TODO use ammo/magazine
+            //TODO fire rate, spread, etc
+
             if(MappedInput.GetButtonDown("Fire1") && ShootingEnabled)
             {
                 //shoot
                 var bullet = Instantiate<GameObject>(BulletPrefab, ShootPoint.position + (ShootPoint.forward.normalized * 0.25f), ShootPoint.rotation, transform.root);
                 var bulletRigidbody = bullet.GetComponent<Rigidbody>();
-                bulletRigidbody.velocity = (ShootPoint.forward.normalized * BulletSpeed);
+
+                bulletRigidbody.velocity = (ShootPoint.forward.normalized * BulletSpeed);                
                 bullet.GetComponent<BulletScript>().HitInfo = BulletHitInfo;
-                if (BulletFireEffect != null)
-                    Instantiate(BulletFireEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
                 if (AttemptToUseStats)
                 {
-                    CDebug.LogEx("Weapon stats not implemented!", LogLevel.Warning, this);
+                    RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RangedWeapon].ItemModel as RangedWeaponItemModel;
+                    if(wim != null)
+                    {
+                        bullet.GetComponent<BulletScript>().HitInfo = new ActorHitInfo(wim.Damage, wim.DamagePierce, wim.DType, ActorBodyPart.Unspecified, this);
+                        bulletRigidbody.velocity = (ShootPoint.forward.normalized * wim.Velocity);
+                    }                    
                 }
+
+                if (BulletFireEffect != null)
+                    Instantiate(BulletFireEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
+                
             }
             else if(MappedInput.GetButtonDown("Fire2") && MeleeEnabled)
             {
@@ -313,17 +324,27 @@ namespace CommonCore.World
                         ac = acgo;
                         break;
                     }
-                }                
+                }
+
+                ActorHitInfo hitInfo = MeleeHitInfo;
+                if (AttemptToUseStats)
+                {
+                    MeleeWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.MeleeWeapon].ItemModel as MeleeWeaponItemModel;
+                    if (wim != null)
+                    {
+                        float calcDamage = RpgValues.GetMeleeDamage(GameState.Instance.PlayerRpgState, wim.Damage);
+                        float calcDamagePierce = RpgValues.GetMeleeDamage(GameState.Instance.PlayerRpgState, wim.DamagePierce);
+                        hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, wim.DType, ActorBodyPart.Unspecified, this);
+                    }
+                }
+
                 if (ac != null)
-                    ac.TakeDamage(MeleeHitInfo);
+                    ac.TakeDamage(hitInfo);
 
                 if (MeleeEffect != null)
                     Instantiate(MeleeEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
                 
-                if (AttemptToUseStats)
-                {
-                    CDebug.LogEx("Weapon stats not implemented!", LogLevel.Warning, this);
-                }
+                
             }
         }
 
