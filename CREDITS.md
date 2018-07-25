@@ -16,7 +16,12 @@ Unity Technologies - Post Processing Stack v2
 	
 Wanzyee Studio - Json.NET Converters
 	https://assetstore.unity.com/packages/tools/input-management/json-net-converters-simple-compatible-solution-58621
-	(delete or comment out DictionaryConverter)
+	delete or comment out DictionaryConverter
+	change line 127? on JsonNetUtility from 
+		).Where(!(type) => (null != type.Namespace && type.Namespace.StartsWith("NewtonSoft"))
+	to
+		).Where((type) => (null != type.Namespace && type.Namespace.StartsWith("WanzyeeStudio"))
+		
 
 Jean Moreno (JMO) - War FX
 	https://www.assetstore.unity3d.com/en/#!/content/5669

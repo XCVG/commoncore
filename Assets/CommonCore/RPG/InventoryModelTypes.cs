@@ -29,7 +29,7 @@ namespace CommonCore.Rpg
     }
 
     //an actual inventory item that the player has
-    [JsonConverter(typeof(InventoryItemSerializer))]
+    [JsonObject(IsReference = true)]
     public class InventoryItemInstance
     {
         public const int UnstackableQuantity = -1;
@@ -37,13 +37,15 @@ namespace CommonCore.Rpg
         public int Quantity { get; set; }
         public float Condition { get; set; } //it's here but basically unimplemented
         public bool Equipped { get; set; }
-        public readonly InventoryItemModel ItemModel;
+        [JsonProperty, JsonConverter(typeof(InstanceItemConverter))]
+        public InventoryItemModel ItemModel { get; private set; }
 
-        internal InventoryItemInstance(InventoryItemModel model, float condition, int quantity)
+        [JsonConstructor]
+        internal InventoryItemInstance(InventoryItemModel model, float condition, int quantity, bool equipped)
         {
             ItemModel = model;
             Condition = condition;
-            Equipped = false;
+            Equipped = equipped;
             Quantity = quantity;
         }
 
@@ -56,6 +58,35 @@ namespace CommonCore.Rpg
         }
     }
 
+    public class InstanceItemConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return typeof(InventoryItemModel).IsAssignableFrom(objectType);
+            //return false;
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.Null) return null;
+
+            JObject jsonObject = JObject.Load(reader);
+            string modelName = jsonObject["$ItemModel"].Value<string>();
+            var model = InventoryModel.GetModel(modelName);
+            return model;
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            var item = value as InventoryItemModel;
+            writer.WriteStartObject();
+            writer.WritePropertyName("$ItemModel");
+            writer.WriteValue(item.Name);
+            writer.WriteEndObject();
+        }
+    }
+
+    /*
     public class InventoryItemSerializer : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -66,6 +97,8 @@ namespace CommonCore.Rpg
             writer.WriteValue(item.Condition);
             writer.WritePropertyName("Quantity");
             writer.WriteValue(item.Quantity);
+            writer.WritePropertyName("Equipped");
+            writer.WriteValue(item.Equipped);
             writer.WritePropertyName("$ItemModel");
             writer.WriteValue(item.ItemModel.Name);
             writer.WriteEndObject();
@@ -79,9 +112,10 @@ namespace CommonCore.Rpg
             float condition = jsonObject["Condition"].Value<float>();
             string modelName = jsonObject["$ItemModel"].Value<string>();
             int quantity = jsonObject["Quantity"].Value<int>();
+            bool equipped = jsonObject["Equipped"].Value<bool>();
             InventoryItemModel model = InventoryModel.GetModel(modelName);
 
-            return new InventoryItemInstance(model, condition, quantity);
+            return new InventoryItemInstance(model, condition, quantity, equipped);
         }
 
         public override bool CanConvert(Type objectType)
@@ -89,6 +123,7 @@ namespace CommonCore.Rpg
             return typeof(InventoryItemInstance).IsAssignableFrom(objectType);
         }
     }
+    */
 
     // class for invariant inventory defs
     public class InventoryItemDef
