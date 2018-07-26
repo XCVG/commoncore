@@ -8,6 +8,8 @@ namespace CommonCore.UI
 {
     public class IngameMenuController : BaseMenuController
     {
+        public static IngameMenuController Current;
+
         public string DefaultPanel;
 
         public bool HandlePause = true;
@@ -15,12 +17,18 @@ namespace CommonCore.UI
 
         public GameObject MainPanel;
         public GameObject ContainerPanel;
+        public GameObject EphemeralRoot;
 
         private string CurrentPanel;
 
         public override void Start()
         {
             base.Start();
+
+            Current = this;
+
+            EphemeralRoot = new GameObject("InGameMenu_EphemeralRoot");
+            EphemeralRoot.transform.parent = transform.root;
 
             if(Autohide)
             {
@@ -56,6 +64,13 @@ namespace CommonCore.UI
                         {
                             DoUnpause();
                         }
+
+                        foreach (Transform child in ContainerPanel.transform)
+                        {
+                            child.gameObject.SetActive(false);
+                        }
+
+                        ClearEphemeral();
                     }                        
                 }
                 else
@@ -77,6 +92,16 @@ namespace CommonCore.UI
                         OnClickSelectButton(DefaultPanel);
                     }
                     
+                    if(!newState)
+                    {
+                        foreach (Transform child in ContainerPanel.transform)
+                        {
+                            child.gameObject.SetActive(false);
+                        }
+
+                        ClearEphemeral();
+                    }
+                    
                 }
             }
 
@@ -92,6 +117,15 @@ namespace CommonCore.UI
         {
             LockPauseModule.UnlockControls(this);
             LockPauseModule.UnpauseGame(this);
+        }
+
+        private void ClearEphemeral()
+        {
+            //destroy ephemeral modals (a bit hacky)
+            foreach (Transform child in EphemeralRoot.transform)
+            {
+                Destroy(child.gameObject);
+            }
         }
 
         public void OnClickSelectButton(string menuName)

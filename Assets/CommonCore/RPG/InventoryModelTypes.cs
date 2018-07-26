@@ -86,45 +86,6 @@ namespace CommonCore.Rpg
         }
     }
 
-    /*
-    public class InventoryItemSerializer : JsonConverter
-    {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            var item = value as InventoryItemInstance;
-            writer.WriteStartObject();
-            writer.WritePropertyName("Condition");
-            writer.WriteValue(item.Condition);
-            writer.WritePropertyName("Quantity");
-            writer.WriteValue(item.Quantity);
-            writer.WritePropertyName("Equipped");
-            writer.WriteValue(item.Equipped);
-            writer.WritePropertyName("$ItemModel");
-            writer.WriteValue(item.ItemModel.Name);
-            writer.WriteEndObject();
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            if (reader.TokenType == JsonToken.Null) return null;
-
-            JObject jsonObject = JObject.Load(reader);
-            float condition = jsonObject["Condition"].Value<float>();
-            string modelName = jsonObject["$ItemModel"].Value<string>();
-            int quantity = jsonObject["Quantity"].Value<int>();
-            bool equipped = jsonObject["Equipped"].Value<bool>();
-            InventoryItemModel model = InventoryModel.GetModel(modelName);
-
-            return new InventoryItemInstance(model, condition, quantity, equipped);
-        }
-
-        public override bool CanConvert(Type objectType)
-        {
-            return typeof(InventoryItemInstance).IsAssignableFrom(objectType);
-        }
-    }
-    */
-
     // class for invariant inventory defs
     public class InventoryItemDef
     {

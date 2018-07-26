@@ -25,5 +25,10 @@ namespace CommonCore.UI
 
         }
 
+        public virtual void OnDisable()
+        {
+            
+        }
+
     }
 }

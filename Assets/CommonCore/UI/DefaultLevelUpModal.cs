@@ -200,12 +200,16 @@ namespace CommonCore.UI
                 var go = Instantiate<GameObject>(Resources.Load<GameObject>(AltPrefab), CCBaseUtil.GetWorldRoot());
                 var modal = go.GetComponent<GameUI.LevelUpModal>();
                 modal.Callback = callback;
+                if (IngameMenuController.Current != null)
+                    go.transform.SetParent(IngameMenuController.Current.EphemeralRoot.transform, false);
             }
             else
             {
                 var go = Instantiate<GameObject>(Resources.Load<GameObject>(DefaultPrefab), CCBaseUtil.GetWorldRoot());
                 var modal = go.GetComponent<DefaultLevelUpModal>();
                 modal.Callback = callback;
+                if (IngameMenuController.Current != null)
+                    go.transform.SetParent(IngameMenuController.Current.EphemeralRoot.transform, false);
             }
         }
 
