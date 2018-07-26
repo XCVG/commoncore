@@ -135,52 +135,5 @@ namespace CommonCore.Scripting
             return results;
         }
     }
-
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class CCScriptAttribute : Attribute
-    {
-        public string Name { get; set; }
-        public string ClassName { get; set; }
-    }
-
-    public struct ScriptExecutionContext
-    {
-        public object Caller;
-        public GameObject Activator;
-
-        public override string ToString()
-        {
-            return string.Format("{0} : [Caller:{1}, Activator:{2}]", GetType().Name, Caller, Activator);
-        }
-    }
-
-    public class ScriptingTest
-    {
-        
-        [CCScript(ClassName = "Test", Name = "HelloWorld")]
-        public void TestMethod(ScriptExecutionContext context)
-        {
-            Debug.Log("Hello world!");
-        }
-
-        [CCScript(ClassName = "Test", Name = "NoArgs")]
-        public void NoArgsTest()
-        {
-            Debug.Log("Hello world! (no args)");
-        }
-
-        [CCScript(ClassName = "Test", Name = "ContextArg")]
-        public void ContextArgTest(ScriptExecutionContext context)
-        {
-            Debug.Log(context);
-        }
-
-        [CCScript(ClassName = "Test", Name = "SingleArg")]
-        public void SingleArgTest(ScriptExecutionContext context, string arg0)
-        {
-            Debug.Log(arg0);
-        }
-    }
-
-    
+  
 }
