@@ -68,11 +68,14 @@ This list is always in flux. As I implement features, I find there are even more
 * Extensible actor controllers
 * Basic state-machine NPC AI
 * Script execution by name
+* Save folder creation and fail handling
 
 **In-Progress Features**
 
 * Player movement (add jumping, swimming, noclip)
 * Combat (currently uses stats only partially, and lacks visuals)
+* Action Special game state modification
+* Loading screen (appears but doesn't animate or anything)
 
 **Planned Features**
 
@@ -82,6 +85,8 @@ This list is always in flux. As I implement features, I find there are even more
 * UI "type on" utility function
 * Hacking minigame
 * Lockpick minigame
+* Map screen
+* Help screen
 
 
 ## Roadmap

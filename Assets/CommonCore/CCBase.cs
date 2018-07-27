@@ -5,6 +5,7 @@ using CommonCore.Messaging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -30,6 +31,7 @@ namespace CommonCore
 
             HookApplicationQuit();
             HookSceneEvents();
+            CreateFolders();
 
             Modules = new List<CCModule>();
 
@@ -192,6 +194,19 @@ namespace CommonCore
             GC.Collect();
 
             Debug.Log("...done!");
+        }
+
+        private static void CreateFolders()
+        {
+            try
+            {
+                Directory.CreateDirectory(CCParams.SavePath);
+            }
+            catch(Exception e)
+            {
+                Debug.LogError("Failed to setup directories (may cause problems during game execution)");
+                Debug.LogException(e);
+            }
         }
 
     }
