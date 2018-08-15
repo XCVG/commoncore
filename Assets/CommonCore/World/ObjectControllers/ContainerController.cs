@@ -40,7 +40,7 @@ namespace CommonCore.World
 
             Debug.Log("Opened container");
             //TODO actually open container dialog
-            //ContainerModal.PushModal(myContainer, isStore);
+            UI.ContainerModal.PushModal(GameState.Instance.PlayerRpgState.Inventory, MyContainer, IsStore, null);
         }
         
 

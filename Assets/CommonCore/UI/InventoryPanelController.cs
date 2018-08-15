@@ -48,7 +48,7 @@ namespace CommonCore.UI
             {
                 var item = itemList[i];
                 GameObject itemGO = Instantiate<GameObject>(ItemTemplatePrefab, ScrollContent);
-                if(item.Quantity == InventoryItemInstance.UnstackableQuantity)
+                if(!item.ItemModel.Stackable)
                     itemGO.GetComponentInChildren<Text>().text = item.ItemModel.Name + (item.Equipped ? " [E]" : string.Empty); //for now
                 else
                     itemGO.GetComponentInChildren<Text>().text = string.Format("{0} ({1})", item.ItemModel.Name, item.Quantity); //for now

@@ -231,14 +231,13 @@ namespace CommonCore.Rpg
             return Items;
         }
 
-        [Obsolete("I don't even know what GetItem was supposed to do")]
-        public InventoryItemInstance[] GetItem(string item) //lack of unique keys makes this essentially useless
+        //like the old deprecated GetItem but better defined
+        //finds all instances of a specified item model in this inventory
+        public InventoryItemInstance[] FindItem(string item)
         {
-            Debug.LogWarning("GetItem is deprecated!");
-
             List<InventoryItemInstance> items = new List<InventoryItemInstance>();
 
-            foreach(InventoryItemInstance i in Items)
+            foreach (InventoryItemInstance i in Items)
             {
                 if (i.ItemModel.Name == item)
                     items.Add(i);
@@ -350,6 +349,11 @@ namespace CommonCore.Rpg
                 
 
             return foundModel;
+        }
+
+        public void AddItem(InventoryItemInstance item)
+        {
+            Items.Add(item);
         }
 
         public void AddItem(string item, int quantity)

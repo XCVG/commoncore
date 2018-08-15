@@ -124,22 +124,70 @@ namespace CommonCore.Rpg
                 return PutItem(item) ? -1 : 1;
             else if (quantity <= 0)
                 return -1;
-            else
+            else if (item.ItemModel.Stackable)
             {
-                if (Items.Contains(item) && item.ItemModel.Stackable) //check that it actually exists...
+                var fItem = Items.Find(x => x.ItemModel == item.ItemModel);
+
+                if (fItem != null) //check that it actually exists...
                 {
-                    item.Quantity += quantity;
+                    fItem.Quantity += quantity;
 
                     return quantity;
                 }
-                else
-                    return -1;
+                else //otherwise create a new one
+                {
+                    var newItem = new InventoryItemInstance(item.ItemModel);
+                    newItem.Quantity = quantity;
+                    Items.Add(newItem);
+
+                    return quantity;
+                }
+                    
             }
+            else
+                return -1;
         }
 
         public InventoryItemInstance[] ListItems()
         {
             return Items.ToArray();
+        }
+
+        public List<InventoryItemInstance> GetItemsListActual()
+        {
+            return Items;
+        }
+
+        public int CountItem(string item)
+        {
+            int quantity = 0;
+            foreach (InventoryItemInstance i in Items)
+            {
+                if (i.ItemModel.Name == item && i.Quantity == -1)
+                    quantity++;
+                else if (i.ItemModel.Name == item && i.Quantity > 0)
+                    quantity += i.Quantity;
+            }
+
+            return quantity;
+        }
+
+        public InventoryItemInstance[] FindItem(string item)
+        {
+            List<InventoryItemInstance> items = new List<InventoryItemInstance>();
+
+            foreach (InventoryItemInstance i in Items)
+            {
+                if (i.ItemModel.Name == item)
+                    items.Add(i);
+            }
+
+            return items.ToArray();
+        }
+
+        public void FixStacks()
+        {
+            //TODO implement stack consolidation
         }
 
     }

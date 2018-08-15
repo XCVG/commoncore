@@ -32,7 +32,7 @@ namespace CommonCore.Rpg
     [JsonObject(IsReference = true)]
     public class InventoryItemInstance
     {
-        public const int UnstackableQuantity = -1;
+        //public const int UnstackableQuantity = -1;
 
         public int Quantity { get; set; }
         public float Condition { get; set; } //it's here but basically unimplemented
@@ -54,7 +54,7 @@ namespace CommonCore.Rpg
             ItemModel = model;
             Condition = model.MaxCondition;
             Equipped = false;
-            Quantity = model.Stackable ? 1 : UnstackableQuantity;
+            Quantity = 1;
         }
     }
 

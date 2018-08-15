@@ -112,6 +112,15 @@ namespace CommonCore.Rpg
             DevConsole.singleton.Log(sb.ToString());
         }
 
+        [Command]
+        static void OpenSharedContainer(string container, string asShop)
+        {
+            var rContainer = GameState.Instance.ContainerState[container];
+            bool bIsShop = Convert.ToBoolean(asShop);
+
+            UI.ContainerModal.PushModal(GameState.Instance.PlayerRpgState.Inventory, rContainer, bIsShop, null);
+        }
+
         [Command(className = "Player")]
         static void ListItems()
         {
