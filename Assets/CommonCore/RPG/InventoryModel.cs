@@ -145,6 +145,9 @@ namespace CommonCore.Rpg
 
         public static InventoryItemModel GetModel(string name)
         {
+            if (!Models.ContainsKey(name))
+                return null;
+
             return Models[name];
         }
 

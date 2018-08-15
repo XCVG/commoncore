@@ -51,10 +51,10 @@ namespace CommonCore.Rpg
         {
             int newXP = character.Experience;
             int newLevel = character.Level;
-            while (newXP >= XPToNext(newLevel))
+            while (newXP >= XPToNext(newLevel-1))
             {
                 newLevel++;
-                newXP -= XPToNext(newLevel);
+                newXP -= XPToNext(newLevel-1);
             }
 
             return newXP;

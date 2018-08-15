@@ -18,9 +18,15 @@ namespace CommonCore.State
         {
             WorldState = new WorldModel();
             CampaignState = new CampaignModel();
+
+            GlobalDataState = new Dictionary<string, object>();
             LocalDataState = new Dictionary<string, Dictionary<string, object>>();
+
             LocalObjectState = new Dictionary<string, Dictionary<string, RestorableData>>(); //maps will have to deal with initialization/non-initialization themselves or on load
             MotileObjectState = new Dictionary<string, RestorableData>();
+
+            ContainerState = new Dictionary<string, ContainerModel>();
+
             PlayerRpgState = new CharacterModel();
         }
 
@@ -73,8 +79,11 @@ namespace CommonCore.State
             });
         }
 
+        
         public static void LoadInitial()
         {
+            //TODO: better debugging and logging
+
             //load initial player
             try
             {
@@ -93,7 +102,31 @@ namespace CommonCore.State
                 Debug.LogException(e);
             }
 
-            //load initial containers
+            //load initial containers (requires some decoding)
+            //we will actually need to load additional containers ex post facto when we add mod support
+            try
+            {
+                var rawContainers = CCBaseUtil.LoadJson<Dictionary<string, SerializableContainerModel>>(CCBaseUtil.LoadResource<TextAsset>("RPGDefs/init_containers").text);
+                foreach(var key in rawContainers.Keys)
+                {
+                    var value = rawContainers[key];
+                    try
+                    {
+                        var realContainer = SerializableContainerModel.MakeContainerModel(value);
+                        instance.ContainerState.Add(key, realContainer);
+                    }
+                    catch(Exception e)
+                    {
+                        Debug.LogError("Failed to load one container");
+                        Debug.LogException(e);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Failed to load initial container state");
+                Debug.LogException(e);
+            }
         }
 
         // actual instance data

@@ -1,0 +1,20 @@
+{
+  "TestSharedContainer": {
+    "Items": [
+      {
+        "ItemModel": "medkit"
+      },
+      {
+        "ItemModel": "stimpack"
+      }
+    ]
+  },
+  "TestSharedContainer2": {
+    "Items": [
+      {
+        "ItemModel": "Acp45",
+        "Quantity": 16
+      }
+    ]
+  }
+}

@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Text;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using SickDev.CommandSystem;
-using System;
 using CommonCore.State;
+
 
 namespace CommonCore.Rpg
 {
@@ -94,6 +96,20 @@ namespace CommonCore.Rpg
         static void ListInventoryDefs()
         {
             DevConsole.singleton.Log(InventoryModel.GetDefsList());
+        }
+
+        [Command]
+        static void ListSharedContainers()
+        {
+
+            var containersDict = GameState.Instance.ContainerState;
+            StringBuilder sb = new StringBuilder(containersDict.Count * 64);
+            foreach (var kvp in containersDict)
+            {
+                sb.AppendFormat("{0} ({1} items) \n", kvp.Key, kvp.Value.ListItems().Length);
+            }
+
+            DevConsole.singleton.Log(sb.ToString());
         }
 
         [Command(className = "Player")]

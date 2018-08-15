@@ -105,19 +105,6 @@ namespace CommonCore.State
             Application.logMessageReceived -= HandleLog;
         }
 
-
-        // Update is called once per frame
-        void Update ()
-        {
-
-		
-	    }
-
-        protected void LoadScene()
-        {
-
-        }
-
         //TODO handle all the nasty game init/game load/scene load stuff
 
     }

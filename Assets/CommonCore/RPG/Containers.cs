@@ -1,9 +1,9 @@
-﻿
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using UnityEngine;
 using CommonCore.State;
+using CommonCore.DebugLog;
 
 namespace CommonCore.Rpg
 {
@@ -93,7 +93,7 @@ namespace CommonCore.Rpg
                 {
                     int origQuantity = item.Quantity; //there's a smarter way but I'm too tired
                     item.Quantity -= quantity;
-                    if(item.Quantity <= 0)
+                    if (item.Quantity <= 0)
                     {
                         Items.Remove(item);
                     }
@@ -109,11 +109,92 @@ namespace CommonCore.Rpg
             }
         }
 
+        public bool PutItem(InventoryItemInstance item)
+        {
+            if (Items.Contains(item))
+                return false;
+
+            Items.Add(item);
+            return true;
+        }
+
+        public int PutItem(InventoryItemInstance item, int quantity)
+        {
+            if (quantity == 1)
+                return PutItem(item) ? -1 : 1;
+            else if (quantity <= 0)
+                return -1;
+            else
+            {
+                if (Items.Contains(item) && item.ItemModel.Stackable) //check that it actually exists...
+                {
+                    item.Quantity += quantity;
+
+                    return quantity;
+                }
+                else
+                    return -1;
+            }
+        }
+
         public InventoryItemInstance[] ListItems()
         {
             return Items.ToArray();
         }
+
     }
 
-    //TODO need a serializable version for editor and defs that gets populated with "real" items at runtime
+    //need a serializable version for editor and defs that gets populated with "real" items at runtime
+
+    [System.Serializable]
+    public class SerializableItemInstance
+    {
+        [JsonProperty(NullValueHandling= NullValueHandling.Ignore)]
+        public int Quantity = 1;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public float Condition = 1.0f;
+        public string ItemModel;
+
+        public static InventoryItemInstance MakeItemInstance(SerializableItemInstance sItemInstance)
+        {
+            InventoryItemModel model = InventoryModel.GetModel(sItemInstance.ItemModel);
+
+            if (model == null)
+            {
+                CDebug.LogEx(string.Format("Couldn't find model {0} for SerializableItemInstance", sItemInstance.ItemModel), LogLevel.Error, sItemInstance);
+                return null;
+            }
+                
+
+            InventoryItemInstance rItemInstance = new InventoryItemInstance(model, sItemInstance.Condition, sItemInstance.Quantity, false);
+
+            return rItemInstance;
+        }
+    }
+
+    [System.Serializable]
+    public class SerializableContainerModel
+    {
+        public SerializableItemInstance[] Items;
+
+        public static ContainerModel MakeContainerModel(SerializableContainerModel sContainerModel)
+        {
+            ContainerModel rContainerModel = new ContainerModel();
+
+            foreach(SerializableItemInstance sItemInstance in sContainerModel.Items)
+            {
+                InventoryItemInstance rItemInstance = SerializableItemInstance.MakeItemInstance(sItemInstance);
+                if(rItemInstance != null)
+                {
+                    rContainerModel.PutItem(rItemInstance);
+                }
+                else
+                {
+                    CDebug.LogEx(string.Format("Couldn't create real item instance for item in container"), LogLevel.Error, sContainerModel);
+                }
+            }
+
+            return rContainerModel;
+        }
+    }
 }
