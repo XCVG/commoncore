@@ -170,6 +170,15 @@ namespace CommonCore.Rpg
 
             return rItemInstance;
         }
+
+        public static SerializableItemInstance MakeSerializableItemInstance(InventoryItemInstance rItemInstance)
+        {
+            var sItemInstance = new SerializableItemInstance();
+            sItemInstance.Quantity = rItemInstance.Quantity;
+            sItemInstance.Condition = rItemInstance.Condition;
+            sItemInstance.ItemModel = rItemInstance.ItemModel.Name;
+            return sItemInstance;
+        }
     }
 
     [System.Serializable]
@@ -195,6 +204,19 @@ namespace CommonCore.Rpg
             }
 
             return rContainerModel;
+        }
+
+        public static SerializableContainerModel MakeSerializableContainerModel(ContainerModel rContainerModel)
+        {
+            var rItems = rContainerModel.ListItems();
+            SerializableItemInstance[] sItems = new SerializableItemInstance[rItems.Length];
+            for(int i = 0; i < rItems.Length; i++)
+            {
+                sItems[i] = SerializableItemInstance.MakeSerializableItemInstance(rItems[i]);                
+            }
+            var sContainerModel = new SerializableContainerModel();
+            sContainerModel.Items = sItems;
+            return sContainerModel;
         }
     }
 }

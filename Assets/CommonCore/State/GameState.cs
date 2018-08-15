@@ -127,6 +127,8 @@ namespace CommonCore.State
                 Debug.LogError("Failed to load initial container state");
                 Debug.LogException(e);
             }
+
+            instance.InitialLoaded = true;
         }
 
         // actual instance data
@@ -146,6 +148,7 @@ namespace CommonCore.State
 
         public string CurrentScene;
         public bool SaveLocked;
+        public bool InitialLoaded; //mostly for editor hacks
 
         [JsonProperty]
         private int CurrentUID;

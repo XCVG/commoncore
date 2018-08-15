@@ -72,15 +72,14 @@ This list is always in flux. As I implement features, I find there are even more
 
 **In-Progress Features**
 
+* Shop/container system (same base logic)
 * Player movement (add jumping, swimming, noclip)
 * Combat (currently uses stats only partially, and lacks visuals)
 * Action Special game state modification
 * Loading screen (appears but doesn't animate or anything)
-* fix the levelling XP bug (taking more XP than available)
 
 **Planned Features**
 
-* Shop/container system (same base logic)
 * Levelled Lists (may defer)
 * Time passage and timed events
 * In-game remappable inputs (alternate MappedInput backend?)
