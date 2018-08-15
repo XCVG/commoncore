@@ -1,0 +1,99 @@
+{
+    "FormID": null,
+    "DisplayName": "PlayerExample",
+    "Gender": "Female",
+    "Health": 110.0,
+    "HealthFraction": 1.0,
+    "Experience": 0,
+    "Level": 1,
+    "BaseStats": {
+      "MaxHealth": 0.0,
+      "DamageResistance": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "DamageThreshold": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Stats": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "Skills": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "Conditions": [],
+    "Inventory": {
+      "Items": [
+        {
+          "Quantity": -1,
+          "Condition": 1.0,
+          "Equipped": false,
+          "ItemModel": {
+            "$ItemModel": "lightarmor"
+          }
+        },
+        {
+          "Quantity": -1,
+          "Condition": 1.0,
+          "Equipped": false,
+          "ItemModel": {
+            "$ItemModel": "sword"
+          }
+        },
+        {
+          "Quantity": -1,
+          "Condition": 1.0,
+          "Equipped": false,
+          "ItemModel": {
+            "$ItemModel": "m1911"
+          }
+        },
+        {
+          "Quantity": -1,
+          "Condition": 1.0,
+          "Equipped": false,
+          "ItemModel": {
+            "$ItemModel": "medkit"
+          }
+        }
+      ]
+    }
+  }

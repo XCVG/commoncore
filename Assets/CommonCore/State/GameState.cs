@@ -4,6 +4,7 @@ using System.IO;
 using Newtonsoft.Json;
 using CommonCore.World;
 using CommonCore.Rpg;
+using UnityEngine;
 using WanzyeeStudio;
 
 namespace CommonCore.State
@@ -72,14 +73,44 @@ namespace CommonCore.State
             });
         }
 
+        public static void LoadInitial()
+        {
+            //load initial player
+            try
+            {
+                instance.PlayerRpgState = new CharacterModel();
+                JsonConvert.PopulateObject(CCBaseUtil.LoadResource<TextAsset>("RPGDefs/init_player").text, instance.PlayerRpgState, new JsonSerializerSettings
+                {
+                    Converters = JsonNetUtility.defaultSettings.Converters,
+                    TypeNameHandling = TypeNameHandling.Auto,
+                    NullValueHandling = NullValueHandling.Ignore
+                });
+                instance.PlayerRpgState.UpdateStats();
+            }
+            catch(Exception e)
+            {
+                Debug.LogError("Failed to load initial player");
+                Debug.LogException(e);
+            }
+
+            //load initial containers
+        }
+
         // actual instance data
         public WorldModel WorldState;
         public CampaignModel CampaignState;
+
+        public Dictionary<string, object> GlobalDataState;
         public Dictionary<string, Dictionary<string, object>> LocalDataState;
+
         public Dictionary<string, Dictionary<string, RestorableData>> LocalObjectState;        
         public Dictionary<string, RestorableData> MotileObjectState;
+
+        public Dictionary<string, ContainerModel> ContainerState;
+
         public RestorableData PlayerWorldState;
         public CharacterModel PlayerRpgState;
+
         public string CurrentScene;
         public bool SaveLocked;
 

@@ -35,6 +35,7 @@ namespace CommonCore.Rpg
         public int Level { get; set; }
 
         public StatsSet BaseStats { get; private set; }
+
         public StatsSet DerivedStats { get; private set; }
 
         public List<Condition> Conditions { get; private set; }
