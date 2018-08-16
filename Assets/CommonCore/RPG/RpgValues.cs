@@ -62,10 +62,10 @@ namespace CommonCore.Rpg
 
         public static float GetMeleeDamage(CharacterModel character, float baseDamage)
         {
-            return Mathf.RoundToInt(baseDamage 
+            return Mathf.RoundToInt(baseDamage
                 + (2 * character.DerivedStats.Skills[(int)SkillType.MeleeBrawn])
                 + (0.5f * character.DerivedStats.Skills[(int)SkillType.Melee])
-                + (0.5f * character.DerivedStats.Stats[(int)StatType.Resilience]) 
+                + (0.5f * character.DerivedStats.Stats[(int)StatType.Resilience])
                 + (0.25f * character.DerivedStats.Stats[(int)StatType.Dexterity])
                 );
         }

@@ -17,11 +17,19 @@ namespace CommonCore.Dialogue
     {
         public static string CurrentDialogue { get; set; }
         public static DialogueFinishedDelegate CurrentCallback { get; set; }
+        //public static bool AutoPauseGame { get; set; }
 
         public Text TextTitle;
         public Text TextMain;
-        public Button[] ButtonsChoice;
+        //public Button[] ButtonsChoice;
+        public GameObject ButtonPrefab;
+        public Button ButtonContinue;
+        public ScrollRect ScrollChoice;
+        public RectTransform ScrollChoiceContent;
 
+        public AudioSource VoiceAudioSource;
+
+        private string CurrentFrameName;
         private string CurrentSceneName;
         private DialogueScene CurrentScene;
         private Dictionary<string, Frame> CurrentSceneFrames { get { return CurrentScene.Frames; } }
@@ -38,13 +46,23 @@ namespace CommonCore.Dialogue
         {
             //GameState.Instance.CurrentDialogue = "intro.intro1";
 
+            //if (AutoPauseGame)
+            //    LockPauseModule.PauseGame(this.gameObject);
+
             var loc = ParseLocation(CurrentDialogue); //TODO we actually need to parse it "backwards" here...
 
-            LoadScene(loc.Key);
+            if(loc.Key == null)
+            {
+                //use default
+                LoadScene(loc.Value);
+                PresentNewFrame(CurrentScene.Default);
+            }
+            else
+            {
+                LoadScene(loc.Key);
+                PresentNewFrame(loc.Value);
+            }
 
-            PresentNewFrame(loc.Value);
-
-            //TODO use defaults if necessary
         }
 
         private void LoadScene(string scene)
@@ -55,26 +73,42 @@ namespace CommonCore.Dialogue
 
         private void PresentNewFrame(string s)
         {
+            CurrentFrameName = s;
             PresentNewFrame(CurrentSceneFrames[s]);
         }
         
         private void PresentNewFrame(Frame f) //args?
         {
+            //present audio
+            if (VoiceAudioSource.isPlaying)
+                VoiceAudioSource.Stop();
+            string voicePath = string.Format("DialogueVoice/{0}/{1}", CurrentSceneName, CurrentFrameName);
+            var voiceClip = CCBaseUtil.LoadResource<AudioClip>(voicePath);
+            if(voiceClip != null)
+            {
+                VoiceAudioSource.clip = voiceClip;
+                VoiceAudioSource.Play();
+            }
 
             //present text
             TextTitle.text = Sub.Macro(f.NameText);
             TextMain.text = Sub.Macro(f.Text);
 
-            //present buttons
-            foreach(Button b in ButtonsChoice)
+            //clear buttons
+            foreach (Transform t in ScrollChoiceContent)
             {
-                b.gameObject.SetActive(false);
+                Destroy(t.gameObject);
             }
+            ScrollChoiceContent.DetachChildren();
 
-            if(f is ChoiceFrame)
+            //present buttons
+            if (f is ChoiceFrame)
             {
+                ScrollChoice.gameObject.SetActive(true);
+                ButtonContinue.gameObject.SetActive(false);
+
                 ChoiceFrame cf = (ChoiceFrame)f;
-                for (int i = 0, j = 0; i < cf.Choices.Length && j < ButtonsChoice.Length; i++)
+                for (int i = 0; i < cf.Choices.Length; i++)
                 {
                     //will need to be redone to effectively deal with conditionals
                     ChoiceNode cn = cf.Choices[i];
@@ -90,17 +124,21 @@ namespace CommonCore.Dialogue
 
                     if(showChoice)
                     {
-                        Button b = ButtonsChoice[j];
+                        GameObject choiceGO = Instantiate<GameObject>(ButtonPrefab, ScrollChoiceContent);
+                        Button b = choiceGO.GetComponent<Button>();
                         b.gameObject.SetActive(true);
                         b.transform.Find("Text").GetComponent<Text>().text = Sub.Macro(cn.Text);
-                        j++;
+                        int idx = i;
+                        b.onClick.AddListener(delegate { OnChoiceButtonClick(idx); });
                     }
                     
                 }
             }
             else // if(f is TextFrame)
             {
-                Button b = ButtonsChoice[ButtonsChoice.Length - 1];
+                ScrollChoice.gameObject.SetActive(false);
+
+                Button b = ButtonContinue;
                 b.gameObject.SetActive(true);
                 b.transform.Find("Text").GetComponent<Text>().text = "Continue..."; //TODO nextText support
             }
@@ -149,6 +187,7 @@ namespace CommonCore.Dialogue
 
         }
 
+        //this one really isn't flexible enough to be useful...
         private KeyValuePair<string, string> ParseLocation(string loc)
         {
             if (!loc.Contains("."))
@@ -168,20 +207,50 @@ namespace CommonCore.Dialogue
             }
             else if(nextLoc.Key == "meta")
             {
-                //TODO any meta ones
+                //probably the only one carried over from Garlic Gang or Katana
                 if(nextLoc.Value == "return")
                 {
                     CloseDialogue();
                 }
             }
+            else if (nextLoc.Key == "shop")
+            {
+                var container = GameState.Instance.ContainerState[nextLoc.Value];
+                UI.ContainerModal.PushModal(GameState.Instance.PlayerRpgState.Inventory, container, true, null);
+                CloseDialogue();
+            }
             else if (nextLoc.Key == "scene")
             {
                 CloseDialogue();
-                SceneManager.LoadScene(nextLoc.Value); //BAD BAD BAD
+
+                var sceneController = World.BaseSceneController.Current;
+
+                if (sceneController != null)
+                {
+                    //extract additional data if possible
+                    string spawnPoint = string.Empty;
+                    var arr = next.Split('.');
+                    if (arr.Length >= 3)
+                        spawnPoint = arr[2];
+
+                    //clean exit
+                    World.WorldUtils.ChangeScene(nextLoc.Value, spawnPoint, Vector3.zero, Vector3.zero);
+                }
+                else
+                {
+                    SceneManager.LoadScene(nextLoc.Value); //BAD BAD BAD forced exit
+                }
+
+            }
+            else if (nextLoc.Key == "script")
+            {
+                CloseDialogue();
+
+                Scripting.ScriptingModule.Call(nextLoc.Value, new Scripting.ScriptExecutionContext() { Caller = this }, null);
             }
             else
             {
-                LoadScene(nextLoc.Key);
+                LoadScene(nextLoc.Key); //this loads a dialogue scene, not a Unity scene (it's confusing right?)
                 PresentNewFrame(nextLoc.Value);
             }
 

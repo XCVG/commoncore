@@ -264,8 +264,6 @@ namespace CommonCore.UI
 
         public void OnClickTransfer()
         {
-            //TODO handle transfer
-
             //immediate fail conditions
             if(Selected == SelectedState.None || SelectedItem == null)
             {

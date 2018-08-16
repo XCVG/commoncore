@@ -8,11 +8,13 @@ namespace CommonCore.Dialogue
     {
         public Dictionary<string, Frame> Frames { get; private set; }
         public string Default;
+        public string Music;
 
-        public DialogueScene(Dictionary<string, Frame> frames, string defaultFrame)
+        public DialogueScene(Dictionary<string, Frame> frames, string defaultFrame, string music)
         {
             Frames = frames;
             Default = defaultFrame;
+            Music = music;
         }
     }
 

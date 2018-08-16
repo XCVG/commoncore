@@ -86,7 +86,7 @@ namespace CommonCore.World
         [Command]
         static void Warp(string scene)
         {
-            Warp(scene, null);
+            Warp(scene, string.Empty);
         }
 
         [Command]

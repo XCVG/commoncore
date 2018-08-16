@@ -296,6 +296,8 @@ namespace CommonCore.World
 
         protected void RestorePlayer(GameState gs)
         {
+            //TODO autoinit player for scenes that "start from zero"
+
             MetaState mgs = MetaState.Instance;
             GameObject player = WorldUtils.GetPlayerObject();
             RestorableData prd = gs.PlayerWorldState;
@@ -348,6 +350,12 @@ namespace CommonCore.World
                 if (!string.IsNullOrEmpty(mgs.PlayerIntent.SpawnPoint))
                 {
                     GameObject spawnPoint = WorldUtils.FindObjectByTID(mgs.PlayerIntent.SpawnPoint);
+                    player.transform.position = spawnPoint.transform.position;
+                    player.transform.rotation = spawnPoint.transform.rotation;
+                }
+                else if(mgs.PlayerIntent.SpawnPoint != null) //not null, but is empty
+                {
+                    GameObject spawnPoint = WorldUtils.FindObjectByTID("DefaultPlayerSpawn");
                     player.transform.position = spawnPoint.transform.position;
                     player.transform.rotation = spawnPoint.transform.rotation;
                 }

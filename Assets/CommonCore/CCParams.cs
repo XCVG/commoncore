@@ -33,6 +33,7 @@ namespace CommonCore
         public const string InitialScene = "TestScene";
         public const bool UseCustomLeveling = false;
         public const PlayerViewType DefaultPlayerView = PlayerViewType.PreferFirst;
+        public const bool UseRandomDamage = true;
 
         //*****automatic environment params
         public static bool IsDebug

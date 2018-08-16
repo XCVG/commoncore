@@ -182,10 +182,10 @@ namespace CommonCore.World
             MetaState mgs = MetaState.Instance;
             mgs.PreviousScene = SceneManager.GetActiveScene().name;
             mgs.NextScene = scene;
-            if (!string.IsNullOrEmpty(spawnPoint))
-                mgs.PlayerIntent = new PlayerSpawnIntent(spawnPoint);
+            if (spawnPoint != null)
+                mgs.PlayerIntent = new PlayerSpawnIntent(spawnPoint); //handle string.Empty as default spawn point
             else
-                mgs.PlayerIntent = new PlayerSpawnIntent(position, Quaternion.Euler(rotation));
+                mgs.PlayerIntent = new PlayerSpawnIntent(position, Quaternion.Euler(rotation));            
             mgs.LoadSave = null;
             mgs.TransitionType = SceneTransitionType.ChangeScene;
             WorldUtils.GetSceneController().ExitScene();

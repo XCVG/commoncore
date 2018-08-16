@@ -59,7 +59,7 @@ namespace CommonCore.Dialogue
                 }
             }
 
-            return new DialogueScene(frames, sNext);
+            return new DialogueScene(frames, sNext, sMusic);
         }
 
         public static Frame ParseSingleFrame(JToken jt, Frame baseFrame)

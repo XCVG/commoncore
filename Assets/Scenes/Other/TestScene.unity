@@ -1128,7 +1128,7 @@ Prefab:
     - target: {fileID: 224259548548557048, guid: d8faa095f4a287249a857510caf0f6cd,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000009012725
+      value: -0.000012029775
       objectReference: {fileID: 0}
     - target: {fileID: 224358864844888908, guid: d8faa095f4a287249a857510caf0f6cd,
         type: 2}
@@ -1979,7 +1979,8 @@ MonoBehaviour:
   TooltipFacesPlayer: 0
   TooltipSprite: {fileID: 0}
   Scene: World_Ext_TestIsland
-  SpawnPoint: PinkDoorSpawn
+  SpawnPoint: 
+  UsePosition: 0
   Position: {x: 0, y: 0, z: 0}
   Rotation: {x: 0, y: 0, z: 0}
 --- !u!1001 &1829139169
