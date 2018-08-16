@@ -6,6 +6,14 @@
       },
       {
         "ItemModel": "stimpack"
+      },
+	  {
+        "ItemModel": "Acp45",
+        "Quantity": 16
+      },
+	  {
+        "ItemModel": "Gold",
+        "Quantity": 50
       }
     ]
   },

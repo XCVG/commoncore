@@ -241,7 +241,18 @@ namespace CommonCore.UI
             else if (Selected == SelectedState.Inventory && IsShop)
                 transferButtonText.text = "Sell >";
 
-            TransferText.text = string.Format("Value: {0}({1}) | Weight: {2}({3})", itemModel.Value, itemModel.Value * 1, itemModel.Weight, itemModel.Weight * 1);
+            if(IsShop && Selected == SelectedState.Container)
+            {
+                int adjValue = RpgValues.AdjustedBuyPrice(GameState.Instance.PlayerRpgState, itemModel.Value);
+                TransferText.text = string.Format("Value: {0}({1}) | Weight: {2}({3})", adjValue, adjValue * 1, itemModel.Weight, itemModel.Weight * 1);
+            }
+            else if (IsShop && Selected == SelectedState.Inventory)
+            {
+                int adjValue = RpgValues.AdjustedSellPrice(GameState.Instance.PlayerRpgState, itemModel.Value);
+                TransferText.text = string.Format("Value: {0}({1}) | Weight: {2}({3})", adjValue, adjValue * 1, itemModel.Weight, itemModel.Weight * 1);
+            }
+            else
+                TransferText.text = string.Format("Value: {0}({1}) | Weight: {2}({3})", itemModel.Value, itemModel.Value * 1, itemModel.Weight, itemModel.Weight * 1);
         }
 
         public void OnClickExit()
@@ -261,7 +272,7 @@ namespace CommonCore.UI
                 return;
             }
 
-            int quantity = CCBaseUtil.Clamp<int>(Convert.ToInt32(QuantityInputField.text), 1, SelectedItem.Quantity);
+            int quantity = CCBaseUtil.Clamp<int>(Convert.ToInt32(QuantityInputField.text), 1, Mathf.Abs(SelectedItem.Quantity));
 
             //if it's a shop and we don't have money, check and possibly fail
             //(we would also handle carry weight here if that was actually implemented ?)
@@ -273,12 +284,12 @@ namespace CommonCore.UI
                 if(Selected == SelectedState.Inventory)
                 {
                     //we are SELLING, check CONTAINER money 
-                    int neededMoney = Mathf.RoundToInt(quantity * SelectedItem.ItemModel.Value); //we'll just use value for now though barter will be a thing later
+                    int neededMoney = Mathf.RoundToInt(quantity * RpgValues.AdjustedSellPrice(GameState.Instance.PlayerRpgState, SelectedItem.ItemModel.Value));
                     int haveMoney = Container.CountItem(moneyTypeName);
 
                     if(neededMoney > haveMoney)
                     {
-                        Modal.PushMessageModal(string.Format("This shop doesn't have enough currency to pay for that (have {0}, need {1}", haveMoney, neededMoney), "Insufficient Currency", null, null);
+                        Modal.PushMessageModal(string.Format("This shop doesn't have enough currency to pay for that (have {0}, need {1})", haveMoney, neededMoney), "Insufficient Currency", null, null);
                         return;
                     }
                     else
@@ -293,12 +304,12 @@ namespace CommonCore.UI
                 else if(Selected == SelectedState.Container)
                 {
                     //we are BUYING, check PLAYER money
-                    int neededMoney = Mathf.RoundToInt(quantity * SelectedItem.ItemModel.Value); //we'll just use value for now though barter will be a thing later
+                    int neededMoney = Mathf.RoundToInt(quantity * RpgValues.AdjustedBuyPrice(GameState.Instance.PlayerRpgState, SelectedItem.ItemModel.Value));
                     int haveMoney = Inventory.CountItem(moneyTypeName);
 
                     if (neededMoney > haveMoney)
                     {
-                        Modal.PushMessageModal(string.Format("You don't have enough currency to pay for that (have {0}, need {1}", haveMoney, neededMoney), "Insufficient Currency", null, null);
+                        Modal.PushMessageModal(string.Format("You don't have enough currency to pay for that (have {0}, need {1})", haveMoney, neededMoney), "Insufficient Currency", null, null);
                         return;
                     }
                     else
@@ -366,7 +377,18 @@ namespace CommonCore.UI
                 QuantityInputField.text = itemQuantity.ToString();
             }
 
-            TransferText.text = string.Format("Value: {0}({1}) | Weight: {2}({3})", itemModel.Value, itemModel.Value * itemQuantity, itemModel.Weight, itemModel.Weight * itemQuantity);
+            if (IsShop && Selected == SelectedState.Container)
+            {
+                int adjValue = RpgValues.AdjustedBuyPrice(GameState.Instance.PlayerRpgState, itemModel.Value);
+                TransferText.text = string.Format("Value: {0}({1}) | Weight: {2}({3})", adjValue, adjValue * itemQuantity, itemModel.Weight, itemModel.Weight * itemQuantity);
+            }
+            else if (IsShop && Selected == SelectedState.Inventory)
+            {
+                int adjValue = RpgValues.AdjustedSellPrice(GameState.Instance.PlayerRpgState, itemModel.Value);
+                TransferText.text = string.Format("Value: {0}({1}) | Weight: {2}({3})", adjValue, adjValue * itemQuantity, itemModel.Weight, itemModel.Weight * itemQuantity);
+            }
+            else
+                TransferText.text = string.Format("Value: {0}({1}) | Weight: {2}({3})", itemModel.Value, itemModel.Value * itemQuantity, itemModel.Weight, itemModel.Weight * itemQuantity);
 
         }
 

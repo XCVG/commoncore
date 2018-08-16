@@ -69,10 +69,10 @@ This list is always in flux. As I implement features, I find there are even more
 * Basic state-machine NPC AI
 * Script execution by name
 * Save folder creation and fail handling
+* Shop/container system (same base logic)
 
 **In-Progress Features**
 
-* Shop/container system (same base logic)
 * Player movement (add jumping, swimming, noclip)
 * Combat (currently uses stats only partially, and lacks visuals)
 * Action Special game state modification

@@ -9,7 +9,7 @@ namespace CommonCore.Rpg
 {
     public enum MoneyType
     {
-        Dollars
+        Gold
     }
 
     public enum AmmoType
@@ -123,6 +123,7 @@ namespace CommonCore.Rpg
         {
             Name = name;
             Weight = weight;
+            Value = value;
             MaxCondition = maxCondition;
             Unique = unique;
             Essential = essential;

@@ -69,5 +69,31 @@ namespace CommonCore.Rpg
                 + (0.25f * character.DerivedStats.Stats[(int)StatType.Dexterity])
                 );
         }
+
+        public static int AdjustedBuyPrice(CharacterModel character, float value)
+        {
+            float adjValue = (value * 2.0f)
+                - (character.DerivedStats.Skills[(int)SkillType.Social] / 200 * value)
+                - (character.DerivedStats.Skills[(int)SkillType.SocialExchange] / 100 * value)
+                - (character.DerivedStats.Skills[(int)SkillType.SocialLeverage] / 200 * value)
+                - (character.DerivedStats.Stats[(int)StatType.Dialectic] / 1000 * value)
+                - (character.DerivedStats.Stats[(int)StatType.Subterfuge] / 1000 * value);
+
+            return Mathf.CeilToInt(Mathf.Max(value, adjValue));
+        }
+
+        public static int AdjustedSellPrice(CharacterModel character, float value)
+        {
+            float halfValue = value * 0.5f;
+
+            float adjValue = halfValue
+                + (character.DerivedStats.Skills[(int)SkillType.Social] / 200 * halfValue)
+                + (character.DerivedStats.Skills[(int)SkillType.SocialExchange] / 200 * halfValue)
+                + (character.DerivedStats.Skills[(int)SkillType.SocialLeverage] / 200 * halfValue)
+                + (character.DerivedStats.Stats[(int)StatType.Dialectic] / 1000 * halfValue)
+                + (character.DerivedStats.Stats[(int)StatType.Subterfuge] / 1000 * halfValue);
+
+            return Mathf.FloorToInt(Mathf.Min(adjValue, value));
+        }
     }
 }
