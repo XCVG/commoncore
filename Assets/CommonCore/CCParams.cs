@@ -10,9 +10,11 @@ namespace CommonCore
      */
     public static class CCParams
     {
-        //*****version info
+        //TODO make decisions about const vs static readonly, will become a problem with multiple assemblies
+
+        //*****system version info
         public static readonly SemanticVersion VersionCode = new SemanticVersion(1,0,0); //1.0.0
-        public const string VersionName = "Arroyo"; //start with A, locations from RPGs
+        public static readonly string VersionName = "Arroyo"; //start with A, locations from RPGs
         public static string UnityVersion
         {
             get
@@ -20,6 +22,10 @@ namespace CommonCore
                 return Application.unityVersion;
             }
         }
+
+        //*****game version info
+        public static readonly SemanticVersion GameVersion = new SemanticVersion(0,0,0);
+        public static readonly string GameVersionName = "Mechanics Preview 1";
 
         //*****basic config settings
         public const bool AutoInit = true;

@@ -31,6 +31,10 @@ namespace CommonCore.UI
         public Text AmmoText;
         public Text MeleeWeaponText;
         public Image ReadyBarImage;
+
+        public Text SubtitleText;
+        private float SubtitleTimer;
+        private int SubtitlePriority = int.MinValue;
         
         private QdmsMessageInterface MessageInterface;
 
@@ -49,6 +53,7 @@ namespace CommonCore.UI
 
             UpdateStatusDisplays();
             UpdateWeaponDisplay();
+            UpdateSubtitles();
         }
         
         void Update()
@@ -61,6 +66,7 @@ namespace CommonCore.UI
             }
 
             UpdateStatusDisplays();
+            UpdateSubtitles();
         }
 
         private void HandleMessage(QdmsMessage message)
@@ -89,6 +95,30 @@ namespace CommonCore.UI
                         break;
                 }
             }
+            else if(message is SubtitleMessage)
+            {
+                SubtitleMessage subMessage = (SubtitleMessage)message;
+                if(subMessage.Priority > SubtitlePriority)
+                {
+                    SubtitlePriority = subMessage.Priority;
+                    SubtitleTimer = subMessage.HoldTime;
+                    SubtitleText.text = subMessage.UseSubstitution ? Sub.Macro(subMessage.Contents) : subMessage.Contents;
+                }
+            }
+        }
+
+        private void UpdateSubtitles()
+        {
+
+            if(SubtitleTimer <= 0)
+            {
+                SubtitleText.text = string.Empty;
+                SubtitlePriority = int.MinValue;
+            }
+            else
+            {
+                SubtitleTimer -= Time.deltaTime;
+            }
         }
 
         private void UpdateStatusDisplays()
@@ -98,6 +128,7 @@ namespace CommonCore.UI
             HealthSlider.value = player.HealthFraction;
         }
 
+        //this needs to die in a fire, the degree of interdependency is insane
         private void UpdateWeaponDisplay()
         {
             var player = GameState.Instance.PlayerRpgState;
@@ -142,6 +173,8 @@ namespace CommonCore.UI
                 ReadyBarImage.color = Color.red;
             }
         }
+
+        //TODO move to messaging
 
         internal void ClearTarget()
         {

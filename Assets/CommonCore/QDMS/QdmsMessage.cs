@@ -6,6 +6,8 @@ using UnityEngine;
 namespace CommonCore.Messaging
 {
 
+    //note to self: strictly typed messaging systems are a fucking stupid idea
+
     public abstract class QdmsMessage
     {
         public QdmsMessageInterface Sender { get; private set; }
@@ -64,6 +66,29 @@ namespace CommonCore.Messaging
         {
             Contents = contents;
         }
+    }
+
+    public class SubtitleMessage : QdmsMessage
+    {
+        public readonly string Contents;
+        public readonly float HoldTime;
+        public readonly bool UseSubstitution;
+        public readonly int Priority;
+
+        public SubtitleMessage(string contents, float holdTime, bool useSubstitution, int priority) : base()
+        {
+            Contents = contents;
+            HoldTime = holdTime;
+            UseSubstitution = useSubstitution;
+            Priority = priority;
+        }
+
+        public SubtitleMessage(string contents, float holdTime) : this(contents, holdTime, true, 0)
+        {
+
+        }
+
+        
     }
 
 }

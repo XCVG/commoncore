@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using CommonCore;
 using CommonCore.State;
@@ -19,20 +20,28 @@ namespace GameUI
         public GameObject CurrentPanel;
         public GameObject LoadPanel;
         public GameObject OptionsPanel;
-        public GameObject HelpPanel;        
+        public GameObject HelpPanel;
+
+        [Header("Special")]
+        public GameObject MessageModal;
+        public Text SystemText;
 
         public override void Awake()
         {
             base.Awake();
         }
 
-        // Use this for initialization
         public override void Start()
         {
             base.Start();
+
+            SystemText.text = string.Format("{0}\n{1} {2}\nCommonCore {3} {4}\nUnity {5}",
+                Application.productName,
+                CCParams.GameVersion, CCParams.GameVersionName,
+                CCParams.VersionCode.ToString(), CCParams.VersionName,
+                Application.unityVersion);
         }
 
-        // Update is called once per frame
         public override void Update()
         {
             base.Update();
@@ -53,6 +62,11 @@ namespace GameUI
         }
 
         public void OnClickNew()
+        {
+            MessageModal.SetActive(true);
+        }      
+
+        public void StartGame()
         {
             //start a new game the normal way
             MetaState mgs = MetaState.Instance;
