@@ -296,8 +296,6 @@ namespace CommonCore.World
 
         protected void RestorePlayer(GameState gs)
         {
-            //TODO autoinit player for scenes that "start from zero"
-
             MetaState mgs = MetaState.Instance;
             GameObject player = WorldUtils.GetPlayerObject();
             RestorableData prd = gs.PlayerWorldState;
@@ -338,6 +336,11 @@ namespace CommonCore.World
             }
             else
             {
+                if(player == null)
+                    player = Instantiate(Resources.Load("entities/" + "spec_player"), transform) as GameObject;
+
+                RestorePlayerToIntent(mgs, player);
+
                 //warn that no player data exists
                 Debug.LogWarning("No player world data exists!");
             }
@@ -356,8 +359,11 @@ namespace CommonCore.World
                 else if(mgs.PlayerIntent.SpawnPoint != null) //not null, but is empty
                 {
                     GameObject spawnPoint = WorldUtils.FindObjectByTID("DefaultPlayerSpawn");
-                    player.transform.position = spawnPoint.transform.position;
-                    player.transform.rotation = spawnPoint.transform.rotation;
+                    if(spawnPoint != null)
+                    {
+                        player.transform.position = spawnPoint.transform.position;
+                        player.transform.rotation = spawnPoint.transform.rotation;
+                    }                    
                 }
                 else
                 {
@@ -367,6 +373,14 @@ namespace CommonCore.World
             }
             else
             {
+
+                GameObject spawnPoint = WorldUtils.FindObjectByTID("DefaultPlayerSpawn");
+                if (spawnPoint != null)
+                {
+                    player.transform.position = spawnPoint.transform.position;
+                    player.transform.rotation = spawnPoint.transform.rotation;
+                }
+
                 Debug.LogWarning("No player spawn intent exists!");
             }
         }

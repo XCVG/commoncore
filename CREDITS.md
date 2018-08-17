@@ -56,6 +56,10 @@ animations from Firefighter VR, but these will be removed/replaced soon
 
 These are included under permissive or copyleft licenses.
 
+JamesWhite - Wooden Bridge [CC0]
+	https://opengameart.org/content/wooden-bridge-0
+	Assets/Objects/OpenSource/ogabridge
+
 César da Rocha - Fantasy Choir 3 orchestral pieces [CC0]
 	https://opengameart.org/content/fantasy-choir-3-orchestral-pieces
 	Assets/Resources/DynamicMusic/menu.ogg
