@@ -31,8 +31,16 @@ Jean Moreno (JMO) - War FX
 Cobo Antonio - DevConsole 2
 	https://assetstore.unity.com/packages/tools/gui/devconsole-2-16833
 
-
+## Assets/ProCore
+	
+Unity Technologies - ProBuilder
+	https://www.assetstore.unity3d.com/en/?stay#!/content/111418
+	(needed for demo scenes)
+	
 ## Assets/Objects/ThirdParty
+
+Jaroslav Grafskiy - Mobile Wooden Fences
+	https://www.assetstore.unity3d.com/en/?stay#!/content/54772
 
 HONETi - Free Animated Space Man
 	https://www.assetstore.unity3d.com/en/?stay#!/content/61548
@@ -59,6 +67,14 @@ These are included under permissive or copyleft licenses.
 JamesWhite - Wooden Bridge [CC0]
 	https://opengameart.org/content/wooden-bridge-0
 	Assets/Objects/OpenSource/ogabridge
+	
+djonvincent/opengameart.org - Wall [CC0]
+	https://opengameart.org/content/wall
+	Assets/Objects/OpenSource/magewall
+	
+Blender Foundation | apricot.blender.org - Loy-poly fences [CC-BY 3.0]
+	https://opengameart.org/content/low-poly-fences
+	Assets/Objects/OpenSource/lowpolyfence
 
 César da Rocha - Fantasy Choir 3 orchestral pieces [CC0]
 	https://opengameart.org/content/fantasy-choir-3-orchestral-pieces
