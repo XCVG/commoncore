@@ -39,6 +39,18 @@ Unity Technologies - ProBuilder
 	
 ## Assets/Objects/ThirdParty
 
+Lylek Games - Medieval Town Exteriors [Free]
+	https://www.assetstore.unity3d.com/en/?stay#!/content/27026
+
+Game-Ready - Free Ships
+	https://www.assetstore.unity3d.com/en/?stay#!/content/104215
+
+Lylek Games - Island Assets
+	https://www.assetstore.unity3d.com/en/?stay#!/content/56989
+
+StarCity Designs - Satellite Dish / Communication Tower
+	https://www.assetstore.unity3d.com/en/?stay#!/content/5884
+
 Jaroslav Grafskiy - Mobile Wooden Fences
 	https://www.assetstore.unity3d.com/en/?stay#!/content/54772
 
@@ -64,12 +76,20 @@ animations from Firefighter VR, but these will be removed/replaced soon
 
 These are included under permissive or copyleft licenses.
 
+Rakshi Games - Free House [CC-BY 3.0]
+	https://opengameart.org/content/free-house
+	Assets/Objects/OpenSource/freehouse
+
 JamesWhite - Wooden Bridge [CC0]
 	https://opengameart.org/content/wooden-bridge-0
 	Assets/Objects/OpenSource/ogabridge
 	
 djonvincent/opengameart.org - Wall [CC0]
 	https://opengameart.org/content/wall
+	Assets/Objects/OpenSource/magewall
+	
+djonvincent/opengameart.org - Mage Tower [CC0]
+	https://opengameart.org/content/mage-tower
 	Assets/Objects/OpenSource/magewall
 	
 Blender Foundation | apricot.blender.org - Loy-poly fences [CC-BY 3.0]

@@ -8,7 +8,8 @@
 	  "Rate": 0.8,
       "DType": "Normal",
       "Name": "sword",
-      "Weight": 1.5,
+      "Weight": 1.5,	  
+	  "Value": 50,
       "MaxCondition": 1,
       "Unique": false,
       "Essential": false
