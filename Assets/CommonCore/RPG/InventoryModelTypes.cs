@@ -167,12 +167,14 @@ namespace CommonCore.Rpg
     {
         public readonly float Reach;
         public readonly float Rate;
+        public readonly float EnergyCost;
 
-        public MeleeWeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, float damage, float damagePierce, float reach, float rate, DamageType dType, string viewModel, string worldModel) 
+        public MeleeWeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, float damage, float damagePierce, float reach, float rate, float energyCost, DamageType dType, string viewModel, string worldModel) 
             : base(name, weight, value, maxCondition, unique, essential, damage, damagePierce, dType, viewModel, worldModel)
         {
             Reach = reach;
             Rate = rate;
+            EnergyCost = energyCost;
         }
     }
 

@@ -13,6 +13,7 @@ namespace CommonCore.State
         {
             //TODO initialization
             Intents = new List<Intent>();
+            SessionFlags = new HashSet<string>();
         }
 
         public static MetaState Instance
@@ -68,6 +69,7 @@ namespace CommonCore.State
         public PlayerSpawnIntent PlayerIntent { get; set; } //horrible for cleanliness but should be faster
         public string LoadingScreenPropOverride { get; set; }
         public bool SkipLoadingScreen { get; set; }
+        public HashSet<string> SessionFlags { get; set; }
 
     }
 

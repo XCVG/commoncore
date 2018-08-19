@@ -6,6 +6,7 @@
       "DamagePierce": 2,
 	  "Reach": 1.0,
 	  "Rate": 0.8,
+	  "EnergyCost": 5.0,
       "DType": "Normal",
       "Name": "sword",
       "Weight": 1.5,	  

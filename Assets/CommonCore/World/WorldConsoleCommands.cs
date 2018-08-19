@@ -34,6 +34,25 @@ namespace CommonCore.World
             DevConsole.singleton.Log(JsonConvert.SerializeObject(GameState.Instance.PlayerRpgState));
         }
 
+        //***** CHEATS
+
+        [Command]
+        static void God()
+        {
+            if (MetaState.Instance.SessionFlags.Contains("GodMode"))
+                MetaState.Instance.SessionFlags.Remove("GodMode");
+            else
+                MetaState.Instance.SessionFlags.Add("GodMode");
+        }
+
+        [Command]
+        static void Noclip()
+        {
+            var player = WorldUtils.GetPlayerController();
+
+            player.Clipping = !(player.Clipping);
+        }
+
         //***** LOAD/SAVE
 
         //force a full load from file with scene transition

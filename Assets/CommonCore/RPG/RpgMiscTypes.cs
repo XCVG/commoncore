@@ -44,6 +44,7 @@ namespace CommonCore.Rpg
     public class StatsSet
     {
         public float MaxHealth { get; set; }
+        public float MaxEnergy { get; set; }
         public float[] DamageResistance { get; set; } //this is stupid, TODO change to dictionary with enum keys
         public float[] DamageThreshold { get; set; }
         

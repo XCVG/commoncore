@@ -18,6 +18,20 @@ namespace CommonCore.Rpg
 
         public Sex Gender { get; set; }
 
+        public float Energy
+        {
+            get
+            {
+                return DerivedStats.MaxEnergy * EnergyFraction;
+            }
+            set
+            {
+                EnergyFraction = value / DerivedStats.MaxEnergy;
+            }
+        }
+
+        public float EnergyFraction { get; set; }
+
         public float Health
         {
             get
@@ -63,9 +77,6 @@ namespace CommonCore.Rpg
             //copy base stats
             DerivedStats = new StatsSet(BaseStats);
 
-            //recalculate max health
-            DerivedStats.MaxHealth = RpgValues.MaxHealthForLevel(Level);
-
             //apply conditions
             foreach(Condition c in Conditions)
             {
@@ -91,6 +102,10 @@ namespace CommonCore.Rpg
                     Debug.LogWarning("Player has non-armor item in armor slot!");
                 }
             }
+
+            //recalculate max health and energy
+            DerivedStats.MaxHealth = RpgValues.MaxHealthForLevel(Level);
+            DerivedStats.MaxEnergy = RpgValues.MaxEnergy(this);
 
             QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgStatsUpdated"));
 

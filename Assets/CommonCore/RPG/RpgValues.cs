@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -80,6 +81,15 @@ namespace CommonCore.Rpg
                 - (character.DerivedStats.Stats[(int)StatType.Subterfuge] / 1000 * value);
 
             return Mathf.CeilToInt(Mathf.Max(value, adjValue));
+        }
+
+        public static float MaxEnergy(CharacterModel characterModel)
+        {
+            return Mathf.FloorToInt(100 
+                + characterModel.DerivedStats.Stats[(int)StatType.Dexterity] * 5.0f
+                + characterModel.DerivedStats.Stats[(int)StatType.Resilience] * 2.0f
+                + characterModel.DerivedStats.Skills[(int)SkillType.Athletics] * 5.0f
+                + characterModel.DerivedStats.Skills[(int)SkillType.AthleticsFleet] * 2.0f);
         }
 
         public static int AdjustedSellPrice(CharacterModel character, float value)

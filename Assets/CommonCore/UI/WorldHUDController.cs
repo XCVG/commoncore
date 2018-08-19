@@ -126,6 +126,9 @@ namespace CommonCore.UI
             var player = GameState.Instance.PlayerRpgState;
             HealthText.text = player.Health.ToString("f0");
             HealthSlider.value = player.HealthFraction;
+
+            EnergyText.text = player.Energy.ToString("f0");
+            EnergySlider.value = player.EnergyFraction;
         }
 
         //this needs to die in a fire, the degree of interdependency is insane

@@ -21,12 +21,15 @@ namespace CommonCore.World
         public bool Clipping;
         public float PushFactor;
 
+        private Vector3 AirMoveVelocity;
+
         public float MaxProbeDist;
         public float MaxUseDist;
 
         [Header("Components")]
         public WorldHUDController HUDScript;
         public CharacterController CharController;
+        public Rigidbody CharRigidbody;
         public Animator AnimController;
         public Transform CameraRoot;
 
@@ -56,6 +59,11 @@ namespace CommonCore.World
             if(!CharController)
             {
                 CharController = GetComponent<CharacterController>();
+            }
+
+            if(!CharRigidbody)
+            {
+                CharRigidbody = GetComponent<Rigidbody>();
             }
 
             if(!CameraRoot)
@@ -212,30 +220,20 @@ namespace CommonCore.World
         }
         
 
-        //TODO refactor, but I think that was in the cards from the beginning
-        //TODO handle jumping, flying, noclip, crouching(?)
+        //TODO handle crouching and fall damage
         protected void HandleMovement()
         {
+            //really need to do something about these values
             bool isMoving = false;
-            float deadzone = 0.1f;
-            float vmul = 10f;
-            float rmul = 60f;
-            float cmul = 0.5f * rmul;
-            float lmul = 180f;
-            
-            if(Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveY)) > deadzone)
-            {
-                CharController.Move(transform.forward * MappedInput.GetAxis(DefaultControls.MoveY) * vmul * Time.deltaTime);
-                isMoving = true;
-            }
+            float deadzone = 0.1f; //this really shouldn't be here
+            float vmul = 10f; //mysterious magic number velocity multiplier
+            float amul = 5.0f; //air move multiplier
+            float lmul = 180f; //mostly logical look multiplier
 
-            if(Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveX)) > deadzone)
-            {
-                CharController.Move(transform.right * MappedInput.GetAxis(DefaultControls.MoveX) * vmul * Time.deltaTime);
-                isMoving = true;
-            }
+            var playerState = GameState.Instance.PlayerRpgState;
 
-            if(Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookX)) > deadzone)
+            //looking is the same as long as we're in control
+            if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookX)) > deadzone)
             {
                 transform.Rotate(Vector3.up, lmul * MappedInput.GetAxis(DefaultControls.LookX) * Time.deltaTime);
                 isMoving = true;
@@ -246,10 +244,117 @@ namespace CommonCore.World
                 CameraRoot.transform.Rotate(Vector3.left, lmul * MappedInput.GetAxis(DefaultControls.LookY) * Time.deltaTime);
             }
 
-            //handle gravity
-            if(Clipping)
+
+            if (!Clipping)
             {
-                CharController.Move(Physics.gravity * Time.deltaTime);
+                //noclip mode: disable controller, kinematic rigidbody, use transform only
+                CharController.enabled = false;
+                CharRigidbody.isKinematic = true;
+
+                Vector3 moveVector = Vector3.zero;
+
+                if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveY)) > deadzone)
+                {
+                    moveVector += (CameraRoot.transform.forward * MappedInput.GetAxis(DefaultControls.MoveY) * vmul * Time.deltaTime);
+                }
+
+                if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveX)) > deadzone)
+                {
+                    moveVector += (transform.right * MappedInput.GetAxis(DefaultControls.MoveX) * vmul * Time.deltaTime);
+                }
+
+                if (MappedInput.GetButton(DefaultControls.Sprint))
+                    moveVector *= 2.0f;
+
+                transform.Translate(moveVector, Space.World);
+            }
+            else
+            {
+
+                Vector3 moveVector = Vector3.zero;
+
+                CharController.enabled = true;
+                CharRigidbody.isKinematic = true;
+
+                if (CharController.isGrounded)
+                {
+                    //grounded: controller enabled, kinematic rigidbody, use controller movement
+                    
+                    AirMoveVelocity = Vector3.zero;
+
+                    if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveY)) > deadzone)
+                    {
+                        moveVector += (transform.forward * MappedInput.GetAxis(DefaultControls.MoveY) * vmul * Time.deltaTime);
+                        isMoving = true;
+                    }
+
+                    if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveX)) > deadzone)
+                    {
+                        moveVector += (transform.right * MappedInput.GetAxis(DefaultControls.MoveX) * vmul * Time.deltaTime);
+                        isMoving = true;
+                    }
+
+                    //hacky sprinting
+                    if(MappedInput.GetButton(DefaultControls.Sprint) && playerState.Energy > 0)
+                    {
+                        moveVector *= 1.5f;
+                        playerState.Energy -= 10.0f * Time.deltaTime;
+                    }
+                    else
+                    {
+                        playerState.Energy += 5.0f * Time.deltaTime;
+                    }
+
+                    if(moveVector.magnitude == 0)
+                    {
+                        playerState.Energy += 5.0f * Time.deltaTime;
+                    }
+
+                    playerState.Energy = Mathf.Min(playerState.Energy, playerState.DerivedStats.MaxEnergy);
+
+                    //jump
+                    if (MappedInput.GetButtonDown(DefaultControls.Jump))
+                    {
+                        AirMoveVelocity = moveVector + (transform.forward * 1.0f); 
+
+                        moveVector += (transform.forward * 1.0f) + (transform.up * 1.0f);
+
+                        if (MappedInput.GetButton(DefaultControls.Sprint) && playerState.Energy > 0)
+                            AirMoveVelocity += transform.forward * 1.0f;
+
+                        isMoving = true;
+                    }
+
+                }
+                else
+                {
+                    //flying: controller enabled, non-kinematic rigidbody, use rigidbody movement
+                    //except that didn't work...
+                    //CharController.enabled = true;
+                    //CharRigidbody.isKinematic = false;                    
+
+                    AirMoveVelocity *= 0.99f;
+
+                    moveVector += AirMoveVelocity * 10.0f * Time.deltaTime;
+
+                    //air control
+                    if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveY)) > deadzone)
+                    {
+                        moveVector += (transform.forward * MappedInput.GetAxis(DefaultControls.MoveY) * amul * Time.deltaTime);
+                        isMoving = true;
+                    }
+
+                    if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveX)) > deadzone)
+                    {
+                        moveVector += (transform.right * MappedInput.GetAxis(DefaultControls.MoveX) * amul * Time.deltaTime);
+                        isMoving = true;
+                    }
+                }
+
+                //"gravity"
+                moveVector += 0.6f * Physics.gravity * Time.deltaTime; //fuck me! this is NOT how to do physics!
+
+                CharController.Move(moveVector);
             }
 
             //handle animation
@@ -356,11 +461,21 @@ namespace CommonCore.World
                         MeleeWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.MeleeWeapon].ItemModel as MeleeWeaponItemModel;
                         if (wim != null)
                         {
+                            TimeToNext = wim.Rate;
                             float calcDamage = RpgValues.GetMeleeDamage(GameState.Instance.PlayerRpgState, wim.Damage);
                             float calcDamagePierce = RpgValues.GetMeleeDamage(GameState.Instance.PlayerRpgState, wim.DamagePierce);
+                            if (GameState.Instance.PlayerRpgState.Energy <= 0)
+                            {
+                                calcDamage *= 0.5f;
+                                calcDamagePierce *= 0.5f;
+                                TimeToNext += wim.Rate;
+                            }
+                            else
+                                GameState.Instance.PlayerRpgState.Energy -= wim.EnergyCost;
                             hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, wim.DType, ActorBodyPart.Unspecified, this);
-                            TimeToNext = wim.Rate;
+                            
                         }
+                        //TODO fists or something
                     }
                 }
 
@@ -376,6 +491,9 @@ namespace CommonCore.World
 
         public void TakeDamage(ActorHitInfo data)
         {
+            if (MetaState.Instance.SessionFlags.Contains("GodMode"))
+                return;
+
             CharacterModel playerModel = GameState.Instance.PlayerRpgState;
 
             //damage model is very stupid right now, we will make it better later

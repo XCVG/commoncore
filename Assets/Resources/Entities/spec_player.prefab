@@ -1872,6 +1872,8 @@ MonoBehaviour:
   EditorFormID: spec_player
   Tags: []
   AutoinitHud: 1
+  Stamina: 100
+  MaxStamina: 100
   PlayerInControl: 1
   Clipping: 1
   PushFactor: 2
@@ -1879,6 +1881,7 @@ MonoBehaviour:
   MaxUseDist: 1
   HUDScript: {fileID: 0}
   CharController: {fileID: 143302546512910276}
+  CharRigidbody: {fileID: 0}
   AnimController: {fileID: 95084112636074572}
   CameraRoot: {fileID: 4686010376756608}
   ShootingEnabled: 1
