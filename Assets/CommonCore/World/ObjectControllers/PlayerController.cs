@@ -315,15 +315,17 @@ namespace CommonCore.World
                     //jump
                     if (MappedInput.GetButtonDown(DefaultControls.Jump))
                     {
-                        AirMoveVelocity = moveVector + (transform.forward * 1.0f); 
+                        AirMoveVelocity = (moveVector * 10.0f) + (transform.forward * 5.0f) + (transform.up * 7.5f); 
 
-                        moveVector += (transform.forward * 1.0f) + (transform.up * 1.0f);
+                        moveVector += (transform.forward * 0.1f) + (transform.up * 0.5f);
 
                         if (MappedInput.GetButton(DefaultControls.Sprint) && playerState.Energy > 0)
                             AirMoveVelocity += transform.forward * 1.0f;
 
                         isMoving = true;
                     }
+
+                    moveVector += 0.6f * Physics.gravity * Time.deltaTime;
 
                 }
                 else
@@ -333,9 +335,11 @@ namespace CommonCore.World
                     //CharController.enabled = true;
                     //CharRigidbody.isKinematic = false;                    
 
-                    AirMoveVelocity *= 0.99f;
+                    AirMoveVelocity.x *= (0.9f * Time.deltaTime);
+                    AirMoveVelocity.z *= (0.9f * Time.deltaTime);
+                    AirMoveVelocity += Physics.gravity * 2.0f * Time.deltaTime;
 
-                    moveVector += AirMoveVelocity * 10.0f * Time.deltaTime;
+                    moveVector += AirMoveVelocity * Time.deltaTime;
 
                     //air control
                     if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveY)) > deadzone)
@@ -352,7 +356,7 @@ namespace CommonCore.World
                 }
 
                 //"gravity"
-                moveVector += 0.6f * Physics.gravity * Time.deltaTime; //fuck me! this is NOT how to do physics!
+                //moveVector += 0.6f * Physics.gravity * Time.deltaTime; //fuck me! this is NOT how to do physics!
 
                 CharController.Move(moveVector);
             }
