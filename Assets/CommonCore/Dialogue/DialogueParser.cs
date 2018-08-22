@@ -27,6 +27,7 @@ namespace CommonCore.Dialogue
             string sMusic = string.Empty;
             string sNext = string.Empty;
             string sText = string.Empty;
+            string sName = string.Empty;
             if (jo["background"] != null)
                 sBackground = jo["background"].Value<string>();
             if (jo["image"] != null)
@@ -37,7 +38,9 @@ namespace CommonCore.Dialogue
                 sNext = jo["default"].Value<string>();
             if (jo["text"] != null)
                 sText = jo["text"].Value<string>();
-            Frame baseFrame = new Frame(sBackground, sImage, sNext, sMusic, string.Empty, sText, null, null);
+            if (jo["nameText"] != null)
+                sName = jo["nameText"].Value<string>();
+            Frame baseFrame = new Frame(sBackground, sImage, sNext, sMusic, sName, sText, null, null);
 
             //parse frames
             Dictionary<string, Frame> frames = new Dictionary<string, Frame>();
@@ -346,6 +349,16 @@ namespace CommonCore.Dialogue
             {
                 type = MicroscriptType.Quest;
                 target = jt["quest"].Value<string>();
+            }
+            else if (jt["actorvalue"] != null)
+            {
+                type = MicroscriptType.ActorValue;
+                target = jt["actorvalue"].Value<string>();
+            }
+            else if(jt["exec"] != null)
+            {
+                type = MicroscriptType.Exec;
+                target = jt["exec"].Value<string>();
             }
             else
             {

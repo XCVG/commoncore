@@ -190,6 +190,7 @@ namespace CommonCore.World
             {
                 case ActorAiState.Idle:
                     SetAnimation(ActorAnimState.Idle);
+                    AbortNav();
                     break;
                 case ActorAiState.Dead:
                     if (CurrentAiState == ActorAiState.Dead) //fix for glitchy looking behaviour

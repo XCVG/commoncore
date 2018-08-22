@@ -1,0 +1,224 @@
+{
+  "image": "Flavia",
+  "nameText": "Flavia",
+  "default": "base",
+  "frames": {
+    "matsuda1": {
+      "type": "text",
+      "image": "matsuda",
+      "nameText": "Matsuda Toyoda",
+      "next": "this.matsuda2",
+      "text": "Hey, there you are! I made it into the academy, too!"
+    },
+    "first1": {
+      "type": "choice",
+      "text": "Greetings, Aegustae",
+      "choices": [
+        {
+          "text": "You know, Aurelia is fine. I'm not that big on titles.",
+          "next": "this.first2",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidTryCasual",
+              "set": true
+            }
+          ]
+        },
+        {
+          "text": "What's the word around town?",
+          "next": "this.first3"
+        },
+        {
+          "text": "That water doesn't look clean... or even close to clean...",
+          "next": "this.first4"
+        },
+        {
+          "text": "I should get going",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "first2": {
+      "type": "choice",
+      "text": "My apologies, Aegustae. I am a simple farmer's wife, and you are of the noble house. I bow humbly to your presence.",
+      "choices": [
+        {
+          "text": "Okay...",
+          "next": "this.first1"
+        }
+      ]
+    },
+    "first3": {
+      "type": "choice",
+      "text": "Nothing that would be of interest to a woman of your stature, I am afraid. Just the simple affairs of peasants and farmers.",
+      "choices": [
+        {
+          "text": "Thanks",
+          "next": "this.first1"
+        }
+      ]
+    },
+    "first4": {
+      "type": "choice",
+      "text": "It's not, I'm afraid. Some raiders dumped their refuse in the lake upstream a few weeks ago. Since then, the water has been foul and several of us have taken ill. ",
+      "choices": [
+        {
+          "text": "Is that normal for a village like this?",
+          "next": "this.first5"
+        },
+        {
+          "text": "Is there something I can do about it?",
+          "next": "this.first6"
+        },
+        {
+          "text": "Sorry, but I can't do anything about it",
+          "next": "this.first1"
+        },
+        {
+          "text": "Hah! Sucks being you, I guess.",
+          "next": "this.first1",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidOffend",
+              "set": true
+            }
+          ]
+        }
+      ]
+    },
+    "first5": {
+      "type": "choice",
+      "text": "By the gods, no! The river has never been clean, mind you, but we used to be able to drink it and rarely get sick.",
+      "choices": [
+        {
+          "text": "Is there anywhere else you could get water?",
+          "next": "this.first6"
+        },
+        {
+          "text": "Wow, that sucks",
+          "next": "this.first1"
+        }
+      ]
+    },
+    "first6": {
+      "type": "choice",
+      "text": "There is the old well halfway down the island. Back in my mother's time, when the garrison was still here, they would get there water there. I believe it's still good, but monsters have nested nearby and it is too dangerous to approach.",
+      "choices": [
+        {
+          "text": "I'll see what I can do.",
+          "next": "meta.return",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "start": true
+            }
+          ]
+        },
+        {
+          "text": "I'm sorry, but I'm not a warrior. I can't help you with that.",
+          "next": "this.first1"
+        },
+        {
+          "text": "Yeah, you're on your own.",
+          "next": "this.first1",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidOffend",
+              "set": true
+            }
+          ]
+        }
+      ]
+    },
+    "started1": {
+      "type": "choice",
+      "text": "Were you able to vanquish the monsters, Aegustae Aurelia?",
+      "choices": [
+        {
+          "text": "(LIE) They fell swiftly by the edge of my sword",
+          "next": "this.first3",
+          "showCondition": {
+            "noflag": "DemoWellMonstersKilled"
+          }
+        },
+        {
+          "text": "Yes, I killed them all",
+          "next": "this.first4",
+          "showCondition": {
+            "flag": "DemoWellMonstersKilled"
+          }
+        },
+        {
+          "text": "I'm working on it",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "base": {
+      "type": "choice",
+      "nameText": "Flavia",
+      "choices": [
+        {
+          "text": "Hello",
+          "next": "this.first1",
+          "conditional": [
+            {
+              "next": "this.started1",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "started": true
+                }
+              ]
+            },
+            {
+              "next": "this.filter1",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "equal": 220
+                }
+              ]
+            },
+            {
+              "next": "this.doneDefault",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "finished": true
+                }
+              ]
+            },
+            {
+              "next": "this.doneRelocated",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "equal": -3
+                }
+              ]
+            },
+            {
+              "next": "this.doneFilterPassed",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "equal": -21
+                }
+              ]
+            },
+            {
+              "next": "this.doneFilterFailed",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "equal": -22
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

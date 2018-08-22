@@ -156,6 +156,9 @@ namespace CommonCore.Dialogue
                 if(cf.Choices[idx].NextConditional != null)
                 {
                     choice = cf.Choices[idx].EvaluateConditional();
+                    
+                    if(choice == null)
+                        choice = cf.Choices[idx].Next;
                 }
                 else
                 {

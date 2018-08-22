@@ -116,7 +116,7 @@ namespace CommonCore.State
 
     internal enum MicroscriptType
     {
-        Flag, Item, Variable, Affinity, Quest, ActorValue //eval is again not supported
+        Flag, Item, Variable, Affinity, Quest, ActorValue, Exec //eval is again not supported
     }
 
     internal enum MicroscriptAction
@@ -221,6 +221,9 @@ namespace CommonCore.State
                     {
                         throw new NotSupportedException();
                     }
+                    break;
+                case MicroscriptType.Exec:
+                    Scripting.ScriptingModule.Call(Target, new Scripting.ScriptExecutionContext() { Caller = this });
                     break;
                 default:
                     throw new NotSupportedException();
