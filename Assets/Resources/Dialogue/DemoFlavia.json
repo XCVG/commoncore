@@ -130,23 +130,127 @@
         }
       ]
     },
+    "endgood1": {
+      "type": "choice",
+      "text": "That is great news! We shall begin fetching water at once. The village cannot thank you enough, Aegustae.",
+      "choices": [
+        {
+          "text": "You're welcome",
+          "next": "meta.return",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "set": -1
+            },
+            {
+              "variable": "Reputation",
+              "add": 5
+            },
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            },
+            {
+              "item": "Gold",
+              "give": 50
+            }
+          ]
+        }
+      ]
+    },
+    "endlie1": {
+      "type": "choice",
+      "text": "That is great news! We shall begin fetching water at once. The village cannot thank you enough, Aegustae.",
+      "choices": [
+        {
+          "text": "You're welcome",
+          "next": "meta.return",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "set": -2
+            },
+            {
+              "variable": "Reputation",
+              "add": -10
+            },
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            },
+            {
+              "item": "Gold",
+              "give": 50
+            }
+          ]
+        }
+      ]
+    },
+    "endlie2": {
+      "type": "choice",
+      "text": "Forgive me, Aegustae, but I have my doubts. I fear the well may not truly be safe, with monsters still lurking in the shadows.",
+      "choices": [
+        {
+          "text": "You dare question me?",
+          "next": "meta.return"
+        },
+        {
+          "text": "I really did kill the monsters!",
+          "next": "meta.return"
+        },
+        {
+          "text": "You're right, I'm lying, I didn't do it.",
+          "next": "meta.return"
+        }
+      ]
+    },
     "started1": {
       "type": "choice",
       "text": "Were you able to vanquish the monsters, Aegustae Aurelia?",
       "choices": [
         {
           "text": "(LIE) They fell swiftly by the edge of my sword",
-          "next": "this.first3",
+          "conditional": [
+            {
+              "next": "this.endlie2",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "greater": 35
+                }
+              ]
+            }
+          ],
+          "next": "this.endlie1",
           "showCondition": {
             "noflag": "DemoWellMonstersKilled"
           }
         },
         {
           "text": "Yes, I killed them all",
-          "next": "this.first4",
+          "next": "this.endgood1",
           "showCondition": {
             "flag": "DemoWellMonstersKilled"
           }
+        },
+        {
+          "next": "this.movefail",
+          "text": "I think you should all move instead",
+          "showCondition": {
+            "actorvalue": "DerivedStats.Skills.SocialLeverage",
+            "greater": 25
+          },
+          "conditional": [
+            {
+              "next": "this.movesucceed",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "greater": 40
+                }
+              ]
+            }
+          ]
         },
         {
           "text": "I'm working on it",

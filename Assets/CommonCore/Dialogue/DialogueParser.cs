@@ -250,7 +250,7 @@ namespace CommonCore.Dialogue
             {
                 type = ConditionType.Affinity;
                 target = jt["affinity"].Value<string>();
-            }
+            }            
             else if (jt["quest"] != null)
             {
                 type = ConditionType.Quest;
@@ -260,6 +260,11 @@ namespace CommonCore.Dialogue
             {
                 type = ConditionType.Item;
                 target = jt["item"].Value<string>();
+            }
+            else if (jt["actorvalue"] != null)
+            {
+                type = ConditionType.ActorValue;
+                target = jt["actorvalue"].Value<string>();
             }
             else
             {

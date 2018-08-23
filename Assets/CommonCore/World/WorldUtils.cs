@@ -214,6 +214,16 @@ namespace CommonCore.World
             return go;
         }
 
+        public static GameObject SpawnEffect(string effectID, Vector3 position, Vector3 rotation, Transform parent)
+        {
+            if (parent == null)
+                parent = CCBaseUtil.GetWorldRoot();
+
+            var go = UnityEngine.Object.Instantiate(Resources.Load("DynamicFX/" + effectID), position, Quaternion.Euler(rotation), parent) as GameObject;
+
+            return go;
+        }
+
         //from StackOverflow, an extension method
         public static Transform FindDeepChild(this Transform aParent, string aName)
         {

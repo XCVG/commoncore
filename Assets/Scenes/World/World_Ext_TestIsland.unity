@@ -314,6 +314,54 @@ Prefab:
 Transform:
   m_PrefabParentObject: {fileID: 435304, guid: 526a7966ccaa21a478875fa72207388c, type: 2}
   m_PrefabInternal: {fileID: 50942101}
+--- !u!1 &63164300
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 63164301}
+  - component: {fileID: 63164302}
+  m_Layer: 0
+  m_Name: Spanwer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &63164301
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 63164300}
+  m_LocalRotation: {x: 0, y: 0.916642, z: 0, w: 0.3997092}
+  m_LocalPosition: {x: 204.04, y: 9.35, z: 164.89}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 165917654}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 132.88, z: 0}
+--- !u!114 &63164302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 63164300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caa42ef6290e5fb4cb9b23160270768b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Repeatable: 1
+  FormId: npc_grat
+  SpawnParent: {fileID: 165917654}
+  OverrideTransform: 0
+  OverridePosition: {x: 0, y: 0, z: 0}
+  OverrideRotation: {x: 0, y: 0, z: 0}
+  ActivateObject: 1
+  EffectId: SpawnGround
 --- !u!1001 &73724725
 Prefab:
   m_ObjectHideFlags: 0
@@ -499,6 +547,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 165917654}
+  - component: {fileID: 165917655}
   m_Layer: 0
   m_Name: WellArea
   m_TagString: Untagged
@@ -517,9 +566,99 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 532625987}
+  - {fileID: 63164301}
+  - {fileID: 1958044320}
+  - {fileID: 2026613696}
+  - {fileID: 946350186}
+  - {fileID: 1465129640}
+  - {fileID: 445828126}
+  - {fileID: 196686375}
   m_Father: {fileID: 184548216}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &165917655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 165917653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdce77d105a09e848a05b724b1ae7e05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MonstersToKill: 6
+  SpawnerSpecial:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 63164302}
+        m_MethodName: Execute
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1958044321}
+        m_MethodName: Execute
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2026613697}
+        m_MethodName: Execute
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 946350187}
+        m_MethodName: Execute
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1465129641}
+        m_MethodName: Execute
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 445828127}
+        m_MethodName: Execute
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: CommonCore.ObjectActions.ActionSpecialEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!1001 &177292253
 Prefab:
   m_ObjectHideFlags: 0
@@ -650,6 +789,80 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &196686374
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 196686375}
+  - component: {fileID: 196686377}
+  - component: {fileID: 196686376}
+  m_Layer: 0
+  m_Name: Trigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &196686375
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 196686374}
+  m_LocalRotation: {x: 0, y: 0.78628844, z: 0, w: 0.61785966}
+  m_LocalPosition: {x: 210.7, y: 11.04, z: 155.3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 165917654}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 103.68, z: 0}
+--- !u!114 &196686376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 196686374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f995e350b872b084bbbe7a8d007b6d3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Persistent: 0
+  Repeatable: 1
+  Special:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 165917655}
+        m_MethodName: OnEnterWellZone
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: CommonCore.ObjectActions.ActionSpecialEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  OnPlayerOnly: 1
+  OnActorsOnly: 0
+  CheckAllCollisions: 0
+--- !u!65 &196686377
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 196686374}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 45.5, y: 10.3, z: 43.4}
+  m_Center: {x: 0, y: 0.31, z: 0}
 --- !u!1001 &249291398
 Prefab:
   m_ObjectHideFlags: 0
@@ -3061,6 +3274,54 @@ Transform:
   m_PrefabParentObject: {fileID: 4178786462353876, guid: 185a850f8e7b7b64a97bcf51dfc7257e,
     type: 2}
   m_PrefabInternal: {fileID: 376997091}
+--- !u!1 &445828125
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 445828126}
+  - component: {fileID: 445828127}
+  m_Layer: 0
+  m_Name: Spanwer (5)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &445828126
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 445828125}
+  m_LocalRotation: {x: 0, y: 0.8594064, z: 0, w: 0.5112931}
+  m_LocalPosition: {x: 206.26, y: 10.27, z: 156.61}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 165917654}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 118.5, z: 0}
+--- !u!114 &445828127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 445828125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caa42ef6290e5fb4cb9b23160270768b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Repeatable: 1
+  FormId: npc_grat
+  SpawnParent: {fileID: 165917654}
+  OverrideTransform: 0
+  OverridePosition: {x: 0, y: 0, z: 0}
+  OverrideRotation: {x: 0, y: 0, z: 0}
+  ActivateObject: 1
+  EffectId: SpawnGround
 --- !u!1001 &458385662
 Prefab:
   m_ObjectHideFlags: 0
@@ -4344,7 +4605,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 538495618}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f3eb9c88186906248b59a4c429a9e18d, type: 3}
   m_Name: 
@@ -5089,7 +5350,7 @@ Mesh:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: pb_Mesh-810942
+  m_Name: pb_Mesh17472
   serializedVersion: 8
   m_SubMeshes:
   - serializedVersion: 2
@@ -5862,6 +6123,54 @@ Prefab:
 Transform:
   m_PrefabParentObject: {fileID: 435304, guid: 526a7966ccaa21a478875fa72207388c, type: 2}
   m_PrefabInternal: {fileID: 889901976}
+--- !u!1 &946350185
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 946350186}
+  - component: {fileID: 946350187}
+  m_Layer: 0
+  m_Name: Spanwer (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &946350186
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 946350185}
+  m_LocalRotation: {x: 0, y: 0.64144963, z: -0, w: -0.76716524}
+  m_LocalPosition: {x: 221.41, y: 10.01, z: 157.36}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 165917654}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 280.2, z: 0}
+--- !u!114 &946350187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 946350185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caa42ef6290e5fb4cb9b23160270768b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Repeatable: 1
+  FormId: npc_grat
+  SpawnParent: {fileID: 165917654}
+  OverrideTransform: 0
+  OverridePosition: {x: 0, y: 0, z: 0}
+  OverrideRotation: {x: 0, y: 0, z: 0}
+  ActivateObject: 1
+  EffectId: SpawnGround
 --- !u!1001 &961353468
 Prefab:
   m_ObjectHideFlags: 0
@@ -8015,6 +8324,54 @@ MeshCollider:
   m_CookingOptions: 14
   m_SkinWidth: 0.01
   m_Mesh: {fileID: 4300000, guid: 124265edd4e8e6f4796a98004b2e6e8e, type: 3}
+--- !u!1 &1465129639
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1465129640}
+  - component: {fileID: 1465129641}
+  m_Layer: 0
+  m_Name: Spanwer (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1465129640
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1465129639}
+  m_LocalRotation: {x: 0, y: 0.30320156, z: -0, w: -0.95292646}
+  m_LocalPosition: {x: 218.83, y: 10.36, z: 150.77}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 165917654}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 324.7, z: 0}
+--- !u!114 &1465129641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1465129639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caa42ef6290e5fb4cb9b23160270768b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Repeatable: 1
+  FormId: npc_grat
+  SpawnParent: {fileID: 165917654}
+  OverrideTransform: 0
+  OverridePosition: {x: 0, y: 0, z: 0}
+  OverrideRotation: {x: 0, y: 0, z: 0}
+  ActivateObject: 1
+  EffectId: SpawnGround
 --- !u!1001 &1470647807
 Prefab:
   m_ObjectHideFlags: 0
@@ -13772,6 +14129,54 @@ Mesh:
   m_BakedConvexCollisionMesh: 
   m_BakedTriangleCollisionMesh: 
   m_MeshOptimized: 0
+--- !u!1 &1958044319
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1958044320}
+  - component: {fileID: 1958044321}
+  m_Layer: 0
+  m_Name: Spanwer (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1958044320
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1958044319}
+  m_LocalRotation: {x: 0, y: 0.9954213, z: 0, w: 0.095585234}
+  m_LocalPosition: {x: 210.85, y: 8.604, z: 169.83}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 165917654}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 169.03, z: 0}
+--- !u!114 &1958044321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1958044319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caa42ef6290e5fb4cb9b23160270768b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Repeatable: 1
+  FormId: npc_grat
+  SpawnParent: {fileID: 165917654}
+  OverrideTransform: 0
+  OverridePosition: {x: 0, y: 0, z: 0}
+  OverrideRotation: {x: 0, y: 0, z: 0}
+  ActivateObject: 1
+  EffectId: SpawnGround
 --- !u!1001 &1958627356
 Prefab:
   m_ObjectHideFlags: 0
@@ -13929,6 +14334,54 @@ CapsuleCollider:
   m_Height: 18.01
   m_Direction: 2
   m_Center: {x: 0, y: -7.724491e-14, z: 5.8}
+--- !u!1 &2026613695
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 2026613696}
+  - component: {fileID: 2026613697}
+  m_Layer: 0
+  m_Name: Spanwer (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2026613696
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2026613695}
+  m_LocalRotation: {x: 0, y: 0.79863554, z: -0, w: -0.60181504}
+  m_LocalPosition: {x: 222.83, y: 10.45, z: 164.54}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 165917654}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 254, z: 0}
+--- !u!114 &2026613697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2026613695}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caa42ef6290e5fb4cb9b23160270768b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Repeatable: 1
+  FormId: npc_grat
+  SpawnParent: {fileID: 165917654}
+  OverrideTransform: 0
+  OverridePosition: {x: 0, y: 0, z: 0}
+  OverrideRotation: {x: 0, y: 0, z: 0}
+  ActivateObject: 1
+  EffectId: SpawnGround
 --- !u!1 &2035901676
 GameObject:
   m_ObjectHideFlags: 0
