@@ -191,15 +191,93 @@
       "text": "Forgive me, Aegustae, but I have my doubts. I fear the well may not truly be safe, with monsters still lurking in the shadows.",
       "choices": [
         {
-          "text": "You dare question me?",
-          "next": "meta.return"
+          "text": "You dare question me? Know your place!",
+          "next": "this.endlie3",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "set": -2
+            },
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            },
+            {
+              "variable": "reputation",
+              "give": -25
+            }
+          ]
         },
         {
           "text": "I really did kill the monsters!",
-          "next": "meta.return"
+          "next": "this.endlie4",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidFailLie",
+              "set": true
+            }
+          ]
         },
         {
           "text": "You're right, I'm lying, I didn't do it.",
+          "next": "meta.endlie9"
+        }
+      ]
+    },
+    "endlie3": {
+      "type": "choice",
+      "text": "I am sorry for my transgressions, Aegustae. Your word is law. Thank you for your help.",
+      "choices": [
+        {
+          "text": "Was that sarcasm? I detected sarcasm.",
+          "next": "meta.return"
+        },
+        {
+          "text": "You're welcome",
+          "next": "meta.return"
+        },
+        {
+          "text": "(Sarcastic) You're welcome",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "endlie4": {
+      "type": "choice",
+      "text": "Please, I implore you, Aegustae Aurelia, to act. I know it is much to ask from a simple villager, but we are dying and we are forgotten. We need the monsters killed so we can get water.",
+      "choices": [
+        {
+          "text": "I understand. I'll try to help you.",
+          "next": "meta.return"
+        },
+        {
+          "text": "I'm done with you.",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidOffend",
+              "set": true
+            }
+          ],
+          "next": "meta.return"
+        }
+      ]
+    },
+    "endlie9": {
+      "type": "choice",
+      "text": "Then I implore you, Aegustae Aurelia, to act. I know it is much to ask from a simple villager, but please. We are dying and we are forgotten.",
+      "choices": [
+        {
+          "text": "I understand. I'll try to help you.",
+          "next": "meta.return"
+        },
+        {
+          "text": "You're right. This isn't really my problem.",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidOffend",
+              "set": true
+            }
+          ],
           "next": "meta.return"
         }
       ]
@@ -224,6 +302,9 @@
           "next": "this.endlie1",
           "showCondition": {
             "noflag": "DemoWellMonstersKilled"
+          },
+          "hidecondition": {
+            "flag": "DemoFlaviaDidFailLie"
           }
         },
         {
@@ -254,6 +335,110 @@
         },
         {
           "text": "I'm working on it",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "doneDefault": {
+      "type": "choice",
+      "text": "Thank you for helping us, Aegustae Aurelia. The village is forever in your debt.",
+      "choices": [
+        {
+          "text": "Don't mention it. Really, don't.",
+          "next": "meta.return"
+        },
+        {
+          "text": "It's fine, you're welcome",
+          "next": "meta.return"
+        },
+        {
+          "text": "I didn't do this for you",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "doneRelocated": {
+      "type": "choice",
+      "text": "We shall begin to leave soon. This is the only home many of us have known, and there are few places for us to go, but it is better than dying here.",
+      "choices": [
+        {
+          "text": "Wow, I kind of feel like a jerk now",
+          "next": "meta.return"
+        },
+        {
+          "text": "I know it's hard, but it's for your own good",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "doneFilterPassed": {
+      "type": "choice",
+      "text": "I still fear this strange mechanism you brought. Many of us do not trust it, but we have no other choice.",
+      "choices": [
+        {
+          "text": "Welcome to the future",
+          "next": "meta.return"
+        },
+        {
+          "text": "Come on, don't be stupid",
+          "next": "meta.return"
+        },
+        {
+          "text": "Just think of it like magic",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "doneFilterFailed": {
+      "type": "choice",
+      "text": "Why did you bring that strange thing to our village? It makes strange noises and keeps us awake at night, and I hesitate to even go near it.",
+      "choices": [
+        {
+          "text": "You're not going to like the future very much",
+          "next": "meta.return"
+        },
+        {
+          "text": "Oh, come on, it's just a filter",
+          "next": "meta.return"
+        },
+        {
+          "text": "Suit yourself. I was only trying to help",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "movefail": {
+      "type": "choice",
+      "text": "(movefail)",
+      "choices": [
+        {
+          "text": "Don't mention it. Really, don't.",
+          "next": "meta.return"
+        },
+        {
+          "text": "It's fine, you're welcome",
+          "next": "meta.return"
+        },
+        {
+          "text": "I didn't do this for you",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "movesucceed": {
+      "type": "choice",
+      "text": "(movesucceed)",
+      "choices": [
+        {
+          "text": "Don't mention it. Really, don't.",
+          "next": "meta.return"
+        },
+        {
+          "text": "It's fine, you're welcome",
+          "next": "meta.return"
+        },
+        {
+          "text": "I didn't do this for you",
           "next": "meta.return"
         }
       ]

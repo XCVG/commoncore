@@ -5,6 +5,7 @@ using System;
 using UnityEngine.SceneManagement;
 using CommonCore.State;
 using CommonCore.Rpg;
+using CommonCore.DebugLog;
 
 namespace CommonCore.World
 {
@@ -207,7 +208,12 @@ namespace CommonCore.World
         {
             if (parent == null)
                 parent = CCBaseUtil.GetWorldRoot();
-            var go = UnityEngine.Object.Instantiate(Resources.Load("entities/" + formID), position, Quaternion.Euler(rotation), parent) as GameObject;
+
+            var prefab = Resources.Load("entities/" + formID);
+            if (prefab == null)
+                return null;
+
+            var go = UnityEngine.Object.Instantiate(prefab, position, Quaternion.Euler(rotation), parent) as GameObject;
             if (string.IsNullOrEmpty(thingID))
                 thingID = string.Format("{0}_{1}", go.name.Replace("(Clone)", "").Trim(), GameState.Instance.NextUID);
             go.name = thingID;
@@ -219,7 +225,11 @@ namespace CommonCore.World
             if (parent == null)
                 parent = CCBaseUtil.GetWorldRoot();
 
-            var go = UnityEngine.Object.Instantiate(Resources.Load("DynamicFX/" + effectID), position, Quaternion.Euler(rotation), parent) as GameObject;
+            var prefab = Resources.Load("DynamicFX/" + effectID);
+            if (prefab == null)
+                return null;
+
+            var go = UnityEngine.Object.Instantiate(prefab, position, Quaternion.Euler(rotation), parent) as GameObject;
 
             return go;
         }

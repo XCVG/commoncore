@@ -669,7 +669,7 @@ namespace CommonCore.World
             }
         }
 
-        private static string GetNameForAnimation(ActorAnimState state)
+        private static string GetNameForAnimation(ActorAnimState state) //TODO non-stupid standard names
         {
             switch (state)
             {

@@ -15,8 +15,8 @@ namespace World.Ext.TestIsland
 
         public int MonstersToKill;
 
-
         public ActionSpecialEvent SpawnerSpecial;
+        public ActionSpecial DeathSpecial;
 
         private int MonstersKilled;
 
@@ -46,8 +46,15 @@ namespace World.Ext.TestIsland
             
         }
 
+        public void OnActorSpawn(GameObject actor, ActionSpecial spawner)
+        {
+            var ac = actor.GetComponent<ActorController>();
+            ac.OnDeathSpecial = DeathSpecial;
+        }
+
         public void OnMonsterKilled()
         {
+
             MonstersKilled++;
 
             if (MonstersKilled >= MonstersToKill)
@@ -58,6 +65,8 @@ namespace World.Ext.TestIsland
             }                
 
             WorldUtils.GetSceneController().LocalStore[MonstersKilledKey] = MonstersKilled;
+
+            Debug.Log(MonstersKilled + "monsters killed");
         }
 
     }

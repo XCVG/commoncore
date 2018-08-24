@@ -10,7 +10,6 @@ namespace CommonCore
      */
     public static class CCParams
     {
-        //TODO make decisions about const vs static readonly, will become a problem with multiple assemblies
 
         //*****system version info
         public static readonly SemanticVersion VersionCode = new SemanticVersion(1,0,0); //1.0.0
@@ -28,18 +27,19 @@ namespace CommonCore
         public static readonly string GameVersionName = "Mechanics Preview 1";
 
         //*****basic config settings
-        public const bool AutoInit = true;
-        public const bool AutoloadModules = true;
-        private const DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
+        public static readonly bool AutoInit = true;
+        public static readonly bool AutoloadModules = true;
+        private static readonly DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
 
         //*****additional config settings
-        public const bool UseVerboseLogging = true;
+        public static readonly bool UseVerboseLogging = true;
 
         //*****game config settings
-        public const string InitialScene = "TestScene";
-        public const bool UseCustomLeveling = false;
-        public const PlayerViewType DefaultPlayerView = PlayerViewType.PreferFirst;
-        public const bool UseRandomDamage = true;
+        public static readonly string InitialScene = "TestScene";
+        public static readonly bool UseCustomLeveling = false;
+        public static readonly PlayerViewType DefaultPlayerView = PlayerViewType.PreferFirst;
+        public static readonly bool UseRandomDamage = true;
+        public static readonly bool AutoQuestNotifications = true;
 
         //*****automatic environment params
         public static bool IsDebug

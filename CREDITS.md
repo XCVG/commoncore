@@ -39,6 +39,9 @@ Unity Technologies - ProBuilder
 	
 ## Assets/Objects/ThirdParty
 
+Kalamona - Free Fantasy Spider
+	https://assetstore.unity.com/packages/3d/characters/creatures/free-fantasy-spider-10104
+
 Calvin Weibel - Free Shipping Containers
 	https://www.assetstore.unity3d.com/en/?stay#!/content/18315
 

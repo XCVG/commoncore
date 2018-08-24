@@ -1,10 +1,14 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections;
-using System;
+using UnityEngine;
+using UnityEngine.Events;
 using CommonCore.World;
+
 
 namespace CommonCore.ObjectActions
 {
+    
+
     public class SpawnActorSpecial : ActionSpecial
     {
         public string FormId;
@@ -13,6 +17,7 @@ namespace CommonCore.ObjectActions
         public Vector3 OverridePosition;
         public Vector3 OverrideRotation;
         public bool ActivateObject = true;
+        public ObjectSpawnEvent OnSpawnEvent;
 
         public string EffectId;
 
@@ -48,6 +53,8 @@ namespace CommonCore.ObjectActions
 
             if (!string.IsNullOrEmpty(EffectId))
                 WorldUtils.SpawnEffect(EffectId, position, rotation, parent);
+
+            OnSpawnEvent.Invoke(go, this);
         }
     }
 }

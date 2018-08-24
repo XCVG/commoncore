@@ -264,7 +264,7 @@ namespace CommonCore.World
                 }
 
                 if (MappedInput.GetButton(DefaultControls.Sprint))
-                    moveVector *= 2.0f;
+                    moveVector *= 5.0f;
 
                 transform.Translate(moveVector, Space.World);
             }

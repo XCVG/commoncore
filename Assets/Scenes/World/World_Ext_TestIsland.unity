@@ -355,12 +355,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Repeatable: 1
-  FormId: npc_grat
+  FormId: npc_testspider
   SpawnParent: {fileID: 165917654}
   OverrideTransform: 0
   OverridePosition: {x: 0, y: 0, z: 0}
   OverrideRotation: {x: 0, y: 0, z: 0}
   ActivateObject: 1
+  OnSpawnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 165917655}
+        m_MethodName: OnActorSpawn
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: CommonCore.ObjectActions.ObjectSpawnEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   EffectId: SpawnGround
 --- !u!1001 &73724725
 Prefab:
@@ -548,6 +564,7 @@ GameObject:
   m_Component:
   - component: {fileID: 165917654}
   - component: {fileID: 165917655}
+  - component: {fileID: 165917656}
   m_Layer: 0
   m_Name: WellArea
   m_TagString: Untagged
@@ -658,6 +675,35 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
     m_TypeName: CommonCore.ObjectActions.ActionSpecialEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  DeathSpecial: {fileID: 165917656}
+--- !u!114 &165917656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 165917653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27e1a63405a4b0a4dbe019299fb21fde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Repeatable: 1
+  Event:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 165917655}
+        m_MethodName: OnMonsterKilled
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!1001 &177292253
 Prefab:
@@ -786,6 +832,7 @@ Transform:
   - {fileID: 2099814433}
   - {fileID: 1019415068}
   - {fileID: 249291399}
+  - {fileID: 2008132137}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3315,12 +3362,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Repeatable: 1
-  FormId: npc_grat
+  FormId: npc_testspider
   SpawnParent: {fileID: 165917654}
   OverrideTransform: 0
   OverridePosition: {x: 0, y: 0, z: 0}
   OverrideRotation: {x: 0, y: 0, z: 0}
   ActivateObject: 1
+  OnSpawnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 165917655}
+        m_MethodName: OnActorSpawn
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: CommonCore.ObjectActions.ObjectSpawnEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   EffectId: SpawnGround
 --- !u!1001 &458385662
 Prefab:
@@ -6164,12 +6227,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Repeatable: 1
-  FormId: npc_grat
+  FormId: npc_testspider
   SpawnParent: {fileID: 165917654}
   OverrideTransform: 0
   OverridePosition: {x: 0, y: 0, z: 0}
   OverrideRotation: {x: 0, y: 0, z: 0}
   ActivateObject: 1
+  OnSpawnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 165917655}
+        m_MethodName: OnActorSpawn
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: CommonCore.ObjectActions.ObjectSpawnEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   EffectId: SpawnGround
 --- !u!1001 &961353468
 Prefab:
@@ -8365,12 +8444,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Repeatable: 1
-  FormId: npc_grat
+  FormId: npc_testspider
   SpawnParent: {fileID: 165917654}
   OverrideTransform: 0
   OverridePosition: {x: 0, y: 0, z: 0}
   OverrideRotation: {x: 0, y: 0, z: 0}
   ActivateObject: 1
+  OnSpawnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 165917655}
+        m_MethodName: OnActorSpawn
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: CommonCore.ObjectActions.ObjectSpawnEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   EffectId: SpawnGround
 --- !u!1001 &1470647807
 Prefab:
@@ -14170,12 +14265,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Repeatable: 1
-  FormId: npc_grat
+  FormId: npc_testspider
   SpawnParent: {fileID: 165917654}
   OverrideTransform: 0
   OverridePosition: {x: 0, y: 0, z: 0}
   OverrideRotation: {x: 0, y: 0, z: 0}
   ActivateObject: 1
+  OnSpawnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 165917655}
+        m_MethodName: OnActorSpawn
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: CommonCore.ObjectActions.ObjectSpawnEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   EffectId: SpawnGround
 --- !u!1001 &1958627356
 Prefab:
@@ -14334,6 +14445,57 @@ CapsuleCollider:
   m_Height: 18.01
   m_Direction: 2
   m_Center: {x: 0, y: -7.724491e-14, z: 5.8}
+--- !u!1001 &2008132136
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 184548216}
+    m_Modifications:
+    - target: {fileID: 4106537749243632, guid: 736e85abde1d1dd429259631c3f6dd98, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 187.24432
+      objectReference: {fileID: 0}
+    - target: {fileID: 4106537749243632, guid: 736e85abde1d1dd429259631c3f6dd98, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 6.2146196
+      objectReference: {fileID: 0}
+    - target: {fileID: 4106537749243632, guid: 736e85abde1d1dd429259631c3f6dd98, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 331.1818
+      objectReference: {fileID: 0}
+    - target: {fileID: 4106537749243632, guid: 736e85abde1d1dd429259631c3f6dd98, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4106537749243632, guid: 736e85abde1d1dd429259631c3f6dd98, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4106537749243632, guid: 736e85abde1d1dd429259631c3f6dd98, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4106537749243632, guid: 736e85abde1d1dd429259631c3f6dd98, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4106537749243632, guid: 736e85abde1d1dd429259631c3f6dd98, type: 2}
+      propertyPath: m_RootOrder
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 1843284352559444, guid: 736e85abde1d1dd429259631c3f6dd98, type: 2}
+      propertyPath: m_Name
+      value: FrontTestSpider
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 736e85abde1d1dd429259631c3f6dd98, type: 2}
+  m_IsPrefabParent: 0
+--- !u!4 &2008132137 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 4106537749243632, guid: 736e85abde1d1dd429259631c3f6dd98,
+    type: 2}
+  m_PrefabInternal: {fileID: 2008132136}
 --- !u!1 &2026613695
 GameObject:
   m_ObjectHideFlags: 0
@@ -14375,12 +14537,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Repeatable: 1
-  FormId: npc_grat
+  FormId: npc_testspider
   SpawnParent: {fileID: 165917654}
   OverrideTransform: 0
   OverridePosition: {x: 0, y: 0, z: 0}
   OverrideRotation: {x: 0, y: 0, z: 0}
   ActivateObject: 1
+  OnSpawnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 165917655}
+        m_MethodName: OnActorSpawn
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: CommonCore.ObjectActions.ObjectSpawnEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   EffectId: SpawnGround
 --- !u!1 &2035901676
 GameObject:
