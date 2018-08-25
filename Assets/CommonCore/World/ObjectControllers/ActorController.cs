@@ -676,9 +676,9 @@ namespace CommonCore.World
                 case ActorAnimState.Idle:
                     return "idle";
                 case ActorAnimState.Dead:
-                    return "fall_flat_fast";
+                    return "die";
                 case ActorAnimState.Dying:
-                    return "fall_flat";
+                    return "dead";
                 case ActorAnimState.Hurting:
                     return "pain";
                 case ActorAnimState.Walking:
@@ -688,7 +688,9 @@ namespace CommonCore.World
                 case ActorAnimState.Running:
                     return "run";
                 case ActorAnimState.Shooting:
-                    return "gunplay";
+                    return "attack";
+                case ActorAnimState.Punching:
+                    return "attack";
                 default:
                     return string.Empty;
             }

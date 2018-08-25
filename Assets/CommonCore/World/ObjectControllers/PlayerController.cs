@@ -368,7 +368,7 @@ namespace CommonCore.World
                 {
 
                     //ac.Play("Run_Rifle_Foreward", 0);
-                    AnimController.CrossFade("Run", 0f);
+                    AnimController.CrossFade("run", 0f);
                     isAnimating = true;
                     //stepSound.Play();
                 }
@@ -379,7 +379,7 @@ namespace CommonCore.World
                 {
 
                     //ac.Stop();
-                    AnimController.CrossFade("Idle", 0f);
+                    AnimController.CrossFade("idle", 0f);
                     isAnimating = false;
                     //stepSound.Stop();
                 }

@@ -8,6 +8,9 @@ These come with the engine and can be unpacked from within the editor.
 
 Environment/Water (Basic)
 	(aesthetic only; can be left out and will still run)
+	
+Characters
+	(you only need Third Person Character but importing the whole thing should be safe)
 
 ## Assets/ThirdParty
 
