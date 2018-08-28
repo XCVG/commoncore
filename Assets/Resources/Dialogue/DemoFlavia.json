@@ -10,6 +10,276 @@
       "next": "this.matsuda2",
       "text": "Hey, there you are! I made it into the academy, too!"
     },
+    "filter1": {
+      "type": "choice",
+      "text": "What is that THING?",
+      "choices": [
+        {
+          "text": "Clean water. That's all you need to know.",
+          "next": "this.filter2"
+        },
+        {
+          "text": "A magical artifact that cleans the water.",
+          "next": "this.filterm1"
+        },
+        {
+          "text": "It's a machine that cleans the water.",
+          "next": "this.filterd1"
+        },
+        {
+          "text": "I don't know either. It was there when I got here.",
+          "next": "this.filter2"
+        },
+        {
+          "text": "Um, I'll get back to you on that.",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "filter2": {
+      "type": "choice",
+      "text": "It is strange and unfamiliar. Can we trust the water? Is it safe, or more poisonous than the river? How can we know this?",
+      "choices": [
+        {
+          "text": "Are you questioning me?",
+          "next": "this.filterq1"
+        },
+        {
+          "text": "It's filtered water. It's perfectly fine.",
+          "next": "this.filterfail",
+          "conditional": [
+            {
+              "next": "this.filtersuccess",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "less": 75
+                },
+                {
+                  "noflag": "DemoFlaviaDidOffend"
+                }
+              ]
+            },
+            {
+              "next": "this.filtersuccess",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "less": 60
+                },
+                {
+                  "noflag": "DemoFlaviaDidOffend"
+                },
+                {
+                  "variable": "reputation",
+                  "greater": 50
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "It's clean enough that I'll drink it myself.",
+          "conditional": [
+            {
+              "next": "this.filterfail",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "less": 35
+                },
+                {
+                  "flag": "DemoFlaviaDidOffend"
+                }
+              ]
+            }
+          ],
+          "next": "this.filtersuccess",
+          "showCondition": {
+            "actorvalue": "DerivedStats.Skills.SocialLeverage",
+            "greater": 25
+          }
+        },
+        {
+          "text": "For all I know it's actually worse.",
+          "next": "this.filterfail"
+        }
+      ]
+    },
+    "filterm1": {
+      "type": "choice",
+      "text": "It does not look like any magic I have ever seen, though I have seen little. And I have never entirely trusted mages.",
+      "choices": [
+        {
+          "text": "Not only is it magic, it's perfectly safe magic.",
+          "next": "this.filter2"
+        },
+        {
+          "text": "It's a new kind of magic!",
+          "next": "this.filter2"
+        },
+        {
+          "text": "It's not actually magic, it's a machine",
+          "next": "this.filterd1",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidOffend",
+              "set": true
+            }
+          ]
+        }
+      ]
+    },
+    "filterd1": {
+      "type": "choice",
+      "text": "A machine? It does not look or sound like any machine I have ever seen!",
+      "choices": [
+        {
+          "text": "It's like a flour mill or a catapult, it's just a lot more complicated.",
+          "next": "this.filter2"
+        },
+        {
+          "text": "It's new technology. You're going to be seeing more of that.",
+          "next": "this.filter2"
+        },
+        {
+          "text": "Yeah, I don't know how it works either",
+          "next": "this.filterfail"
+        }
+      ]
+    },
+    "filterfail": {
+      "type": "choice",
+      "text": "Thank you for trying to help us, Aegustae Aurelia. But I fear your efforts have been in vain. I do not trust that thing, and neither will the rest of the village.",
+      "choices": [
+        {
+          "text": "I understand. I shouldn't have pushed this on you.",
+          "next": "meta.return",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "set": -22
+            },
+            {
+              "variable": "Reputation",
+              "add": -10
+            },
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            }
+          ]
+        },
+        {
+          "text": "I tried. If you're not willing to accept help, so be it.",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "set": -22
+            },
+            {
+              "variable": "Reputation",
+              "add": -10
+            },
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            }
+          ],
+          "next": "meta.return"
+        },
+        {
+          "text": "Really? You backwards fucking hicks!",
+          "next": "meta.return",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "set": -22
+            },
+            {
+              "variable": "Reputation",
+              "add": -15
+            },
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            }
+          ]
+        }
+      ]
+    },
+    "filtersuccess": {
+      "type": "choice",
+      "text": "Thank you for your help, Aegustae Aurelia. I still fear that thing. But I will drink the water, and try to convince the other villagers to drink the water also.",
+      "choices": [
+        {
+          "text": "You're welcome. I'm just happy to lend a hand.",
+          "next": "meta.return",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "set": -21
+            },
+            {
+              "variable": "Reputation",
+              "add": 6
+            },
+            {
+              "item": "Gold",
+              "add": 50
+            },
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            }
+          ]
+        },
+        {
+          "text": "Trust me, this kind of thing is where the future is headed.",
+          "next": "meta.return",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "set": -21
+            },
+            {
+              "variable": "Reputation",
+              "add": 5
+            },
+            {
+              "item": "Gold",
+              "add": 50
+            },
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            }
+          ]
+        },
+        {
+          "text": "I'm just glad to be done with this.",
+          "next": "meta.return",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "set": -21
+            },
+            {
+              "variable": "Reputation",
+              "add": 4
+            },
+            {
+              "item": "Gold",
+              "add": 50
+            },
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            }
+          ]
+        }
+      ]
+    },
     "first1": {
       "type": "choice",
       "text": "Greetings, Aegustae",
@@ -317,9 +587,18 @@
         {
           "next": "this.movefail",
           "text": "I think you should all move instead",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidTryMove",
+              "set": true
+            }
+          ],
           "showCondition": {
             "actorvalue": "DerivedStats.Skills.SocialLeverage",
             "greater": 25
+          },
+          "hideCondition": {
+            "flag": "DemoFlaviaDidTryMove"
           },
           "conditional": [
             {
@@ -327,7 +606,19 @@
               "conditions": [
                 {
                   "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "greater": 60
+                }
+              ]
+            },
+            {
+              "next": "this.movesucceed",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
                   "greater": 40
+                },
+                {
+                  "noflag": "DemoFlaviaDidOffend"
                 }
               ]
             }
@@ -391,7 +682,7 @@
     },
     "doneFilterFailed": {
       "type": "choice",
-      "text": "Why did you bring that strange thing to our village? It makes strange noises and keeps us awake at night, and I hesitate to even go near it.",
+      "text": "Why did you bring that strange thing to our village? It makes strange noises and keeps us awake at night, and I fear to even go near it.",
       "choices": [
         {
           "text": "You're not going to like the future very much",
@@ -409,36 +700,58 @@
     },
     "movefail": {
       "type": "choice",
-      "text": "(movefail)",
+      "text": "We cannot, Aegustae, even if we wished to. We are simple, poor villagers, without means to leave the island and without another place to go. For most of us, the village is all we have ever known, and all we shall ever know.",
       "choices": [
         {
-          "text": "Don't mention it. Really, don't.",
+          "text": "Well, it was worth a shot.",
           "next": "meta.return"
         },
         {
-          "text": "It's fine, you're welcome",
+          "text": "Wow, that's kind of sad, actually",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidOffend",
+              "set": true
+            }
+          ],
           "next": "meta.return"
         },
         {
-          "text": "I didn't do this for you",
+          "text": "I didn't know that. I'll find another way.",
           "next": "meta.return"
         }
       ]
     },
     "movesucceed": {
       "type": "choice",
-      "text": "(movesucceed)",
+      "text": "If that is our only choice, then it shall be our only choice. We are simple, poor villagers, Aegustae. We hardly have the means to leave the island, and many of us have nowhere else to go. But we will find a way.",
       "choices": [
         {
-          "text": "Don't mention it. Really, don't.",
+          "text": "I'm sorry. I know it's going to be hard for you.",
+          "microscript": [
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            },
+            {
+              "quest": "DemoQuest",
+              "set": -3
+            }
+          ],
           "next": "meta.return"
         },
         {
-          "text": "It's fine, you're welcome",
-          "next": "meta.return"
-        },
-        {
-          "text": "I didn't do this for you",
+          "text": "Your village sucks anyways. I'm doing you a favour.",
+          "microscript": [
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            },
+            {
+              "quest": "DemoQuest",
+              "set": -3
+            }
+          ],
           "next": "meta.return"
         }
       ]

@@ -163,3 +163,15 @@ Designer.io - Sword 2 [CC0] [modified]
 Luis Zuno (@ansimuz) - Mountain at Dusk Background [CC0] [modified]
 	https://opengameart.org/content/mountain-at-dusk-background
 	Assets/Scenes/Meta/GameOverScene/gameover_bg.png
+	
+# Miscelleneous
+
+These are separated out largely for formatting
+
+Aurelia charachter model (Assets/OpenSource/makehuman/aurelia)
+	Built with MakeHuman (CC0 export exemption)
+	Crude long gloves by Joel Palmius (CC0)
+	Shoes Biker Boots female by Mindfront (CC-BY)
+	Leather armor by MaciekG (CC-BY)
+	
+	
