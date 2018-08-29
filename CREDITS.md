@@ -2,6 +2,8 @@
 
 You will need to acquire these and place them in the correct directories for the project to work properly.
 
+It's possible and even likely that many dependencies will be removed as time goes on.
+
 ## Standard Assets
 
 These come with the engine and can be unpacked from within the editor.
@@ -173,5 +175,16 @@ Aurelia charachter model (Assets/OpenSource/makehuman/aurelia)
 	Crude long gloves by Joel Palmius (CC0)
 	Shoes Biker Boots female by Mindfront (CC-BY)
 	Leather armor by MaciekG (CC-BY)
+	
+Peasant (female) character model (Assets/OpenSource/makehuman/peasantf)
+	Built with MakeHuman (CC0 export exemption)
+	F Dress 03 by Mindfront (CC-BY)
+	Starship uniform boots by Sculletto (CC0)
+	
+Peasant (male) character model (Assets/OpenSource/makehuman/peasantm)
+	Built with MakeHuman (CC0 export exemption)
+	Ruffle Sleeve Peasant Blouse 1 by Mindfront (CC-BY)
+	F Trousers 01 by Mindfront (CC-BY)
+	Starship uniform boots by Sculletto (CC0)
 	
 	

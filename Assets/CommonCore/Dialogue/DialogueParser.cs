@@ -284,7 +284,7 @@ namespace CommonCore.Dialogue
                 }
 
             }
-            else if (type == ConditionType.Affinity || type == ConditionType.Quest || type == ConditionType.Variable)
+            else if (type == ConditionType.Affinity || type == ConditionType.Quest || type == ConditionType.Variable || type == ConditionType.ActorValue)
             {
                 if (jt["greater"] != null)
                 {
