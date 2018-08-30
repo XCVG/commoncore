@@ -94,6 +94,26 @@ animations from Firefighter VR, but these will be removed/replaced soon
 
 These are included under permissive or copyleft licenses.
 
+arikel - Low poly furniture [CC0]
+	https://opengameart.org/content/low-poly-furniture
+	Assets/Objects/OpenSource/lowpolyshelf
+
+Lucian Pavel - Low poly "table and chair" [CC0]
+	https://opengameart.org/content/low-poly-table-and-chair
+	Assets/Objects/OpenSource/lowpolytable
+
+Clint Bellanger - Bed (low poly) [CC0]
+	https://opengameart.org/content/bed-low-poly
+	Assets/Objects/OpenSource/lowpolybed
+
+DeadKir - Torch [CC0]
+	https://opengameart.org/content/low-poly-torchwithout-flame
+	Assets/Objects/OpenSource/lowpolytorch
+
+JCW - Wood Texture Tiles [CC0]
+	https://opengameart.org/content/wood-texture-tiles
+	Assets/Shared/Textures/wood1
+
 Rakshi Games - Free House [CC-BY 3.0]
 	https://opengameart.org/content/free-house
 	Assets/Objects/OpenSource/freehouse

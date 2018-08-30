@@ -32,6 +32,7 @@ namespace CommonCore.World
         public Rigidbody CharRigidbody;
         public Animator AnimController;
         public Transform CameraRoot;
+        public GameObject ModelRoot;
 
         [Header("Shooting")]
         public bool ShootingEnabled = true;
@@ -69,6 +70,11 @@ namespace CommonCore.World
             if(!CameraRoot)
             {
                 CameraRoot = transform.Find("CameraRoot");
+            }
+
+            if(!ModelRoot)
+            {
+                ModelRoot = transform.GetChild(0).gameObject;
             }
 
             if(!AnimController)
@@ -140,18 +146,22 @@ namespace CommonCore.World
                 case PlayerViewType.PreferFirst:
                     tpCamera.SetActive(false);
                     fpCamera.SetActive(true);
+                    ModelRoot.SetActive(false);
                     break;
                 case PlayerViewType.PreferThird:
                     tpCamera.SetActive(true);
                     fpCamera.SetActive(false);
+                    ModelRoot.SetActive(true);
                     break;
                 case PlayerViewType.ForceFirst:
                     tpCamera.SetActive(false);
                     fpCamera.SetActive(true);
+                    ModelRoot.SetActive(false);
                     break;
                 case PlayerViewType.ForceThird:
                     tpCamera.SetActive(true);
                     fpCamera.SetActive(false);
+                    ModelRoot.SetActive(true);
                     break;
                 case PlayerViewType.ExplicitOther:
                     tpCamera.SetActive(false);
@@ -176,11 +186,13 @@ namespace CommonCore.World
                 {
                     fpCamera.SetActive(true);
                     tpCamera.SetActive(false);
+                    ModelRoot.SetActive(false);
                 }
                 else
                 {
                     fpCamera.SetActive(false);
                     tpCamera.SetActive(true);
+                    ModelRoot.SetActive(true);
 
                 }
             }

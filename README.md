@@ -73,25 +73,28 @@ This list is always in flux. As I implement features, I find there are even more
 
 **In-Progress Features**
 
-* Player movement (add jumping, swimming, noclip)
+* Player movement (need to add swimming and crouching)
 * Combat (currently uses stats only partially, and lacks visuals)
 * Action Special game state modification
-* Loading screen (appears but doesn't animate or anything)
+* Loading screen (appears but needs animation)
 
-**Planned Features**
+**Planned Features (soon)**
 
-* Levelled Lists (may defer)
 * Time passage and timed events
-* In-game remappable inputs (alternate MappedInput backend?)
-* Graphics, sound, and other configuration
+* Basic config options
 * UI "type on" utility function
-* Hacking minigame
-* Lockpick minigame
 * Map screen
 * Help screen
-* improved messaging (may defer)
-* magic (may defer)
-* stealth (may defer)
+* basic stealth mechanics (weighted detection)
+
+**Planned Features (later)**
+
+* Graphics, sound, and other configuration
+* In-game remappable inputs (alternate MappedInput backend?)
+* Levelled Lists
+* improved messaging
+* magic
+* proper stealth
 
 
 ## Roadmap

@@ -305,6 +305,7 @@ namespace CommonCore.World
                 {
                     //spawn the player object in
                     player = Instantiate(Resources.Load("entities/" + "spec_player"), transform) as GameObject;
+                    player.name = "Player";
                     if (mgs.TransitionType == SceneTransitionType.LoadGame)
                     {
                         player.GetComponent<PlayerRestorableComponent>().Restore(prd);
@@ -337,7 +338,11 @@ namespace CommonCore.World
             else
             {
                 if(player == null)
+                {
                     player = Instantiate(Resources.Load("entities/" + "spec_player"), transform) as GameObject;
+                    player.name = "Player";
+                }
+                    
 
                 RestorePlayerToIntent(mgs, player);
 

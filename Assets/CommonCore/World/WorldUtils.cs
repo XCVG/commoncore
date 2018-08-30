@@ -75,7 +75,10 @@ namespace CommonCore.World
                 return go;
             }
 
-            go = CCBaseUtil.GetWorldRoot().FindDeepChild("Player").gameObject;
+            var tf = CCBaseUtil.GetWorldRoot().FindDeepChild("Player");
+
+            if(tf != null)
+                go = tf.gameObject;
 
             if (go != null)
             {
