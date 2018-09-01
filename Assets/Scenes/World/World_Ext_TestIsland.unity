@@ -14441,7 +14441,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4032182571642530, guid: c78c79f4a528df8499e5b89355a2ceb2, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 5.051263
+      value: 5.099
       objectReference: {fileID: 0}
     - target: {fileID: 4032182571642530, guid: c78c79f4a528df8499e5b89355a2ceb2, type: 2}
       propertyPath: m_LocalPosition.z
@@ -14489,7 +14489,87 @@ Prefab:
     - target: {fileID: 114886002833580368, guid: c78c79f4a528df8499e5b89355a2ceb2,
         type: 2}
       propertyPath: TooltipOverride
-      value: The Engineer
+      value: The Mechanic
+      objectReference: {fileID: 0}
+    - target: {fileID: 114886002833580368, guid: c78c79f4a528df8499e5b89355a2ceb2,
+        type: 2}
+      propertyPath: Interaction
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114886002833580368, guid: c78c79f4a528df8499e5b89355a2ceb2,
+        type: 2}
+      propertyPath: InteractionTarget
+      value: DemoMechanic
+      objectReference: {fileID: 0}
+    - target: {fileID: 114886002833580368, guid: c78c79f4a528df8499e5b89355a2ceb2,
+        type: 2}
+      propertyPath: AttackHit.Damage
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114886002833580368, guid: c78c79f4a528df8499e5b89355a2ceb2,
+        type: 2}
+      propertyPath: Health
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 114886002833580368, guid: c78c79f4a528df8499e5b89355a2ceb2,
+        type: 2}
+      propertyPath: DamageResistance.Array.data[0]
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114886002833580368, guid: c78c79f4a528df8499e5b89355a2ceb2,
+        type: 2}
+      propertyPath: DamageResistance.Array.data[1]
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114886002833580368, guid: c78c79f4a528df8499e5b89355a2ceb2,
+        type: 2}
+      propertyPath: DamageResistance.Array.data[2]
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114886002833580368, guid: c78c79f4a528df8499e5b89355a2ceb2,
+        type: 2}
+      propertyPath: DamageResistance.Array.data[3]
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114886002833580368, guid: c78c79f4a528df8499e5b89355a2ceb2,
+        type: 2}
+      propertyPath: DamageResistance.Array.data[4]
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114886002833580368, guid: c78c79f4a528df8499e5b89355a2ceb2,
+        type: 2}
+      propertyPath: DamageResistance.Array.data[5]
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114886002833580368, guid: c78c79f4a528df8499e5b89355a2ceb2,
+        type: 2}
+      propertyPath: DamageThreshold.Array.data[0]
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114886002833580368, guid: c78c79f4a528df8499e5b89355a2ceb2,
+        type: 2}
+      propertyPath: DamageThreshold.Array.data[1]
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114886002833580368, guid: c78c79f4a528df8499e5b89355a2ceb2,
+        type: 2}
+      propertyPath: DamageThreshold.Array.data[2]
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114886002833580368, guid: c78c79f4a528df8499e5b89355a2ceb2,
+        type: 2}
+      propertyPath: DamageThreshold.Array.data[3]
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114886002833580368, guid: c78c79f4a528df8499e5b89355a2ceb2,
+        type: 2}
+      propertyPath: DamageThreshold.Array.data[4]
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114886002833580368, guid: c78c79f4a528df8499e5b89355a2ceb2,
+        type: 2}
+      propertyPath: DamageThreshold.Array.data[5]
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c78c79f4a528df8499e5b89355a2ceb2, type: 2}

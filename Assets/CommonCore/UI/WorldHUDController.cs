@@ -32,6 +32,8 @@ namespace CommonCore.UI
         public Text MeleeWeaponText;
         public Image ReadyBarImage;
 
+        public Image Crosshair;
+
         public Text SubtitleText;
         private float SubtitleTimer;
         private int SubtitlePriority = int.MinValue;
@@ -93,6 +95,9 @@ namespace CommonCore.UI
                         WeaponReady = true;
                         UpdateWeaponDisplay();
                         break;
+                    case "PlayerChangeView":
+                        SetCrosshair(message);
+                        break;
                 }
             }
             else if(message is SubtitleMessage)
@@ -105,6 +110,20 @@ namespace CommonCore.UI
                     SubtitleText.text = subMessage.UseSubstitution ? Sub.Macro(subMessage.Contents) : subMessage.Contents;
                 }
             }
+        }
+
+        private void SetCrosshair(QdmsMessage message)
+        {
+            //we actually don't care much if this fails
+            //it'll throw an ugly exception but won't break anything
+
+            var newView = ((QdmsKeyValueMessage)(message)).GetValue<PlayerViewType>("ViewType");
+            if (newView == PlayerViewType.ForceFirst || newView == PlayerViewType.PreferFirst)
+                Crosshair.gameObject.SetActive(true);
+            else if(newView == PlayerViewType.ForceThird || newView == PlayerViewType.PreferThird)
+                Crosshair.gameObject.SetActive(false);
+            else
+                Crosshair.gameObject.SetActive(false);
         }
 
         private void UpdateSubtitles()

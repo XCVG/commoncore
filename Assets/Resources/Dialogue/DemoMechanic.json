@@ -1,0 +1,670 @@
+{
+  "image": "Mechanic",
+  "nameText": "The Mechanic",
+  "default": "gen1",
+  "frames": {
+    "matsuda1": {
+      "type": "text",
+      "image": "matsuda",
+      "nameText": "Matsuda Toyoda",
+      "next": "this.matsuda2",
+      "text": "Hey, there you are! I made it into the academy, too!"
+    },
+    "leave1": {
+      "type": "text",
+      "next": "meta.return",
+      "text": "Try not to trip on the way out, Princess"
+    },
+    "gen1": {
+      "type": "choice",
+      "text": "So, Princess, what brings you to my shack in the middle of nowhere?",
+      "choices": [
+        {
+          "text": "Princess? That sounded more sarcastic than respectful...",
+          "next": "this.princess1"
+        },
+        {
+          "text": "Who are you? What do you do up here?",
+          "next": "this.personal1"
+        },
+        {
+          "text": "Have you heard anything interesting lately?",
+          "next": "this.rumours1"
+        },
+        {
+          "text": "What do you know about the river water?",
+          "next": "this.water1",
+          "showCondition": {
+            "quest": "DemoQuest",
+            "started": true
+          },
+          "hideCondition": {
+            "flag": "DemoMechanicStartedFetchQuest"
+          }
+        },
+        {
+          "text": "Can you build me a filter now?",
+          "next": "this.filtern1",
+          "showCondition": {
+            "flag": "DemoMechanicStartedFetchQuest"
+          },
+          "hideCondition": {
+            "flag": "DemoMechanicFinishedFetchQuest"
+          },
+          "conditional": [
+            {
+              "next": "this.filterd1",
+              "conditions": [
+                {
+                  "item": "demo_part1",
+                  "greaterEqual": 1
+                },
+                {
+                  "item": "demo_part2",
+                  "greaterEqual": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "I should get going",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "filterd1": {
+      "type": "choice",
+      "text": "Yeah, that'll work. Give me a day and I'll have something together that should do the trick.",
+      "choices": [
+        {
+          "text": "Continue",
+          "next": "this.filterd2",
+          "microscript": [
+            {
+              "flag": "DemoMechanicFinishedFetchQuest",
+              "set": true
+            },
+            {
+              "quest": "DemoQuest",
+              "set": 210
+            },
+            {
+              "item": "demo_part1",
+              "take": 1
+            },
+            {
+              "item": "demo_part2",
+              "take": 1
+            },
+            {
+              "item": "demo_filter",
+              "take": 1
+            }
+          ]
+        }
+      ]
+    },
+    "filterd2": {
+      "type": "text",
+      "text": "(Unfortunately, we couldn't get the timer system implemented in time for this demo)",
+      "next": "this.gen1"
+    },
+    "filtern1": {
+      "type": "choice",
+      "text": "Gonna need the right parts, or some parts anyway. Like I said, I need a semi-permeable membrane, say from a <b>Fuel Converter Assembly</b>. And some kinda <b>High-Pressure Pump</b>",
+      "choices": [
+        {
+          "text": "Where could I find those parts?",
+          "next": "this.filtern2"
+        },
+        {
+          "text": "Do you have any other ideas?",
+          "next": "this.filtern3"
+        },
+        {
+          "text": "I understand",
+          "next": "this.gen1"
+        }
+      ]
+    },
+    "filtern2": {
+      "type": "choice",
+      "text": "Don't got an easy answer for that. Might have better luck on Uban if you could get off this island. I know somethin' crashed off the north end of the island some years back. Might try that.",
+      "choices": [
+        {
+          "text": "Got it",
+          "next": "this.gen1"
+        }
+      ]
+    },
+    "filtern3": {
+      "type": "choice",
+      "text": "There's a well on this island, might try clearin' that out. Or maybe someone'd be willing to bring water in. Might be expensive, though.",
+      "choices": [
+        {
+          "text": "Okay, thanks",
+          "next": "this.gen1"
+        }
+      ]
+    },
+    "water1": {
+      "type": "choice",
+      "text": "I know it's pretty toxic. When those pirates came through- just before I settled in- they threw one hell of a bender. And threw all their trash, dead bodies and shit, into the lake.",
+      "choices": [
+        {
+          "text": "How do you drink it, then?",
+          "next": "this.water2"
+        },
+        {
+          "text": "Could it make a village sick?",
+          "next": "this.water3"
+        },
+        {
+          "text": "Nevermind",
+          "next": "this.gen1"
+        }
+      ]
+    },
+    "water2": {
+      "type": "choice",
+      "text": "I don't, not straight, anyway. I'd be dead in a day. No, I got a little RO- reverse osmosis- unit. Filthy water comes in, pure and clean comes out.",
+      "choices": [
+        {
+          "text": "Where can I get one?",
+          "next": "this.water2a"
+        },
+        {
+          "text": "Could you build something similar for the village?",
+          "next": "this.water4"
+        },
+        {
+          "text": "I see",
+          "next": "this.gen1"
+        }
+      ]
+    },
+    "water2a": {
+      "type": "choice",
+      "text": "I could put in a request for one. Maybe by the end of the month, you'll get a little filter like mine. If you're thinking what I think you're thinking, though, it won't do any good. Way too small for a whole village. You'd need a permanant plant, and that would take months to put in.",
+      "choices": [
+        {
+          "text": "Could you build something similar, but bigger?",
+          "next": "this.water4"
+        },
+        {
+          "text": "I see",
+          "next": "this.gen1"
+        }
+      ]
+    },
+    "water3": {
+      "type": "choice",
+      "text": "Yeah, for sure. Heavy metals are high, and that'll screw everyone up in the long run, but it's the bacterial load that'll kill you. You don't boil it, you'll get all kinds of nasty diseases. Even if you do, you'll probably still get sick.",
+      "choices": [
+        {
+          "text": "How do you drink it, then?",
+          "next": "this.water2"
+        },
+        {
+          "text": "Could you build some kind of filter for the village?",
+          "next": "this.water4"
+        },
+        {
+          "text": "Nevermind",
+          "next": "this.gen1"
+        }
+      ]
+    },
+    "water4": {
+      "type": "choice",
+      "text": "I could, yeah. Actually, yeah, that might even be fun. I'll need a few parts, though, and they're gonna be hard to get here.",
+      "choices": [
+        {
+          "text": "What do I need to get?",
+          "next": "this.water5"
+        },
+        {
+          "text": "Oh, nevermind, then",
+          "next": "this.gen1"
+        }
+      ]
+    },
+    "water5": {
+      "type": "choice",
+      "text": "You're gonna need a... hmm. The key parts are a semi-permeable membrane and a powerful pump to push the water through it. You're not gonna find the right parts, no way, but a <b>Fuel Converter Assembly</b>, like from a shuttle, would work. And any <b>High-Pressure Pump</b>. I think I have everything else.",
+      "choices": [
+        {
+          "text": "Okay, I'll get on it.",
+          "microscript": [
+            {
+              "flag": "DemoMechanicStartedFetchQuest",
+              "set": true
+            }
+          ],
+          "next": "this.gen1"
+        },
+        {
+          "text": "I don't think I can find those things.",
+          "next": "this.gen1"
+        }
+      ]
+    },
+    "rumours1": {
+      "type": "choice",
+      "text": "I hear all kinds of stuff. Sittin' beside a giant antenna farm after all, soaking up the cancer rays. You talkin' from the village, from the planet, or from the galaxy?",
+      "choices": [
+        {
+          "text": "Village",
+          "next": "this.rumoursv1",
+          "conditional": [
+            {
+              "next": "this.rumoursv2",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "equal": -3
+                }
+              ]
+            },
+            {
+              "next": "this.rumoursv2",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "equal": -1
+                }
+              ]
+            },
+            {
+              "next": "this.rumoursv2",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "equal": -21
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Planet",
+          "next": "this.rumoursp1"
+        },
+        {
+          "text": "Galaxy",
+          "next": "this.rumoursg1"
+        },
+        {
+          "text": "Nevermind",
+          "next": "this.gen1"
+        }
+      ]
+    },
+    "rumoursv1": {
+      "type": "text",
+      "text": "I don't really talk to the villagers down there much, but they seemed to be pretty unhappy about something. And I might be crazy, but I might have seen them buryin' some bodies.",
+      "next": "this.rumours1"
+    },
+    "rumoursv2": {
+      "type": "text",
+      "text": "Well, they haven't been happy lately, but things seem to be a little better now. Dunno if you had anything to do with that, but it seems a good thing.",
+      "next": "this.rumours1"
+    },
+    "rumoursp1": {
+      "type": "text",
+      "text": "Egaloch signed that trade deal with Lenwohl. They both used to be part of the Empire, didn't they? Oh, some adventurer finally cracked the Forge over near Pheleans. That was somethin'.",
+      "next": "this.rumours1"
+    },
+    "rumoursg1": {
+      "type": "text",
+      "text": "The Salvel are trying to push through another round of sanctions against us. They're pissed at us, but what else is new? Oh, there's that new movie, the one about the Andromeda galaxy with Dana Delani in it - you don't know who that is, do you?",
+      "next": "this.rumours1"
+    },
+    "personal1": {
+      "type": "choice",
+      "text": "Name's Tess, but pretty well everyone calls me the Mechanic. I fly from island to island, make sure the transmitters and the generators and the filters all stay working.",
+      "choices": [
+        {
+          "text": "Nice to meet you, Tess",
+          "next": "this.gen1"
+        },
+        {
+          "text": "What's it like doing that?",
+          "next": "this.personal2"
+        },
+        {
+          "text": "Great, you're one of those people",
+          "next": "this.personalx"
+        }
+      ]
+    },
+    "personal2": {
+      "type": "choice",
+      "text": "Honestly, pretty boring. Sometimes one of the locals will get mad over their dead cow or whatever and throw rocks at me. Sometimes a survey team comes in to look at the ruins under us. But mostly it's boring. Not a lot of action, or a lot of... action. Gets lonely up here.",
+      "choices": [
+        {
+          "text": "Ah, that makes sense",
+          "next": "this.gen1"
+        },
+        {
+          "text": "You don't go down to the village at all?",
+          "next": "this.personal3"
+        }
+      ]
+    },
+    "personal3": {
+      "type": "choice",
+      "text": "Like I said, sometimes they throw rocks at me. I've had to use my sidearm a couple times.  They don't really trust me and all my \"witchcraft\". Ha! Thought I'd come here and see some witches, never thought I'd <i>be</i> the witch.",
+      "choices": [
+        {
+          "text": "That's too bad.",
+          "next": "this.gen1"
+        },
+        {
+          "text": "I can try to talk some sense into them",
+          "next": "this.personalx5"
+        },
+        {
+          "text": "I mean, I don't trust you either.",
+          "next": "this.personalx1"
+        }
+      ]
+    },
+    "personalx": {
+      "type": "choice",
+      "text": "What the hell do you mean, one of those people?",
+      "choices": [
+        {
+          "text": "Spacemen",
+          "microscript": [
+            {
+              "flag": "DemoMechanicDidOffend",
+              "set": true
+            }
+          ],
+          "next": "this.princessx1"
+        },
+        {
+          "text": "Tech types",
+          "microscript": [
+            {
+              "flag": "DemoMechanicDidOffend",
+              "set": true
+            }
+          ],
+          "next": "this.princessx1"
+        },
+        {
+          "text": "People who talk at the theatre",
+          "next": "this.princessx2"
+        }
+      ]
+    },
+    "personalx2": {
+      "type": "text",
+      "text": "Hah! Well, Princess, I aim to misbehave.",
+      "next": "this.gen1"
+    },
+    "personalx1": {
+      "type": "text",
+      "text": "Well, to you too, princess.",
+      "next": "this.gen1"
+    },
+    "personalx5": {
+      "type": "text",
+      "text": "Nah, it's alright. I'm all good up here.",
+      "next": "this.gen1"
+    },
+    "princess1": {
+      "type": "choice",
+      "text": "Well, you are, aren't ya?",
+      "choices": [
+        {
+          "text": "I guess, sure",
+          "next": "this.princess2"
+        },
+        {
+          "text": "That's not the word we use, but basically yes",
+          "next": "this.princess2"
+        },
+        {
+          "text": "Now I know you're just mocking me",
+          "next": "this.princess9"
+        }
+      ]
+    },
+    "princess2": {
+      "type": "choice",
+      "text": "Next in line to the throne, or some people say. Gotta admit, Aurelia Caesar I has got a ring to it.",
+      "choices": [
+        {
+          "text": "You heard right. My cousin may sit on it, but that throne is mine.",
+          "next": "this.princess3"
+        },
+        {
+          "text": "That was the plan, but it's kind of on the rocks right now.",
+          "next": "this.princess3"
+        },
+        {
+          "text": "I think you heard wrong.",
+          "next": "this.princess3"
+        },
+        {
+          "text": "Now I know you're just mocking me",
+          "next": "this.princess9"
+        }
+      ]
+    },
+    "princess3": {
+      "type": "choice",
+      "text": "Yeah, I heard that too. Still rootin' for you, though. If you ever make it out to Charleston, say on a diplomatic mission or whatever, there's a beer with your name on it.",
+      "choices": [
+        {
+          "text": "I'm holding you to that.",
+          "next": "this.gen1"
+        },
+        {
+          "text": "Well, we'll see",
+          "next": "this.gen1"
+        },
+        {
+          "text": "Like I'd drink with the likes of you",
+          "next": "this.princessx",
+          "microscript": [
+            {
+              "flag": "DemoMechanicDidOffend",
+              "set": true
+            }
+          ]
+        }
+      ]
+    },
+    "princess9": {
+      "type": "choice",
+      "text": "I ain't your subject, and I don't bow to no emperor. The way I see it, I can call you whatever I want. Princess, Aurelia, Bitch if I'm havin' a bad day. But I'm tryin' to at least be somewhat respectful. Take it or leave it.",
+      "choices": [
+        {
+          "text": "Okay, I get it. Thank you.",
+          "next": "this.gen1"
+        },
+        {
+          "text": "Fine.",
+          "next": "this.gen1"
+        },
+        {
+          "text": "Yeah, sure you are.",
+          "next": "this.gen1"
+        }
+      ]
+    },
+    "princessx": {
+      "type": "text",
+      "next": "this.princess9",
+      "text": "Have it your way, bitch.",
+      "nextText": "Excuse me?"
+    },
+    "started1": {
+      "type": "choice",
+      "text": "Were you able to vanquish the monsters, Aegustae Aurelia?",
+      "choices": [
+        {
+          "text": "(LIE) They fell swiftly by the edge of my sword",
+          "conditional": [
+            {
+              "next": "this.endlie2",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "greater": 35
+                }
+              ]
+            }
+          ],
+          "next": "this.endlie1",
+          "showCondition": {
+            "noflag": "DemoWellMonstersKilled"
+          },
+          "hidecondition": {
+            "flag": "DemoFlaviaDidFailLie"
+          }
+        },
+        {
+          "text": "Yes, I killed them all",
+          "next": "this.endgood1",
+          "showCondition": {
+            "flag": "DemoWellMonstersKilled"
+          }
+        },
+        {
+          "next": "this.movefail",
+          "text": "I think you should all move instead",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidTryMove",
+              "set": true
+            }
+          ],
+          "showCondition": {
+            "actorvalue": "DerivedStats.Skills.SocialLeverage",
+            "greater": 25
+          },
+          "hideCondition": {
+            "flag": "DemoFlaviaDidTryMove"
+          },
+          "conditional": [
+            {
+              "next": "this.movesucceed",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "greater": 60
+                }
+              ]
+            },
+            {
+              "next": "this.movesucceed",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "greater": 40
+                },
+                {
+                  "noflag": "DemoFlaviaDidOffend"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "I'm working on it",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "doneDefault": {
+      "type": "choice",
+      "text": "Thank you for helping us, Aegustae Aurelia. The village is forever in your debt.",
+      "choices": [
+        {
+          "text": "Don't mention it. Really, don't.",
+          "next": "meta.return"
+        },
+        {
+          "text": "It's fine, you're welcome",
+          "next": "meta.return"
+        },
+        {
+          "text": "I didn't do this for you",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "base": {
+      "type": "choice",
+      "nameText": "Flavia",
+      "choices": [
+        {
+          "text": "Hello",
+          "next": "this.first1",
+          "conditional": [
+            {
+              "next": "this.started1",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "started": true
+                }
+              ]
+            },
+            {
+              "next": "this.filter1",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "equal": 220
+                }
+              ]
+            },
+            {
+              "next": "this.doneDefault",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "finished": true
+                }
+              ]
+            },
+            {
+              "next": "this.doneRelocated",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "equal": -3
+                }
+              ]
+            },
+            {
+              "next": "this.doneFilterPassed",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "equal": -21
+                }
+              ]
+            },
+            {
+              "next": "this.doneFilterFailed",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "equal": -22
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

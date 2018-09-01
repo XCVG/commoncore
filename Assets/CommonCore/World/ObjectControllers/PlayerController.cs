@@ -33,6 +33,7 @@ namespace CommonCore.World
         public Animator AnimController;
         public Transform CameraRoot;
         public GameObject ModelRoot;
+        public Transform TargetPoint;
 
         [Header("Shooting")]
         public bool ShootingEnabled = true;
@@ -48,7 +49,8 @@ namespace CommonCore.World
         public Transform ShootPoint;
         private float TimeToNext;
 
-        private bool isAnimating;
+        private bool IsAnimating;
+        private Renderer[] ModelRendererCache;
 
         // Use this for initialization
         public override void Start()
@@ -97,7 +99,7 @@ namespace CommonCore.World
             }
             
 
-            isAnimating = false;
+            IsAnimating = false;
 
             LockPauseModule.CaptureMouse = true;
 
@@ -146,28 +148,30 @@ namespace CommonCore.World
                 case PlayerViewType.PreferFirst:
                     tpCamera.SetActive(false);
                     fpCamera.SetActive(true);
-                    ModelRoot.SetActive(false);
+                    SetModelVisibility(false);
                     break;
                 case PlayerViewType.PreferThird:
                     tpCamera.SetActive(true);
                     fpCamera.SetActive(false);
-                    ModelRoot.SetActive(true);
+                    SetModelVisibility(true);
                     break;
                 case PlayerViewType.ForceFirst:
                     tpCamera.SetActive(false);
                     fpCamera.SetActive(true);
-                    ModelRoot.SetActive(false);
+                    SetModelVisibility(false);
                     break;
                 case PlayerViewType.ForceThird:
                     tpCamera.SetActive(true);
                     fpCamera.SetActive(false);
-                    ModelRoot.SetActive(true);
+                    SetModelVisibility(true);
                     break;
                 case PlayerViewType.ExplicitOther:
                     tpCamera.SetActive(false);
                     fpCamera.SetActive(false);
                     break;
             }
+
+            PushViewChangeMessage(CCParams.DefaultPlayerView);
         }
 
         private void HandleView()
@@ -186,14 +190,15 @@ namespace CommonCore.World
                 {
                     fpCamera.SetActive(true);
                     tpCamera.SetActive(false);
-                    ModelRoot.SetActive(false);
+                    SetModelVisibility(false);
+                    PushViewChangeMessage(PlayerViewType.ForceFirst);
                 }
                 else
                 {
                     fpCamera.SetActive(false);
                     tpCamera.SetActive(true);
-                    ModelRoot.SetActive(true);
-
+                    SetModelVisibility(true);
+                    PushViewChangeMessage(PlayerViewType.ForceThird);
                 }
             }
         }
@@ -229,6 +234,32 @@ namespace CommonCore.World
                 }
 
             }
+        }
+
+        private void SetModelVisibility(bool visible)
+        {
+            //fill renderer cache if empty
+            if(ModelRendererCache == null || ModelRendererCache.Length == 0)
+            {
+                List<Renderer> rendererList = WorldUtils.GetComponentsInDescendants<Renderer>(ModelRoot.transform);
+                ModelRendererCache = rendererList.ToArray();
+            }
+
+            foreach(var r in ModelRendererCache)
+            {
+                if (visible)
+                    r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+                else
+                    r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+            }
+        }
+
+        private void PushViewChangeMessage(PlayerViewType newView)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict["ViewType"] = newView;
+            QdmsKeyValueMessage msg = new QdmsKeyValueMessage(dict, "PlayerChangeView");
+            QdmsMessageBus.Instance.PushBroadcast(msg);
         }
         
 
@@ -376,23 +407,23 @@ namespace CommonCore.World
             //handle animation
             if (isMoving)
             {
-                if (!isAnimating)
+                if (!IsAnimating)
                 {
 
                     //ac.Play("Run_Rifle_Foreward", 0);
                     AnimController.CrossFade("run", 0f);
-                    isAnimating = true;
+                    IsAnimating = true;
                     //stepSound.Play();
                 }
             }
             else
             {
-                if (isAnimating)
+                if (IsAnimating)
                 {
 
                     //ac.Stop();
                     AnimController.CrossFade("idle", 0f);
-                    isAnimating = false;
+                    IsAnimating = false;
                     //stepSound.Stop();
                 }
             }

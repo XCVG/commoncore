@@ -23,6 +23,7 @@ namespace CommonCore.World
         public Animator AnimController;
         public ActorInteractableComponent InteractComponent;
         public NavMeshAgent NavComponent;
+        public Transform TargetPoint;
 
         [Header("State")]
         public ActorAiState BaseAiState = ActorAiState.Idle;
@@ -67,6 +68,7 @@ namespace CommonCore.World
         public float AttackRange = 1.0f;
         public float AttackStateDelay = 1.0f;
         public float AttackInterval = 1.0f;
+        public float AttackSpread = 0.25f;
         public float BulletSpeed = 100;
         public ActorHitInfo AttackHit;
         public GameObject BulletPrefab;
@@ -330,7 +332,6 @@ namespace CommonCore.World
                     }
                     break;
                 case ActorAiState.Chasing:
-                    //TODO actually go to attack
                     if(!WorldUtils.TargetIsAlive(Target))
                     {
                         EnterState(BaseAiState);
@@ -370,7 +371,7 @@ namespace CommonCore.World
                     break;
                 case ActorAiState.Attacking:
                     //wait...
-                    if(TimeInState >= AttackStateDelay)
+                    if (TimeInState >= AttackStateDelay)
                     {
                         //just return
                         if (!WorldUtils.TargetIsAlive(Target))
@@ -442,11 +443,20 @@ namespace CommonCore.World
 
         private void DoAttack()
         {
-            //hardcoded spread for now
+            
             Vector3 aimPoint = Target.position;
-            aimPoint.y += UnityEngine.Random.Range(0.5f, 1.5f); //so we don't aim at feet
-            aimPoint.x += UnityEngine.Random.Range(-0.25f, 0.25f);
-            aimPoint.z += UnityEngine.Random.Range(-0.25f, 0.25f);
+
+            var targetAC = Target.GetComponent<ActorController>();
+            if (targetAC != null && targetAC.TargetPoint != null)
+                aimPoint = targetAC.TargetPoint.position;
+
+            var targetPC = Target.GetComponent<PlayerController>();
+            if (targetPC != null && targetPC.TargetPoint != null)
+                aimPoint = targetPC.TargetPoint.position;
+
+            aimPoint.y += UnityEngine.Random.Range(-AttackSpread, AttackSpread);
+            aimPoint.x += UnityEngine.Random.Range(-AttackSpread, AttackSpread);
+            aimPoint.z += UnityEngine.Random.Range(-AttackSpread, AttackSpread);
 
             Vector3 shootPos = ShootPoint == null ? (transform.position + (transform.forward * 0.6f) + (transform.up * 1.25f)) : ShootPoint.position;
             Vector3 shootVec = (aimPoint - shootPos).normalized; //I screwed this up the first time
@@ -511,11 +521,13 @@ namespace CommonCore.World
             if (TotalTickCount % SearchInterval != 0)
                 return;
 
+            //TODO faction system
+
             //check player first since it's (relatively) cheap
             if(TargetPlayer)
             {
                 var playerObj = WorldUtils.GetPlayerObject();
-                if(playerObj != null)
+                if(playerObj != null && !WorldUtils.TargetIsAlive(playerObj.transform))
                 {
                     if((playerObj.transform.position - transform.position).magnitude <= SearchRadius)
                     {
@@ -549,7 +561,9 @@ namespace CommonCore.World
                 var potentialTargets = transform.root.GetComponentsInChildren<ActorController>();
                 foreach (var potentialTarget in potentialTargets)
                 {
-                    if(WorldUtils.TargetIsAlive(potentialTarget.transform) && (potentialTarget.transform.position - transform.position).magnitude <= SearchRadius)
+                    if(WorldUtils.TargetIsAlive(potentialTarget.transform) 
+                        && (potentialTarget.transform.position - transform.position).magnitude <= SearchRadius
+                        && !(potentialTarget == this))
                     {
                         if (UseLineOfSight)
                         {
@@ -573,6 +587,9 @@ namespace CommonCore.World
                     }
                 }
             }
+
+            if (!WorldUtils.TargetIsAlive(Target))
+                Target = null;
             
         }
 
@@ -660,7 +677,7 @@ namespace CommonCore.World
             {
                 string stateName = GetNameForAnimation(state);
 
-                if (string.IsNullOrEmpty(AttackAnimationOverride) && (state == ActorAnimState.Punching || state == ActorAnimState.Shooting))
+                if (!string.IsNullOrEmpty(AttackAnimationOverride) && (state == ActorAnimState.Punching || state == ActorAnimState.Shooting))
                     stateName = AttackAnimationOverride;
 
                 AnimController.Play(stateName);

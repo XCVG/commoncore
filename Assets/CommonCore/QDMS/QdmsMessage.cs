@@ -46,6 +46,11 @@ namespace CommonCore.Messaging
 
             return null;
         }
+
+        public object this[string i]
+        {
+            get { return _Dictionary[i]; }
+        }
     }
 
     public class QdmsFlagMessage : QdmsMessage

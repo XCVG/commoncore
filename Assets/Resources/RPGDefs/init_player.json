@@ -63,37 +63,59 @@
     "Inventory": {
       "Items": [
         {
-          "Quantity": -1,
+		  "$id": "1",
+          "Quantity": 1,
           "Condition": 1.0,
-          "Equipped": false,
+          "Equipped": true,
           "ItemModel": {
             "$ItemModel": "lightarmor"
           }
         },
         {
-          "Quantity": -1,
+		  "$id": "2",
+          "Quantity": 1,
           "Condition": 1.0,
-          "Equipped": false,
+          "Equipped": true,
           "ItemModel": {
             "$ItemModel": "sword"
           }
         },
         {
-          "Quantity": -1,
+		  "$id": "3",
+          "Quantity": 1,
           "Condition": 1.0,
-          "Equipped": false,
+          "Equipped": true,
           "ItemModel": {
-            "$ItemModel": "m1911"
+            "$ItemModel": "crossbow"
           }
         },
         {
-          "Quantity": -1,
+          "Quantity": 1,
           "Condition": 1.0,
           "Equipped": false,
           "ItemModel": {
             "$ItemModel": "medkit"
           }
+        },
+		{
+          "Quantity": 50,
+          "Condition": 1.0,
+          "Equipped": false,
+          "ItemModel": {
+            "$ItemModel": "Gold"
+          }
         }
       ]
+    },
+	"Equipped": {
+      "Body": {
+        "$ref": "1"
+      },
+      "MeleeWeapon": {
+        "$ref": "2"
+      },
+      "RangedWeapon": {
+        "$ref": "3"
+      }
     }
   }

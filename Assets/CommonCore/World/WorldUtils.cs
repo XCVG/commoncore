@@ -28,13 +28,22 @@ namespace CommonCore.World
             return goList;
         }
 
+        public static List<T> GetComponentsInDescendants<T>(Transform root)
+        {
+            List<T> components = new List<T>();
+
+            GetComponentsInDescendants<T>(root, components);
+
+            return components;
+        }
+
         public static void GetComponentsInDescendants<T>(Transform root, List<T> components)
         {
             //base case: root has no children
             if (root.childCount == 0)
             {
                 T component = root.GetComponent<T>();
-                if (component != null)
+                if (!((UnityEngine.Object)(object)component == null)) //!= null doesn't work, it doesn't return true null and instead they've overloaded ==... but not !=
                 {
                     components.Add(component);
                 }
@@ -42,7 +51,7 @@ namespace CommonCore.World
             else //other case (could be cleaned up a bit)
             {
                 T component = root.GetComponent<T>();
-                if (component != null)
+                if (!((UnityEngine.Object)(object)component == null))
                 {
                     components.Add(component);
                 }

@@ -1400,7 +1400,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 224358864844888908}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9999995
+  m_Size: 0.9999999
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1693,6 +1693,7 @@ MonoBehaviour:
   AmmoText: {fileID: 114313897932301290}
   MeleeWeaponText: {fileID: 114359961027429680}
   ReadyBarImage: {fileID: 114777453710192974}
+  Crosshair: {fileID: 114634995045220404}
   SubtitleText: {fileID: 114120061578670386}
 --- !u!114 &114539421137001006
 MonoBehaviour:
@@ -2888,7 +2889,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000061035156, y: 0.000028185043}
+  m_AnchoredPosition: {x: 0.000061035156, y: -0.000022020275}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!224 &224264659612919540
@@ -3421,7 +3422,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 96, y: 96}
+  m_SizeDelta: {x: 48, y: 48}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224854599395274590
 RectTransform:
