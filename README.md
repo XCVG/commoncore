@@ -22,6 +22,7 @@ CommonCore handles or will handle standard RPG mechanics, game state with saving
 
 CommonCore consists of several modules that encompass various functionality.
 
+* Audio: Handy fire-and-forget audio and music player
 * Base: Module loading, lifecycle handling, utility functions
 * Config: Graphics, sound, and other configuration state and modification
 * Console: Glue that handles interfacing with third-party command console

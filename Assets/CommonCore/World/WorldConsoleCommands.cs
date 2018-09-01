@@ -34,6 +34,18 @@ namespace CommonCore.World
             DevConsole.singleton.Log(JsonConvert.SerializeObject(GameState.Instance.PlayerRpgState));
         }
 
+        [Command]
+        static void PrintSceneList()
+        {
+            var sceneNames = SceneUtils.GetSceneList();
+            StringBuilder sb = new StringBuilder(sceneNames.Length * 16);
+            foreach(var s in sceneNames)
+            {
+                sb.AppendLine(s);
+            }
+            DevConsole.singleton.Log(sb.ToString());
+        }
+
         //***** CHEATS
 
         [Command]

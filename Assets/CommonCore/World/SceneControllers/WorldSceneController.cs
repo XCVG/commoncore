@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using CommonCore.State;
+using CommonCore.Audio;
 
 namespace CommonCore.World
 {
@@ -13,6 +14,7 @@ namespace CommonCore.World
     {
         public bool AutoGameover = true;
         public bool Autoload = true;
+        public string SetMusic;
         
         public override void Awake()
         {
@@ -30,6 +32,13 @@ namespace CommonCore.World
                 Restore();
                 MetaState.Instance.IntentsExecutePostload();
             }
+
+            if (!string.IsNullOrEmpty(SetMusic))
+            {
+                AudioPlayer.Instance.SetMusic(SetMusic, true, false);
+                AudioPlayer.Instance.StartMusic();
+            }
+                
         }
 
         public override void Update()

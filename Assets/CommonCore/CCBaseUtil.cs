@@ -82,6 +82,28 @@ namespace CommonCore
             return input;
         }
 
+        /*
+         * Converts a string to an int or a float with correct type
+         * (double precision version: long or double)
+         */
+        public static object StringToNumericAutoDouble(string input)
+        {
+            //check if it is integer first
+            long iResult;
+            bool isInteger = long.TryParse(input, out iResult);
+            if (isInteger)
+                return iResult;
+
+            //then check if it could be decimal
+            double fResult;
+            bool isFloat = double.TryParse(input, out fResult);
+            if (isFloat)
+                return fResult;
+
+            //else return what we started with
+            return input;
+        }
+
         public static bool IsNumericType(Type type)
         {
             switch (Type.GetTypeCode(type))
