@@ -113,7 +113,9 @@ There is no formal timeline. Ultimately, this is a hobby project for me, and is 
 
 ## Usage
 
-With the exceptions listed below, this repository is licensed under the MIT License, a copy of which is included in LICENSE.txt
+With the exceptions listed below, this repository is dual-licensed under the MIT License (a copy of which is included in LICENSE.txt) and the Creative Commons Attribution 3.0 Unported license (a copy of which is included in ALTLICENSE.txt), with later versions permitted.
+
+It is **strongly** recommended that you license derivatives under the MIT License or dual-license them rather than using the Creative Commons license exclusively. The MIT License is a GPL-compatible permissive software license approved by the Free Software Foundation and the Open Source Initiative, while the Creative Commons license is designed for creative works and has several ambiguities when used to license software. The Creative Commons option is provided primarily for compliance with game jams that require entries to be released under such a license.
 
 CommonCore relies on a few third-party packages available from the Asset Store, listed in CREDITS. These will likely be replaced in future versions, but for the time being CommonCore won't work without at least DevConsole 2 and Json.NET Converters. Some of these require modifications or altered install paths, listed in CREDITS.
 

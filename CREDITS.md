@@ -94,6 +94,14 @@ animations from Firefighter VR, but these will be removed/replaced soon
 
 These are included under permissive or copyleft licenses.
 
+Clint Bellanger - Historical Swords Set [CC-BY 3.0]
+	https://opengameart.org/content/historical-swords-set
+	Assets/Objects/OpenSource/sword
+
+Lamoot - Low-poly Crossbow [CC-BY 3.0]
+	https://opengameart.org/content/low-poly-crossbow
+	Assets/Objects/OpenSource/crossbow
+
 Erdie - bow02.wav [CC-BY]
 	https://freesound.org/people/Erdie/sounds/65734/
 	Assets/Resources/DynamicSound/BowFire
