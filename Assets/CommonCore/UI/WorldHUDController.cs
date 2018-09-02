@@ -83,17 +83,17 @@ namespace CommonCore.UI
             {
                 string flag = ((QdmsFlagMessage)message).Flag;
                 switch (flag)
-                {
-                    
+                {                    
                     case "RpgChangeWeapon":
-                    case "WepReloaded":
                         UpdateWeaponDisplay();
                         break;
+                    case "WepReloading":
                     case "WepFired":
                         WeaponReady = false;
                         UpdateWeaponDisplay();
                         break;
                     case "WepReady":
+                    case "WepReloaded":
                         WeaponReady = true;
                         UpdateWeaponDisplay();
                         break;

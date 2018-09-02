@@ -37,6 +37,7 @@ namespace CommonCore.World
         public Transform CameraRoot;
         public GameObject ModelRoot;
         public Transform TargetPoint;
+        private QdmsMessageInterface MessageInterface;
 
         [Header("Shooting")]
         public bool ShootingEnabled = true;
@@ -102,7 +103,8 @@ namespace CommonCore.World
 
                 HUDScript = WorldHUDController.Current;
             }
-            
+
+            MessageInterface = new QdmsMessageInterface(gameObject);
 
             IsAnimating = false;
 
@@ -115,7 +117,7 @@ namespace CommonCore.World
         //should be fixedupdate
         public override void Update()
         {
-
+            HandleMessages();
 
             if (Time.timeScale == 0 || LockPauseModule.IsPaused())
                 return;
@@ -177,6 +179,28 @@ namespace CommonCore.World
             }
 
             PushViewChangeMessage(CCParams.DefaultPlayerView);
+        }
+
+        private void HandleMessages()
+        {
+            while (MessageInterface.HasMessageInQueue)
+            {
+                HandleMessage(MessageInterface.PopFromQueue());
+            }
+        }
+
+        private void HandleMessage(QdmsMessage message)
+        {
+            if (message is QdmsFlagMessage)
+            {
+                string flag = ((QdmsFlagMessage)message).Flag;
+                switch (flag)
+                {
+                    case "RpgChangeWeapon":
+                        HandleWeaponChange(null);
+                        break;
+                }
+            }
         }
 
         private void HandleView()
@@ -590,6 +614,7 @@ namespace CommonCore.World
                         GameObject fireEffect = null;
 
                         //TODO handle instantiate location (and variants?) in FPS/TPS mode?
+                        //TODO fairly dramatic paradigm shift: effects are handled by viewmodel
 
                         if (!string.IsNullOrEmpty(wim.FireEffect))
                         {
@@ -642,6 +667,8 @@ namespace CommonCore.World
             TimeToNext = wim.ReloadTime;
             IsReloading = true;
 
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepReloading"));
+
         }
 
         private void FinishReload()
@@ -656,6 +683,12 @@ namespace CommonCore.World
 
             QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepReloaded"));
 
+        }
+
+        private void HandleWeaponChange(WeaponItemModel wim)
+        {
+            IsReloading = false;
+            TimeToNext = 0;
         }
 
         public void TakeDamage(ActorHitInfo data)

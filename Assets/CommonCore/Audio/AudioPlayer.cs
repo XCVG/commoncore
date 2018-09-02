@@ -122,19 +122,41 @@ namespace CommonCore.Audio
 
         public void PlayUISound(string sound)
         {
-            PlaySoundEx(sound, SoundType.Sound, true, true, false, false, 1.0f, Vector3.zero);
+            try
+            {
+                PlaySoundEx(sound, SoundType.Sound, true, true, false, false, 1.0f, Vector3.zero);
+            }
+            catch(Exception)
+            {
+
+            }
         }
 
         //play a sound from a category, and maybe retain it on scene change
         public void PlaySound(string sound, SoundType type, bool retain)
         {
-            PlaySoundEx(sound, type, retain, false, false, false, 1.0f, Vector3.zero);
+            try
+            {
+                PlaySoundEx(sound, type, retain, false, false, false, 1.0f, Vector3.zero);
+            }
+            catch (Exception)
+            {
+
+            }
         }
 
         public void PlaySoundPositional(string sound, SoundType type, bool retain, Vector3 position)
         {
-            PlaySoundEx(sound, type, retain, false, false, true, 1.0f, position);
+            try
+            {
+                PlaySoundEx(sound, type, retain, false, false, true, 1.0f, position);
+            }
+            catch (Exception)
+            {
+
+            }
         }
+
 
         private SoundInfo PlaySoundEx(string sound, SoundType type, bool retain, bool ignorePause, bool loop, bool positional, float volume, Vector3 position)
         {
