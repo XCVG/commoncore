@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,6 +10,7 @@ using CommonCore.DebugLog;
 using CommonCore.State;
 using CommonCore.Rpg;
 using CommonCore.Messaging;
+
 
 namespace CommonCore.World
 {
@@ -442,98 +444,180 @@ namespace CommonCore.World
             if(oldTTN > 0)
                 QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepReady"));
 
-            //TODO use ammo/magazine
-            //TODO fire rate, spread, etc
-
             if (MappedInput.GetButtonDown("Fire1") && ShootingEnabled)
             {
                 //shoot
-                var bullet = Instantiate<GameObject>(BulletPrefab, ShootPoint.position + (ShootPoint.forward.normalized * 0.25f), ShootPoint.rotation, transform.root);
-                var bulletRigidbody = bullet.GetComponent<Rigidbody>();
-                
-                bulletRigidbody.velocity = (ShootPoint.forward.normalized * BulletSpeed);                
-                bullet.GetComponent<BulletScript>().HitInfo = BulletHitInfo;
-                TimeToNext = 1.0f;
-                if (AttemptToUseStats)
-                {
-                    if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.RangedWeapon))
-                    {
-                        RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RangedWeapon].ItemModel as RangedWeaponItemModel;
-                        if (wim != null)
-                        {
-                            //TODO factor in weapon skill, esp for bows
-                            bullet.GetComponent<BulletScript>().HitInfo = new ActorHitInfo(wim.Damage, wim.DamagePierce, wim.DType, ActorBodyPart.Unspecified, this);
-                            Vector3 fireVec = Quaternion.AngleAxis(Random.Range(-wim.Spread, wim.Spread), Vector3.right)
-                                * (Quaternion.AngleAxis(Random.Range(-wim.Spread, wim.Spread), Vector3.up)
-                                * ShootPoint.forward.normalized);
-                            bulletRigidbody.velocity = (fireVec * wim.Velocity);
-                            TimeToNext = wim.FireRate;
-                        }
-                    }      
-                }
 
-                if (BulletFireEffect != null)
-                    Instantiate(BulletFireEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
-
-                QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepFired"));
+                DoRangedAttack();
             }
             else if(MappedInput.GetButtonDown("Fire2") && MeleeEnabled)
             {
-                //punch
-                LayerMask lm = LayerMask.GetMask("Default", "ActorHitbox");
-                var rc = Physics.RaycastAll(ShootPoint.position, ShootPoint.forward, MeleeProbeDist, lm, QueryTriggerInteraction.Collide);
-                ActorController ac = null;
-                foreach(var r in rc)
-                {
-                    var go = r.collider.gameObject;
-                    var ahgo = go.GetComponent<ActorHitboxComponent>();
-                    if(ahgo != null)
-                    {
-                        ac = (ActorController)ahgo.ParentController; //this works as long as we don't go MP or do Voodoo Dolls
-                        break;
-                    }
-                    var acgo = go.GetComponent<ActorController>();
-                    if(acgo != null)
-                    {
-                        ac = acgo;
-                        break;
-                    }
-                }
-
-                ActorHitInfo hitInfo = MeleeHitInfo;
-                if (AttemptToUseStats)
-                {
-                    if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.MeleeWeapon))
-                    {
-                        MeleeWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.MeleeWeapon].ItemModel as MeleeWeaponItemModel;
-                        if (wim != null)
-                        {
-                            TimeToNext = wim.Rate;
-                            float calcDamage = RpgValues.GetMeleeDamage(GameState.Instance.PlayerRpgState, wim.Damage);
-                            float calcDamagePierce = RpgValues.GetMeleeDamage(GameState.Instance.PlayerRpgState, wim.DamagePierce);
-                            if (GameState.Instance.PlayerRpgState.Energy <= 0)
-                            {
-                                calcDamage *= 0.5f;
-                                calcDamagePierce *= 0.5f;
-                                TimeToNext += wim.Rate;
-                            }
-                            else
-                                GameState.Instance.PlayerRpgState.Energy -= wim.EnergyCost;
-                            hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, wim.DType, ActorBodyPart.Unspecified, this);
-                            
-                        }
-                        //TODO fists or something
-                    }
-                }
-
-                if (ac != null)
-                    ac.TakeDamage(hitInfo);
-
-                if (MeleeEffect != null)
-                    Instantiate(MeleeEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
-
-                QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepFired"));
+                DoMeleeAttack();
             }
+        }
+
+        private void DoMeleeAttack()
+        {
+            //punch
+            LayerMask lm = LayerMask.GetMask("Default", "ActorHitbox");
+            var rc = Physics.RaycastAll(ShootPoint.position, ShootPoint.forward, MeleeProbeDist, lm, QueryTriggerInteraction.Collide);
+            ActorController ac = null;
+            foreach (var r in rc)
+            {
+                var go = r.collider.gameObject;
+                var ahgo = go.GetComponent<ActorHitboxComponent>();
+                if (ahgo != null)
+                {
+                    ac = (ActorController)ahgo.ParentController; //this works as long as we don't go MP or do Voodoo Dolls
+                    break;
+                }
+                var acgo = go.GetComponent<ActorController>();
+                if (acgo != null)
+                {
+                    ac = acgo;
+                    break;
+                }
+            }
+
+            ActorHitInfo hitInfo = MeleeHitInfo;
+            if (AttemptToUseStats)
+            {
+                if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.MeleeWeapon))
+                {
+                    MeleeWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.MeleeWeapon].ItemModel as MeleeWeaponItemModel;
+                    if (wim != null)
+                    {
+                        TimeToNext = wim.Rate;
+                        float calcDamage = RpgValues.GetMeleeDamage(GameState.Instance.PlayerRpgState, wim.Damage);
+                        float calcDamagePierce = RpgValues.GetMeleeDamage(GameState.Instance.PlayerRpgState, wim.DamagePierce);
+                        if (GameState.Instance.PlayerRpgState.Energy <= 0)
+                        {
+                            calcDamage *= 0.5f;
+                            calcDamagePierce *= 0.5f;
+                            TimeToNext += wim.Rate;
+                        }
+                        else
+                            GameState.Instance.PlayerRpgState.Energy -= wim.EnergyCost;
+                        hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, wim.DType, ActorBodyPart.Unspecified, this);
+
+                    }
+                    //TODO fists or something
+                }
+            }
+
+            if (ac != null)
+                ac.TakeDamage(hitInfo);
+
+            if (MeleeEffect != null)
+                Instantiate(MeleeEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
+
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepFired"));
+        }
+
+        //this whole thing is a fucking mess that needs to be refactored
+        private void DoRangedAttack()
+        {
+            if (AttemptToUseStats)
+            {
+                //TODO use ammo/magazine
+                //TODO fire rate, spread, etc
+
+                if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.RangedWeapon))
+                {
+                    
+
+                    RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RangedWeapon].ItemModel as RangedWeaponItemModel;
+                    if (wim != null)
+                    {
+                        bool useAmmo = !(wim.AType == AmmoType.NoAmmo);
+
+                        //ammo logic
+                        //TODO "inverted" reload for crossbows and such
+                        if (useAmmo)
+                        {
+                            if(GameState.Instance.PlayerRpgState.AmmoInMagazine == 0)
+                            {
+                                DoReload();
+                                return;
+                            }
+
+                            GameState.Instance.PlayerRpgState.AmmoInMagazine -= 1;
+                        }
+
+                        //bullet logic
+                        GameObject bullet = null;
+
+                        if (!string.IsNullOrEmpty(wim.Projectile))
+                        {
+                            var wimBulletPrefab = CCBaseUtil.LoadResource<GameObject>("DynamicFX/" + wim.Projectile);
+                            if (wimBulletPrefab != null)
+                                bullet = Instantiate<GameObject>(wimBulletPrefab, ShootPoint.position + (ShootPoint.forward.normalized * 0.25f), ShootPoint.rotation, transform.root);
+
+                        }
+
+                        if (bullet == null)
+                            bullet = Instantiate<GameObject>(BulletPrefab, ShootPoint.position + (ShootPoint.forward.normalized * 0.25f), ShootPoint.rotation, transform.root);
+
+                        var bulletRigidbody = bullet.GetComponent<Rigidbody>();
+
+                        //TODO factor in weapon skill, esp for bows
+                        bullet.GetComponent<BulletScript>().HitInfo = new ActorHitInfo(wim.Damage, wim.DamagePierce, wim.DType, ActorBodyPart.Unspecified, this);
+                        Vector3 fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-wim.Spread, wim.Spread), Vector3.right)
+                            * (Quaternion.AngleAxis(UnityEngine.Random.Range(-wim.Spread, wim.Spread), Vector3.up)
+                            * ShootPoint.forward.normalized);
+                        bulletRigidbody.velocity = (fireVec * wim.Velocity);
+                        TimeToNext = wim.FireRate;
+                    }
+
+                    GameObject fireEffect = null;
+
+                    //TODO handle instantiate location (and variants?) in FPS/TPS mode?
+
+                    if(!string.IsNullOrEmpty(wim.FireEffect))
+                    {
+                        var fireEffectPrefab = CCBaseUtil.LoadResource<GameObject>("DynamicFX/" + wim.FireEffect);
+                        if(fireEffectPrefab != null)
+                            fireEffect = Instantiate(fireEffectPrefab, ShootPoint.position, ShootPoint.rotation, ShootPoint);
+                    }
+
+                    if (fireEffect == null && BulletFireEffect != null)
+                        fireEffect = Instantiate(BulletFireEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
+                }
+            }
+            else
+            {
+                var bullet = Instantiate<GameObject>(BulletPrefab, ShootPoint.position + (ShootPoint.forward.normalized * 0.25f), ShootPoint.rotation, transform.root);
+                var bulletRigidbody = bullet.GetComponent<Rigidbody>();
+
+                bulletRigidbody.velocity = (ShootPoint.forward.normalized * BulletSpeed);
+                bullet.GetComponent<BulletScript>().HitInfo = BulletHitInfo;
+                TimeToNext = 1.0f;
+
+                if (BulletFireEffect != null)
+                    Instantiate(BulletFireEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
+            }
+
+            
+
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepFired"));
+        }
+
+        private void DoReload()
+        {
+            //TODO animation and delay
+            RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RangedWeapon].ItemModel as RangedWeaponItemModel;
+
+            if(wim == null)
+            {
+                CDebug.LogEx("Tried to reload a null weapon", LogLevel.Error, this);
+                return;
+            }
+
+            int qty = Math.Min(wim.MagazineSize, GameState.Instance.PlayerRpgState.Inventory.CountItem(wim.AType.ToString()));
+            GameState.Instance.PlayerRpgState.AmmoInMagazine = qty;
+            GameState.Instance.PlayerRpgState.Inventory.RemoveItem(wim.AType.ToString(), qty);
+
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepReloaded"));
         }
 
         public void TakeDamage(ActorHitInfo data)

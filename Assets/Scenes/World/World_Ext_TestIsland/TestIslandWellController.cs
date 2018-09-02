@@ -31,6 +31,11 @@ namespace World.Ext.TestIsland
 
         public void OnEnterWellZone(ActionInvokerData data)
         {
+
+            //don't do ANYTHING if the quest isn't started (dumb but I'm too tired to handle the more complex cases of not doing this)
+            if (!GameState.Instance.CampaignState.IsQuestActive("DemoQuest"))
+                return;
+
             //we're done if...
             if (GameState.Instance.CampaignState.HasFlag("DemoWellMonstersKilled") || GameState.Instance.CampaignState.HasFlag("DemoWellMonstersSpawned"))
                 return;

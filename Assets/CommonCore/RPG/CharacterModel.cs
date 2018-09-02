@@ -48,14 +48,16 @@ namespace CommonCore.Rpg
         public int Experience { get; set; }
         public int Level { get; set; }
 
+
         public StatsSet BaseStats { get; private set; }
 
         public StatsSet DerivedStats { get; private set; }
 
         public List<Condition> Conditions { get; private set; }
 
+        
         public InventoryModel Inventory { get; private set; }
-
+        public int AmmoInMagazine { get; set; }
         public Dictionary<EquipSlot, InventoryItemInstance> Equipped { get; private set; }
 
         public CharacterModel() //TODO with a model base parameter
@@ -126,6 +128,14 @@ namespace CommonCore.Rpg
 
             Equipped[slot] = item;
 
+            //magazine logic
+            if (item.ItemModel is RangedWeaponItemModel)
+            {
+                var rwim = (RangedWeaponItemModel)item.ItemModel;
+                AmmoInMagazine = Math.Min(rwim.MagazineSize, Inventory.CountItem(rwim.AType.ToString()));
+                Inventory.RemoveItem(rwim.AType.ToString(), AmmoInMagazine);
+            }
+
             item.Equipped = true;
 
             UpdateStats();
@@ -145,6 +155,14 @@ namespace CommonCore.Rpg
                 Equipped.Remove(slot);            
             }           
             //allow continuing even if it's not actually equippable, for fixing bugs
+
+            //magazine logic
+            if(item.ItemModel is RangedWeaponItemModel)
+            {
+                var rwim = (RangedWeaponItemModel)item.ItemModel;
+                Inventory.AddItem(rwim.AType.ToString(), AmmoInMagazine);
+                AmmoInMagazine = 0;
+            }
 
             item.Equipped = false;
 

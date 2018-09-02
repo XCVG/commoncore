@@ -104,9 +104,18 @@
           "ItemModel": {
             "$ItemModel": "Gold"
           }
+        },
+		{
+          "Quantity": 7,
+          "Condition": 1.0,
+          "Equipped": false,
+          "ItemModel": {
+            "$ItemModel": "Bolt"
+          }
         }
       ]
     },
+	"AmmoInMagazine": 1,
 	"Equipped": {
       "Body": {
         "$ref": "1"

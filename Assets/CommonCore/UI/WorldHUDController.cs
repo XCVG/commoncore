@@ -84,7 +84,9 @@ namespace CommonCore.UI
                 string flag = ((QdmsFlagMessage)message).Flag;
                 switch (flag)
                 {
+                    
                     case "RpgChangeWeapon":
+                    case "WepReloaded":
                         UpdateWeaponDisplay();
                         break;
                     case "WepFired":
@@ -161,7 +163,7 @@ namespace CommonCore.UI
                 AmmoType atype = ((RangedWeaponItemModel)player.Equipped[EquipSlot.RangedWeapon].ItemModel).AType;
                 if(atype != AmmoType.NoAmmo)
                 {
-                    AmmoText.text = string.Format("{1}/{2} [{0}]", atype.ToString(), "-", player.Inventory.CountItem(atype.ToString()));
+                    AmmoText.text = string.Format("{1}/{2} [{0}]", atype.ToString(), player.AmmoInMagazine, player.Inventory.CountItem(atype.ToString()));
                     //TODO magazine
                 }
                 else

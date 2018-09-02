@@ -75,7 +75,7 @@ namespace GameUI
             PaintAll();
         }
 
-        void OnDisable()
+        public override void OnDisable()
         {
             LockPauseModule.UnpauseGame(this);
         }

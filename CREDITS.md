@@ -94,6 +94,18 @@ animations from Firefighter VR, but these will be removed/replaced soon
 
 These are included under permissive or copyleft licenses.
 
+Erdie - bow02.wav [CC-BY]
+	https://freesound.org/people/Erdie/sounds/65734/
+	Assets/Resources/DynamicSound/BowFire
+
+Erdie - bow01.wav [CC-BY]
+	https://freesound.org/people/Erdie/sounds/65733/
+	Assets/Resources/DynamicSound/CrossbowFire
+
+InspectorJ - Bodyboard, Stretch, A.wav [CC-BY]
+	https://freesound.org/people/InspectorJ/sounds/401648/
+	Assets/Resources/DynamicSound/CrossbowDraw
+
 arikel - Low poly furniture [CC0]
 	https://opengameart.org/content/low-poly-furniture
 	Assets/Objects/OpenSource/lowpolyshelf

@@ -9,16 +9,19 @@
       "FireRate": 1,
       "MagazineSize": 1,
       "ReloadTime": 1.25,
-      "AType": "Arrow",
+      "AType": "Bolt",
       "DType": "Normal",
-      "FireEffect": "PistolEffect",
+      "FireEffect": "CrossbowEffect",
+	  "Projectile": "CrossbowBolt",
       "ReloadEffect": "ReloadNormal",
+	  "ViewModel": "Crossbow",
       "Name": "crossbow",
       "Weight": 3,
 	  "Value": 50,
       "MaxCondition": 1,
       "Unique": false,
-      "Essential": false
+      "Essential": false,
+	  "Flags": "InvertReload"
     },
     "def": {
     "NiceName": "Crossbow",

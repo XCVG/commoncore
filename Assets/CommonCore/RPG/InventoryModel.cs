@@ -50,14 +50,14 @@ namespace CommonCore.Rpg
                 CDebug.LogEx("Autocreating item models!", LogLevel.Verbose, null);
                 foreach (AmmoType at in Enum.GetValues(typeof(AmmoType)))
                 {
-                    AmmoItemModel aim = new AmmoItemModel(at.ToString(), 0, 1, 1, false, false, null, at);
+                    AmmoItemModel aim = new AmmoItemModel(at.ToString(), 0, 1, 1, false, false, null, null, at);
                     Models.Add(at.ToString(), aim);
                     LoadItemCount++;
                 }
                 
                 foreach(MoneyType mt in Enum.GetValues(typeof(MoneyType)))
                 {
-                    MoneyItemModel mim = new MoneyItemModel(mt.ToString(), 0, 1, 1, false, false, null, mt);
+                    MoneyItemModel mim = new MoneyItemModel(mt.ToString(), 0, 1, 1, false, false, null, null, mt);
                     Models.Add(mt.ToString(), mim);
                     LoadItemCount++;
                 }
@@ -270,6 +270,15 @@ namespace CommonCore.Rpg
             }
         }
 
+        //very limited, only useful for stacked items
+        public bool RemoveItem(string item, int quantity)
+        {
+            var items = FindItem(item);
+            if (items.Length != 1)
+                return false;
+            return RemoveItem(items[0], quantity);
+        }
+
         public InventoryItemModel UseItem(string item, int quantity)
         {
             int foundIndex = -1;
@@ -358,6 +367,9 @@ namespace CommonCore.Rpg
 
         public void AddItem(string item, int quantity)
         {
+            if (quantity <= 0)
+                return;
+
             InventoryItemModel mdl = Models[item];
 
             if(mdl.Stackable)

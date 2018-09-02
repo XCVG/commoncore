@@ -158,11 +158,6 @@ namespace CommonCore
 
         public static Vector3 GetFlatVectorToTarget(Vector3 pos, Vector3 target)
         {
-            if (target == null)
-            {
-                return Vector3.zero;
-            }
-
             Vector3 dir = target - pos;
             return new Vector3(dir.x, 0, dir.z);
         }

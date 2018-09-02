@@ -36,14 +36,21 @@ namespace CommonCore.World
 
         [Command]
         static void PrintSceneList()
-        {
-            var sceneNames = SceneUtils.GetSceneList();
-            StringBuilder sb = new StringBuilder(sceneNames.Length * 16);
-            foreach(var s in sceneNames)
+        {   try
             {
-                sb.AppendLine(s);
+                var sceneNames = SceneUtils.GetSceneList();
+                StringBuilder sb = new StringBuilder(sceneNames.Length * 16);
+                foreach (var s in sceneNames)
+                {
+                    sb.AppendLine(s);
+                }
+                DevConsole.singleton.Log(sb.ToString());
             }
-            DevConsole.singleton.Log(sb.ToString());
+            catch(Exception e)
+            {
+                Debug.LogException(e);
+            }
+            
         }
 
         //***** CHEATS

@@ -1881,6 +1881,7 @@ MonoBehaviour:
   AutoinitState: 1
   AutoGameover: 1
   Autoload: 1
+  SetMusic: 
 --- !u!4 &550104340
 Transform:
   m_ObjectHideFlags: 0
@@ -3285,6 +3286,26 @@ Prefab:
     - target: {fileID: 4607996614254812, guid: 4507804656f937946ad6907e337f4f22, type: 2}
       propertyPath: m_LocalScale.z
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114727526427158440, guid: 4507804656f937946ad6907e337f4f22,
+        type: 2}
+      propertyPath: Interaction
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114727526427158440, guid: 4507804656f937946ad6907e337f4f22,
+        type: 2}
+      propertyPath: InteractionTarget
+      value: DemoHealer
+      objectReference: {fileID: 0}
+    - target: {fileID: 114727526427158440, guid: 4507804656f937946ad6907e337f4f22,
+        type: 2}
+      propertyPath: AltInteractionTarget
+      value: DemoHealer
+      objectReference: {fileID: 0}
+    - target: {fileID: 114727526427158440, guid: 4507804656f937946ad6907e337f4f22,
+        type: 2}
+      propertyPath: TooltipOverride
+      value: Healer
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 4507804656f937946ad6907e337f4f22, type: 2}

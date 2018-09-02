@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,21 +12,49 @@ namespace CommonCore
 
         public static string[] GetSceneList()
         {
+            /*
             int sceneCount = SceneManager.sceneCountInBuildSettings;
-            var scenes = new Scene[sceneCount];
+            var scenes = new List<Scene>(sceneCount);
             for (int i = 0; i < sceneCount; i++)
             {
-                scenes[i] = SceneManager.GetSceneByBuildIndex(sceneCount);
+                try
+                {
+                    scenes.Add(SceneManager.GetSceneByBuildIndex(sceneCount));
+                }
+                catch(Exception e)
+                {
+                    //ignore it, we've gone over
+                }
+                
             }
 
-            var sceneNames = new string[sceneCount];
+            var sceneNames = new List<string>(sceneCount);
 
-            for(int i = 0; i < sceneCount; i++)
+            foreach(Scene s in scenes)
             {
-                sceneNames[i] = scenes[i].name;
+                sceneNames.Add(s.name);
             }
 
-            return sceneNames;
+            return sceneNames.ToArray();
+            */
+
+            int sceneCount = SceneManager.sceneCountInBuildSettings;
+            var scenes = new List<string>(sceneCount);
+            for (int i = 0; i < sceneCount; i++)
+            {
+                try
+                {
+                    scenes.Add(SceneUtility.GetScenePathByBuildIndex(i));
+                }
+                catch (Exception e)
+                {
+                    //ignore it, we've gone over or some stupid bullshit
+                }
+
+            }
+
+            return scenes.ToArray();
+            
         }
     }
 }
