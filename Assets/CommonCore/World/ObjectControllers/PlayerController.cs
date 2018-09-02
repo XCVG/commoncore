@@ -37,6 +37,8 @@ namespace CommonCore.World
         public Transform CameraRoot;
         public GameObject ModelRoot;
         public Transform TargetPoint;
+        public Transform LeftViewModelPoint;
+        public Transform RightViewModelPoint;
         private QdmsMessageInterface MessageInterface;
 
         [Header("Shooting")]
@@ -51,11 +53,13 @@ namespace CommonCore.World
         public float MeleeProbeDist = 1.5f;
         public GameObject MeleeEffect;
         public Transform ShootPoint;
-
+        private ViewModelScript RangedViewModel;
+        private ViewModelScript MeleeViewModel;
         private float TimeToNext;
         private bool IsReloading;
 
         private bool IsAnimating;
+        private bool IsMoving;
         private Renderer[] ModelRendererCache;
 
         // Use this for initialization
@@ -111,6 +115,7 @@ namespace CommonCore.World
             LockPauseModule.CaptureMouse = true;
 
             SetDefaultPlayerView();
+            SetInitialViewModels();
         }
 
         //TODO: still unsure about the state system, but I'll likely rewrite this whole class
@@ -181,6 +186,12 @@ namespace CommonCore.World
             PushViewChangeMessage(CCParams.DefaultPlayerView);
         }
 
+        private void SetInitialViewModels()
+        {
+            HandleWeaponChange(EquipSlot.RangedWeapon);
+            HandleWeaponChange(EquipSlot.MeleeWeapon);
+        }
+
         private void HandleMessages()
         {
             while (MessageInterface.HasMessageInQueue)
@@ -197,7 +208,19 @@ namespace CommonCore.World
                 switch (flag)
                 {
                     case "RpgChangeWeapon":
-                        HandleWeaponChange(null);
+                        {
+                            var kvm = message as QdmsKeyValueMessage;
+                                
+                            if(kvm != null && kvm.HasValue<EquipSlot>("Slot"))
+                            {
+                                HandleWeaponChange(kvm.GetValue<EquipSlot>("Slot"));
+                            }
+                            else
+                            {
+                                HandleWeaponChange(EquipSlot.None);
+                            }
+                                
+                        }                        
                         break;
                 }
             }
@@ -296,7 +319,7 @@ namespace CommonCore.World
         protected void HandleMovement()
         {
             //really need to do something about these values
-            bool isMoving = false;
+            IsMoving = false;
             float deadzone = 0.1f; //this really shouldn't be here
             float vmul = 10f; //mysterious magic number velocity multiplier
             float amul = 5.0f; //air move multiplier
@@ -308,7 +331,7 @@ namespace CommonCore.World
             if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookX)) > deadzone)
             {
                 transform.Rotate(Vector3.up, lmul * MappedInput.GetAxis(DefaultControls.LookX) * Time.deltaTime);
-                isMoving = true;
+                IsMoving = true;
             }
 
             if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookY)) > deadzone)
@@ -357,13 +380,13 @@ namespace CommonCore.World
                     if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveY)) > deadzone)
                     {
                         moveVector += (transform.forward * MappedInput.GetAxis(DefaultControls.MoveY) * vmul * Time.deltaTime);
-                        isMoving = true;
+                        IsMoving = true;
                     }
 
                     if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveX)) > deadzone)
                     {
                         moveVector += (transform.right * MappedInput.GetAxis(DefaultControls.MoveX) * vmul * Time.deltaTime);
-                        isMoving = true;
+                        IsMoving = true;
                     }
 
                     //hacky sprinting
@@ -394,7 +417,7 @@ namespace CommonCore.World
                         if (MappedInput.GetButton(DefaultControls.Sprint) && playerState.Energy > 0)
                             AirMoveVelocity += transform.forward * 1.0f;
 
-                        isMoving = true;
+                        IsMoving = true;
                     }
 
                     moveVector += 0.6f * Physics.gravity * Time.deltaTime;
@@ -417,13 +440,13 @@ namespace CommonCore.World
                     if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveY)) > deadzone)
                     {
                         moveVector += (transform.forward * MappedInput.GetAxis(DefaultControls.MoveY) * amul * Time.deltaTime);
-                        isMoving = true;
+                        IsMoving = true;
                     }
 
                     if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveX)) > deadzone)
                     {
                         moveVector += (transform.right * MappedInput.GetAxis(DefaultControls.MoveX) * amul * Time.deltaTime);
-                        isMoving = true;
+                        IsMoving = true;
                     }
                 }
 
@@ -434,7 +457,7 @@ namespace CommonCore.World
             }
 
             //handle animation
-            if (isMoving)
+            if (IsMoving)
             {
                 if (!IsAnimating)
                 {
@@ -443,6 +466,10 @@ namespace CommonCore.World
                     AnimController.CrossFade("run", 0f);
                     IsAnimating = true;
                     //stepSound.Play();
+                    if (MeleeViewModel != null)
+                        MeleeViewModel.SetState(ViewModelState.Moving);
+                    if (RangedViewModel != null)
+                        RangedViewModel.SetState(ViewModelState.Moving);
                 }
             }
             else
@@ -454,6 +481,10 @@ namespace CommonCore.World
                     AnimController.CrossFade("idle", 0f);
                     IsAnimating = false;
                     //stepSound.Stop();
+                    if (MeleeViewModel != null)
+                        MeleeViewModel.SetState(ViewModelState.Fixed);
+                    if (RangedViewModel != null)
+                        RangedViewModel.SetState(ViewModelState.Fixed);
                 }
             }
 
@@ -471,7 +502,15 @@ namespace CommonCore.World
             //TODO reset reload time on weapon change, probably going to need to add messaging for that
 
             if(oldTTN > 0)
+            {
                 QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepReady"));
+
+                if (MeleeViewModel != null)
+                    MeleeViewModel.SetState(IsMoving ? ViewModelState.Moving : ViewModelState.Fixed);
+                if (RangedViewModel != null)
+                    RangedViewModel.SetState(IsMoving ? ViewModelState.Moving : ViewModelState.Fixed);
+            }
+                
 
             if(IsReloading)
             {
@@ -546,7 +585,11 @@ namespace CommonCore.World
             if (ac != null)
                 ac.TakeDamage(hitInfo);
 
-            if (MeleeEffect != null)
+            if (RangedViewModel != null)
+            {
+                RangedViewModel.SetState(ViewModelState.Firing);
+            }
+            else if (MeleeEffect != null)
                 Instantiate(MeleeEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
 
             QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepFired"));
@@ -555,10 +598,10 @@ namespace CommonCore.World
         //this whole thing is a fucking mess that needs to be refactored
         private void DoRangedAttack()
         {
+            //TODO default model for fallback instead of fixed values
+
             if (AttemptToUseStats)
             {
-                //TODO use ammo/magazine
-                //TODO fire rate, spread, etc
 
                 if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.RangedWeapon))
                 {
@@ -614,17 +657,18 @@ namespace CommonCore.World
                         GameObject fireEffect = null;
 
                         //TODO handle instantiate location (and variants?) in FPS/TPS mode?
-                        //TODO fairly dramatic paradigm shift: effects are handled by viewmodel
-
-                        if (!string.IsNullOrEmpty(wim.FireEffect))
+                        //WIP fairly dramatic paradigm shift: effects are handled by viewmodel
+                        if(RangedViewModel != null)
+                        {
+                            RangedViewModel.SetState(ViewModelState.Firing);
+                        }
+                        else if (!string.IsNullOrEmpty(wim.FireEffect))
                         {
                             var fireEffectPrefab = CCBaseUtil.LoadResource<GameObject>("DynamicFX/" + wim.FireEffect);
                             if (fireEffectPrefab != null)
                                 fireEffect = Instantiate(fireEffectPrefab, ShootPoint.position, ShootPoint.rotation, ShootPoint);
                         }
 
-                        if (fireEffect == null && BulletFireEffect != null)
-                            fireEffect = Instantiate(BulletFireEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
                     }
                     else
                     {
@@ -635,6 +679,8 @@ namespace CommonCore.World
             }
             else
             {
+                CDebug.LogEx("Ranged attack without model is deprecated!", LogLevel.Error, this);
+
                 var bullet = Instantiate<GameObject>(BulletPrefab, ShootPoint.position + (ShootPoint.forward.normalized * 0.25f), ShootPoint.rotation, transform.root);
                 var bulletRigidbody = bullet.GetComponent<Rigidbody>();
 
@@ -661,7 +707,13 @@ namespace CommonCore.World
                 return;
             }
 
-            if (!string.IsNullOrEmpty(wim.ReloadEffect))
+            
+
+            if(RangedViewModel != null)
+            {
+                RangedViewModel.SetState(ViewModelState.Reloading);
+            }
+            else if (!string.IsNullOrEmpty(wim.ReloadEffect))
                 AudioPlayer.Instance.PlaySound(wim.ReloadEffect, SoundType.Sound, false);
 
             TimeToNext = wim.ReloadTime;
@@ -679,16 +731,91 @@ namespace CommonCore.World
             GameState.Instance.PlayerRpgState.AmmoInMagazine = qty;
             GameState.Instance.PlayerRpgState.Inventory.RemoveItem(wim.AType.ToString(), qty);
 
+            if (RangedViewModel != null)
+            {
+                RangedViewModel.SetState(IsMoving ? ViewModelState.Moving : ViewModelState.Fixed);
+            }
+
             IsReloading = false;
 
             QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepReloaded"));
 
         }
 
-        private void HandleWeaponChange(WeaponItemModel wim)
+        //this is confusing and bloated because everything is pretty much designed around equipping/unequipping weapons being the same scenario
+        //but they're actually quite different
+        private void HandleWeaponChange(EquipSlot slot)
         {
-            IsReloading = false;
-            TimeToNext = 0;
+            //we should probably cache this at a higher level but it's probably not safe
+            var player = GameState.Instance.PlayerRpgState;
+
+            //TODO get actual prefabs
+            if (slot == EquipSlot.MeleeWeapon)
+            {
+                //handle equip/unequip melee weapon
+                if (player.Equipped.ContainsKey(EquipSlot.MeleeWeapon) && player.Equipped[EquipSlot.MeleeWeapon] != null)
+                {
+                    Debug.Log("Equipped melee weapon!");
+
+                    MeleeWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.MeleeWeapon].ItemModel as MeleeWeaponItemModel;
+                    if (wim != null && !string.IsNullOrEmpty(wim.ViewModel))
+                    {
+                        var prefab = CCBaseUtil.LoadResource<GameObject>("WeaponViewModels/" + wim.ViewModel);
+                        if(prefab != null)
+                        {
+                            var go = Instantiate<GameObject>(prefab, LeftViewModelPoint);
+                            MeleeViewModel = go.GetComponent<ViewModelScript>();
+                            if (MeleeViewModel != null)
+                                MeleeViewModel.SetState(IsMoving ? ViewModelState.Moving : ViewModelState.Fixed);
+                        }
+                        
+                    }
+                    
+                }
+                else
+                {
+                    Debug.Log("Unequipped melee weapon!");
+                    if(LeftViewModelPoint.transform.childCount > 0)
+                    {
+                        Destroy(LeftViewModelPoint.transform.GetChild(0).gameObject);                        
+                    }
+                    MeleeViewModel = null;
+                }
+            }
+            else if(slot == EquipSlot.RangedWeapon)
+            {
+                IsReloading = false;
+                TimeToNext = 0;
+
+                //handle equip/unequip ranged weapon
+                if(player.Equipped.ContainsKey(EquipSlot.RangedWeapon) && player.Equipped[EquipSlot.RangedWeapon] != null)
+                {
+                    Debug.Log("Equipped ranged weapon!");
+
+                    RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RangedWeapon].ItemModel as RangedWeaponItemModel;
+                    if (wim != null && !string.IsNullOrEmpty(wim.ViewModel))
+                    {
+                        var prefab = CCBaseUtil.LoadResource<GameObject>("WeaponViewModels/" + wim.ViewModel);
+                        if (prefab != null)
+                        {
+                            var go = Instantiate<GameObject>(prefab, RightViewModelPoint);
+                            RangedViewModel = go.GetComponent<ViewModelScript>();
+                            if (RangedViewModel != null)
+                                RangedViewModel.SetState(IsMoving ? ViewModelState.Moving : ViewModelState.Fixed);
+                        }
+
+                    }
+                }
+                else
+                {
+                    Debug.Log("Unequipped ranged weapon!");
+                    if (RightViewModelPoint.transform.childCount > 0)
+                    {
+                        Destroy(RightViewModelPoint.transform.GetChild(0).gameObject);                        
+                    }
+                    RangedViewModel = null;
+                }
+            }
         }
 
         public void TakeDamage(ActorHitInfo data)

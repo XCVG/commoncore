@@ -32,6 +32,25 @@ namespace CommonCore.Messaging
             }
         }
 
+        //shorthand constructor for single key/value
+        public QdmsKeyValueMessage(string flag, string key, object value) : base(flag)
+        {
+            _Dictionary = new Dictionary<string, object>();
+            _Dictionary.Add(key, value);
+        }
+
+        public bool HasValue(string key)
+        {
+            return _Dictionary.ContainsKey(key);
+        }
+
+        public bool HasValue<T>(string key)
+        {
+            object rawValue = null;
+            bool exists = _Dictionary.TryGetValue(key, out rawValue);
+            return (exists && rawValue is T);
+        }
+
         public T GetValue<T>(string key)
         {
             if (_Dictionary.ContainsKey(key))

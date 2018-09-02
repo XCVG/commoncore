@@ -124,7 +124,7 @@ namespace CommonCore.Rpg
                 throw new InvalidOperationException();
 
             if (Equipped.ContainsKey(slot))
-                UnequipItem(Equipped[slot]);
+                UnequipItem(Equipped[slot], false);
 
             Equipped[slot] = item;
 
@@ -140,10 +140,15 @@ namespace CommonCore.Rpg
 
             UpdateStats();
 
-            QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgChangeWeapon"));
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgChangeWeapon", "Slot", slot));
         }
 
         public void UnequipItem(InventoryItemInstance item)
+        {
+            UnequipItem(item, true);
+        }
+
+        private void UnequipItem(InventoryItemInstance item, bool postMessage)
         {
             if (!item.Equipped)
                 throw new InvalidOperationException();
@@ -168,7 +173,7 @@ namespace CommonCore.Rpg
 
             UpdateStats();
 
-            QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgChangeWeapon"));
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgChangeWeapon", "Slot", slot));
         }
 
         public void SetAV(string av, object value)
