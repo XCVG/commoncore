@@ -13,7 +13,7 @@
       "DType": "Normal",
       "FireEffect": "CrossbowEffect",
 	  "Projectile": "CrossbowBolt",
-      "ReloadEffect": "ReloadNormal",
+      "ReloadEffect": "CrossbowDraw",
 	  "ViewModel": "Crossbow",
       "Name": "crossbow",
       "Weight": 3,
@@ -21,7 +21,7 @@
       "MaxCondition": 1,
       "Unique": false,
       "Essential": false,
-	  "Flags": "InvertReload"
+	  "Flags": ["AutoReload"]
     },
     "def": {
     "NiceName": "Crossbow",

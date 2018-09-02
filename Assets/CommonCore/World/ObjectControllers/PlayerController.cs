@@ -10,6 +10,7 @@ using CommonCore.DebugLog;
 using CommonCore.State;
 using CommonCore.Rpg;
 using CommonCore.Messaging;
+using CommonCore.Audio;
 
 
 namespace CommonCore.World
@@ -49,7 +50,9 @@ namespace CommonCore.World
         public float MeleeProbeDist = 1.5f;
         public GameObject MeleeEffect;
         public Transform ShootPoint;
+
         private float TimeToNext;
+        private bool IsReloading;
 
         private bool IsAnimating;
         private Renderer[] ModelRendererCache;
@@ -441,16 +444,27 @@ namespace CommonCore.World
             if (TimeToNext > 0)
                 return;
 
+            //TODO reset reload time on weapon change, probably going to need to add messaging for that
+
             if(oldTTN > 0)
                 QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepReady"));
 
-            if (MappedInput.GetButtonDown("Fire1") && ShootingEnabled)
+            if(IsReloading)
+            {
+                FinishReload();
+            }
+
+            if (ShootingEnabled && MappedInput.GetButtonDown("Fire1"))
             {
                 //shoot
 
                 DoRangedAttack();
             }
-            else if(MappedInput.GetButtonDown("Fire2") && MeleeEnabled)
+            else if (ShootingEnabled && MappedInput.GetButtonDown("Reload"))
+            {
+                DoReload();
+            }
+            else if(MeleeEnabled && MappedInput.GetButtonDown("Fire2"))
             {
                 DoMeleeAttack();
             }
@@ -530,12 +544,12 @@ namespace CommonCore.World
                     if (wim != null)
                     {
                         bool useAmmo = !(wim.AType == AmmoType.NoAmmo);
+                        bool autoReload = wim.CheckFlag("AutoReload");
 
                         //ammo logic
-                        //TODO "inverted" reload for crossbows and such
                         if (useAmmo)
                         {
-                            if(GameState.Instance.PlayerRpgState.AmmoInMagazine == 0)
+                            if (GameState.Instance.PlayerRpgState.AmmoInMagazine == 0 && !IsReloading)
                             {
                                 DoReload();
                                 return;
@@ -567,21 +581,31 @@ namespace CommonCore.World
                             * ShootPoint.forward.normalized);
                         bulletRigidbody.velocity = (fireVec * wim.Velocity);
                         TimeToNext = wim.FireRate;
+
+                        if(useAmmo && autoReload && GameState.Instance.PlayerRpgState.AmmoInMagazine <= 0)
+                        {
+                            DoReload();
+                        }
+
+                        GameObject fireEffect = null;
+
+                        //TODO handle instantiate location (and variants?) in FPS/TPS mode?
+
+                        if (!string.IsNullOrEmpty(wim.FireEffect))
+                        {
+                            var fireEffectPrefab = CCBaseUtil.LoadResource<GameObject>("DynamicFX/" + wim.FireEffect);
+                            if (fireEffectPrefab != null)
+                                fireEffect = Instantiate(fireEffectPrefab, ShootPoint.position, ShootPoint.rotation, ShootPoint);
+                        }
+
+                        if (fireEffect == null && BulletFireEffect != null)
+                            fireEffect = Instantiate(BulletFireEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
                     }
-
-                    GameObject fireEffect = null;
-
-                    //TODO handle instantiate location (and variants?) in FPS/TPS mode?
-
-                    if(!string.IsNullOrEmpty(wim.FireEffect))
+                    else
                     {
-                        var fireEffectPrefab = CCBaseUtil.LoadResource<GameObject>("DynamicFX/" + wim.FireEffect);
-                        if(fireEffectPrefab != null)
-                            fireEffect = Instantiate(fireEffectPrefab, ShootPoint.position, ShootPoint.rotation, ShootPoint);
+                        CDebug.LogEx("Can't find item model for ranged weapon!", LogLevel.Error, this);
                     }
-
-                    if (fireEffect == null && BulletFireEffect != null)
-                        fireEffect = Instantiate(BulletFireEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
+                    
                 }
             }
             else
@@ -604,7 +628,6 @@ namespace CommonCore.World
 
         private void DoReload()
         {
-            //TODO animation and delay
             RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RangedWeapon].ItemModel as RangedWeaponItemModel;
 
             if(wim == null)
@@ -613,11 +636,26 @@ namespace CommonCore.World
                 return;
             }
 
+            if (!string.IsNullOrEmpty(wim.ReloadEffect))
+                AudioPlayer.Instance.PlaySound(wim.ReloadEffect, SoundType.Sound, false);
+
+            TimeToNext = wim.ReloadTime;
+            IsReloading = true;
+
+        }
+
+        private void FinishReload()
+        {
+            RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RangedWeapon].ItemModel as RangedWeaponItemModel;
+
             int qty = Math.Min(wim.MagazineSize, GameState.Instance.PlayerRpgState.Inventory.CountItem(wim.AType.ToString()));
             GameState.Instance.PlayerRpgState.AmmoInMagazine = qty;
             GameState.Instance.PlayerRpgState.Inventory.RemoveItem(wim.AType.ToString(), qty);
 
+            IsReloading = false;
+
             QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepReloaded"));
+
         }
 
         public void TakeDamage(ActorHitInfo data)
