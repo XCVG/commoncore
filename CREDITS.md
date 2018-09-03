@@ -94,6 +94,10 @@ animations from Firefighter VR, but these will be removed/replaced soon
 
 These are included under permissive or copyleft licenses.
 
+Iwan Gabovitch - Swish - bamboo stick weapon swhoshes [CC0]
+	https://opengameart.org/content/swish-bamboo-stick-weapon-swhoshes
+	Assets/Resources/DynamicSound/SwordSwing
+
 Clint Bellanger - Historical Swords Set [CC-BY 3.0]
 	https://opengameart.org/content/historical-swords-set
 	Assets/Objects/OpenSource/sword

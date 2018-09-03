@@ -3428,16 +3428,26 @@ Prefab:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 114399906522207162, guid: cd005af43e73e74428bc7e6a16566c7f,
-        type: 2}
-      propertyPath: LeftViewModelPoint
-      value: 
-      objectReference: {fileID: 1058811839}
-    - target: {fileID: 114399906522207162, guid: cd005af43e73e74428bc7e6a16566c7f,
-        type: 2}
-      propertyPath: RightViewModelPoint
-      value: 
-      objectReference: {fileID: 1648697660}
+    - target: {fileID: 1896938070193184, guid: cd005af43e73e74428bc7e6a16566c7f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4377850425335280, guid: cd005af43e73e74428bc7e6a16566c7f, type: 2}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4688839903414208, guid: cd005af43e73e74428bc7e6a16566c7f, type: 2}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4686010376756608, guid: cd005af43e73e74428bc7e6a16566c7f, type: 2}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4281617959735354, guid: cd005af43e73e74428bc7e6a16566c7f, type: 2}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cd005af43e73e74428bc7e6a16566c7f, type: 2}
   m_IsPrefabParent: 0
@@ -6386,34 +6396,6 @@ Transform:
   m_PrefabParentObject: {fileID: 4323876786651924, guid: f3543b6421601124b8692e426b9e6518,
     type: 2}
   m_PrefabInternal: {fileID: 1019415067}
---- !u!1 &1058811838
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 1058811839}
-  m_Layer: 0
-  m_Name: LViewModelPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1058811839
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1058811838}
-  m_LocalRotation: {x: -0, y: 0.000000029773956, z: -0.0000000012999595, w: 1}
-  m_LocalPosition: {x: -0.2800006, y: -0.2100007, z: 0.37999174}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1865554694}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1073999567
 GameObject:
   m_ObjectHideFlags: 0
@@ -11038,34 +11020,6 @@ MonoBehaviour:
   polyEditMode: 0
   flipNormals: 0
   isOnGrid: 0
---- !u!1 &1648697659
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 1648697660}
-  m_Layer: 0
-  m_Name: RViewModelPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1648697660
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1648697659}
-  m_LocalRotation: {x: -0, y: 0.000000029773956, z: -0.0000000012999595, w: 1}
-  m_LocalPosition: {x: 0.28000063, y: -0.2100007, z: 0.37999174}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1865554694}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1665322137
 GameObject:
   m_ObjectHideFlags: 0
@@ -14080,11 +14034,6 @@ MonoBehaviour:
   Target: {fileID: 1583672637}
   AlwaysForceDisable: 0
   AlwaysForceEnable: 0
---- !u!4 &1865554694 stripped
-Transform:
-  m_PrefabParentObject: {fileID: 4377599811798244, guid: cd005af43e73e74428bc7e6a16566c7f,
-    type: 2}
-  m_PrefabInternal: {fileID: 464163109}
 --- !u!1 &1878856404 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 100000, guid: f731640b62eb3e14583ef1de3b431e97, type: 3}

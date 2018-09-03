@@ -585,9 +585,9 @@ namespace CommonCore.World
             if (ac != null)
                 ac.TakeDamage(hitInfo);
 
-            if (RangedViewModel != null)
+            if (MeleeViewModel != null)
             {
-                RangedViewModel.SetState(ViewModelState.Firing);
+                MeleeViewModel.SetState(ViewModelState.Firing);
             }
             else if (MeleeEffect != null)
                 Instantiate(MeleeEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
@@ -707,7 +707,12 @@ namespace CommonCore.World
                 return;
             }
 
-            
+            //unreloadable condition
+            if(GameState.Instance.PlayerRpgState.AmmoInMagazine == wim.MagazineSize 
+                || GameState.Instance.PlayerRpgState.Inventory.CountItem(wim.AType.ToString()) <= 0)
+            {
+                return;
+            }
 
             if(RangedViewModel != null)
             {

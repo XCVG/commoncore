@@ -32,8 +32,33 @@ namespace CommonCore.World
 
         void Start()
         {
+            TryGetDefaults();
 
             ApplyOffsets();
+        }
+
+        private void TryGetDefaults()
+        {
+            if (EffectPoint == null)
+                EffectPoint = transform;
+
+            if (AnimController == null)
+                AnimController = GetComponent<Animator>();
+
+            if (FireSound == null)
+            {
+                var t = transform.Find("FireSound");
+                if (t != null)
+                    FireSound = t.GetComponent<AudioSource>();
+            }
+
+            if (ReloadSound == null)
+            {
+                var t = transform.Find("ReloadSound");
+                if (t != null)
+                    ReloadSound = t.GetComponent<AudioSource>();
+            }
+
         }
 
         private void ApplyOffsets()
