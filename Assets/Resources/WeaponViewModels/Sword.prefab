@@ -233,7 +233,7 @@ Animator:
   m_GameObject: {fileID: 1006611663692594}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: c3bc33598cbdb244e81942b89f32b1d4, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 320ab5fa53b5e5340b9f417fa63e28c7, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -254,13 +254,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   State: 0
   Offsets: {x: 0, y: 0, z: 0}
-  AnimController: {fileID: 0}
+  AnimController: {fileID: 95805431795338902}
   EffectPrefab: {fileID: 0}
   EffectPoint: {fileID: 0}
   ModelRoot: {fileID: 4372703124901282}
   FireSound: {fileID: 82014674553818382}
   ReloadSound: {fileID: 0}
-  FixedState: 
-  MovingState: moving
-  FiringState: firing
-  ReloadingState: reloading
+  UseMoveStateTransitions: 1
+  FixedState: sword_fixed
+  MovingState: sword_idle
+  FiringState: sword_swing
+  ReloadingState: 

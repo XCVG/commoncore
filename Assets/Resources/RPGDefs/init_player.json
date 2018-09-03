@@ -106,7 +106,7 @@
           }
         },
 		{
-          "Quantity": 7,
+          "Quantity": 50,
           "Condition": 1.0,
           "Equipped": false,
           "ItemModel": {

@@ -655,11 +655,6 @@ namespace CommonCore.World
                         bulletRigidbody.velocity = (fireVec * wim.Velocity);
                         TimeToNext = wim.FireRate;
 
-                        if(useAmmo && autoReload && GameState.Instance.PlayerRpgState.AmmoInMagazine <= 0)
-                        {
-                            DoReload();
-                        }
-
                         GameObject fireEffect = null;
 
                         //TODO handle instantiate location (and variants?) in FPS/TPS mode?
@@ -673,6 +668,11 @@ namespace CommonCore.World
                             var fireEffectPrefab = CCBaseUtil.LoadResource<GameObject>("DynamicFX/" + wim.FireEffect);
                             if (fireEffectPrefab != null)
                                 fireEffect = Instantiate(fireEffectPrefab, ShootPoint.position, ShootPoint.rotation, ShootPoint);
+                        }
+
+                        if (useAmmo && autoReload && GameState.Instance.PlayerRpgState.AmmoInMagazine <= 0)
+                        {
+                            DoReload();
                         }
 
                     }

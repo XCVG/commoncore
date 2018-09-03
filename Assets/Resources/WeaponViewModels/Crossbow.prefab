@@ -342,7 +342,7 @@ Animator:
   m_GameObject: {fileID: 1712187310795220}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 855188be780dbe04da25e8a46574572b, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ba79d7c89f0a6d243920e392f773498f, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -363,13 +363,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   State: 0
   Offsets: {x: 0, y: 0, z: 0}
-  AnimController: {fileID: 0}
+  AnimController: {fileID: 95633011003816298}
   EffectPrefab: {fileID: 0}
   EffectPoint: {fileID: 0}
   ModelRoot: {fileID: 4003787634995578}
   FireSound: {fileID: 82219708522388582}
   ReloadSound: {fileID: 82777383879253856}
-  FixedState: 
+  UseMoveStateTransitions: 1
+  FixedState: fixed
   MovingState: moving
   FiringState: firing
   ReloadingState: reloading

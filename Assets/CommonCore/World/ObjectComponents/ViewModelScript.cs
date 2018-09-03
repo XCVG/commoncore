@@ -25,6 +25,8 @@ namespace CommonCore.World
         public AudioSource FireSound;
         public AudioSource ReloadSound;
 
+        public bool UseMoveStateTransitions = false;
+
         [Header("State Names")]
         public string FixedState;
         public string MovingState = "moving";
@@ -112,6 +114,7 @@ namespace CommonCore.World
                     {
                         if (!string.IsNullOrEmpty(ReloadingState))
                             AnimController.Play(ReloadingState);
+
                     }
                     //play sound if exists
                     if (ReloadSound != null)
@@ -121,25 +124,40 @@ namespace CommonCore.World
                 case ViewModelState.Moving:
                     if(AnimController != null)
                     {
-                        //play move animation if available, if not play idle/none
-                        if (!string.IsNullOrEmpty(MovingState))
-                            AnimController.Play(MovingState);
-                        else if (!string.IsNullOrEmpty(FixedState))
-                            AnimController.Play(FixedState);
+                        if(UseMoveStateTransitions)
+                        {
+                            AnimController.SetBool("IsMoving", true);
+                        }
                         else
-                            AnimController.StopPlayback();
+                        {
+                            //play move animation if available, if not play idle/none
+                            if (!string.IsNullOrEmpty(MovingState))
+                                AnimController.Play(MovingState);
+                            else if (!string.IsNullOrEmpty(FixedState))
+                                AnimController.Play(FixedState);
+                            else
+                                AnimController.StopPlayback();
+                        }
+                        
                     }
-
                     break;
                 default:
                     if(AnimController != null)
                     {
-                        //enter Fixed state, set anim accordingly
-                        if (!string.IsNullOrEmpty(FixedState))
-                            AnimController.Play(FixedState);
-                        //stop anim if we don't have an actual fixed one
+                        if (UseMoveStateTransitions)
+                        {
+                            AnimController.SetBool("IsMoving", false);
+                        }
                         else
-                            AnimController.StopPlayback();
+                        {
+                            //enter Fixed state, set anim accordingly
+                            if (!string.IsNullOrEmpty(FixedState))
+                                AnimController.Play(FixedState);
+                            //stop anim if we don't have an actual fixed one
+                            else
+                                AnimController.StopPlayback();
+                        }
+
                     }
                     break;
             }
