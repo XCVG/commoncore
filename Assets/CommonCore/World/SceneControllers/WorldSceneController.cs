@@ -45,7 +45,7 @@ namespace CommonCore.World
         {
             base.Update();
 
-            if(AutoGameover && GameState.Instance.PlayerRpgState.Health <= 0)
+            if(AutoGameover && GameState.Instance.PlayerRpgState.Health <= 0) //TODO move this, this is dumb, we'll set a flag in MetaState but handle the actual check in PlayerController or explicitly
             {
                 MetaState.Instance.NextScene = SceneManager.GetActiveScene().name; //in case we need it...
                 SceneManager.LoadScene("GameOverScene");

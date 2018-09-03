@@ -2,7 +2,7 @@
 
 You will need to acquire these and place them in the correct directories for the project to work properly.
 
-It's possible and even likely that many dependencies will be removed as time goes on.
+It's possible and even likely that many dependencies will be removed as time goes on. Nearly all assets will be removed once the demo and library are split, leaving some to form a generic quick-start base.
 
 ## Standard Assets
 
@@ -93,6 +93,14 @@ animations from Firefighter VR, but these will be removed/replaced soon
 # Third Party Assets (included in repository)
 
 These are included under permissive or copyleft licenses.
+
+TinyWorlds - Different steps on wood, stone, leaves, gravel, and mud
+	https://opengameart.org/content/different-steps-on-wood-stone-leaves-gravel-and-mud
+	Assets/Shared/Sounds/Footsteps
+
+AderuMoro - Fighting Game grunts - young female.wav [CC-BY]
+	https://freesound.org/people/AderuMoro/sounds/213295/
+	Assets/Shared/Sounds/Bolt
 
 Iwan 'qubodup' Gabovitch - Impact [CC0]
 	https://opengameart.org/content/impact

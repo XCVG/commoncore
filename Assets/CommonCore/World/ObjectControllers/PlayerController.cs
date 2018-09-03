@@ -41,6 +41,14 @@ namespace CommonCore.World
         public Transform RightViewModelPoint;
         private QdmsMessageInterface MessageInterface;
 
+        [Header("Sounds")]
+        public AudioSource WalkSound;
+        public AudioSource RunSound;
+        public AudioSource FallSound;
+        public AudioSource PainSound;
+        public AudioSource JumpSound;
+        public AudioSource DeathSound;
+
         [Header("Shooting")]
         public bool ShootingEnabled = true;
         public bool AttemptToUseStats = false;
@@ -60,6 +68,8 @@ namespace CommonCore.World
 
         private bool IsAnimating;
         private bool IsMoving;
+        private bool IsRunning;
+        private bool IsGrounded;
         private Renderer[] ModelRendererCache;
 
         // Use this for initialization
@@ -326,6 +336,9 @@ namespace CommonCore.World
         {
             //really need to do something about these values
             IsMoving = false;
+            IsRunning = false;
+            IsGrounded = false;
+            bool didJump = false;
             float deadzone = 0.1f; //this really shouldn't be here
             float vmul = 10f; //mysterious magic number velocity multiplier
             float amul = 5.0f; //air move multiplier
@@ -366,7 +379,11 @@ namespace CommonCore.World
                 }
 
                 if (MappedInput.GetButton(DefaultControls.Sprint))
+                {
                     moveVector *= 5.0f;
+                    IsRunning = true;
+                }
+                    
 
                 transform.Translate(moveVector, Space.World);
             }
@@ -378,7 +395,9 @@ namespace CommonCore.World
                 CharController.enabled = true;
                 CharRigidbody.isKinematic = true;
 
-                if (CharController.isGrounded)
+
+                IsGrounded = CharController.isGrounded;
+                if (IsGrounded)
                 {
                     //grounded: controller enabled, kinematic rigidbody, use controller movement
                     
@@ -399,6 +418,7 @@ namespace CommonCore.World
                     //hacky sprinting
                     if(MappedInput.GetButton(DefaultControls.Sprint) && playerState.Energy > 0)
                     {
+                        IsRunning = true;
                         moveVector *= 1.5f;
                         playerState.Energy -= 10.0f * Time.deltaTime;
                     }
@@ -425,6 +445,7 @@ namespace CommonCore.World
                             AirMoveVelocity += transform.forward * 1.0f;
 
                         IsMoving = true;
+                        didJump = true;
                     }
 
                     moveVector += 0.6f * Physics.gravity * Time.deltaTime;
@@ -493,6 +514,37 @@ namespace CommonCore.World
                     if (RangedViewModel != null)
                         RangedViewModel.SetState(ViewModelState.Fixed);
                 }
+            }
+
+            //handle sound
+            if(IsGrounded && !didJump)
+            {
+                if(IsMoving)
+                {
+                    if (IsRunning && RunSound != null && !RunSound.isPlaying)
+                        RunSound.Play();
+                    else if (WalkSound != null && !WalkSound.isPlaying)
+                        WalkSound.Play();
+                }
+                else
+                {
+                    if (WalkSound != null)
+                        WalkSound.Pause();
+
+                    if (RunSound != null)
+                        RunSound.Pause();
+                }
+            }
+            else
+            {
+                if (WalkSound != null)
+                    WalkSound.Pause();
+
+                if (RunSound != null)
+                    RunSound.Pause();
+
+                if (didJump && JumpSound != null)
+                    JumpSound.Play();
             }
 
 
@@ -846,6 +898,12 @@ namespace CommonCore.World
                 damageTaken *= 2.0f;
             else if (data.HitLocation == ActorBodyPart.LeftArm || data.HitLocation == ActorBodyPart.LeftLeg || data.HitLocation == ActorBodyPart.RightArm || data.HitLocation == ActorBodyPart.RightLeg)
                 damageTaken *= 0.75f;
+
+            if(damageTaken > 1)
+            {
+                if (PainSound != null && !PainSound.isPlaying)
+                    PainSound.Play();
+            }
 
             playerModel.Health -= damageTaken;
 
