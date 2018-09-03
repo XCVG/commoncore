@@ -217,7 +217,8 @@ These are separated out largely for formatting
 Aurelia charachter model (Assets/OpenSource/makehuman/aurelia)
 	Built with MakeHuman (CC0 export exemption)
 	Crude long gloves by Joel Palmius (CC0)
-	Shoes Biker Boots female by Mindfront (CC-BY)
+	Riding Boots by punkduck (CC-BY)
+	Riding Breeches by punkduck (CC-BY)
 	Leather armor by MaciekG (CC-BY)
 	
 Peasant (female) character model (Assets/OpenSource/makehuman/peasantf)

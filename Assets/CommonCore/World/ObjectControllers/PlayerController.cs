@@ -304,6 +304,12 @@ namespace CommonCore.World
                 else
                     r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
             }
+
+            if (MeleeViewModel != null)
+                MeleeViewModel.SetVisibility(!visible);
+
+            if (RangedViewModel != null)
+                RangedViewModel.SetVisibility(!visible);
         }
 
         private void PushViewChangeMessage(PlayerViewType newView)

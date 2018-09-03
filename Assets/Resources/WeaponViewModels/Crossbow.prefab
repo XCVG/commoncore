@@ -366,6 +366,7 @@ MonoBehaviour:
   AnimController: {fileID: 0}
   EffectPrefab: {fileID: 0}
   EffectPoint: {fileID: 0}
+  ModelRoot: {fileID: 4003787634995578}
   FireSound: {fileID: 82219708522388582}
   ReloadSound: {fileID: 82777383879253856}
   FixedState: 

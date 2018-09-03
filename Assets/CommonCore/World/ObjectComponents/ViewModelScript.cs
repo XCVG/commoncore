@@ -20,6 +20,7 @@ namespace CommonCore.World
         private GameObject EffectObject;
         public GameObject EffectPrefab;
         public Transform EffectPoint;
+        public Transform ModelRoot;
 
         public AudioSource FireSound;
         public AudioSource ReloadSound;
@@ -39,6 +40,9 @@ namespace CommonCore.World
 
         private void TryGetDefaults()
         {
+            if (ModelRoot == null)
+                ModelRoot = transform;
+
             if (EffectPoint == null)
                 EffectPoint = transform;
 
@@ -70,6 +74,11 @@ namespace CommonCore.World
         void Update()
         {
 
+        }
+
+        public void SetVisibility(bool visible)
+        {
+            ModelRoot.gameObject.SetActive(visible);
         }
 
         public void SetState(ViewModelState newState)
