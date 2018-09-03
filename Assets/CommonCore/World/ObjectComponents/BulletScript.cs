@@ -33,6 +33,7 @@ namespace CommonCore.World
                 if (ac == HitInfo.Originator) //no friendly fire for now
                     return;
 
+                HitInfo.HitCoords = transform.position;
                 ac.TakeDamage(HitInfo);
                 Destroy(this.gameObject);
                 return;
@@ -44,6 +45,7 @@ namespace CommonCore.World
                 if (pc == HitInfo.Originator)
                     return;
 
+                HitInfo.HitCoords = transform.position;
                 pc.TakeDamage(HitInfo);
                 Destroy(this.gameObject);
                 return;

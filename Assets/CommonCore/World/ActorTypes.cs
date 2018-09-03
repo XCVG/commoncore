@@ -33,14 +33,23 @@ namespace CommonCore.World
         public DamageType DType;
         public ActorBodyPart HitLocation;
         public BaseController Originator;
+        public string HitPuff;
+        public Vector3? HitCoords;
 
-        public ActorHitInfo(float damage, float damagePierce, DamageType dtype, ActorBodyPart hitlocation, BaseController originator)
+        public ActorHitInfo(float damage, float damagePierce, DamageType dtype, ActorBodyPart hitlocation, BaseController originator) 
+            : this(damage, damagePierce, dtype, hitlocation, originator, null, null)
+        {
+        }
+
+        public ActorHitInfo(float damage, float damagePierce, DamageType dtype, ActorBodyPart hitlocation, BaseController originator, string hitPuff, Vector3? hitCoords)
         {
             Damage = damage;
             DamagePierce = damagePierce;
             DType = dtype;
             HitLocation = hitlocation;
             Originator = originator;
+            HitPuff = hitPuff;
+            HitCoords = hitCoords;
         }
     }
 

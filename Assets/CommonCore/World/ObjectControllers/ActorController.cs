@@ -50,6 +50,7 @@ namespace CommonCore.World
         public ActionSpecial OnDeathSpecial;
         public bool FeelPain = true;
         public float PainWaitTime = 1.0f;
+        public string DefaultHitPuff = "DefaultHitPuff";
 
         [Header("Aggression")]
         public bool Aggressive = false;
@@ -768,6 +769,17 @@ namespace CommonCore.World
                 damageTaken *= 0.75f;
 
             Health -= damageTaken;
+
+            if(!string.IsNullOrEmpty(data.HitPuff))
+            {
+                Vector3 hitCoords = data.HitCoords.HasValue ? data.HitCoords.Value : transform.position;
+                WorldUtils.SpawnEffect(data.HitPuff, hitCoords, transform.eulerAngles, null);
+            }
+            else if(!string.IsNullOrEmpty(DefaultHitPuff))
+            {
+                Vector3 hitCoords = data.HitCoords.HasValue ? data.HitCoords.Value : transform.position;
+                WorldUtils.SpawnEffect(DefaultHitPuff, hitCoords, transform.eulerAngles, null);
+            }
 
             if (CurrentAiState == ActorAiState.Dead) //abort if we're already dead
                 return;

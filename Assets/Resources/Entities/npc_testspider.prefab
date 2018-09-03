@@ -2173,6 +2173,7 @@ MonoBehaviour:
   AnimController: {fileID: 95739414101498982}
   InteractComponent: {fileID: 114617734609497678}
   NavComponent: {fileID: 195267488173129686}
+  TargetPoint: {fileID: 0}
   BaseAiState: 2
   CurrentAiState: 2
   LockAiState: 0
@@ -2201,6 +2202,7 @@ MonoBehaviour:
   OnDeathSpecial: {fileID: 0}
   FeelPain: 1
   PainWaitTime: 1
+  DefaultHitPuff: BugHitPuff
   Aggressive: 1
   TargetPlayer: 1
   TargetNpc: 0
@@ -2214,6 +2216,7 @@ MonoBehaviour:
   AttackRange: 1.2
   AttackStateDelay: 2
   AttackInterval: 1
+  AttackSpread: 0.25
   BulletSpeed: 100
   AttackHit:
     Damage: 10
@@ -2221,6 +2224,7 @@ MonoBehaviour:
     DType: 0
     HitLocation: 0
     Originator: {fileID: 0}
+    HitPuff: 
   BulletPrefab: {fileID: 0}
   AttackEffectPrefab: {fileID: 0}
   ShootPoint: {fileID: 0}

@@ -94,6 +94,13 @@ animations from Firefighter VR, but these will be removed/replaced soon
 
 These are included under permissive or copyleft licenses.
 
+Iwan 'qubodup' Gabovitch - Impact [CC0]
+	https://opengameart.org/content/impact
+	Assets/Resources/DynamicSound/HitGeneric
+	Assets/Resources/DynamicSound/HitMetal
+	Assets/Resources/DynamicSound/HitWood
+	Assets/Resources/DynamicSound/HitMeat
+	
 Iwan Gabovitch - Swish - bamboo stick weapon swhoshes [CC0]
 	https://opengameart.org/content/swish-bamboo-stick-weapon-swhoshes
 	Assets/Resources/DynamicSound/SwordSwing

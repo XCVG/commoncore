@@ -334,13 +334,14 @@ namespace CommonCore.World
             var playerState = GameState.Instance.PlayerRpgState;
 
             //looking is the same as long as we're in control
-            if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookX)) > deadzone)
+            if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookX)) != 0)
             {
                 transform.Rotate(Vector3.up, lmul * MappedInput.GetAxis(DefaultControls.LookX) * Time.deltaTime);
-                IsMoving = true;
+                if(Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookY)) > deadzone)
+                    IsMoving = true;
             }
 
-            if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookY)) > deadzone)
+            if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookY)) != 0)
             {
                 CameraRoot.transform.Rotate(Vector3.left, lmul * MappedInput.GetAxis(DefaultControls.LookY) * Time.deltaTime);
             }
