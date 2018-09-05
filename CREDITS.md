@@ -44,6 +44,15 @@ Unity Technologies - ProBuilder
 	
 ## Assets/Objects/ThirdParty
 
+Vertex Studio - Free Laptop
+	https://assetstore.unity.com/packages/3d/props/electronics/free-laptop-90315
+
+Super Icon Ltd - Mobile Furniture Pack
+	https://assetstore.unity.com/packages/3d/props/mobile-furniture-pack-62164
+
+3DAVEGA - Machine tools for game of survival
+	https://assetstore.unity.com/packages/3d/props/tools/machine-tools-for-game-of-survival-53029
+
 Kalamona - Free Fantasy Spider
 	https://assetstore.unity.com/packages/3d/characters/creatures/free-fantasy-spider-10104
 
@@ -93,6 +102,16 @@ animations from Firefighter VR, but these will be removed/replaced soon
 # Third Party Assets (included in repository)
 
 These are included under permissive or copyleft licenses.
+
+yughues - Free Hi-Tech Sci-Fi IT thing [CC0]
+	https://opengameart.org/content/free-hi-tech-sci-fi-it-thing
+	Assets/Objects/OpenSource/it_thing
+
+Scouser - Free Urban Textures [CC0]
+	https://opengameart.org/users/scouser
+	Assets/Shared/Textures/steel_ribbed_low.png
+	Assets/Shared/Textures/metal_panel_1.png
+	Assets/Shared/Textures/metal_diamond.png
 
 TinyWorlds - Different steps on wood, stone, leaves, gravel, and mud
 	https://opengameart.org/content/different-steps-on-wood-stone-leaves-gravel-and-mud

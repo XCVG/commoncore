@@ -785,7 +785,7 @@ GameObject:
   - component: {fileID: 195753988229046458}
   m_Layer: 0
   m_Name: npc_engineer
-  m_TagString: Untagged
+  m_TagString: CCObject
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1114,7 +1114,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1682917864756298}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 201.24536, y: 5.051263, z: 338.98}
+  m_LocalPosition: {x: 201.24536, y: 5.099, z: 338.98}
   m_LocalScale: {x: 0.9999998, y: 1, z: 0.9999998}
   m_Children:
   - {fileID: 4897126986768666}
@@ -2122,6 +2122,7 @@ MonoBehaviour:
   AnimController: {fileID: 95898923526475470}
   InteractComponent: {fileID: 114050656289375220}
   NavComponent: {fileID: 0}
+  TargetPoint: {fileID: 0}
   BaseAiState: 2
   CurrentAiState: 2
   LockAiState: 0
@@ -2130,32 +2131,33 @@ MonoBehaviour:
   Target: {fileID: 0}
   AltTarget: {x: 0, y: 0, z: 0}
   SavedTarget: 
-  Health: 50
+  Health: 100
   DieImmediately: 0
   DestroyOnDeath: 1
   DamageResistance:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
+  - 5
+  - 5
+  - 5
+  - 5
+  - 5
+  - 5
   DamageThreshold:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
+  - 5
+  - 5
+  - 5
+  - 5
+  - 5
+  - 5
   OnDeathSpecial: {fileID: 0}
   FeelPain: 1
   PainWaitTime: 1
-  Aggressive: 0
+  DefaultHitPuff: DefaultHitPuff
+  Aggressive: 1
   TargetPlayer: 0
-  TargetNpc: 0
+  TargetNpc: 1
   Defensive: 1
   Relentless: 0
-  UseLineOfSight: 1
+  UseLineOfSight: 0
   SearchRadius: 25
   SearchInterval: 70
   DisableInteractionOnHit: 0
@@ -2163,21 +2165,23 @@ MonoBehaviour:
   AttackRange: 5
   AttackStateDelay: 2
   AttackInterval: 2
+  AttackSpread: 0.25
   BulletSpeed: 100
   AttackHit:
-    Damage: 10
+    Damage: 15
     DamagePierce: 5
     DType: 3
     HitLocation: 0
     Originator: {fileID: 0}
+    HitPuff: 
   BulletPrefab: {fileID: 1084969536453480, guid: f80d8c4ee49627841b2db2bf6a00027c,
     type: 2}
   AttackEffectPrefab: {fileID: 1069681291466534, guid: 7dbc392e134c6514b9d3dd13d44ea885,
     type: 2}
   ShootPoint: {fileID: 4034012939267662}
   AttackAnimationOverride: 
-  Interaction: 0
-  InteractionTarget: 
+  Interaction: 3
+  InteractionTarget: DemoMechanic
   InteractionSpecial: {fileID: 0}
   AlternateCondition:
     Type: 0
@@ -2188,7 +2192,7 @@ MonoBehaviour:
   AltInteractionTarget: 
   AltInteractionSpecial: {fileID: 0}
   InteractionForceDisabled: 0
-  TooltipOverride: 
+  TooltipOverride: The Mechanic
   ForceNavmeshOff: 0
   UseControllerGravity: 1
   RunOnChase: 1
