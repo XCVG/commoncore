@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using CommonCore.Messaging;
+using CommonCore.Config;
 
 
 namespace CommonCore.Audio
@@ -54,6 +55,7 @@ namespace CommonCore.Audio
             AudioSource mpSource = mpObject.AddComponent<AudioSource>();
             mpSource.spatialBlend = 0;
             mpSource.ignoreListenerPause = true;
+            mpSource.ignoreListenerVolume = true;
             MusicPlayer = mpSource;
             //mpSource.volume = Config.ConfigState.Instance.MusicVolume;
 
@@ -73,8 +75,11 @@ namespace CommonCore.Audio
 
         void Update()
         {
-            //TODO message bus integration: pop audio messages
-
+            //message bus integration (and this is why QDMS sucks)
+            while(MessageInterface.HasMessageInQueue)
+            {
+                HandleMessage(MessageInterface.PopFromQueue());
+            }
 
             //run cleanup periodically
             TimeElapsed += Time.deltaTime;
@@ -91,6 +96,22 @@ namespace CommonCore.Audio
                 }
 
                 TimeElapsed = 0;
+            }
+        }
+
+        private void HandleMessage(QdmsMessage message)
+        {
+            if(message is QdmsFlagMessage)
+            {
+                QdmsFlagMessage flagMessage = (QdmsFlagMessage)message;
+                switch (flagMessage.Flag)
+                {
+                    case "ConfigChanged":
+                        MusicPlayer.volume = ConfigState.Instance.MusicVolume;
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -202,7 +223,7 @@ namespace CommonCore.Audio
 
             MusicPlayer.Stop();
             MusicPlayer.clip = clip;
-
+            MusicPlayer.volume = ConfigState.Instance.MusicVolume;
             MusicRetain = retain;
             MusicPlayer.loop = loop;
             MusicPlayer.time = 0;

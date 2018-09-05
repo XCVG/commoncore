@@ -27,10 +27,30 @@ namespace CommonCore.Config
         [JsonConstructor]
         private ConfigState()
         {
+            MusicVolume = 0.8f;
+            SoundVolume = 0.8f;
 
+            QualityLevel = 4;
+            FxaaEnabled = true;
+
+            LookSpeed = 1.0f;
         }
 
         //actual config data here (TODO)
+
+        //AUDIO CONFIG
+        public float MusicVolume { get; set; }
+        public float SoundVolume { get; set; }
+        public AudioSpeakerMode SpeakerMode { get; set; }
+
+        //VIDEO CONFIG
+        public int QualityLevel { get; set; }
+        public bool FxaaEnabled { get; set; }
+
+        //INPUT CONFIG
+        public float LookSpeed { get; set; }
         
     }
+
+
 }

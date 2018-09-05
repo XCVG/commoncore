@@ -11,7 +11,7 @@ using CommonCore.State;
 using CommonCore.Rpg;
 using CommonCore.Messaging;
 using CommonCore.Audio;
-
+using CommonCore.Config;
 
 namespace CommonCore.World
 {
@@ -349,14 +349,14 @@ namespace CommonCore.World
             //looking is the same as long as we're in control
             if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookX)) != 0)
             {
-                transform.Rotate(Vector3.up, lmul * MappedInput.GetAxis(DefaultControls.LookX) * Time.deltaTime);
+                transform.Rotate(Vector3.up, lmul * ConfigState.Instance.LookSpeed * MappedInput.GetAxis(DefaultControls.LookX) * Time.deltaTime);
                 if(Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookY)) > deadzone)
                     IsMoving = true;
             }
 
             if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookY)) != 0)
             {
-                CameraRoot.transform.Rotate(Vector3.left, lmul * MappedInput.GetAxis(DefaultControls.LookY) * Time.deltaTime);
+                CameraRoot.transform.Rotate(Vector3.left, lmul * ConfigState.Instance.LookSpeed * MappedInput.GetAxis(DefaultControls.LookY) * Time.deltaTime);
             }
 
 

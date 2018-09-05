@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CommonCore.Messaging;
 
 namespace CommonCore.Config
 {
@@ -11,8 +12,12 @@ namespace CommonCore.Config
     [CCExplicitModule]
     public class ConfigModule : CCModule
     {
+        private static ConfigModule Instance;
+
         public ConfigModule()
         {
+            Instance = this;
+
             ConfigState.Load();
             PersistState.Load();
             ConfigState.Save();
@@ -23,6 +28,25 @@ namespace CommonCore.Config
         public void ApplyConfiguration()
         {
             //TODO apply configuration changes
+
+            //AUDIO CONFIG
+            AudioListener.volume = ConfigState.Instance.SoundVolume;
+            var ac = AudioSettings.GetConfiguration();
+            ac.speakerMode = ConfigState.Instance.SpeakerMode;
+            AudioSettings.Reset(ac);
+
+            //VIDEO CONFIG
+            QualitySettings.SetQualityLevel(ConfigState.Instance.QualityLevel, true);
+
+            //INPUT CONFIG
+
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("ConfigChanged"));
+
+        }
+
+        public static void Apply()
+        {
+            Instance.ApplyConfiguration();
         }
 
     }
