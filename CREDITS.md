@@ -44,6 +44,21 @@ Unity Technologies - ProBuilder
 	
 ## Assets/Objects/ThirdParty
 
+Szymon Łukaszuk - Sci-fi Crate
+	https://assetstore.unity.com/packages/3d/props/sci-fi-crate-70278
+
+South Studios - Washing Machine A01
+	https://assetstore.unity.com/packages/3d/props/furniture/washing-machine-a01-70644
+
+Rakshi Games - Wooden Box
+	https://assetstore.unity.com/packages/3d/props/wooden-box-670
+
+Hit Jones - Realistic Cardboard Boxes
+	https://assetstore.unity.com/packages/3d/realistic-cardboard-boxes-pbr-hq-58749
+
+Arvis Magone - Space Shuttle
+	https://assetstore.unity.com/packages/3d/vehicles/space/space-shuttle-34972
+
 Vertex Studio - Free Laptop
 	https://assetstore.unity.com/packages/3d/props/electronics/free-laptop-90315
 
@@ -102,6 +117,27 @@ animations from Firefighter VR, but these will be removed/replaced soon
 # Third Party Assets (included in repository)
 
 These are included under permissive or copyleft licenses.
+
+JeremyWoods - Drink [CC-BY 3.0]
+	https://opengameart.org/content/drink-0
+	Assets/Objects/OpenSource/drink
+
+Brian MacIntosh - Door Textures [CC0]
+	https://opengameart.org/content/door-textures
+	Assets/Objects/OpenSource/fakedoors/door_wood.png
+
+rubberduck - seamless industrial textures [CC-BY 3.0]
+	https://opengameart.org/content/seamless-industrial-textures?page=1
+	Assets/Objects/OpenSource/fakedoors/door_scifi.png
+	Assets/Objects/OpenSource/fakedoors/door_industrial.png
+
+wobba89 - wood door [CC0]
+	https://opengameart.org/content/wood-door
+	Assets/Objects/OpenSource/door
+
+giddster - Fan (heating) [CC0]
+	https://freesound.org/people/giddster/sounds/437343/
+	Assets/Shared/Sounds/Ambient/fan
 
 yughues - Free Hi-Tech Sci-Fi IT thing [CC0]
 	https://opengameart.org/content/free-hi-tech-sci-fi-it-thing
@@ -265,5 +301,9 @@ Peasant (male) character model (Assets/OpenSource/makehuman/peasantm)
 	Ruffle Sleeve Peasant Blouse 1 by Mindfront (CC-BY)
 	F Trousers 01 by Mindfront (CC-BY)
 	Starship uniform boots by Sculletto (CC0)
-	
+
+Background ambient music (Assets/ThirdParty/compo.ogg)
+	Eric Taylor - Royalty Free Music
+	https://opengameart.org/content/eric-taylor-royalty-free-music-pack-2-30-songs-cc-by
+	https://opengameart.org/content/eric-taylor-royalty-free-music-pack-50-songs-cc-by
 	
