@@ -24,5 +24,32 @@
         "Quantity": 16
       }
     ]
+  },
+  "DemoTrader": {
+    "Items": [
+      {
+        "ItemModel": "Gold",
+        "Quantity": 500
+      },
+	  {
+        "ItemModel": "stimpack"
+      },
+	  {
+        "ItemModel": "stimpack"
+      },
+	  {
+        "ItemModel": "Bolt",
+        "Quantity": 36
+      },
+	  {
+        "ItemModel": "bread",
+      },
+	  {
+        "ItemModel": "bread",
+      },
+	  {
+        "ItemModel": "bread",
+      }
+    ]
   }
 }

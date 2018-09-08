@@ -30,7 +30,7 @@ namespace CommonCore.World
             if (!UseLocalContainer)
                 MyContainer = GameState.Instance.ContainerState[SharedContainer];
             else
-                MyContainer = SerializableContainerModel.MakeContainerModel(LocalContainer);
+                MyContainer = SerializableContainerModel.MakeContainerModel(LocalContainer); //called after and overriding save?
         }
 
         public void InvokeContainer(ActionInvokerData data) //for invoking with an action special etc
@@ -45,13 +45,14 @@ namespace CommonCore.World
         
 
         //persistence
-        public override void SetExtraData(Dictionary<string, object> data)
+        //doesn't work, don't know why, no time to fix it
+        public override void SetExtraData(Dictionary<string, object> data) //this either isn't called or doesn't work
         {
             if (UseLocalContainer && UsePersistentContainer)
                 MyContainer = SerializableContainerModel.MakeContainerModel((SerializableContainerModel)data["Container"]);
         }
 
-        public override Dictionary<string, object> GetExtraData()
+        public override Dictionary<string, object> GetExtraData() //this works
         {
             var data = new Dictionary<string, object>();
 

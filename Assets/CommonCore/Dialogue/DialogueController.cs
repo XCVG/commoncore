@@ -241,6 +241,7 @@ namespace CommonCore.Dialogue
                 }
                 else
                 {
+                    Debug.LogWarning("DialogueController forced scene exit!");
                     SceneManager.LoadScene(nextLoc.Value); //BAD BAD BAD forced exit
                 }
 

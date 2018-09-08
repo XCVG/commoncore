@@ -1,0 +1,201 @@
+{
+  "image": "Trader",
+  "nameText": "Trader",
+  "default": "base",
+  "frames": {
+    "self1": {
+      "text": "Not much to say. My name's Hadrae. My father opened this shop, and when he passed, I took over.",
+      "type": "choice",
+      "choices": [
+        {
+          "text": "Why come out here? Business can't be that good",
+          "next": "this.self2"
+        },
+        {
+          "text": "Did you have other plans when your father passed?",
+          "next": "this.self3"
+        },
+        {
+          "text": "I see",
+          "next": "this.gen1"
+        }
+      ]
+    },
+    "self2": {
+      "text": "It's better than you might think. We get a lot of business from the other islands and passing fishermen. And I'm the only trader, so I can set the prices.",
+      "type": "choice",
+      "choices": [
+        {
+          "text": "That's kind of horrible...",
+          "next": "this.self4"
+        },
+        {
+          "text": "Supply and demand...",
+          "next": "this.self4"
+        },
+        {
+          "text": "I see",
+          "next": "this.gen1"
+        }
+      ]
+    },
+    "self3": {
+      "text": "Of course I didn't! That's ridiculous!",
+      "type": "choice",
+      "choices": [
+        {
+          "text": "Of course you did",
+          "conditional": [
+            {
+              "next": "this.self6",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "greater": 40
+                }
+              ]
+            }
+          ],
+          "next": "this.self5",
+          "showCondition": {
+            "actorvalue": "DerivedStats.Skills.SocialLeverage",
+            "greater": 30
+          }
+        },
+        {
+          "text": "That's... actually pretty sad",
+          "next": "this.self5"
+        },
+        {
+          "text": "A family business is a respectable thing",
+          "next": "this.gen1"
+        },
+        {
+          "text": "I see",
+          "next": "this.gen1"
+        }
+      ]
+    },
+    "self4": {
+      "text": "Ha! It's a living!",
+      "type": "text",
+      "next": "this.gen1"
+    },
+    "self5": {
+      "text": "This shop is my everything. It may not compare to being royalty, but it's a solid living.",
+      "type": "text",
+      "next": "this.gen1"
+    },
+    "self6": {
+      "text": "Ah, well, I wanted to be an adventurer when I was little, like a lot of boys do. Then when the Starfall happened, I wanted to see space. But that's just a fantasy. This is a solid living.",
+      "type": "text",
+      "next": "this.gen1"
+    },
+    "rumors1": {
+      "text": "There have been a lot of people getting sick. The healer woman says it's probably the water, been dirty ever since they built that thing up there. I say we burn it down, but the last man who tried doesn't have legs anymore.",
+      "type": "text",
+      "next": "this.gen1"
+    },
+    "rumors2": {
+      "text": "There were these adventurers who came through on a ship a week ago, really colourful people. They said they were going south to try to reach land down there. I wished 'em luck, but no man gets past the seadragons.",
+      "type": "text",
+      "next": "this.gen1"
+    },
+    "gen1": {
+      "type": "choice",
+      "text": "How can I help you?",
+      "choices": [
+        {
+          "text": "What do you have for sale?",
+          "next": "shop.DemoTrader"
+        },
+        {
+          "text": "Tell me about yourself",
+          "next": "this.self1"
+        },
+        {
+          "text": "Have you heard anything interesting lately?",
+          "next": "this.rumors1",
+          "conditional": [
+            {
+              "next": "this.rumors2",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "finished": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "I'm just browsing",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "greetWater1": {
+      "type": "text",
+      "text": "Welcome to my humble shop, Aegustae Aurelia. Thank you for helping our village.",
+      "next": "this.gen1"
+    },
+    "greetWater2": {
+      "type": "text",
+      "text": "My shop is open for you, Aegustae, but many of the villagers do not appreciate your attempt at help. We do not want those strange magics among us.",
+      "next": "this.gen1"
+    },
+    "greetWater3": {
+      "type": "text",
+      "text": "It's going to be a difficult journey. I have a lot to carry, and little means to do so. While I'm still here, my shop is open for you. I would appreciate all of your business.",
+      "next": "this.gen1"
+    },
+    "base": {
+      "type": "choice",
+      "nameText": "Trader",
+      "choices": [
+        {
+          "text": "Hello",
+          "next": "this.gen1",
+          "conditional": [
+            {
+              "next": "this.greetWater1",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "finished": true
+                }
+              ]
+            },
+            {
+              "next": "this.greetWater3",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "equal": -3
+                }
+              ]
+            },
+            {
+              "next": "this.greetWater1",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "equal": -21
+                }
+              ]
+            },
+            {
+              "next": "this.greetWater2",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "equal": -22
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

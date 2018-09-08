@@ -25,6 +25,11 @@ namespace CommonCore
         {
             return Resources.LoadAll<T>(path);
         }
+
+        public static bool CheckResource<T>(string path) where T: UnityEngine.Object
+        {
+            return Resources.Load<T>(path) != null;
+        }
         
         public static T LoadExternalJson<T>(string path)
         {
@@ -131,7 +136,6 @@ namespace CommonCore
             else if (val.CompareTo(max) > 0) return max;
             else return val;
         }
-
 
         private static Transform WorldRoot;
         public static Transform GetWorldRoot() //TODO really ought to move this

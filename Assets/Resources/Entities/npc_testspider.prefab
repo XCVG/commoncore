@@ -2210,10 +2210,10 @@ MonoBehaviour:
   Relentless: 0
   UseLineOfSight: 1
   SearchRadius: 25
-  SearchInterval: 70
+  SearchInterval: 35
   DisableInteractionOnHit: 1
   UseMelee: 1
-  AttackRange: 1.2
+  AttackRange: 1.5
   AttackStateDelay: 2
   AttackInterval: 1
   AttackSpread: 0.25
