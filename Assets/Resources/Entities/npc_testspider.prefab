@@ -2200,7 +2200,7 @@ MonoBehaviour:
   - 0
   - 0
   OnDeathSpecial: {fileID: 0}
-  FeelPain: 1
+  FeelPain: 0
   PainWaitTime: 1
   DefaultHitPuff: BugHitPuff
   Aggressive: 1
@@ -2208,7 +2208,7 @@ MonoBehaviour:
   TargetNpc: 0
   Defensive: 1
   Relentless: 0
-  UseLineOfSight: 1
+  UseLineOfSight: 0
   SearchRadius: 25
   SearchInterval: 35
   DisableInteractionOnHit: 1
@@ -2242,6 +2242,7 @@ MonoBehaviour:
   AltInteractionSpecial: {fileID: 0}
   InteractionForceDisabled: 0
   TooltipOverride: 
+  GrantXpOnDeath: 30
   ForceNavmeshOff: 0
   UseControllerGravity: 1
   RunOnChase: 1

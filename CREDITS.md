@@ -8,6 +8,9 @@ It's possible and even likely that many dependencies will be removed as time goe
 
 These come with the engine and can be unpacked from within the editor.
 
+Environment/TerrainAssets
+	(aesthetic only; can be left out and will still run)
+
 Environment/Water (Basic)
 	(aesthetic only; can be left out and will still run)
 	
@@ -43,6 +46,9 @@ Unity Technologies - ProBuilder
 	(needed for demo scenes)
 	
 ## Assets/Objects/ThirdParty
+
+Studio Krokidana - Ruins Creation Kit
+	https://assetstore.unity.com/packages/3d/environments/ruins-creation-kit-2235
 
 Szymon Łukaszuk - Sci-fi Crate
 	https://assetstore.unity.com/packages/3d/props/sci-fi-crate-70278
@@ -117,6 +123,10 @@ animations from Firefighter VR, but these will be removed/replaced soon
 # Third Party Assets (included in repository)
 
 These are included under permissive or copyleft licenses.
+
+CDmir - Chest (Animated) [CC0]
+	https://opengameart.org/content/chest-animated
+	Assets/Objects/OpenSource/chest
 
 JeremyWoods - Drink [CC-BY 3.0]
 	https://opengameart.org/content/drink-0

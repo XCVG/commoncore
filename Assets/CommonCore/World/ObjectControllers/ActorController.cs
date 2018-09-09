@@ -92,6 +92,8 @@ namespace CommonCore.World
         public bool InteractionForceDisabled;
         public string TooltipOverride;
 
+        public int GrantXpOnDeath;
+
         [Header("Movement")]
         public bool ForceNavmeshOff = false;
         public bool UseControllerGravity = true;
@@ -177,7 +179,6 @@ namespace CommonCore.World
             EmulateNav();
         }
 
-        //TODO handle aggression
         public void EnterState(ActorAiState newState)
         {
             if (LockAiState)
@@ -210,6 +211,9 @@ namespace CommonCore.World
 
                     if (OnDeathSpecial != null)
                         OnDeathSpecial.Execute(new ActionInvokerData { Activator = this });
+
+                    if (Target.GetComponent<PlayerController>() && GrantXpOnDeath > 0)
+                        GameState.Instance.PlayerRpgState.Experience += GrantXpOnDeath;
                     break;
                 case ActorAiState.Wandering:
                     SetAnimation(ActorAnimState.Walking);
@@ -528,7 +532,7 @@ namespace CommonCore.World
             if(TargetPlayer)
             {
                 var playerObj = WorldUtils.GetPlayerObject();
-                if(playerObj != null && !WorldUtils.TargetIsAlive(playerObj.transform))
+                if(playerObj != null && WorldUtils.TargetIsAlive(playerObj.transform))
                 {
                     if((playerObj.transform.position - transform.position).magnitude <= SearchRadius)
                     {
