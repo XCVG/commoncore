@@ -2,7 +2,7 @@
 
 You will need to acquire these and place them in the correct directories for the project to work properly.
 
-It's possible and even likely that many dependencies will be removed as time goes on. Nearly all assets will be removed once the demo and library are split, leaving some to form a generic quick-start base.
+It's possible and even likely that many dependencies will be removed as time goes on. Nearly all assets will be removed once the demo and library are split, leaving some to form a generic quick-start base. Most assets in Objects/ in particular are resources used in the demo scene, not critical to the functionality of the library.
 
 ## Standard Assets
 
@@ -46,6 +46,15 @@ Unity Technologies - ProBuilder
 	(needed for demo scenes)
 	
 ## Assets/Objects/ThirdParty
+
+mojo-structure - Pipes Kit
+	https://assetstore.unity.com/packages/3d/props/industrial/pipes-kit-64170
+
+Coolworks Studio - Sci-Fi Gravity Generator
+	https://assetstore.unity.com/packages/3d/props/electronics/sci-fi-gravity-generator-82847
+
+Ebal Studios - Space Debris and Crates
+	https://assetstore.unity.com/packages/3d/characters/space-debris-99699
 
 Studio Krokidana - Ruins Creation Kit
 	https://assetstore.unity.com/packages/3d/environments/ruins-creation-kit-2235

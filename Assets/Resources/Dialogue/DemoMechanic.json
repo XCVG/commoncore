@@ -99,7 +99,7 @@
             },
             {
               "item": "demo_filter",
-              "take": 1
+              "give": 1
             }
           ]
         }
@@ -602,7 +602,7 @@
     },
     "base": {
       "type": "choice",
-      "nameText": "Flavia",
+      "nameText": "Mechanic",
       "choices": [
         {
           "text": "Hello",

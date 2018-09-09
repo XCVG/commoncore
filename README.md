@@ -71,18 +71,20 @@ This list is always in flux. As I implement features, I find there are even more
 * Script execution by name
 * Save folder creation and fail handling
 * Shop/container system (same base logic)
+* Basic config options
 
 **In-Progress Features**
 
 * Player movement (need to add swimming and crouching)
-* Combat (currently uses stats only partially, and lacks visuals)
-* Action Special game state modification
+* Combat (has stats and visuals, but many limitations and unhandled edge cases)
+* Action Special game state modification (currently limited)
 * Loading screen (appears but needs animation)
 
 **Planned Features (soon)**
 
 * Time passage and timed events
-* Basic config options
+* Faction/Reputation system
+* Levelled Lists
 * UI "type on" utility function
 * Map screen
 * Help screen
@@ -92,7 +94,6 @@ This list is always in flux. As I implement features, I find there are even more
 
 * Graphics, sound, and other configuration
 * In-game remappable inputs (alternate MappedInput backend?)
-* Levelled Lists
 * improved messaging
 * magic
 * proper stealth

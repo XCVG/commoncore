@@ -105,7 +105,7 @@ namespace CommonCore.UI
             else if(message is SubtitleMessage)
             {
                 SubtitleMessage subMessage = (SubtitleMessage)message;
-                if(subMessage.Priority > SubtitlePriority)
+                if(subMessage.Priority >= SubtitlePriority)
                 {
                     SubtitlePriority = subMessage.Priority;
                     SubtitleTimer = subMessage.HoldTime;

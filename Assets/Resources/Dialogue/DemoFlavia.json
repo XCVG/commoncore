@@ -10,6 +10,120 @@
       "next": "this.matsuda2",
       "text": "Hey, there you are! I made it into the academy, too!"
     },
+    "filterd1": {
+      "type": "choice",
+      "text": "A machine? It does not look or sound like any machine I have ever seen!",
+      "choices": [
+        {
+          "text": "It's like a flour mill or a catapult, it's just a lot more complicated.",
+          "next": "this.filter2"
+        },
+        {
+          "text": "It's new technology. You're going to be seeing more of that.",
+          "next": "this.filter2"
+        },
+        {
+          "text": "Yeah, I don't know how it works either",
+          "next": "this.filterfail"
+        }
+      ]
+    },
+    "started1": {
+      "type": "choice",
+      "text": "Were you able to vanquish the monsters, Aegustae Aurelia?",
+      "choices": [
+        {
+          "text": "(LIE) They fell swiftly by the edge of my sword",
+          "conditional": [
+            {
+              "next": "this.endlie2",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "greater": 35
+                }
+              ]
+            }
+          ],
+          "next": "this.endlie1",
+          "showCondition": {
+            "noflag": "DemoWellMonstersKilled"
+          },
+          "hidecondition": {
+            "flag": "DemoFlaviaDidFailLie"
+          }
+        },
+        {
+          "text": "Yes, I killed them all",
+          "next": "this.endgood1",
+          "showCondition": {
+            "flag": "DemoWellMonstersKilled"
+          }
+        },
+        {
+          "next": "this.movefail",
+          "text": "I think you should all move instead",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidTryMove",
+              "set": true
+            }
+          ],
+          "showCondition": {
+            "actorvalue": "DerivedStats.Skills.SocialLeverage",
+            "greater": 25
+          },
+          "hideCondition": {
+            "flag": "DemoFlaviaDidTryMove"
+          },
+          "conditional": [
+            {
+              "next": "this.movesucceed",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "greater": 60
+                }
+              ]
+            },
+            {
+              "next": "this.movesucceed",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "greater": 40
+                },
+                {
+                  "noflag": "DemoFlaviaDidOffend"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "I'm working on it",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "doneDefault": {
+      "type": "choice",
+      "text": "Thank you for helping us, Aegustae Aurelia. The village is forever in your debt.",
+      "choices": [
+        {
+          "text": "Don't mention it. Really, don't.",
+          "next": "meta.return"
+        },
+        {
+          "text": "It's fine, you're welcome",
+          "next": "meta.return"
+        },
+        {
+          "text": "I didn't do this for you",
+          "next": "meta.return"
+        }
+      ]
+    },
     "filter1": {
       "type": "choice",
       "text": "What is that THING?",
@@ -127,24 +241,6 @@
               "set": true
             }
           ]
-        }
-      ]
-    },
-    "filterd1": {
-      "type": "choice",
-      "text": "A machine? It does not look or sound like any machine I have ever seen!",
-      "choices": [
-        {
-          "text": "It's like a flour mill or a catapult, it's just a lot more complicated.",
-          "next": "this.filter2"
-        },
-        {
-          "text": "It's new technology. You're going to be seeing more of that.",
-          "next": "this.filter2"
-        },
-        {
-          "text": "Yeah, I don't know how it works either",
-          "next": "this.filterfail"
         }
       ]
     },
@@ -381,6 +477,10 @@
             {
               "quest": "DemoQuest",
               "start": true
+            },
+            {
+              "flag": "DemoFlaviaDidAskWater",
+              "set": true
             }
           ]
         },
@@ -552,102 +652,6 @@
         }
       ]
     },
-    "started1": {
-      "type": "choice",
-      "text": "Were you able to vanquish the monsters, Aegustae Aurelia?",
-      "choices": [
-        {
-          "text": "(LIE) They fell swiftly by the edge of my sword",
-          "conditional": [
-            {
-              "next": "this.endlie2",
-              "conditions": [
-                {
-                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
-                  "greater": 35
-                }
-              ]
-            }
-          ],
-          "next": "this.endlie1",
-          "showCondition": {
-            "noflag": "DemoWellMonstersKilled"
-          },
-          "hidecondition": {
-            "flag": "DemoFlaviaDidFailLie"
-          }
-        },
-        {
-          "text": "Yes, I killed them all",
-          "next": "this.endgood1",
-          "showCondition": {
-            "flag": "DemoWellMonstersKilled"
-          }
-        },
-        {
-          "next": "this.movefail",
-          "text": "I think you should all move instead",
-          "microscript": [
-            {
-              "flag": "DemoFlaviaDidTryMove",
-              "set": true
-            }
-          ],
-          "showCondition": {
-            "actorvalue": "DerivedStats.Skills.SocialLeverage",
-            "greater": 25
-          },
-          "hideCondition": {
-            "flag": "DemoFlaviaDidTryMove"
-          },
-          "conditional": [
-            {
-              "next": "this.movesucceed",
-              "conditions": [
-                {
-                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
-                  "greater": 60
-                }
-              ]
-            },
-            {
-              "next": "this.movesucceed",
-              "conditions": [
-                {
-                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
-                  "greater": 40
-                },
-                {
-                  "noflag": "DemoFlaviaDidOffend"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "text": "I'm working on it",
-          "next": "meta.return"
-        }
-      ]
-    },
-    "doneDefault": {
-      "type": "choice",
-      "text": "Thank you for helping us, Aegustae Aurelia. The village is forever in your debt.",
-      "choices": [
-        {
-          "text": "Don't mention it. Really, don't.",
-          "next": "meta.return"
-        },
-        {
-          "text": "It's fine, you're welcome",
-          "next": "meta.return"
-        },
-        {
-          "text": "I didn't do this for you",
-          "next": "meta.return"
-        }
-      ]
-    },
     "doneRelocated": {
       "type": "choice",
       "text": "We shall begin to leave soon. This is the only home many of us have known, and there are few places for us to go, but it is better than dying here.",
@@ -770,6 +774,9 @@
                 {
                   "quest": "DemoQuest",
                   "started": true
+                },
+                {
+                  "flag": "DemoFlaviaDidAskWater"
                 }
               ]
             },

@@ -36,7 +36,7 @@ namespace CommonCore
 
         //*****game config settings
         public static readonly string InitialScene = "TestScene";
-        public static readonly bool UseCustomLeveling = true;
+        public static readonly bool UseCustomLeveling = false;
         public static readonly PlayerViewType DefaultPlayerView = PlayerViewType.PreferFirst;
         public static readonly bool UseRandomDamage = true;
         public static readonly bool AutoQuestNotifications = true;
