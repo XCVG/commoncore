@@ -75,9 +75,7 @@ namespace CommonCore.UI
         {
             if(message is HUDPushMessage)
             {
-                MessageText.text = MessageText.text + "\n" + Sub.Macro(((HUDPushMessage)message).Contents);
-                Canvas.ForceUpdateCanvases();
-                MessageScrollRect.verticalNormalizedPosition = 0;
+                AppendHudMessage(Sub.Macro(((HUDPushMessage)message).Contents));
             }
             else if(message is QdmsFlagMessage)
             {
@@ -99,6 +97,10 @@ namespace CommonCore.UI
                         break;
                     case "PlayerChangeView":
                         SetCrosshair(message);
+                        break;
+                    case "RpgQuestStarted":
+                    case "RpgQuestEnded":
+                        AddQuestMessage(message);
                         break;
                 }
             }
@@ -196,6 +198,36 @@ namespace CommonCore.UI
             {
                 ReadyBarImage.color = Color.red;
             }
+        }
+
+        private void AddQuestMessage(QdmsMessage message)
+        {
+            var qMessage = message as QdmsKeyValueMessage;
+            if (qMessage == null)
+            {
+                return;
+            }                
+            else if(qMessage.Flag == "RpgQuestStarted")
+            {
+                var qRawName = qMessage.GetValue<string>("Quest");
+                var qDef = QuestModel.GetDef(qRawName);
+                string questName = qDef == null ? qRawName : qDef.NiceName;
+                AppendHudMessage(string.Format("Quest Started: {0}", questName));
+            }
+            else if(qMessage.Flag == "RpgQuestEnded")
+            {
+                var qRawName = qMessage.GetValue<string>("Quest");
+                var qDef = QuestModel.GetDef(qRawName);
+                string questName = qDef == null ? qRawName : qDef.NiceName;
+                AppendHudMessage(string.Format("Quest Ended: {0}", questName));
+            }
+        }
+
+        private void AppendHudMessage(string newMessage)
+        {
+            MessageText.text = MessageText.text + "\n" + newMessage;
+            Canvas.ForceUpdateCanvases();
+            MessageScrollRect.verticalNormalizedPosition = 0;
         }
 
         //TODO move to messaging

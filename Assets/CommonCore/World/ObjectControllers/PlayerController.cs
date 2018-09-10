@@ -350,7 +350,7 @@ namespace CommonCore.World
             if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookX)) != 0)
             {
                 transform.Rotate(Vector3.up, lmul * ConfigState.Instance.LookSpeed * MappedInput.GetAxis(DefaultControls.LookX) * Time.deltaTime);
-                if(Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookY)) > deadzone)
+                if(Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookX)) > deadzone)
                     IsMoving = true;
             }
 

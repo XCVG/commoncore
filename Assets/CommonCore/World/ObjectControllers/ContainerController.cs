@@ -29,7 +29,7 @@ namespace CommonCore.World
 
             if (!UseLocalContainer)
                 MyContainer = GameState.Instance.ContainerState[SharedContainer];
-            else
+            else if (MyContainer == null) //should fix...
                 MyContainer = SerializableContainerModel.MakeContainerModel(LocalContainer); //called after and overriding save?
         }
 
@@ -38,14 +38,14 @@ namespace CommonCore.World
             if (data.Activator == null || !(data.Activator is PlayerController))
                 return;
 
-            Debug.Log("Opened container");
-            //TODO actually open container dialog
+            //Debug.Log("Opened container");
+
             UI.ContainerModal.PushModal(GameState.Instance.PlayerRpgState.Inventory, MyContainer, IsStore, null);
         }
         
 
         //persistence
-        //doesn't work, don't know why, no time to fix it
+        //should be fixed now
         public override void SetExtraData(Dictionary<string, object> data) //this either isn't called or doesn't work
         {
             if (UseLocalContainer && UsePersistentContainer)

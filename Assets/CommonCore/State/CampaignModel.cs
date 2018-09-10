@@ -5,6 +5,7 @@ using UnityEngine;
 using Newtonsoft.Json;
 using System;
 using System.Text;
+using CommonCore.Messaging;
 
 namespace CommonCore.State
 {
@@ -135,6 +136,10 @@ namespace CommonCore.State
         public void SetQuestStage(string questName, int questStage)
         {
             Quests[questName] = questStage;
+
+            //honestly this is super hacky and I don't like it
+            if(questStage < 0)
+                QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgQuestEnded", "Quest", questName));
         }
 
         //StartQuest only starts a quest if it is not started
@@ -148,7 +153,13 @@ namespace CommonCore.State
             int oldStage = 0;
             Quests.TryGetValue(questName, out oldStage);
             if (oldStage == 0)
+            {
                 Quests[questName] = initialStage;
+
+                //honestly this is super hacky and I don't like it
+                QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgQuestStarted", "Quest", questName));
+            }
+            
         }
 
         public bool HasQuest(string questName)

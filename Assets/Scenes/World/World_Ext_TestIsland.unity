@@ -8504,7 +8504,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Flag: DemoGotFilter
-  GrantItem: demo_filter1
+  GrantItem: demo_part1
   SubtitleText: Aha! It's beat up, but the fuel filter here looks salvagable
   VoicePath: 
   AltSubtitleText: There's nothing else in here worth salvaging

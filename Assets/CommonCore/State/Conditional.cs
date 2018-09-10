@@ -114,17 +114,33 @@ namespace CommonCore.State
         }
     }
 
-    internal enum MicroscriptType
+    public enum MicroscriptType
     {
         Flag, Item, Variable, Affinity, Quest, ActorValue, Exec //eval is again not supported
     }
 
-    internal enum MicroscriptAction
+    public enum MicroscriptAction
     {
         Set, Toggle, Add, Give, Take, Start, Finish
     }
 
-    internal class MicroscriptNode //"directive" in Katana parlance
+    [Serializable]
+    public struct EditorMicroscript
+    {
+        public MicroscriptType Type;
+        public string Target;
+        public MicroscriptAction Action;
+        public string Value;
+
+        public MicroscriptNode Parse()
+        {
+            object val = CCBaseUtil.StringToNumericAuto(Value);
+            return new MicroscriptNode(Type, Target, Action, val);
+        }
+
+    }
+
+    public class MicroscriptNode //"directive" in Katana parlance
     {
         public readonly MicroscriptType Type;
         public readonly string Target;
