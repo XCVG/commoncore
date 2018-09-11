@@ -133,6 +133,14 @@ animations from Firefighter VR, but these will be removed/replaced soon
 
 These are included under permissive or copyleft licenses.
 
+syncopika - medieval town [CC-BY 3.0]
+	https://opengameart.org/content/medieval-town
+	Assets/Resources/DynamicMusic/town
+
+Trevor Lentz - Search The World [CC-BY 3.0]
+	https://opengameart.org/content/search-the-world-trevor-lentz
+	Assets/Resources/DynamicMusic/overworld
+
 CDmir - Chest (Animated) [CC0]
 	https://opengameart.org/content/chest-animated
 	Assets/Objects/OpenSource/chest
@@ -321,8 +329,3 @@ Peasant (male) character model (Assets/OpenSource/makehuman/peasantm)
 	F Trousers 01 by Mindfront (CC-BY)
 	Starship uniform boots by Sculletto (CC0)
 
-Background ambient music (Assets/ThirdParty/compo.ogg)
-	Eric Taylor - Royalty Free Music
-	https://opengameart.org/content/eric-taylor-royalty-free-music-pack-2-30-songs-cc-by
-	https://opengameart.org/content/eric-taylor-royalty-free-music-pack-50-songs-cc-by
-	

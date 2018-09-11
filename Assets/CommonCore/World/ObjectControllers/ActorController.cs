@@ -49,6 +49,7 @@ namespace CommonCore.World
         public float[] DamageThreshold = { 0, 0, 0, 0, 0, 0 };
         public ActionSpecial OnDeathSpecial;
         public bool FeelPain = true;
+        public float PainChance = 0.5f;
         public float PainWaitTime = 1.0f;
         public string DefaultHitPuff = "DefaultHitPuff";
 
@@ -788,7 +789,9 @@ namespace CommonCore.World
             if (CurrentAiState == ActorAiState.Dead) //abort if we're already dead
                 return;
 
-            if(Defensive && data.Originator != null)
+            bool didTakePain = UnityEngine.Random.Range(0f, 1f) < PainChance;
+
+            if (Defensive && data.Originator != null)
             {
                 Target = data.Originator.transform;
                 BeenHit = true;
@@ -796,12 +799,12 @@ namespace CommonCore.World
                 if (DisableInteractionOnHit)
                     InteractionForceDisabled = true;
 
-                if (FeelPain)
+                if (FeelPain && didTakePain)
                     EnterState(ActorAiState.Hurting);
                 else
                     EnterState(ActorAiState.Chasing);
             }
-            else if(FeelPain)
+            else if(FeelPain && didTakePain)
                 EnterState(ActorAiState.Hurting);
         }
 

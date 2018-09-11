@@ -95,7 +95,7 @@ namespace CommonCore.World
                 return go;
             }
 
-            Debug.LogError("Couldn't find player!");
+            Debug.LogWarning("Couldn't find player!");
 
             return null;
         }

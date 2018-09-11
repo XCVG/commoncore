@@ -1,0 +1,22 @@
+{
+  "monologue": [
+    {
+      "line": "Thank you for helping us",
+      "conditions": [
+        {
+          "quest": "DemoQuest",
+          "finished": true
+        }
+      ]
+    },
+    {
+      "line": "Good day, Aegustae"
+    },
+    {
+      "line": "Good day, Aegustae"
+    },
+    {
+      "line": "Good day, Aegustae"
+    }
+  ]
+}
