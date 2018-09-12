@@ -1983,6 +1983,7 @@ MonoBehaviour:
   - 0
   OnDeathSpecial: {fileID: 0}
   FeelPain: 1
+  PainChance: 0.5
   PainWaitTime: 1
   DefaultHitPuff: DefaultHitPuff
   Aggressive: 0
@@ -2024,7 +2025,7 @@ MonoBehaviour:
   AltInteractionSpecial: {fileID: 0}
   InteractionForceDisabled: 0
   TooltipOverride: 
-  GrantXpOnDeath: 0
+  GrantXpOnDeath: 50
   ForceNavmeshOff: 0
   UseControllerGravity: 1
   RunOnChase: 1

@@ -133,6 +133,22 @@ animations from Firefighter VR, but these will be removed/replaced soon
 
 These are included under permissive or copyleft licenses.
 
+drummyfish - RPG Item collection 1 [CC0]
+	https://opengameart.org/content/rpg-item-collection-1
+	Assets/Objects/OpenSource/lowpolyrpg
+
+Michael Cameron - Crate [CC-BY 3.0]
+	https://opengameart.org/content/a-simple-crate
+	Assets/Objects/OpenSource/simplecrate
+
+AntumDeluge - Fire Crackling [CC0]
+	https://opengameart.org/content/fire-crackling
+	Assets/Shared/Sounds/Ambient/fire
+
+WeaponGuy - Fireplace [CC0]
+	https://opengameart.org/content/fireplace-0
+	Assets/Objects/OpenSource/fireplace
+
 syncopika - medieval town [CC-BY 3.0]
 	https://opengameart.org/content/medieval-town
 	Assets/Resources/DynamicMusic/town

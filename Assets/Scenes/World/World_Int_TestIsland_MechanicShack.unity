@@ -7046,7 +7046,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerCanActivate: 1
   NpcCanActivate: 0
-  Tooltip: Door To Equis Village
+  Tooltip: Door To Equis Island
   TooltipObject: {fileID: 0}
   TooltipFacesPlayer: 0
   TooltipSprite: {fileID: 0}
@@ -7069,7 +7069,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: fa986aa2ea2b1cb46808b5e2f556f6d2, type: 2}
+  - {fileID: 2100000, guid: 48160161107e0964fb39dfbc0b32f65e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

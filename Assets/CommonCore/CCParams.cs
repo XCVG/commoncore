@@ -35,7 +35,7 @@ namespace CommonCore
         public static readonly bool UseVerboseLogging = true;
 
         //*****game config settings
-        public static readonly string InitialScene = "TestScene";
+        public static readonly string InitialScene = "World_Ext_TestIsland";
         public static readonly bool UseCustomLeveling = true;
         public static readonly PlayerViewType DefaultPlayerView = PlayerViewType.PreferFirst;
         public static readonly bool UseRandomDamage = true;
