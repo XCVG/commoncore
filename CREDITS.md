@@ -133,6 +133,10 @@ animations from Firefighter VR, but these will be removed/replaced soon
 
 These are included under permissive or copyleft licenses.
 
+CodeAndReload - Loading Wheel (Transparent)
+	https://openclipart.org/detail/192512/loading-wheel-transparent
+	Assets/UI/Graphics/loadwheel
+
 drummyfish - RPG Item collection 1 [CC0]
 	https://opengameart.org/content/rpg-item-collection-1
 	Assets/Objects/OpenSource/lowpolyrpg

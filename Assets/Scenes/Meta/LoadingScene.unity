@@ -240,7 +240,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &738290469
 RectTransform:
   m_ObjectHideFlags: 0
@@ -309,7 +309,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1039244068
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -654,7 +654,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff26db721962cdf4a8edcdfa9a767d2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  profile: {fileID: 11400000, guid: 7eaf6cf4c7f8b5f4790179568d8a31a8, type: 2}
 --- !u!1 &1855424096
 GameObject:
   m_ObjectHideFlags: 0
@@ -826,9 +825,9 @@ Animation:
   m_GameObject: {fileID: 2114255632}
   m_Enabled: 1
   serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 5f14638567c244848bd5eb7af1109de5, type: 2}
+  m_Animation: {fileID: 7400000, guid: dea243a5da8f0574fab9e5202cf14a76, type: 2}
   m_Animations:
-  - {fileID: 7400000, guid: 5f14638567c244848bd5eb7af1109de5, type: 2}
+  - {fileID: 7400000, guid: dea243a5da8f0574fab9e5202cf14a76, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
@@ -845,14 +844,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.06855965, b: 0.7647059, a: 0.722}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 55f3be23770f5424ea136f8a7ac60a67, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1d716d77bd9b7c14982ae0ba59aceacf, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

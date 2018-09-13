@@ -1,0 +1,22 @@
+{
+  "drink": {
+    "model": {
+		"$type": "CommonCore.Rpg.AidItemModel, Assembly-CSharp",
+		"AType": "Health",
+		"RType": "Add",
+		"Amount": 5.0,
+		"Value": 5.0,
+		"Name": "drink",
+		"WorldModel": "item_drink",
+		"Weight": 0.5,
+		"MaxCondition": 1.0,
+		"Unique": false,
+		"Essential": false
+    },
+    "def": {
+    "NiceName": "drink.",
+    "Image": "drink",
+    "Description": "A sweet, thirst-quenching 'tropical' beverage from Centauri"
+	}
+  }
+}
