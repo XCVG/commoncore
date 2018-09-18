@@ -133,6 +133,10 @@ animations from Firefighter VR, but these will be removed/replaced soon
 
 These are included under permissive or copyleft licenses.
 
+Steve Matteson - Croscore fonts (Arimo, Cousine, Tinos)
+	https://www.apache.org/licenses/LICENSE-2.0
+	Assets/UI/Fonts
+	
 CodeAndReload - Loading Wheel (Transparent)
 	https://openclipart.org/detail/192512/loading-wheel-transparent
 	Assets/UI/Graphics/loadwheel
