@@ -129,8 +129,8 @@ namespace GameUI
             RapidityButton.GetComponentInChildren<Text>().text = string.Format("Rapidity\n({0})", NewStats.Skills[(int)SkillType.GunsRapidity]);
 
             AthleticsButton.GetComponentInChildren<Text>().text = string.Format("Athletics ({0})", NewStats.Skills[(int)SkillType.Athletics]);
-            FurtiveButton.GetComponentInChildren<Text>().text = string.Format("Furtiveness\n({0})", NewStats.Skills[(int)SkillType.AthleticsFleet]);
-            FleetButton.GetComponentInChildren<Text>().text = string.Format("Fleetness\n({0})", NewStats.Skills[(int)SkillType.AthleticsFurtive]);
+            FurtiveButton.GetComponentInChildren<Text>().text = string.Format("Furtiveness\n({0})", NewStats.Skills[(int)SkillType.AthleticsFurtive]);
+            FleetButton.GetComponentInChildren<Text>().text = string.Format("Fleetness\n({0})", NewStats.Skills[(int)SkillType.AthleticsFleet]);
 
             MagicButton.GetComponentInChildren<Text>().text = string.Format("Magic ({0})", NewStats.Skills[(int)SkillType.Magic]);
             ForceButton.GetComponentInChildren<Text>().text = string.Format("Force\n({0})", NewStats.Skills[(int)SkillType.MagicForce]);

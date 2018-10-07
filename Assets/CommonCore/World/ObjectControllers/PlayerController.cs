@@ -275,6 +275,11 @@ namespace CommonCore.World
             int layerMask = LayerMask.GetMask("Default","ActorHitbox");
 
             RaycastHit probeHit;
+            //Debug.DrawRay(CameraRoot.position, CameraRoot.transform.forward);
+
+            //TODO: issue is MaxProbeLength and the angle
+            //we should actually do RaycastAll, cull based on 2D distance and separate 3D distance, and possibly handle occlusion
+
             if(Physics.Raycast(CameraRoot.transform.position,CameraRoot.transform.forward,out probeHit,MaxProbeDist,layerMask,QueryTriggerInteraction.Collide))
             {
                 // Debug.Log("Detected: " + probeHit.transform.gameObject.name);
@@ -418,12 +423,15 @@ namespace CommonCore.World
                     //hacky sprinting
                     if(MappedInput.GetButton(DefaultControls.Sprint) && playerState.Energy > 0)
                     {
+                        //TODO: this seems to be broken, and I don't know why     
                         IsRunning = true;
                         moveVector *= 1.5f;
                         playerState.Energy -= 10.0f * Time.deltaTime;
                     }
                     else
                     {
+                        //oh, I think what happens is we recover one frame, then sprinting immediately kicks in the next
+                        //need to hold button state and/or implement cooldown
                         playerState.Energy += 5.0f * Time.deltaTime;
                     }
 
@@ -597,6 +605,9 @@ namespace CommonCore.World
             //punch
             LayerMask lm = LayerMask.GetMask("Default", "ActorHitbox");
             var rc = Physics.RaycastAll(ShootPoint.position, ShootPoint.forward, MeleeProbeDist, lm, QueryTriggerInteraction.Collide);
+
+            //TODO handle 2D/3D probe distance
+
             ActorController ac = null;
             foreach (var r in rc)
             {

@@ -57,7 +57,8 @@ namespace CommonCore.State
                 }
                 else if (MetaState.Instance.TransitionType == SceneTransitionType.NewGame)
                 {
-                    GameState.Reset();                    
+                    GameState.Reset();
+                    MetaState.Reset();
                     MetaState.Instance.NextScene = CCParams.InitialScene;
                     GameState.Instance.CurrentScene = MetaState.Instance.NextScene;
                     GameState.LoadInitial();

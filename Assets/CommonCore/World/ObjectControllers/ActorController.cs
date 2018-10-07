@@ -90,6 +90,11 @@ namespace CommonCore.World
         public string AltInteractionTarget;
         public ActionSpecial AltInteractionSpecial;
 
+        public bool UseDeadAction = true;
+        public ActorInteractionType DeadInteraction;
+        public string DeadInteractionTarget;
+        public ActionSpecial DeadInteractionSpecial;
+
         public bool InteractionForceDisabled;
         public string TooltipOverride;
 
@@ -474,6 +479,9 @@ namespace CommonCore.World
             {
                 //melee path (raycast)
                 LayerMask lm = LayerMask.GetMask("Default", "ActorHitbox");
+
+                //TODO 2D/3D attack range, or just increase attack range?
+
                 var rc = Physics.RaycastAll(shootPos, shootVec, AttackRange, lm, QueryTriggerInteraction.Collide);
                 BaseController ac = null;
                 foreach (var r in rc)
@@ -724,15 +732,24 @@ namespace CommonCore.World
             if (InteractionForceDisabled)
                 return;
 
-            if(AltInteraction != ActorInteractionType.None && AlternateCondition.Parse().Evaluate())
+            if(UseDeadAction && CurrentAiState == ActorAiState.Dead)
             {
-                ExecuteInteraction(AltInteraction, AltInteractionTarget, AltInteractionSpecial, data);
+                if(DeadInteraction != ActorInteractionType.None)
+                {
+                    ExecuteInteraction(DeadInteraction, DeadInteractionTarget, DeadInteractionSpecial, data);
+                }
             }
             else
             {
-                ExecuteInteraction(Interaction, InteractionTarget, InteractionSpecial, data);
+                if (AltInteraction != ActorInteractionType.None && AlternateCondition.Parse().Evaluate())
+                {
+                    ExecuteInteraction(AltInteraction, AltInteractionTarget, AltInteractionSpecial, data);
+                }
+                else
+                {
+                    ExecuteInteraction(Interaction, InteractionTarget, InteractionSpecial, data);
+                }
             }
-
         }
 
         private void ExecuteInteraction(ActorInteractionType type, string target, ActionSpecial special, ActionInvokerData data)
