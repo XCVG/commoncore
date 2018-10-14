@@ -2154,8 +2154,7 @@ MonoBehaviour:
   PainWaitTime: 1
   DefaultHitPuff: DefaultHitPuff
   Aggressive: 1
-  TargetPlayer: 0
-  TargetNpc: 1
+  Faction: Neutral
   Defensive: 1
   Relentless: 0
   UseLineOfSight: 0
@@ -2192,6 +2191,10 @@ MonoBehaviour:
   AltInteraction: 0
   AltInteractionTarget: 
   AltInteractionSpecial: {fileID: 0}
+  UseDeadAction: 1
+  DeadInteraction: 0
+  DeadInteractionTarget: 
+  DeadInteractionSpecial: {fileID: 0}
   InteractionForceDisabled: 0
   TooltipOverride: The Mechanic
   GrantXpOnDeath: 100

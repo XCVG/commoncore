@@ -72,6 +72,15 @@ namespace CommonCore.World
             player.Clipping = !(player.Clipping);
         }
 
+        [Command]
+        static void Notarget()
+        {
+            if (MetaState.Instance.SessionFlags.Contains("NoTarget"))
+                MetaState.Instance.SessionFlags.Remove("NoTarget");
+            else
+                MetaState.Instance.SessionFlags.Add("NoTarget");
+        }
+
         //***** LOAD/SAVE
 
         //force a full load from file with scene transition

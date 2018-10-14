@@ -1987,8 +1987,7 @@ MonoBehaviour:
   PainWaitTime: 1
   DefaultHitPuff: DefaultHitPuff
   Aggressive: 0
-  TargetPlayer: 0
-  TargetNpc: 0
+  Faction: Neutral
   Defensive: 1
   Relentless: 0
   UseLineOfSight: 0
@@ -2023,6 +2022,10 @@ MonoBehaviour:
   AltInteraction: 0
   AltInteractionTarget: 
   AltInteractionSpecial: {fileID: 0}
+  UseDeadAction: 1
+  DeadInteraction: 0
+  DeadInteractionTarget: 
+  DeadInteractionSpecial: {fileID: 0}
   InteractionForceDisabled: 0
   TooltipOverride: 
   GrantXpOnDeath: 50

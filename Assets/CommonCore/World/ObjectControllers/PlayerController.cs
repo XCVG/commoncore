@@ -275,29 +275,36 @@ namespace CommonCore.World
             int layerMask = LayerMask.GetMask("Default","ActorHitbox");
 
             RaycastHit probeHit;
-            //Debug.DrawRay(CameraRoot.position, CameraRoot.transform.forward);
+            Debug.DrawRay(CameraRoot.position, CameraRoot.transform.forward * MaxProbeDist);
 
-            //TODO: issue is MaxProbeLength and the angle
             //we should actually do RaycastAll, cull based on 2D distance and separate 3D distance, and possibly handle occlusion
 
-            if(Physics.Raycast(CameraRoot.transform.position,CameraRoot.transform.forward,out probeHit,MaxProbeDist,layerMask,QueryTriggerInteraction.Collide))
+            if(Physics.Raycast(CameraRoot.transform.position,CameraRoot.transform.forward,out probeHit,MaxProbeDist * 2,layerMask,QueryTriggerInteraction.Collide))
             {
                 // Debug.Log("Detected: " + probeHit.transform.gameObject.name);
                 GameObject go = probeHit.transform.gameObject;
+                //Debug.Log(go);
                 if(go != null)
                 {
-                    var ic = go.GetComponent<InteractableComponent>();
-                    if(ic != null && ic.enabled)
+                    //handling highly oblique angles
+                    float dist = CCBaseUtil.GetFlatVectorToTarget(transform.position, go.transform.position).magnitude;
+                    
+                    if(dist < MaxProbeDist)
                     {
-                        //Debug.Log("Detected: " + ic.Tooltip);
-                        HUDScript.SetTargetMessage(ic.Tooltip);
-
-                        //actual use
-                        if(MappedInput.GetButtonDown("Use"))
+                        var ic = go.GetComponent<InteractableComponent>();
+                        if (ic != null && ic.enabled)
                         {
-                            ic.OnActivate(this.gameObject);
+                            //Debug.Log("Detected: " + ic.Tooltip);
+                            HUDScript.SetTargetMessage(ic.Tooltip);
+
+                            //actual use
+                            if (MappedInput.GetButtonDown("Use"))
+                            {
+                                ic.OnActivate(this.gameObject);
+                            }
                         }
                     }
+                    
                 }
 
             }
@@ -345,7 +352,7 @@ namespace CommonCore.World
             IsGrounded = false;
             bool didJump = false;
             float deadzone = 0.1f; //this really shouldn't be here
-            float vmul = 10f; //mysterious magic number velocity multiplier
+            float vmul = 7.5f; //mysterious magic number velocity multiplier
             float amul = 5.0f; //air move multiplier
             float lmul = 180f; //mostly logical look multiplier
 
@@ -425,10 +432,10 @@ namespace CommonCore.World
                     {
                         //TODO: this seems to be broken, and I don't know why     
                         IsRunning = true;
-                        moveVector *= 1.5f;
+                        moveVector *= 2.0f;
                         playerState.Energy -= 10.0f * Time.deltaTime;
                     }
-                    else
+                    else if(!MappedInput.GetButton(DefaultControls.Sprint))
                     {
                         //oh, I think what happens is we recover one frame, then sprinting immediately kicks in the next
                         //need to hold button state and/or implement cooldown

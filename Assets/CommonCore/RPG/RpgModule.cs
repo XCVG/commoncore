@@ -13,11 +13,17 @@ namespace CommonCore.Rpg
     {
         public RpgModule()
         {
+            LoadFactionModels();
             LoadCharacterModels();
             LoadInventoryModels();
             LoadQuestModels();
-
+            
             CDebug.Log("RPG module loaded!");
+        }
+
+        private void LoadFactionModels()
+        {
+            FactionModel.Load();
         }
 
         private void LoadCharacterModels()

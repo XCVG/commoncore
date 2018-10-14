@@ -174,6 +174,33 @@ namespace CommonCore
                 );
         }
 
+        public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
+        {
+            return GetOrDefault(dictionary, key, default(TValue));
+        }
+
+        public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue def)
+        {
+            TValue result;
+            if (dictionary.TryGetValue(key, out result))
+                return result;
+
+            return def;
+        }
+
+        public static object Ref(this object obj)
+        {
+            if (obj is UnityEngine.Object)
+                return obj == null ? null : obj;
+            else
+                return obj;
+        }
+
+        public static T Ref<T>(this T obj) where T : UnityEngine.Object
+        {
+            return obj == null ? null : obj;
+        }
+
         public static float CalculateDamage(float Damage, float Pierce, float Threshold, float Resistance) //this is a dumb spot and we will move it later
         {
             float d1 = Damage * ((100f - Mathf.Min(Resistance, 99f)) / 100f);

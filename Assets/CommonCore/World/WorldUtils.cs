@@ -143,7 +143,10 @@ namespace CommonCore.World
 
         public static GameObject FindObjectByTID(string TID)
         {
-            return GameObject.Find("WorldRoot").transform.FindDeepChild(TID).gameObject;
+            var targetTransform = GameObject.Find("WorldRoot").transform.FindDeepChild(TID);
+            if (targetTransform != null)
+                return targetTransform.gameObject;
+            return null;
         }
 
         public static GameObject[] FindObjectsWithFormID(string formID)

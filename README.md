@@ -76,14 +76,14 @@ This list is always in flux. As I implement features, I find there are even more
 **In-Progress Features**
 
 * Player movement (need to add swimming and crouching)
+* Faction system (needs handling for infighting)
 * Combat (has stats and visuals, but many limitations and unhandled edge cases)
-* Action Special game state modification (currently limited)
-* Loading screen (appears but needs animation)
+* Action Special game state modification (currently untested)
+* Loading screen (appears but needs animation and better error handling)
 
 **Planned Features (soon)**
 
 * Time passage and timed events
-* Faction/Reputation system
 * Levelled Lists
 * UI "type on" utility function
 * Map screen
@@ -94,6 +94,7 @@ This list is always in flux. As I implement features, I find there are even more
 
 * Graphics, sound, and other configuration
 * In-game remappable inputs (alternate MappedInput backend?)
+* Extended faction/reputation system
 * improved messaging
 * magic
 * proper stealth

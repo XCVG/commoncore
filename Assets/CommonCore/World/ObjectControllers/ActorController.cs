@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using CommonCore.ObjectActions;
+using CommonCore.Rpg;
 using CommonCore.State;
 using CommonCore.DebugLog;
 using CommonCore.Dialogue;
@@ -55,8 +56,7 @@ namespace CommonCore.World
 
         [Header("Aggression")]
         public bool Aggressive = false;
-        public bool TargetPlayer = false;
-        public bool TargetNpc = false; //TODO factions, but not yet
+        public string Faction = "None";
         public bool Defensive = true;        
         public bool Relentless = false;
         public bool UseLineOfSight = false;
@@ -199,6 +199,7 @@ namespace CommonCore.World
             switch (newState)
             {
                 case ActorAiState.Idle:
+                    Target = null;
                     SetAnimation(ActorAnimState.Idle);
                     AbortNav();
                     break;
@@ -222,6 +223,7 @@ namespace CommonCore.World
                         GameState.Instance.PlayerRpgState.Experience += GrantXpOnDeath;
                     break;
                 case ActorAiState.Wandering:
+                    Target = null;
                     SetAnimation(ActorAnimState.Walking);
                     //set initial destination
                     Vector2 newpos = CCBaseUtil.GetRandomVector(InitialPosition.ToFlatVec(), WanderRadius);
@@ -349,7 +351,13 @@ namespace CommonCore.World
                         break;
                     }
 
-                    if((Time.time - LastAttackTime >= AttackInterval) && (Target.position - transform.position).magnitude <= AttackRange)
+                    if (MetaState.Instance.SessionFlags.Contains("NoTarget") && Target.GetComponent<PlayerController>())
+                    {
+                        EnterState(BaseAiState);
+                        break;
+                    }
+
+                    if ((Time.time - LastAttackTime >= AttackInterval) && (Target.position - transform.position).magnitude <= AttackRange)
                     {
                         EnterState(ActorAiState.Attacking);
                         return;
@@ -538,7 +546,7 @@ namespace CommonCore.World
             //TODO faction system
 
             //check player first since it's (relatively) cheap
-            if(TargetPlayer)
+            if(FactionModel.GetRelation(Faction, "Player") == FactionRelationStatus.Hostile && !MetaState.Instance.SessionFlags.Contains("NoTarget"))
             {
                 var playerObj = WorldUtils.GetPlayerObject();
                 if(playerObj != null && WorldUtils.TargetIsAlive(playerObj.transform))
@@ -570,13 +578,14 @@ namespace CommonCore.World
 
             //stupid and inefficient; we'll fix it later
             //should work well enough as long as n is small and your computer is fast enough
-            if(TargetNpc)
+            //if(TargetNpc)
             {
                 var potentialTargets = transform.root.GetComponentsInChildren<ActorController>();
                 foreach (var potentialTarget in potentialTargets)
                 {
                     if(WorldUtils.TargetIsAlive(potentialTarget.transform) 
                         && (potentialTarget.transform.position - transform.position).magnitude <= SearchRadius
+                        && FactionModel.GetRelation(Faction, potentialTarget.Faction) == FactionRelationStatus.Hostile
                         && !(potentialTarget == this))
                     {
                         if (UseLineOfSight)

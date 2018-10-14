@@ -11932,6 +11932,11 @@ Prefab:
       propertyPath: AltInteractionTarget
       value: DemoVillager
       objectReference: {fileID: 0}
+    - target: {fileID: 114727526427158440, guid: 4507804656f937946ad6907e337f4f22,
+        type: 2}
+      propertyPath: Faction
+      value: None
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 4507804656f937946ad6907e337f4f22, type: 2}
   m_IsPrefabParent: 0

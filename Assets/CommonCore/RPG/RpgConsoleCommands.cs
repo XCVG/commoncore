@@ -84,6 +84,14 @@ namespace CommonCore.Rpg
             player.CheckLevelUp();
         }
 
+        //***** Faction manipulation
+
+        [Command]
+        static void ListFactions()
+        {
+            DevConsole.singleton.Log(FactionModel.GetFactionsList());
+        }
+
         //***** Inventory manipulation
 
         [Command]
