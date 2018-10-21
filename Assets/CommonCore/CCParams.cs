@@ -33,6 +33,7 @@ namespace CommonCore
 
         //*****additional config settings
         public static readonly bool UseVerboseLogging = true;
+        public static readonly float DelayedEventPollInterval = 1.0f;
 
         //*****game config settings
         public static readonly string InitialScene = "World_Ext_TestIsland";

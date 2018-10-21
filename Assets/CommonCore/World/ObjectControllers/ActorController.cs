@@ -57,7 +57,8 @@ namespace CommonCore.World
         [Header("Aggression")]
         public bool Aggressive = false;
         public string Faction = "None";
-        public bool Defensive = true;        
+        public bool Defensive = true;
+        public bool Infighting = false;
         public bool Relentless = false;
         public bool UseLineOfSight = false;
         public float SearchRadius = 25.0f;
@@ -817,18 +818,34 @@ namespace CommonCore.World
 
             bool didTakePain = UnityEngine.Random.Range(0f, 1f) < PainChance;
 
-            if (Defensive && data.Originator != null)
+            if (Defensive && data.Originator != null && data.Originator != this)
             {
-                Target = data.Originator.transform;
-                BeenHit = true;
+                FactionRelationStatus relation = FactionRelationStatus.Neutral;
+                if(data.Originator is PlayerController)
+                {
+                    relation = FactionModel.GetRelation(Faction, "Player");
+                }
+                else if(data.Originator is ActorController)
+                {
+                    relation = FactionModel.GetRelation(Faction, ((ActorController)data.Originator).Faction);
+                }
 
-                if (DisableInteractionOnHit)
-                    InteractionForceDisabled = true;
+                if(relation != FactionRelationStatus.Friendly || Infighting)
+                {
+                    Target = data.Originator.transform;
+                    BeenHit = true;
 
-                if (FeelPain && didTakePain)
-                    EnterState(ActorAiState.Hurting);
+                    if (DisableInteractionOnHit)
+                        InteractionForceDisabled = true;
+
+                    if (FeelPain && didTakePain)
+                        EnterState(ActorAiState.Hurting);
+                    else
+                        EnterState(ActorAiState.Chasing);
+                }
                 else
-                    EnterState(ActorAiState.Chasing);
+                    EnterState(ActorAiState.Hurting);
+
             }
             else if(FeelPain && didTakePain)
                 EnterState(ActorAiState.Hurting);

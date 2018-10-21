@@ -266,5 +266,31 @@ namespace CommonCore.Rpg
         {
             DevConsole.singleton.Log(GameState.Instance.CampaignState.ListAllQuests());
         }
+
+        //***** Event manipulation
+        [Command]
+        static void DisplayTime()
+        {
+            string timeStr = string.Format("Real Time:  {0:F1}s\nGame Time:  {1:F1}s\nWorld Time: {2:F1}d, {3}s\n\nUnity Timescale: {4}\nWorld Timescale: {5}",
+                GameState.Instance.WorldState.RealTimeElapsed,
+                GameState.Instance.WorldState.GameTimeElapsed,
+                GameState.Instance.WorldState.WorldDaysElapsed,
+                GameState.Instance.WorldState.WorldSecondsElapsed,
+                Time.timeScale,
+                GameState.Instance.WorldState.WorldTimeScale);
+            DevConsole.singleton.Log(timeStr);
+        }
+
+        [Command(className = "Events")]
+        static void ListDelayedEvents()
+        {
+            DevConsole.singleton.Log(GameState.Instance.DelayedEvents.ToNiceString());
+        }
+
+        [Command(className = "Events")]
+        static void ClearDelayedEvents()
+        {
+            GameState.Instance.DelayedEvents.Clear();
+        }
     }
 }

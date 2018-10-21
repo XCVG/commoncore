@@ -19,6 +19,8 @@ namespace CommonCore.State
             WorldState = new WorldModel();
             CampaignState = new CampaignModel();
 
+            DelayedEvents = new List<DelayedEvent>();
+
             GlobalDataState = new Dictionary<string, object>();
             LocalDataState = new Dictionary<string, Dictionary<string, object>>();
 
@@ -135,6 +137,8 @@ namespace CommonCore.State
         public WorldModel WorldState;
         public CampaignModel CampaignState;
 
+        public List<DelayedEvent> DelayedEvents;
+
         public Dictionary<string, object> GlobalDataState;
         public Dictionary<string, Dictionary<string, object>> LocalDataState;
 
@@ -152,6 +156,7 @@ namespace CommonCore.State
 
         [JsonProperty]
         private int CurrentUID;
+        [JsonIgnore]
         public int NextUID { get { return ++CurrentUID; } }
 
     }

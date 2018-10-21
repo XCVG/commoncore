@@ -94,11 +94,13 @@ This list is always in flux. As I implement features, I find there are even more
 
 * Graphics, sound, and other configuration
 * In-game remappable inputs (alternate MappedInput backend?)
+* improved messaging (MSDMS)
+* object pooling (POS)
+* Gamestate observer and triggered events
 * Extended faction/reputation system
-* improved messaging
 * magic
 * proper stealth
-
+* Mod support! (eventually)
 
 ## Roadmap
 

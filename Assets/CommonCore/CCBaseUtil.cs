@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using UnityEngine;
 using WanzyeeStudio;
 
@@ -201,6 +202,27 @@ namespace CommonCore
             return obj == null ? null : obj;
         }
 
+        public static string ToNiceString(this IEnumerable collection)
+        {
+            StringBuilder sb = new StringBuilder(256);
+            sb.Append("[");
+
+            IEnumerator enumerator = collection.GetEnumerator();
+            bool eHasNext = enumerator.MoveNext();
+            while(eHasNext)
+            {
+                sb.Append(enumerator.Current.ToString());
+
+                eHasNext = enumerator.MoveNext();
+                if (eHasNext)
+                    sb.Append(", ");
+            }
+            sb.Append("]");
+
+            return sb.ToString();
+        }
+
+        //THIS NEEDS TO MOVE!
         public static float CalculateDamage(float Damage, float Pierce, float Threshold, float Resistance) //this is a dumb spot and we will move it later
         {
             float d1 = Damage * ((100f - Mathf.Min(Resistance, 99f)) / 100f);
