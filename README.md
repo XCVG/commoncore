@@ -1,6 +1,6 @@
 # CommonCore RPG Libraries for Unity
 ### Version Pre1.0
-### For Unity 2017.4+
+### For Unity 2018.2
 
 ## Introduction
 
@@ -107,7 +107,7 @@ This list is always in flux. As I implement features, I find there are even more
 A rough plan is in place for the future of CommonCore.
 
 * 1.x _Arroyo_ : Basic features complete.
-* 2.x _Balmora_ : Retarget to Unity 2018. Separate modules, remove dependencies, general cleanup and documentation.
+* 2.x _Balmora_ : Separate modules, remove dependencies, general cleanup and documentation.
 * 3.x _Citadel_ : UI theming and initial mod support. More?
 * 4.x _Downwarren_ : AI and actor improvements. Improved stealth mechanics? More?
 * 5.x _Endar Spire_ : Mobile and VR support?
