@@ -15,11 +15,11 @@ namespace CommonCore.State
             WorldTimeUseRollover = true;
         }
 
-        public float RealTimeElapsed { get; set; }
-        public float GameTimeElapsed { get; set; }
-        public float WorldDaysElapsed { get; set; }
-        public float WorldSecondsElapsed { get; set; }
-        public float WorldTimeScale { get; set; }
+        public double RealTimeElapsed { get; set; }
+        public double GameTimeElapsed { get; set; }
+        public double WorldDaysElapsed { get; set; }
+        public double WorldSecondsElapsed { get; set; }
+        public double WorldTimeScale { get; set; }
         public bool WorldTimeUseRollover { get; set; }
     }
 }

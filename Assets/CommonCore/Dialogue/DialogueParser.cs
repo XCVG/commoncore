@@ -90,7 +90,7 @@ namespace CommonCore.Dialogue
             if (jt["type"] != null)
                 type = jt["type"].Value<string>();
 
-            //TODO load/parse conditionals and microscripts
+            //load/parse conditionals and microscripts
             ConditionNode[] conditional = null;
             MicroscriptNode[] microscript = null;
 
@@ -328,6 +328,7 @@ namespace CommonCore.Dialogue
 
         public static MicroscriptNode ParseMicroscript(JToken jt)
         {
+            //parse type and target
             MicroscriptType type;
             string target;
             if (jt["flag"] != null)
@@ -370,6 +371,7 @@ namespace CommonCore.Dialogue
                 throw new NotSupportedException();
             }
 
+            //parse action/value
             MicroscriptAction action;
             object value = 0;
             if (jt["set"] != null)
@@ -414,7 +416,37 @@ namespace CommonCore.Dialogue
                 throw new NotSupportedException();
             }
 
-            return new MicroscriptNode(type, target, action, value);
+            //parse delay, if applicable
+            DelayTimeType delayType = DelayTimeType.None;
+            double delayTime = default(double);
+            bool delayAbsolute = false;
+            if (jt["delay"] != null)
+            {
+                delayType = DelayTimeType.Game;
+                delayTime = double.Parse(jt["delay"].Value<string>());
+                if(jt["delayType"] != null)
+                {
+                    string delayTypeString = jt["delayType"].Value<string>();
+                    switch (delayTypeString)
+                    {
+                        case "real":
+                            delayType = DelayTimeType.Real;
+                            break;
+                        case "world":
+                            delayType = DelayTimeType.World;
+                            break;
+                        case "game":
+                            delayType = DelayTimeType.Game;
+                            break;
+                    }
+                }
+                if(jt["delayAbsolute"] != null)
+                {
+                    delayAbsolute = jt["delayAbsolute"].Value<bool>();
+                }
+            }
+
+            return new MicroscriptNode(type, target, action, value, delayType, delayTime, delayAbsolute);
         }
 
         public static KeyValuePair<string, string> ParseLocation(string loc)

@@ -9,52 +9,62 @@ namespace CommonCore.State
 
     public enum DelayTimeType
     {
-        Real, Game, World
+        None, Real, Game, World
     }
 
     public class DelayedEvent
     {
         public readonly MicroscriptNode Event;
         public readonly DelayTimeType DelayType;
-        public readonly float DelayTime;
-        public float StartTime;
+        public double DelayTime;
+        public bool DelayAbsolute;
 
-        public DelayedEvent(MicroscriptNode ev, DelayTimeType delayType, float delayTime)
+        public DelayedEvent(MicroscriptNode ev, DelayTimeType delayType, double delayTime, bool delayAbsolute)
         {
             Event = ev;
             DelayType = delayType;
             DelayTime = delayTime;
+            DelayAbsolute = delayAbsolute;
         }
 
     }
 
-    public class DelayedEventScheduler
+    public static class DelayedEventScheduler
     {
 
         const float SecondsInDay = 24 * 60 * 60;
 
         public static void ScheduleEvent(DelayedEvent ev)
         {
-            //TODO handle start time
-            switch (ev.DelayType)
+            if(!ev.DelayAbsolute) //if not absolute, calculate absolute time
             {
-                case DelayTimeType.Real:
-                    ev.StartTime = GameState.Instance.WorldState.RealTimeElapsed;
-                    break;
-                case DelayTimeType.Game:
-                    ev.StartTime = GameState.Instance.WorldState.GameTimeElapsed;
-                    break;
-                case DelayTimeType.World:
-                    ev.StartTime = GameState.Instance.WorldState.WorldDaysElapsed * SecondsInDay + GameState.Instance.WorldState.WorldSecondsElapsed;
-                    break;
+                switch (ev.DelayType)
+                {
+                    case DelayTimeType.Real:
+                        ev.DelayTime = GameState.Instance.WorldState.RealTimeElapsed + ev.DelayTime;
+                        break;
+                    case DelayTimeType.Game:
+                        ev.DelayTime = GameState.Instance.WorldState.GameTimeElapsed + ev.DelayTime;
+                        break;
+                    case DelayTimeType.World:
+                        ev.DelayTime = GameState.Instance.WorldState.WorldDaysElapsed * SecondsInDay + GameState.Instance.WorldState.WorldSecondsElapsed + ev.DelayTime;
+                        break;
+                }
+
+                ev.DelayAbsolute = true;
             }
 
             GameState.Instance.DelayedEvents.Add(ev);
         }
 
-        public void ScheduleEvent(MicroscriptNode action, DelayTimeType timeType, float delayTime)
+        public static void ScheduleEvent(MicroscriptNode action, DelayTimeType timeType, double delayTime)
         {
-            ScheduleEvent(new DelayedEvent(action, timeType, delayTime));
+            ScheduleEvent(new DelayedEvent(action, timeType, delayTime, false));
+        }
+
+        public static void ScheduleEvent(MicroscriptNode action, DelayTimeType timeType, double delayTime, bool delayAbsolute)
+        {
+            ScheduleEvent(new DelayedEvent(action, timeType, delayTime, delayAbsolute));
         }
 
         public static void ExecuteScheduledEvents()
@@ -68,8 +78,11 @@ namespace CommonCore.State
                 {
                     DelayedEvent delayedEvent = delayedEvents[i];
 
-                    float fireTime = delayedEvent.StartTime + delayedEvent.DelayTime;
-                    float elapsedTime = 0;
+                    if (!delayedEvent.DelayAbsolute)
+                        throw new InvalidOperationException();
+
+                    double fireTime = delayedEvent.DelayTime;
+                    double elapsedTime = 0;
                     switch (delayedEvent.DelayType)
                     {
                         case DelayTimeType.Real:

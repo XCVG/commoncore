@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,10 +10,10 @@ namespace CommonCore.State
     {
         const float SecondsInDay = 24 * 60 * 60;
 
-        private float Elapsed;
+        private double Elapsed;
 
-        private float LastScaledTime;
-        private float LastRealTime;
+        private double LastScaledTime;
+        private double LastRealTime;
 
         private void Awake()
         {
@@ -30,7 +31,7 @@ namespace CommonCore.State
                 
                 //advance gametime and realtime
                 wm.GameTimeElapsed += (Time.time - LastScaledTime);
-                wm.RealTimeElapsed += (Time.realtimeSinceStartup - LastRealTime);
+                wm.RealTimeElapsed = DateTimeOffset.Now.ToUnixTimeSeconds();
 
                 //advance world (scaled) time
                 wm.WorldSecondsElapsed += (Time.time - LastScaledTime) * wm.WorldTimeScale;
