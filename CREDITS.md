@@ -133,6 +133,10 @@ animations from Firefighter VR, but these will be removed/replaced soon
 
 These are included under permissive or copyleft licenses.
 
+James Newton-King - Json.NET
+	https://github.com/JamesNK/Newtonsoft.Json
+	Assets/Plugins/JsonNet
+
 Steve Matteson - Croscore fonts (Arimo, Cousine, Tinos)
 	https://www.apache.org/licenses/LICENSE-2.0
 	Assets/UI/Fonts

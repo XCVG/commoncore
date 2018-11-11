@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
-using WanzyeeStudio;
 
 namespace CommonCore
 {
@@ -46,7 +45,7 @@ namespace CommonCore
         {
             return JsonConvert.DeserializeObject<T>(text, new JsonSerializerSettings
             {
-                Converters = JsonNetUtility.defaultSettings.Converters,
+                Converters = CCJsonConverters.Defaults.Converters,
                 TypeNameHandling = TypeNameHandling.Auto
             });
         }
@@ -61,7 +60,7 @@ namespace CommonCore
         {
             return JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings
             {
-                Converters = JsonNetUtility.defaultSettings.Converters,
+                Converters = CCJsonConverters.Defaults.Converters,
                 TypeNameHandling = TypeNameHandling.Auto
             });
         }

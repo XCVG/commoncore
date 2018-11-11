@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using CommonCore.World;
 using CommonCore.Rpg;
 using UnityEngine;
-using WanzyeeStudio;
 
 namespace CommonCore.State
 { 
@@ -61,7 +60,7 @@ namespace CommonCore.State
                 Formatting.Indented,
                 new JsonSerializerSettings
                 {
-                Converters = JsonNetUtility.defaultSettings.Converters,
+                Converters = CCJsonConverters.Defaults.Converters,
                 TypeNameHandling = TypeNameHandling.Auto
             });
         }
@@ -76,7 +75,7 @@ namespace CommonCore.State
             instance = JsonConvert.DeserializeObject<GameState>(data,
             new JsonSerializerSettings
             {
-                Converters = JsonNetUtility.defaultSettings.Converters,
+                Converters = CCJsonConverters.Defaults.Converters,
                 TypeNameHandling = TypeNameHandling.Auto
             });
         }
@@ -92,7 +91,7 @@ namespace CommonCore.State
                 instance.PlayerRpgState = new CharacterModel();
                 JsonConvert.PopulateObject(CCBaseUtil.LoadResource<TextAsset>("RPGDefs/init_player").text, instance.PlayerRpgState, new JsonSerializerSettings
                 {
-                    Converters = JsonNetUtility.defaultSettings.Converters,
+                    Converters = CCJsonConverters.Defaults.Converters,
                     TypeNameHandling = TypeNameHandling.Auto,
                     NullValueHandling = NullValueHandling.Ignore
                 });
