@@ -331,6 +331,9 @@ namespace CommonCore.Dialogue
             //parse type and target
             MicroscriptType type;
             string target;
+            MicroscriptAction action;
+            object value = 0;
+
             if (jt["flag"] != null)
             {
                 type = MicroscriptType.Flag;
@@ -365,15 +368,17 @@ namespace CommonCore.Dialogue
             {
                 type = MicroscriptType.Exec;
                 target = jt["exec"].Value<string>();
+                if(jt["arg"] != null)
+                {
+                    value = CCBaseUtil.StringToNumericAuto(jt["arg"].Value<string>());
+                }
             }
             else
             {
                 throw new NotSupportedException();
             }
 
-            //parse action/value
-            MicroscriptAction action;
-            object value = 0;
+            //parse action/value            
             if (jt["set"] != null)
             {
                 action = MicroscriptAction.Set;

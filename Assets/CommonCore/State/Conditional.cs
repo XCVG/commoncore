@@ -264,7 +264,7 @@ namespace CommonCore.State
                     }
                     break;
                 case MicroscriptType.Exec:
-                    Scripting.ScriptingModule.Call(Target, new Scripting.ScriptExecutionContext() { Caller = this });
+                    Scripting.ScriptingModule.Call(Target, new Scripting.ScriptExecutionContext() { Caller = this }, Value);
                     break;
                 default:
                     throw new NotSupportedException();
