@@ -40,6 +40,8 @@ namespace CommonCore.World
             }
 
             var pc = collision.gameObject.GetComponent<PlayerController>();
+            if (pc == null)
+                pc = collision.gameObject.GetComponentInParent<PlayerController>();
             if(pc != null)
             {
                 if (pc == HitInfo.Originator)

@@ -14,9 +14,15 @@ CommonCore handles or will handle standard RPG mechanics, game state with saving
 * Elegance and ease of use take precedence over performance. If it speeds the game up but requires the user of the library to do mental backflips, it's not going in.
 * Provide flexibility and transparency to the developer using the library and to the player of the game. No black boxes, and allow multiple approaches when it makes sense to do so.
 * Build more than just enough, but not too much. Strike a balance between targeting specific cases and building more general systems. This is hard!
-* Fault tolerance! Handle errors gracefully, attempt to correct common mistakes, and continue execution until no meaningful execution is possible.
+* Build a complete package that provides core functionality without dependencies on other assets (FOSS inclusions are okay). But also provide modularity, extensibility, and optional integrations to go past what's built here.
+* Fault tolerance! Handle errors gracefully, attempt to correct common mistakes, and continue execution until no meaningful execution is possible. At the same time, we should also make it clear that errors are occurring rather than swallowing them entirely.
 * Game data should be human-readable, which allows easier debugging and manual modification if necessary. JSON was used in most cases.
-* Modularity and reusability are key (but see below).
+
+## Platform Support
+
+CommonCore supports Unity 2018.2 and (probably) later. The plan is to continue to target the latest stable version of 2018.x for the forseeable future. Unity 2017.x is no longer supported, and Unity 2019.x is very much a "we'll see" affair.
+
+CommonCore supports standalone platforms using Mono and the .NET 4.x scripting runtime. When Balmora rolls around, the plan is to get the basic core working on mobile and WebGL (IL2CPP) platforms, but not the full feature set (at least, not yet).
 
 ## Modules
 
@@ -72,6 +78,7 @@ This list is always in flux. As I implement features, I find there are even more
 * Save folder creation and fail handling
 * Shop/container system (same base logic)
 * Basic config options
+* Time passage and timed events
 
 **In-Progress Features**
 
@@ -83,8 +90,6 @@ This list is always in flux. As I implement features, I find there are even more
 
 **Planned Features (soon)**
 
-* Time passage and timed events
-* Levelled Lists
 * UI "type on" utility function
 * Map screen
 * Help screen
@@ -92,14 +97,18 @@ This list is always in flux. As I implement features, I find there are even more
 
 **Planned Features (later)**
 
+* Levelled Lists
 * Graphics, sound, and other configuration
 * In-game remappable inputs (alternate MappedInput backend?)
+* unified UI panels
+* custom dev console
 * improved messaging (MSDMS)
 * object pooling (POS)
 * Gamestate observer and triggered events
 * Extended faction/reputation system
 * magic
 * proper stealth
+* UI theming 
 * Mod support! (eventually)
 
 ## Roadmap
@@ -107,10 +116,10 @@ This list is always in flux. As I implement features, I find there are even more
 A rough plan is in place for the future of CommonCore.
 
 * 1.x _Arroyo_ : Basic features complete.
-* 2.x _Balmora_ : Separate modules, remove dependencies, general cleanup and documentation.
-* 3.x _Citadel_ : UI theming and initial mod support. More?
-* 4.x _Downwarren_ : AI and actor improvements. Improved stealth mechanics? More?
-* 5.x _Endar Spire_ : Mobile and VR support?
+* 2.x _Balmora_ : Separate modules, remove dependencies, quality-of-life, general cleanup and documentation.
+* 3.x _Citadel_ : UI theming and initial mod support (data overrides, script hooks).
+* 4.x _Downwarren_ : Further mod support. Performance and QoL features. Mechanics improvments?
+* 5.x _Endar Spire_ : Vehicles? Even more mod support? Proper AOT support?
 * 6.x and beyond : Keep iterating, improving and adding features as I think of them.
 
 There is no formal timeline. Ultimately, this is a hobby project for me, and is subject to the vagaries of real life. With that being said, I hope to have Arroyo finished by the end of 2018.

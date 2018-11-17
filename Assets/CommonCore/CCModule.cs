@@ -13,6 +13,7 @@ namespace CommonCore
         public virtual void OnApplicationQuit() { }
         public virtual void OnGameStart() { }
         public virtual void OnSceneLoaded() { }
+        public virtual void OnFrameUpdate() { }
         public virtual void OnSceneUnloaded() { }
         public virtual void OnGameEnd() { }
     }

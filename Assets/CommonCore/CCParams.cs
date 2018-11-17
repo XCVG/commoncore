@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ namespace CommonCore
     {
 
         //*****system version info
-        public static readonly SemanticVersion VersionCode = new SemanticVersion(1,0,0); //1.0.0
+        public static readonly Version VersionCode = new Version(1,0,0); //1.0.0
         public static readonly string VersionName = "Arroyo"; //start with A, locations from RPGs
         public static string UnityVersion
         {
@@ -23,7 +24,7 @@ namespace CommonCore
         }
 
         //*****game version info
-        public static readonly SemanticVersion GameVersion = new SemanticVersion(0,0,0);
+        public static readonly Version GameVersion = new Version(0,0,0);
         public static readonly string GameVersionName = "Mechanics Preview 1";
 
         //*****basic config settings

@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -29,7 +30,8 @@ namespace CommonCore
 
             Debug.Log("Initializing CommonCore...");
 
-            HookApplicationQuit();
+            HookMonobehaviourEvents();
+            HookQuitEvent();
             HookSceneEvents();
             CreateFolders();
 
@@ -38,11 +40,29 @@ namespace CommonCore
             if (CCParams.AutoloadModules)
             {
                 InitializeEarlyModules();
+                PrintSystemData(); //we wait until the console is loaded so we can see it in the console
                 InitializeModules();
             }
 
             Initialized = true;
             Debug.Log("...done!");
+        }
+
+        private static void PrintSystemData()
+        {
+            //this is not efficient, but it's a hell of a lot more readable than a gigantic string.format
+            StringBuilder sb = new StringBuilder(1024);
+
+            sb.AppendLine("----------------------------------------");
+            sb.AppendFormat("{1} v{3} {4} by {0} (appversion: {2})\n", Application.companyName, Application.productName, Application.version, CCParams.GameVersion, CCParams.GameVersionName);
+            sb.AppendFormat("CommonCore {0} {1}\n", CCParams.VersionCode.ToString(), CCParams.VersionName);
+            sb.AppendFormat("Unity {0} [{3} | {1} on {2}]\n", Application.unityVersion, Application.platform, SystemInfo.operatingSystem, SystemInfo.graphicsDeviceType);
+            sb.AppendLine("persistentDataPath: " + Application.persistentDataPath);
+            sb.AppendLine("dataPath: " + Application.dataPath);
+            sb.AppendLine(Environment.CommandLine);
+            sb.AppendLine("----------------------------------------");
+
+            Debug.Log(sb.ToString());
         }
 
         private static void InitializeEarlyModules()
@@ -163,14 +183,33 @@ namespace CommonCore
             Debug.Log("CommonCore: ...done!");
         }
 
-        private static void HookApplicationQuit()
+        private static void HookMonobehaviourEvents()
         {
-            //hook application unload (a bit hacky)
             GameObject hookObject = new GameObject();
-            CCExitHook hookScript = hookObject.AddComponent<CCExitHook>();
-            hookScript.OnApplicationQuitDelegate = new LifecycleEventDelegate(OnApplicationQuit);
+            CCMonoBehaviourHook hookScript = hookObject.AddComponent<CCMonoBehaviourHook>();
+            hookScript.OnUpdateDelegate = new LifecycleEventDelegate(OnFrameUpdate);
 
-            Debug.Log("Hooked application quit!");
+            Debug.Log("Hooked MonoBehaviour events!");
+        }
+
+        internal static void OnFrameUpdate()
+        {
+            foreach (CCModule m in Modules)
+            {
+                try
+                {
+                    m.OnFrameUpdate();
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e);
+                }
+            }
+        }
+
+        private static void HookQuitEvent()
+        {
+            Application.quitting += OnApplicationQuit;
         }
 
         internal static void OnApplicationQuit()

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace CommonCore
 {
@@ -7,6 +8,7 @@ namespace CommonCore
      * Just your basic Semantic Version struct
      * (immutable, just the way we like it, though that matters less for structs)
      */
+     [Obsolete] //use native Version instead
     public struct SemanticVersion
     {
         public readonly int Major;

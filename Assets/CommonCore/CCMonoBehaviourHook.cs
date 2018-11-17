@@ -9,19 +9,20 @@ namespace CommonCore
      * A slightly hacky way of hooking the ApplicationExit event which is only available to MonoBehaviour
      * We may rename and extend this later to hook other Monobehaviour-only events as well
      */
-    internal class CCExitHook : MonoBehaviour
+    internal class CCMonoBehaviourHook : MonoBehaviour
     { 
-        public LifecycleEventDelegate OnApplicationQuitDelegate;
+        public LifecycleEventDelegate OnUpdateDelegate;
 
         private void Awake()
         {
             DontDestroyOnLoad(this.gameObject);
         }
 
-        private void OnApplicationQuit()
+        private void Update()
         {
-            OnApplicationQuitDelegate();
+            OnUpdateDelegate();
         }
+
     }
 
     //the actual delegate signature
