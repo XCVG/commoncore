@@ -274,40 +274,81 @@ namespace CommonCore.World
 
             int layerMask = LayerMask.GetMask("Default","ActorHitbox");
 
-            RaycastHit probeHit;
             Debug.DrawRay(CameraRoot.position, CameraRoot.transform.forward * MaxProbeDist);
 
             //we should actually do RaycastAll, cull based on 2D distance and separate 3D distance, and possibly handle occlusion
 
-            if(Physics.Raycast(CameraRoot.transform.position,CameraRoot.transform.forward,out probeHit,MaxProbeDist * 2,layerMask,QueryTriggerInteraction.Collide))
+            //raycast all, go through the hits ignoring hits to self
+            RaycastHit[] hits = Physics.RaycastAll(CameraRoot.transform.position, CameraRoot.transform.forward, MaxProbeDist * 2, layerMask, QueryTriggerInteraction.Collide);            
+            if(hits != null && hits.Length > 0)
             {
-                // Debug.Log("Detected: " + probeHit.transform.gameObject.name);
-                GameObject go = probeHit.transform.gameObject;
-                //Debug.Log(go);
-                if(go != null)
+                //GameObject nearestObject = null;
+                InteractableComponent nearestInteractable = null;
+                float nearestDist = float.MaxValue;
+                foreach(RaycastHit hit in hits)
                 {
-                    //handling highly oblique angles
-                    float dist = CCBaseUtil.GetFlatVectorToTarget(transform.position, go.transform.position).magnitude;
-                    
-                    if(dist < MaxProbeDist)
-                    {
-                        var ic = go.GetComponent<InteractableComponent>();
-                        if (ic != null && ic.enabled)
-                        {
-                            //Debug.Log("Detected: " + ic.Tooltip);
-                            HUDScript.SetTargetMessage(ic.Tooltip);
+                    //skip if it's further than nearestDist (occluded) or flatdist is further than MaxProbeDist (too far away)
+                    if (hit.distance > nearestDist)
+                        continue;
 
-                            //actual use
-                            if (MappedInput.GetButtonDown("Use"))
-                            {
-                                ic.OnActivate(this.gameObject);
-                            }
-                        }
+                    float fDist = CCBaseUtil.GetFlatVectorToTarget(transform.position, hit.point).magnitude;
+                    if (fDist > MaxProbeDist)
+                        continue;
+
+                    //nearestObject = hit.collider.gameObject;
+
+                    //if there's a PlayerController attached, we've hit ourselves
+                    if (hit.collider.GetComponent<PlayerController>() != null)
+                        continue;
+
+                    //TODO pull a similar trick to see if we're pointing at an Actor?
+
+                    //get the interactable component and hitbox component; if it doesn't have either then it's an obstacle
+                    InteractableComponent ic = hit.collider.GetComponent<InteractableComponent>();
+                    ActorHitboxComponent ahc = hit.collider.GetComponent<ActorHitboxComponent>();
+                    if (ic == null && ahc == null)
+                    {
+                        //we null out our hit first since it's occluded by this one                        
+                        nearestInteractable = null;
+                        nearestDist = hit.distance;
+                        continue;
                     }
+
+                    //it's just us lol
+                    if (ahc != null && ahc.ParentController is PlayerController)
+                        continue;                    
                     
+                    //we have an interactablecomponent and we're not occluded
+                    if(ic != null)
+                    {
+                        nearestInteractable = ic;
+                        nearestDist = hit.distance;
+                        continue;
+                    }
+
+                    //if it doesn't meet any of those criteria then it's an occluder
+                    nearestInteractable = null;
+                    nearestDist = hit.distance;
+
                 }
 
+                //if(nearestObject != null)
+                //    Debug.Log("Nearest: " + nearestObject.name);
+
+                if (nearestInteractable != null && nearestInteractable.enabled)
+                {
+                    //Debug.Log("Detected: " + ic.Tooltip);
+                    
+                    HUDScript.SetTargetMessage(nearestInteractable.Tooltip);
+
+                    //actual use
+                    if (MappedInput.GetButtonDown("Use"))
+                    {
+                        nearestInteractable.OnActivate(this.gameObject);
+                    }
+                }
             }
+
         }
 
         private void SetModelVisibility(bool visible)
