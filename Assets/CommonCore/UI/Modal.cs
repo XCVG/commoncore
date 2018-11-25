@@ -17,7 +17,7 @@ namespace CommonCore.UI
     public delegate void QuantityModalCallback(ModalStatusCode status, string tag, int quantity);
     public delegate void ConfirmModalCallback(ModalStatusCode status, string tag, bool result);
 
-    public static class Modal //TODO modals should take out control locks once that's implemented
+    public static class Modal //TODO modals should take out control locks
     {
         private const string MessageModalPrefab = "UI/Modal_Message";
         private const string QuantityModalPrefab = "UI/Modal_Quantity";
@@ -25,20 +25,48 @@ namespace CommonCore.UI
 
         public static void PushMessageModal(string text, string heading, string tag, MessageModalCallback callback)
         {
-            var go = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(MessageModalPrefab), CCBaseUtil.GetWorldRoot());
+            PushMessageModal(text, heading, tag, callback, false);
+        }
+
+        public static void PushMessageModal(string text, string heading, string tag, MessageModalCallback callback, bool ephemeral)
+        {
+            var go = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(MessageModalPrefab), ephemeral ? GetEphemeralOrUIRoot() : CCBaseUtil.GetUIRoot());
             go.GetComponent<MessageModalController>().SetInitial(heading, text, null, tag, callback);
         }
 
         public static void PushQuantityModal(string heading, int min, int max, int initial, bool allowCancel, string tag, QuantityModalCallback callback)
         {
-            var go = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(QuantityModalPrefab), CCBaseUtil.GetWorldRoot());
+            PushQuantityModal(heading, min, max, initial, allowCancel, tag, callback, false);
+        }
+
+        public static void PushQuantityModal(string heading, int min, int max, int initial, bool allowCancel, string tag, QuantityModalCallback callback, bool ephemeral)
+        {
+            var go = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(QuantityModalPrefab), ephemeral ? GetEphemeralOrUIRoot() : CCBaseUtil.GetUIRoot());
             go.GetComponent<QuantityModalController>().SetInitial(heading, min, max, initial, allowCancel, tag, callback);
         }
 
         public static void PushConfirmModal(string text, string heading, string yesText, string noText, string tag, ConfirmModalCallback callback)
         {
-            var go = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(ConfirmModalPrefab), CCBaseUtil.GetWorldRoot());
+            PushConfirmModal(text, heading, yesText, noText, tag, callback, false);
+        }
+
+        public static void PushConfirmModal(string text, string heading, string yesText, string noText, string tag, ConfirmModalCallback callback, bool ephemeral)
+        {
+            var go = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(ConfirmModalPrefab), ephemeral ? GetEphemeralOrUIRoot() : CCBaseUtil.GetUIRoot());
             go.GetComponent<ConfirmModalController>().SetInitial(heading, text, yesText, noText, tag, callback);
+        }
+
+        private static Transform GetEphemeralOrUIRoot()
+        {
+            IngameMenuController imc = IngameMenuController.Current;
+            if(imc != null)
+            {
+                GameObject erObj = imc.EphemeralRoot;
+                if (erObj != null)
+                    return erObj.transform;
+            }
+
+            return CCBaseUtil.GetUIRoot();
         }
 
     }

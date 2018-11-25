@@ -92,6 +92,20 @@ namespace CommonCore.Rpg
             DevConsole.singleton.Log(FactionModel.GetFactionsList());
         }
 
+        //***** MapMarker manipulation
+
+        [Command]
+        static void ListMapMarkers()
+        {
+            DevConsole.singleton.Log(GameState.Instance.MapMarkers.ToNiceString());
+        }
+
+        [Command]
+        static void SetMapMarker(string marker, string markerState)
+        {
+            GameState.Instance.MapMarkers[marker] = (MapMarkerState)Enum.Parse(typeof(MapMarkerState), markerState);
+        }
+
         //***** Inventory manipulation
 
         [Command]

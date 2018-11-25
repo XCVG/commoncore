@@ -15,6 +15,7 @@ namespace CommonCore
     public static class CCBaseUtil
     {
         //this seems absolutely pointless but will make sense when eXPostFacto (mod support) is added
+        //basically we'll have redirection tables and will be able to handle overrides and load from virtual paths that don't really exist
         public static T LoadResource<T>(string path) where T: UnityEngine.Object
         {
             return Resources.Load<T>(path);
@@ -148,6 +149,20 @@ namespace CommonCore
                 WorldRoot = rootGo.transform;
             }
             return WorldRoot;
+        }
+
+        public static Transform GetUIRoot()
+        {
+            //not implemented yet, but the interface exists
+            return GetWorldRoot();
+        }
+
+        public static void DestroyAllChildren(Transform root)
+        {
+            foreach(Transform t in root)
+            {
+                GameObject.Destroy(t.gameObject);
+            }
         }
 
         public static Vector2 ToFlatVec(this Vector3 vec3)

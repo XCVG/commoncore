@@ -27,6 +27,7 @@ namespace CommonCore.State
             MotileObjectState = new Dictionary<string, RestorableData>();
 
             ContainerState = new Dictionary<string, ContainerModel>();
+            MapMarkers = new Dictionary<string, MapMarkerState>();
 
             PlayerRpgState = new CharacterModel();
         }
@@ -145,6 +146,7 @@ namespace CommonCore.State
         public Dictionary<string, RestorableData> MotileObjectState;
 
         public Dictionary<string, ContainerModel> ContainerState;
+        public Dictionary<string, MapMarkerState> MapMarkers;
 
         public RestorableData PlayerWorldState;
         public CharacterModel PlayerRpgState;

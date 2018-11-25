@@ -64,6 +64,7 @@ namespace CommonCore.World
 
         private static GameObject PlayerObject;
 
+        //TODO split into Get and TryGet
         public static GameObject GetPlayerObject()
         {
             if (PlayerObject != null)
@@ -100,6 +101,7 @@ namespace CommonCore.World
             return null;
         }
 
+        //TODO split into Get and TryGet
         public static PlayerController GetPlayerController()
         {
             PlayerController pc = GetPlayerObject().GetComponent<PlayerController>();
@@ -114,10 +116,10 @@ namespace CommonCore.World
             }
         }
 
-        public static BaseSceneController GetSceneController()
+        public static BaseSceneController TryGetSceneController()
         {
             GameObject go = GameObject.FindGameObjectWithTag("GameController");
-            if(go != null)
+            if (go != null)
             {
                 BaseSceneController bsc = go.GetComponent<BaseSceneController>();
 
@@ -134,6 +136,16 @@ namespace CommonCore.World
                 if (bsc != null)
                     return bsc;
             }
+
+            return null;
+        }
+
+        public static BaseSceneController GetSceneController()
+        {
+            BaseSceneController bsc = TryGetSceneController();
+
+            if (bsc != null)
+                return bsc;
 
             //still couldn't find it, throw an error
             Debug.LogError("Couldn't find SceneController");

@@ -7,7 +7,7 @@ namespace CommonCore
 
     public abstract class CCModule
     {
-        //kinda-RAII: constructor=onapplicationstart
+        //constructor=onapplicationstart
 
         //other lifecycle events
         public virtual void OnApplicationQuit() { }
