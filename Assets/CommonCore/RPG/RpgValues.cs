@@ -10,8 +10,6 @@ namespace CommonCore.Rpg
      */
     public static class RpgValues
     {
-        public const bool UseCustomLevelling = true; //TODO hook this up for generic levelling dialog
-
         public static int XPToNext(int level)
         {
             return level * 10 + 100; //for now
@@ -69,6 +67,15 @@ namespace CommonCore.Rpg
                 + (0.5f * character.DerivedStats.Stats[(int)StatType.Resilience])
                 + (0.25f * character.DerivedStats.Stats[(int)StatType.Dexterity])
                 );
+        }       
+
+        public static float MaxEnergy(CharacterModel characterModel)
+        {
+            return Mathf.FloorToInt(100 
+                + characterModel.DerivedStats.Stats[(int)StatType.Dexterity] * 5.0f
+                + characterModel.DerivedStats.Stats[(int)StatType.Resilience] * 2.0f
+                + characterModel.DerivedStats.Skills[(int)SkillType.Athletics] * 5.0f
+                + characterModel.DerivedStats.Skills[(int)SkillType.AthleticsFleet] * 2.0f);
         }
 
         public static int AdjustedBuyPrice(CharacterModel character, float value)
@@ -83,15 +90,6 @@ namespace CommonCore.Rpg
             return Mathf.CeilToInt(Mathf.Max(value, adjValue));
         }
 
-        public static float MaxEnergy(CharacterModel characterModel)
-        {
-            return Mathf.FloorToInt(100 
-                + characterModel.DerivedStats.Stats[(int)StatType.Dexterity] * 5.0f
-                + characterModel.DerivedStats.Stats[(int)StatType.Resilience] * 2.0f
-                + characterModel.DerivedStats.Skills[(int)SkillType.Athletics] * 5.0f
-                + characterModel.DerivedStats.Skills[(int)SkillType.AthleticsFleet] * 2.0f);
-        }
-
         public static int AdjustedSellPrice(CharacterModel character, float value)
         {
             float halfValue = value * 0.5f;
@@ -104,6 +102,14 @@ namespace CommonCore.Rpg
                 + (character.DerivedStats.Stats[(int)StatType.Subterfuge] / 1000 * halfValue);
 
             return Mathf.FloorToInt(Mathf.Min(adjValue, value));
+        }
+
+        public static void SkillsFromStats(StatsSet baseStats, StatsSet derivedStats)
+        {
+            //derive skill values from base stats if you want to; you should never modify baseStats, and ADD to the skills on derivedStats
+
+            //basically for testing; I had no plans to implement this in Ascension III
+            //derivedStats.Skills[(int)SkillType.Melee] += derivedStats.Stats[(int)StatType.Resilience] * 100;
         }
     }
 }

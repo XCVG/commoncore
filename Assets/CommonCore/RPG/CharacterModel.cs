@@ -70,7 +70,7 @@ namespace CommonCore.Rpg
             Equipped = new Dictionary<EquipSlot, InventoryItemInstance>();
 
             //create blank stats and derive stats
-            BaseStats = new StatsSet(); //TODO load defaults
+            BaseStats = new StatsSet();
             UpdateStats();
         }
 
@@ -104,6 +104,10 @@ namespace CommonCore.Rpg
                     Debug.LogWarning("Player has non-armor item in armor slot!");
                 }
             }
+
+            //apply derived skills
+            if(CCParams.UseDerivedSkills)
+                RpgValues.SkillsFromStats(BaseStats, DerivedStats);
 
             //recalculate max health and energy
             DerivedStats.MaxHealth = RpgValues.MaxHealthForLevel(Level);

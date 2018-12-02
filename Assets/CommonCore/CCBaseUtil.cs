@@ -206,7 +206,7 @@ namespace CommonCore
         public static object Ref(this object obj)
         {
             if (obj is UnityEngine.Object)
-                return obj == null ? null : obj;
+                return (UnityEngine.Object)obj == null ? null : obj;
             else
                 return obj;
         }

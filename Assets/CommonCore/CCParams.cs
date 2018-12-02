@@ -24,6 +24,7 @@ namespace CommonCore
         }
 
         //*****game version info
+        [Obsolete("Use Unity Application version instead")]
         public static readonly Version GameVersion = new Version(0,0,0);
         public static readonly string GameVersionName = "Mechanics Preview 1";
 
@@ -40,6 +41,7 @@ namespace CommonCore
         //*****game config settings
         public static readonly string InitialScene = "World_Ext_TestIsland";
         public static readonly bool UseCustomLeveling = true;
+        public static readonly bool UseDerivedSkills = true;
         public static readonly PlayerViewType DefaultPlayerView = PlayerViewType.PreferFirst;
         public static readonly bool UseRandomDamage = true;
         public static readonly bool AutoQuestNotifications = true;
