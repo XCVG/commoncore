@@ -111,5 +111,19 @@ namespace CommonCore.Rpg
             //basically for testing; I had no plans to implement this in Ascension III
             //derivedStats.Skills[(int)SkillType.Melee] += derivedStats.Stats[(int)StatType.Resilience] * 100;
         }
+
+        public static float DetectionChance(CharacterModel character, bool isSneaking, bool isRunning)
+        {
+
+            float r1 = character.DerivedStats.Skills[(int)SkillType.AthleticsFurtive];
+            float r2 = character.DerivedStats.Skills[(int)SkillType.Athletics] * 0.25f;
+            float r3 = character.DerivedStats.Skills[(int)StatType.Dexterity] * 2f;
+            float rawChance = (100f - (r1 + r2 + r3)) / 100f;
+
+            rawChance *= isSneaking ? 0.5f : 1.0f;
+            rawChance *= isRunning ? 1.5f : 1.0f;
+
+            return Mathf.Clamp(rawChance, 0.05f, 0.95f);
+        }
     }
 }

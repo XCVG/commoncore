@@ -42,6 +42,7 @@ namespace CommonCore.World
         [Header("Damage")]
         public float Health = 1.0f;
         public float MaxHealth { get; private set; }
+        public bool Invincible = false;
         public bool DieImmediately = false;
         public bool DestroyOnDeath = false;
         [Tooltip("Normal, Impact, Explosive, Energy, Poison, Radiation")]
@@ -57,6 +58,7 @@ namespace CommonCore.World
         [Header("Aggression")]
         public bool Aggressive = false;
         public string Faction = "None";
+        public float Detectability = 1.0f;
         public bool Defensive = true;
         public bool Infighting = false;
         public bool Relentless = false;
@@ -69,6 +71,7 @@ namespace CommonCore.World
         [Header("Attack")]
         public bool UseMelee = true;
         public float AttackRange = 1.0f;
+        public float AttackStateWarmup = 0;
         public float AttackStateDelay = 1.0f;
         public float AttackInterval = 1.0f;
         public float AttackSpread = 0.25f;
@@ -80,6 +83,7 @@ namespace CommonCore.World
         public string AttackAnimationOverride;
 
         private float LastAttackTime = -1;
+        private bool DidAttack;
 
         [Header("Interaction")]
         public ActorInteractionType Interaction;
@@ -258,8 +262,11 @@ namespace CommonCore.World
                     //set animation, fire projectile, set timer
                     SetAnimation(UseMelee ? ActorAnimState.Punching : ActorAnimState.Shooting);
                     transform.forward = CCBaseUtil.GetFlatVectorToTarget(transform.position, Target.position); //ugly but workable
-                    DoAttack(); //waaaaay too complicated to cram here
-                    LastAttackTime = Time.time;
+                    if(AttackStateWarmup <= 0)
+                    {
+                        DoAttack(); //waaaaay too complicated to cram here
+                        LastAttackTime = Time.time;
+                    }                    
                     break;
                 case ActorAiState.Covering:
                     break;
@@ -391,7 +398,12 @@ namespace CommonCore.World
                     break;
                 case ActorAiState.Attacking:
                     //wait...
-                    if (TimeInState >= AttackStateDelay)
+                    if (!DidAttack && AttackStateWarmup > 0 && TimeInState >= AttackStateWarmup)
+                    {
+                        DoAttack(); //waaaaay too complicated to cram here
+                        LastAttackTime = Time.time;                        
+                    }
+                    if (TimeInState >= AttackStateDelay + AttackStateWarmup)
                     {
                         //just return
                         if (!WorldUtils.TargetIsAlive(Target))
@@ -450,6 +462,7 @@ namespace CommonCore.World
                     AbortNav();
                     break;
                 case ActorAiState.Attacking:
+                    DidAttack = false;
                     break;
                 case ActorAiState.Covering:
                     break;
@@ -537,6 +550,8 @@ namespace CommonCore.World
             {
                 Instantiate(AttackEffectPrefab, shootPos, Quaternion.identity, (ShootPoint == null ? transform : ShootPoint));
             }
+
+            DidAttack = true;
         }
 
         private void SelectTarget()
@@ -544,15 +559,14 @@ namespace CommonCore.World
             if (TotalTickCount % SearchInterval != 0)
                 return;
 
-            //TODO faction system
-
             //check player first since it's (relatively) cheap
             if(FactionModel.GetRelation(Faction, "Player") == FactionRelationStatus.Hostile && !MetaState.Instance.SessionFlags.Contains("NoTarget"))
             {
                 var playerObj = WorldUtils.GetPlayerObject();
                 if(playerObj != null && WorldUtils.TargetIsAlive(playerObj.transform))
                 {
-                    if((playerObj.transform.position - transform.position).magnitude <= SearchRadius)
+                    if((playerObj.transform.position - transform.position).magnitude <= SearchRadius
+                        && UnityEngine.Random.Range(0f, 1f) <= RpgValues.DetectionChance(GameState.Instance.PlayerRpgState, false, false)) //TODO handle player sprint/sneak
                     {
                         if(UseLineOfSight)
                         {
@@ -589,6 +603,10 @@ namespace CommonCore.World
                         && FactionModel.GetRelation(Faction, potentialTarget.Faction) == FactionRelationStatus.Hostile
                         && !(potentialTarget == this))
                     {
+                        //roll some dice
+                        if (potentialTarget.Detectability < 1 && UnityEngine.Random.Range(0f, 1f) > potentialTarget.Detectability)
+                            continue;
+
                         if (UseLineOfSight)
                         {
                             //additional check
@@ -800,7 +818,8 @@ namespace CommonCore.World
             else if (data.HitLocation == ActorBodyPart.LeftArm || data.HitLocation == ActorBodyPart.LeftLeg || data.HitLocation == ActorBodyPart.RightArm || data.HitLocation == ActorBodyPart.RightLeg)
                 damageTaken *= 0.75f;
 
-            Health -= damageTaken;
+            if(!Invincible)
+                Health -= damageTaken;
 
             if(!string.IsNullOrEmpty(data.HitPuff))
             {
