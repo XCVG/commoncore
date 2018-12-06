@@ -28,6 +28,7 @@ namespace CommonCore.State
 
             ContainerState = new Dictionary<string, ContainerModel>();
             MapMarkers = new Dictionary<string, MapMarkerState>();
+            LibraryUnlocks = new HashSet<string>();
 
             PlayerRpgState = new CharacterModel();
         }
@@ -147,6 +148,7 @@ namespace CommonCore.State
 
         public Dictionary<string, ContainerModel> ContainerState;
         public Dictionary<string, MapMarkerState> MapMarkers;
+        public HashSet<string> LibraryUnlocks;
 
         public RestorableData PlayerWorldState;
         public CharacterModel PlayerRpgState;
