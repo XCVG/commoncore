@@ -16,6 +16,7 @@ namespace CommonCore.Input
         public const string LookY = "LookY";
         public const string Jump = "Jump";
         public const string Sprint = "Run";
+        public const string Crouch = "Crouch";
 
         public const string Fire = "Fire1";
         public const string Use = "Use";

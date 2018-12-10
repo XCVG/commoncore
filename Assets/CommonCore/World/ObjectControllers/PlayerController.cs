@@ -19,6 +19,13 @@ namespace CommonCore.World
     {
         public bool AutoinitHud = true;
 
+        [Header("Appearance")]
+        public bool UseCrouchHack;
+
+        [Header("Movement")]
+        public float CrouchYScale = 0.66f;
+        public float CrouchMoveScale = 0.5f;
+
         [Header("Interactivity")]
         public bool PlayerInControl;
         public bool Clipping;
@@ -36,6 +43,7 @@ namespace CommonCore.World
         public Animator AnimController;
         public Transform CameraRoot;
         public GameObject ModelRoot;
+        public CapsuleCollider Hitbox;
         public Transform TargetPoint;
         public Transform LeftViewModelPoint;
         public Transform RightViewModelPoint;
@@ -69,8 +77,17 @@ namespace CommonCore.World
         private bool IsAnimating;
         private bool IsMoving;
         private bool IsRunning;
+        private bool IsCrouching;
         private bool IsGrounded;
         private Renderer[] ModelRendererCache;
+
+        //all this crap is necessary for crouching to work correctly
+        private float? CharControllerOriginalHeight;
+        private float? CharControllerOriginalYPos;
+        private float? HitboxOriginalHeight;
+        private float? HitboxOriginalYPos;
+        private Vector3? CameraRootOriginalLPos;
+        private Vector3? ModelOriginalScale;
 
         // Use this for initialization
         public override void Start()
@@ -97,6 +114,11 @@ namespace CommonCore.World
             if(!ModelRoot)
             {
                 ModelRoot = transform.GetChild(0).gameObject;
+            }
+
+            if(!Hitbox)
+            {
+                Hitbox = transform.Find("Hitbox").GetComponent<CapsuleCollider>();
             }
 
             if(!AnimController)
@@ -126,6 +148,7 @@ namespace CommonCore.World
 
             SetDefaultPlayerView();
             SetInitialViewModels();
+            SetBaseScaleVars();
         }
 
         //TODO: still unsure about the state system, but I'll likely rewrite this whole class
@@ -201,6 +224,16 @@ namespace CommonCore.World
             HandleWeaponChange(EquipSlot.RangedWeapon);
             HandleWeaponChange(EquipSlot.MeleeWeapon);
         }
+
+        private void SetBaseScaleVars()
+        {
+            ModelOriginalScale = ModelRoot.transform.localScale;
+            CharControllerOriginalHeight = CharController.height;
+            CharControllerOriginalYPos = CharController.center.y;
+            HitboxOriginalHeight = ((CapsuleCollider)Hitbox).height;
+            HitboxOriginalYPos = ((CapsuleCollider)Hitbox).center.y;
+            CameraRootOriginalLPos = CameraRoot.localPosition;
+    }
 
         private void HandleMessages()
         {
@@ -412,6 +445,11 @@ namespace CommonCore.World
                 CameraRoot.transform.Rotate(Vector3.left, lmul * ConfigState.Instance.LookSpeed * MappedInput.GetAxis(DefaultControls.LookY) * Time.deltaTime);
             }
 
+            //toggle crouch for now
+            if(MappedInput.GetButtonDown(DefaultControls.Crouch))
+            {
+                IsCrouching = !IsCrouching;
+            }
 
             if (!Clipping)
             {
@@ -483,6 +521,12 @@ namespace CommonCore.World
                         playerState.Energy += 5.0f * Time.deltaTime;
                     }
 
+                    //crouched movement
+                    if(IsCrouching)
+                    {
+                        moveVector *= CrouchMoveScale;
+                    }
+
                     if(moveVector.magnitude == 0)
                     {
                         playerState.Energy += 5.0f * Time.deltaTime;
@@ -501,6 +545,7 @@ namespace CommonCore.World
                             AirMoveVelocity += transform.forward * 1.0f;
 
                         IsMoving = true;
+                        IsCrouching = false;
                         didJump = true;
                     }
 
@@ -513,6 +558,8 @@ namespace CommonCore.World
                     //except that didn't work...
                     //CharController.enabled = true;
                     //CharRigidbody.isKinematic = false;                    
+
+                    IsCrouching = false; //because that would make little sense
 
                     AirMoveVelocity.x *= (0.9f * Time.deltaTime);
                     AirMoveVelocity.z *= (0.9f * Time.deltaTime);
@@ -539,6 +586,45 @@ namespace CommonCore.World
 
                 CharController.Move(moveVector);
             }
+
+            //TODO handle crouch collision changes
+            //TODO figure out how to not set everything every time, only when there has been a *change*
+
+            if(!CharControllerOriginalHeight.HasValue)
+            {
+                SetBaseScaleVars();
+            }
+
+            if(IsCrouching && CharControllerOriginalHeight.HasValue)
+            {
+                //set character controller, hitbox, camera root position
+                CharController.height = CharControllerOriginalHeight.Value * CrouchYScale;
+                CharController.center = new Vector3(CharController.center.x, CharController.height / 2f, CharController.center.z);
+                Hitbox.height = HitboxOriginalHeight.Value * CrouchYScale;
+                Hitbox.center = new Vector3(Hitbox.center.x, Hitbox.height / 2f, Hitbox.center.z);
+                CameraRoot.localPosition = new Vector3(CameraRootOriginalLPos.Value.x, CameraRootOriginalLPos.Value.y * CrouchYScale, CameraRootOriginalLPos.Value.z);
+
+                if (UseCrouchHack)
+                {
+                    ModelRoot.transform.localScale = Vector3.Scale(ModelOriginalScale.Value, new Vector3(1f, 0.66f, 1f));
+                }
+            }
+            else if(CharControllerOriginalHeight.HasValue)
+            {
+                //restore character controller, hitbox, camera root position
+                CharController.height = CharControllerOriginalHeight.Value;
+                CharController.center = new Vector3(CharController.center.x, CharControllerOriginalYPos.Value, CharController.center.z);
+                Hitbox.height = HitboxOriginalHeight.Value;
+                Hitbox.center = new Vector3(Hitbox.center.x, HitboxOriginalYPos.Value, Hitbox.center.z);
+                CameraRoot.localPosition = CameraRootOriginalLPos.Value;
+
+                if (UseCrouchHack)
+                {
+                    ModelRoot.transform.localScale = ModelOriginalScale.Value;
+                }
+            }
+
+            //TODO handle crouch animation proper
 
             //handle animation
             if (IsMoving)
