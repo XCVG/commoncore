@@ -79,31 +79,25 @@ This list is always in flux. As I implement features, I find there are even more
 * Shop/container system (same base logic)
 * Basic config options
 * Time passage and timed events
+* UI "type on" utility function
+* Map screen with map markers
+* First/third person melee/ranged combat
+* Basic faction system
+* Basic stealth mechanics (weighted detection)
 
 **In-Progress Features**
 
-* Player movement (need to add swimming and crouching)
-* Faction system (needs handling for infighting)
-* Combat (has stats and visuals, but many limitations and unhandled edge cases)
-* Action Special game state modification (currently untested)
 * Loading screen (appears but needs animation and better error handling)
 
-**Planned Features (soon)**
-
-* UI "type on" utility function
-* Map screen
-* Help screen
-* basic stealth mechanics (weighted detection)
-
-**Planned Features (later)**
+**Planned Features **
 
 * Levelled Lists
 * Graphics, sound, and other configuration
-* In-game remappable inputs (alternate MappedInput backend?)
+* In-game remappable inputs (ExplicitKBM and XInput backends)
 * unified UI panels
 * custom dev console
 * improved messaging (MSDMS)
-* object pooling (POS)
+* object pooling (POS/Calandria)
 * Gamestate observer and triggered events
 * Extended faction/reputation system
 * magic
@@ -119,7 +113,7 @@ A rough plan is in place for the future of CommonCore.
 * 2.x _Balmora_ : Separate modules, remove dependencies, quality-of-life, general cleanup and documentation.
 * 3.x _Citadel_ : UI theming and initial mod support (data overrides, script hooks).
 * 4.x _Downwarren_ : Further mod support. Performance and QoL features. Mechanics improvments?
-* 5.x _Endar Spire_ : Vehicles? Even more mod support? Proper AOT support?
+* 5.x _Endar Spire_ : Vehicles? Even more mod support?
 * 6.x and beyond : Keep iterating, improving and adding features as I think of them.
 
 There is no formal timeline. Ultimately, this is a hobby project for me, and is subject to the vagaries of real life. With that being said, I hope to have Arroyo finished by the end of 2018.
