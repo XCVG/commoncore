@@ -565,8 +565,10 @@ namespace CommonCore.World
                 var playerObj = WorldUtils.GetPlayerObject();
                 if(playerObj != null && WorldUtils.TargetIsAlive(playerObj.transform))
                 {
+                    PlayerController pc = playerObj.GetComponent<PlayerController>();
+
                     if((playerObj.transform.position - transform.position).magnitude <= SearchRadius
-                        && UnityEngine.Random.Range(0f, 1f) <= RpgValues.DetectionChance(GameState.Instance.PlayerRpgState, false, false)) //TODO handle player sprint/sneak
+                        && UnityEngine.Random.Range(0f, 1f) <= RpgValues.DetectionChance(GameState.Instance.PlayerRpgState, pc.IsCrouching, pc.IsRunning))
                     {
                         if(UseLineOfSight)
                         {

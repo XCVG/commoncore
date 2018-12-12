@@ -15,6 +15,7 @@ namespace CommonCore.World
         public string NiceName;
         public string IconOverride;
         public Vector3 WorldPoint;
+        public bool ForceShow;
     }
 
     public class Cartographer : MonoBehaviour

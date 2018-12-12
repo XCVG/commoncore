@@ -147,10 +147,10 @@ namespace CommonCore.UI
 
             foreach(EditorMapMarker emm in c.Markers)
             {
-                if (string.IsNullOrEmpty(emm.Id))
+                if (string.IsNullOrEmpty(emm.Id) && !emm.ForceShow)
                     continue;
 
-                MapMarkerState state = markersData.GetOrDefault(emm.Id, MapMarkerState.Unknown);
+                MapMarkerState state = emm.ForceShow ? MapMarkerState.Known : markersData.GetOrDefault(emm.Id, MapMarkerState.Unknown);
 
                 if(state != MapMarkerState.Unknown)
                     DrawIcon(emm.WorldPoint, GetMarkerSprite(emm.IconOverride, state), c, emm.NiceName);

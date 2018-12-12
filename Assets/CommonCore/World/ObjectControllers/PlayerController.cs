@@ -75,10 +75,10 @@ namespace CommonCore.World
         private bool IsReloading;
 
         private bool IsAnimating;
-        private bool IsMoving;
-        private bool IsRunning;
-        private bool IsCrouching;
-        private bool IsGrounded;
+        public bool IsMoving { get; private set; }
+        public bool IsRunning { get; private set; }
+        public bool IsCrouching { get; private set; }
+        public bool IsGrounded { get; private set; }
         private Renderer[] ModelRendererCache;
 
         //all this crap is necessary for crouching to work correctly
@@ -425,6 +425,7 @@ namespace CommonCore.World
             IsRunning = false;
             IsGrounded = false;
             bool didJump = false;
+            bool didChangeCrouch = false;
             float deadzone = 0.1f; //this really shouldn't be here
             float vmul = 7.5f; //mysterious magic number velocity multiplier
             float amul = 5.0f; //air move multiplier
@@ -449,6 +450,7 @@ namespace CommonCore.World
             if(MappedInput.GetButtonDown(DefaultControls.Crouch))
             {
                 IsCrouching = !IsCrouching;
+                didChangeCrouch = true;
             }
 
             if (!Clipping)
@@ -624,16 +626,22 @@ namespace CommonCore.World
                 }
             }
 
-            //TODO handle crouch animation proper
+            //handle animation (an absolute fucking shitshow here)
+            if(didChangeCrouch && !UseCrouchHack)
+            {
+                IsAnimating = !IsMoving;
+            }
 
-            //handle animation
             if (IsMoving)
             {
                 if (!IsAnimating)
                 {
 
                     //ac.Play("Run_Rifle_Foreward", 0);
-                    AnimController.CrossFade("run", 0f);
+                    if(IsCrouching && !UseCrouchHack)
+                        AnimController.CrossFade("crouch_move", 0f);
+                    else
+                        AnimController.CrossFade("run", 0f);
                     IsAnimating = true;
                     //stepSound.Play();
                     if (MeleeViewModel != null)
@@ -648,7 +656,10 @@ namespace CommonCore.World
                 {
 
                     //ac.Stop();
-                    AnimController.CrossFade("idle", 0f);
+                    if (IsCrouching && !UseCrouchHack)
+                        AnimController.CrossFade("crouch_idle", 0f);
+                    else
+                        AnimController.CrossFade("idle", 0f);
                     IsAnimating = false;
                     //stepSound.Stop();
                     if (MeleeViewModel != null)
