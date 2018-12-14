@@ -1,7 +1,1 @@
-Ascension III: Revolution is at a very early stage in development. While many game systems are fully working, others are partially complete or not working at all. What you see here is very rough and subject to change. Please try everything you feel like, but be aware some things may break.
-
-This game is (or will be) an open-world, sci-fi/fantasy RPG. It has been thirty years since Rynn, a world of swords and sorcery, made accidental contact with the rest of the galaxy. It is a time of great change, and the once powerful Remarian Empire now struggles to survive. Aurelia, daughter of the current Emperor, is the unorthodox heir to the throne, finishing her education on Earth. But a turn of events will soon force her to return to Rynn and face a new threat in a remote island chain...
-
-In this demo, Aurelia makes her way through a simulation of Equis, an island on the sourthern border of the Empire, in order to help out a friend. I'm going to be honest, it's not a great concept for a demo, but I thought this was going to be in late October.
-
-Anyway, thanks for playing, and I hope you enjoy this early preview!
+Lorem ipsum dolor sit amet

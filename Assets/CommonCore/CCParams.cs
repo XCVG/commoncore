@@ -26,7 +26,7 @@ namespace CommonCore
         //*****game version info
         [Obsolete("Use Unity Application version instead")]
         public static readonly Version GameVersion = new Version(0,0,0);
-        public static readonly string GameVersionName = "Mechanics Preview 1";
+        public static readonly string GameVersionName = "Example Version";
 
         //*****basic config settings
         public static readonly bool AutoInit = true;
