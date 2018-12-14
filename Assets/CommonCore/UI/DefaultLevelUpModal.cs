@@ -57,7 +57,7 @@ namespace CommonCore.UI
             PaintAll();
         }
 
-        void OnDisable()
+        public override void OnDisable()
         {
             LockPauseModule.UnpauseGame(this);
         }
@@ -175,7 +175,7 @@ namespace CommonCore.UI
             if (PotentialPoints == 0)
             {
                 GameState.Instance.PlayerRpgState.Experience = RpgValues.XPAfterMaxLevel(GameState.Instance.PlayerRpgState);
-                GameState.Instance.PlayerRpgState.Level += NewLevel;
+                GameState.Instance.PlayerRpgState.Level = NewLevel;
                 GameState.Instance.PlayerRpgState.BaseStats.Skills = NewStats.Skills; //assign points
                 GameState.Instance.PlayerRpgState.UpdateStats();
                 Destroy(this.gameObject);

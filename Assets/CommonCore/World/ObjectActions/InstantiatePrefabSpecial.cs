@@ -14,6 +14,7 @@ namespace CommonCore.ObjectActions
         public Vector3 OverrideRotation;
         public Vector3 OverrideScale;
         public bool ActivateObject = true;
+        public ObjectSpawnEvent OnSpawnEvent;
 
         private bool Locked;
 
@@ -60,6 +61,8 @@ namespace CommonCore.ObjectActions
                 go.transform.rotation = transform.rotation;
             }
             go.SetActive(ActivateObject);
+
+            OnSpawnEvent.Invoke(go, this);
         }
     }
 }

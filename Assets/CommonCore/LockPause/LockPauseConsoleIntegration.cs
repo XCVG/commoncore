@@ -10,7 +10,7 @@ namespace CommonCore.LockPause
 
     public partial class LockPauseModule //yes, I have a strategy
     {
-        [Command(alias ="ForceUnlock", useClassName = false)]
+        [Command(alias ="ClearLocks", useClassName = false)]
         static void ForceClearAll()
         {
             ForceClearLocks();

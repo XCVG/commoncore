@@ -48,7 +48,7 @@ namespace CommonCore.UI
             {
                 var item = itemList[i];
                 GameObject itemGO = Instantiate<GameObject>(ItemTemplatePrefab, ScrollContent);
-                if(item.Quantity == InventoryItemInstance.UnstackableQuantity)
+                if(!item.ItemModel.Stackable)
                     itemGO.GetComponentInChildren<Text>().text = item.ItemModel.Name + (item.Equipped ? " [E]" : string.Empty); //for now
                 else
                     itemGO.GetComponentInChildren<Text>().text = string.Format("{0} ({1})", item.ItemModel.Name, item.Quantity); //for now
@@ -95,7 +95,7 @@ namespace CommonCore.UI
                     GameState.Instance.PlayerRpgState.Inventory.RemoveItem(ItemLookupTable[SelectedItem]);
 
                     string message = string.Format("{0} {1} {2}", aim.RType.ToString(), aim.Amount, aim.AType.ToString()); //temporary, will fix this up with lookups later
-                    Modal.PushMessageModal(message, "Aid Applied", null, null);
+                    Modal.PushMessageModal(message, "Aid Applied", null, null, true);
                 }
 
                 SignalPaint();
@@ -124,7 +124,7 @@ namespace CommonCore.UI
                     //do quantity selection with modal dialogue if inventory is stackable
 
                     Modal.PushQuantityModal("Quantity To Drop", 0, itemInstance.Quantity, itemInstance.Quantity, true, string.Empty,
-                        delegate (ModalStatusCode status, string tag, int quantity) { CompleteItemDrop(itemInstance, itemModel, quantity, status); });
+                        delegate (ModalStatusCode status, string tag, int quantity) { CompleteItemDrop(itemInstance, itemModel, quantity, status); }, true);
                     //like I don't see why that won't work but holy shit is it ugly
                 
                 }

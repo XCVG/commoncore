@@ -15,6 +15,7 @@
       "ReloadEffect": "ReloadNormal",
       "Name": "bow",
       "Weight": 3,
+	  "Value": 50,
       "MaxCondition": 1,
       "Unique": false,
       "Essential": false

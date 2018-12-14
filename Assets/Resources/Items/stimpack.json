@@ -6,6 +6,7 @@
 		"RType": "Add",
 		"Amount": 20.0,
 		"Name": "stimpack",
+		"Value": 10.0,
 		"Weight": 0.1,
 		"MaxCondition": 1.0,
 		"Unique": false,

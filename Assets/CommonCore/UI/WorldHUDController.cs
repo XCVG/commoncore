@@ -31,6 +31,12 @@ namespace CommonCore.UI
         public Text AmmoText;
         public Text MeleeWeaponText;
         public Image ReadyBarImage;
+
+        public Image Crosshair;
+
+        public Text SubtitleText;
+        private float SubtitleTimer;
+        private int SubtitlePriority = int.MinValue;
         
         private QdmsMessageInterface MessageInterface;
 
@@ -49,6 +55,7 @@ namespace CommonCore.UI
 
             UpdateStatusDisplays();
             UpdateWeaponDisplay();
+            UpdateSubtitles();
         }
         
         void Update()
@@ -61,33 +68,79 @@ namespace CommonCore.UI
             }
 
             UpdateStatusDisplays();
+            UpdateSubtitles();
         }
 
         private void HandleMessage(QdmsMessage message)
         {
             if(message is HUDPushMessage)
             {
-                MessageText.text = MessageText.text + "\n" + Sub.Macro(((HUDPushMessage)message).Contents);
-                Canvas.ForceUpdateCanvases();
-                MessageScrollRect.verticalNormalizedPosition = 0;
+                AppendHudMessage(Sub.Macro(((HUDPushMessage)message).Contents));
             }
             else if(message is QdmsFlagMessage)
             {
                 string flag = ((QdmsFlagMessage)message).Flag;
                 switch (flag)
-                {
+                {                    
                     case "RpgChangeWeapon":
                         UpdateWeaponDisplay();
                         break;
+                    case "WepReloading":
                     case "WepFired":
                         WeaponReady = false;
                         UpdateWeaponDisplay();
                         break;
                     case "WepReady":
+                    case "WepReloaded":
                         WeaponReady = true;
                         UpdateWeaponDisplay();
                         break;
+                    case "PlayerChangeView":
+                        SetCrosshair(message);
+                        break;
+                    case "RpgQuestStarted":
+                    case "RpgQuestEnded":
+                        AddQuestMessage(message);
+                        break;
                 }
+            }
+            else if(message is SubtitleMessage)
+            {
+                SubtitleMessage subMessage = (SubtitleMessage)message;
+                if(subMessage.Priority >= SubtitlePriority)
+                {
+                    SubtitlePriority = subMessage.Priority;
+                    SubtitleTimer = subMessage.HoldTime;
+                    SubtitleText.text = subMessage.UseSubstitution ? Sub.Macro(subMessage.Contents) : subMessage.Contents;
+                }
+            }
+        }
+
+        private void SetCrosshair(QdmsMessage message)
+        {
+            //we actually don't care much if this fails
+            //it'll throw an ugly exception but won't break anything
+
+            var newView = ((QdmsKeyValueMessage)(message)).GetValue<PlayerViewType>("ViewType");
+            if (newView == PlayerViewType.ForceFirst || newView == PlayerViewType.PreferFirst)
+                Crosshair.gameObject.SetActive(true);
+            else if(newView == PlayerViewType.ForceThird || newView == PlayerViewType.PreferThird)
+                Crosshair.gameObject.SetActive(false);
+            else
+                Crosshair.gameObject.SetActive(false);
+        }
+
+        private void UpdateSubtitles()
+        {
+
+            if(SubtitleTimer <= 0)
+            {
+                SubtitleText.text = string.Empty;
+                SubtitlePriority = int.MinValue;
+            }
+            else
+            {
+                SubtitleTimer -= Time.deltaTime;
             }
         }
 
@@ -96,8 +149,12 @@ namespace CommonCore.UI
             var player = GameState.Instance.PlayerRpgState;
             HealthText.text = player.Health.ToString("f0");
             HealthSlider.value = player.HealthFraction;
+
+            EnergyText.text = player.Energy.ToString("f0");
+            EnergySlider.value = player.EnergyFraction;
         }
 
+        //this needs to die in a fire, the degree of interdependency is insane
         private void UpdateWeaponDisplay()
         {
             var player = GameState.Instance.PlayerRpgState;
@@ -108,7 +165,7 @@ namespace CommonCore.UI
                 AmmoType atype = ((RangedWeaponItemModel)player.Equipped[EquipSlot.RangedWeapon].ItemModel).AType;
                 if(atype != AmmoType.NoAmmo)
                 {
-                    AmmoText.text = string.Format("{1}/{2} [{0}]", atype.ToString(), "-", player.Inventory.CountItem(atype.ToString()));
+                    AmmoText.text = string.Format("{1}/{2} [{0}]", atype.ToString(), player.AmmoInMagazine, player.Inventory.CountItem(atype.ToString()));
                     //TODO magazine
                 }
                 else
@@ -142,6 +199,38 @@ namespace CommonCore.UI
                 ReadyBarImage.color = Color.red;
             }
         }
+
+        private void AddQuestMessage(QdmsMessage message)
+        {
+            var qMessage = message as QdmsKeyValueMessage;
+            if (qMessage == null)
+            {
+                return;
+            }                
+            else if(qMessage.Flag == "RpgQuestStarted")
+            {
+                var qRawName = qMessage.GetValue<string>("Quest");
+                var qDef = QuestModel.GetDef(qRawName);
+                string questName = qDef == null ? qRawName : qDef.NiceName;
+                AppendHudMessage(string.Format("Quest Started: {0}", questName));
+            }
+            else if(qMessage.Flag == "RpgQuestEnded")
+            {
+                var qRawName = qMessage.GetValue<string>("Quest");
+                var qDef = QuestModel.GetDef(qRawName);
+                string questName = qDef == null ? qRawName : qDef.NiceName;
+                AppendHudMessage(string.Format("Quest Ended: {0}", questName));
+            }
+        }
+
+        private void AppendHudMessage(string newMessage)
+        {
+            MessageText.text = MessageText.text + "\n" + newMessage;
+            Canvas.ForceUpdateCanvases();
+            MessageScrollRect.verticalNormalizedPosition = 0;
+        }
+
+        //TODO move to messaging
 
         internal void ClearTarget()
         {

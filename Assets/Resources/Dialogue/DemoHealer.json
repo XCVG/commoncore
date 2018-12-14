@@ -1,0 +1,156 @@
+{
+  "image": "Healer",
+  "nameText": "Healer",
+  "default": "gen1",
+  "frames": {
+    "gen1": {
+      "type": "choice",
+      "text": "Are you in need of healing, Aegustae?",
+      "choices": [
+        {
+          "text": "Yes, I need healing",
+          "next": "this.heal1"
+        },
+        {
+          "text": "No, I'd rather not die of gangrene",
+          "next": "meta.return"
+        },
+        {
+          "text": "Actually, can I ask you something?",
+          "next": "this.investigate"
+        },
+        {
+          "text": "Perhaps later",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "heal1": {
+      "type": "text",
+      "text": "There, you should feel better already",
+      "next": "this.gen1",
+      "microscript": [
+        {
+          "actorvalue": "HealthFraction",
+          "set": 1
+        }
+      ]
+    },
+    "investigate": {
+      "text": "I will try to answer your questions to the best of my ability.",
+      "type": "choice",
+      "choices": [
+        {
+          "text": "Where are you from?",
+          "next": "this.self1"
+        },
+        {
+          "text": "Where did you learn to be a healer?",
+          "next": "this.self11"
+        },
+        {
+          "text": "Heard anything interesting lately?",
+          "next": "this.rumors1"
+        },
+        {
+          "text": "Uh, nevermind",
+          "next": "this.gen1"
+        }
+      ]
+    },
+    "rumors1": {
+      "text": "I do not follow in the affairs of others, but there have been many falling ill as of late. Bad water, I believe. They drink from the filthy river rather than collecting the rain as I do.",
+      "type": "choice",
+      "choices": [
+        {
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "start": 1
+            }
+          ],
+          "text": "That's interesting",
+          "next": "this.investigate"
+        }
+      ]
+    },
+    "self1": {
+      "text": "I was born in Atena, but I spent years with the Healer's Guild in Pelici and some time in Reme. Even Pelici was far more populous and diverse than here.",
+      "type": "choice",
+      "choices": [
+        {
+          "text": "Why'd you come to the island?",
+          "next": "this.self2"
+        },
+        {
+          "text": "Okay",
+          "next": "this.investigate"
+        }
+      ]
+    },
+    "self2": {
+      "text": "The ways of the healer were always distrusted, but now even more so. The sky people try to discredit us, playing on the fear and ignorance of the people. Ironic, perhaps, considering their own status. I decided to leave Reme before things got very bad. But it is not much better here.",
+      "type": "choice",
+      "choices": [
+        {
+          "text": "What's wrong with it here?",
+          "next": "this.self3"
+        },
+        {
+          "text": "That really kind of sucks",
+          "next": "this.investigate"
+        },
+        {
+          "text": "Your problem, not mine",
+          "next": "this.investigate"
+        }
+      ]
+    },
+    "self3": {
+      "text": "People had started to become more accepting of healers during the last era in the urban provinces, but not here. And that skyperson on the hill keeps painting obsceneties on my house.",
+      "type": "choice",
+      "choices": [
+        {
+          "text": "That's actually pretty mean",
+          "next": "this.investigate"
+        },
+        {
+          "text": "Ha! Sucks to be you!",
+          "next": "this.investigate"
+        }
+      ]
+    },
+    "self11": {
+      "text": "I learned my craft as many healers have, at the Healer's Guild in Pelici. My knowledge of herbs and remedies has been passed down through generations.",
+      "type": "choice",
+      "choices": [
+        {
+          "text": "Why'd you come here?",
+          "next": "this.self2"
+        },
+        {
+          "text": "You know that's all obselete now, right?",
+          "next": "this.self12"
+        },
+        {
+          "text": "Okay",
+          "next": "this.investigate"
+        }
+      ]
+    },
+    "self12": {
+      "text": "Old, yes, archaic, perhaps, but not obselete! The medicine the sky people bring may be more effective, but it is too rare and expensive for many of the least fortunate. We healers still save many lives, even- no, especially in these trying times. ",
+      "type": "choice",
+      "choices": [
+        {
+          "text": "Sure, whatever, if you say so",
+          "next": "this.investigate"
+        },
+        {
+          "text": "Wow, I never thought of that",
+          "next": "this.investigate"
+        }
+      ]
+    }
+  }
+}

@@ -11,6 +11,7 @@ namespace CommonCore.World
     public abstract class BaseSceneController : MonoBehaviour
     {
         public bool AutoinitUi = true;
+        public bool AutoinitState = true;
 
         public static BaseSceneController Current { get; protected set; }
 
@@ -23,6 +24,10 @@ namespace CommonCore.World
             Current = this;
             if (AutoinitUi)
                 InitUI();
+
+            //mostly an editor hack
+            if (AutoinitState && !GameState.Instance.InitialLoaded)
+                GameState.LoadInitial();
         }
 
         public virtual void Start()

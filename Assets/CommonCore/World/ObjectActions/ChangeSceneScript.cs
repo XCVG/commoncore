@@ -10,12 +10,19 @@ namespace CommonCore.ObjectActions
     {
         public string NextScene;
         public string SpawnPoint;
+        public bool UsePosition = false;
         public Vector3 SpawnPosition;
         public Vector3 SpawnRotation;
 
         public void ChangeScene()
         {
-            WorldUtils.ChangeScene(NextScene, SpawnPoint, SpawnPosition, SpawnRotation);
+            string spawnPointHack = SpawnPoint;
+            if (UsePosition)
+                spawnPointHack = null;
+            else if (string.IsNullOrEmpty(SpawnPoint))
+                spawnPointHack = string.Empty;
+
+            WorldUtils.ChangeScene(NextScene, spawnPointHack, SpawnPosition, SpawnRotation);
         }
 
         public override void Execute(ActionInvokerData data)

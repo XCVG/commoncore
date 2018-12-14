@@ -1,6 +1,6 @@
 # CommonCore RPG Libraries for Unity
 ### Version Pre1.0
-### For Unity 2017.4+
+### For Unity 2018.2
 
 ## Introduction
 
@@ -14,14 +14,21 @@ CommonCore handles or will handle standard RPG mechanics, game state with saving
 * Elegance and ease of use take precedence over performance. If it speeds the game up but requires the user of the library to do mental backflips, it's not going in.
 * Provide flexibility and transparency to the developer using the library and to the player of the game. No black boxes, and allow multiple approaches when it makes sense to do so.
 * Build more than just enough, but not too much. Strike a balance between targeting specific cases and building more general systems. This is hard!
-* Fault tolerance! Handle errors gracefully, attempt to correct common mistakes, and continue execution until no meaningful execution is possible.
+* Build a complete package that provides core functionality without dependencies on other assets (FOSS inclusions are okay). But also provide modularity, extensibility, and optional integrations to go past what's built here.
+* Fault tolerance! Handle errors gracefully, attempt to correct common mistakes, and continue execution until no meaningful execution is possible. At the same time, we should also make it clear that errors are occurring rather than swallowing them entirely.
 * Game data should be human-readable, which allows easier debugging and manual modification if necessary. JSON was used in most cases.
-* Modularity and reusability are key (but see below).
+
+## Platform Support
+
+CommonCore supports Unity 2018.2 and (probably) later. The plan is to continue to target the latest stable version of 2018.x for the forseeable future. Unity 2017.x is no longer supported, and Unity 2019.x is very much a "we'll see" affair.
+
+CommonCore supports standalone platforms using Mono and the .NET 4.x scripting runtime. When Balmora rolls around, the plan is to get the basic core working on mobile and WebGL (IL2CPP) platforms, but not the full feature set (at least, not yet).
 
 ## Modules
 
 CommonCore consists of several modules that encompass various functionality.
 
+* Audio: Handy fire-and-forget audio and music player
 * Base: Module loading, lifecycle handling, utility functions
 * Config: Graphics, sound, and other configuration state and modification
 * Console: Glue that handles interfacing with third-party command console
@@ -68,37 +75,54 @@ This list is always in flux. As I implement features, I find there are even more
 * Extensible actor controllers
 * Basic state-machine NPC AI
 * Script execution by name
+* Save folder creation and fail handling
+* Shop/container system (same base logic)
+* Basic config options
+* Time passage and timed events
+* UI "type on" utility function
+* Map screen with map markers
+* First/third person melee/ranged combat
+* Basic faction system
+* Basic stealth mechanics (weighted detection)
 
 **In-Progress Features**
 
-* Player movement (add jumping, swimming, noclip)
-* Combat (currently uses stats only partially, and lacks visuals)
+* Loading screen (appears but needs animation and better error handling)
 
-**Planned Features**
+**Planned Features **
 
-* Shop/container system (same base logic)
-* In-game remappable inputs (alternate MappedInput backend?)
+* Levelled Lists
 * Graphics, sound, and other configuration
-* UI "type on" utility function
-* Hacking minigame
-* Lockpick minigame
-
+* In-game remappable inputs (ExplicitKBM and XInput backends)
+* unified UI panels
+* custom dev console
+* improved messaging (MSDMS)
+* object pooling (POS/Calandria)
+* Gamestate observer and triggered events
+* Extended faction/reputation system
+* magic
+* proper stealth
+* UI theming 
+* Mod support! (eventually)
 
 ## Roadmap
 
 A rough plan is in place for the future of CommonCore.
 
 * 1.x _Arroyo_ : Basic features complete.
-* 2.x _Balmora_ : Retarget to Unity 2018. Separate modules, remove dependencies, general cleanup and documentation.
-* 3.x _Citadel_ : UI theming and mod support. More?
-* 4.x _Downwarren_ : AI and actor improvements. More?
-* 5.x and beyond : Keep iterating, improving and adding features as I think of them.
+* 2.x _Balmora_ : Separate modules, remove dependencies, quality-of-life, general cleanup and documentation.
+* 3.x _Citadel_ : UI theming and initial mod support (data overrides, script hooks).
+* 4.x _Downwarren_ : Further mod support. Performance and QoL features. Mechanics improvments?
+* 5.x _Endar Spire_ : Vehicles? Even more mod support?
+* 6.x and beyond : Keep iterating, improving and adding features as I think of them.
 
 There is no formal timeline. Ultimately, this is a hobby project for me, and is subject to the vagaries of real life. With that being said, I hope to have Arroyo finished by the end of 2018.
 
 ## Usage
 
-With the exceptions listed below, this repository is licensed under the MIT License, a copy of which is included in LICENSE.txt
+With the exceptions listed below, this repository is dual-licensed under the MIT License (a copy of which is included in LICENSE.txt) and the Creative Commons Attribution 3.0 Unported license (a copy of which is included in ALTLICENSE.txt), with later versions permitted.
+
+It is **strongly** recommended that you license derivatives under the MIT License or dual-license them rather than using the Creative Commons license exclusively. The MIT License is a GPL-compatible permissive software license approved by the Free Software Foundation and the Open Source Initiative, while the Creative Commons license is designed for creative works and has several ambiguities when used to license software. The Creative Commons option is provided primarily for compliance with game jams that require entries to be released under such a license.
 
 CommonCore relies on a few third-party packages available from the Asset Store, listed in CREDITS. These will likely be replaced in future versions, but for the time being CommonCore won't work without at least DevConsole 2 and Json.NET Converters. Some of these require modifications or altered install paths, listed in CREDITS.
 

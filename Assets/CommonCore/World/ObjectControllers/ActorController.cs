@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using CommonCore.ObjectActions;
+using CommonCore.Rpg;
 using CommonCore.State;
 using CommonCore.DebugLog;
 using CommonCore.Dialogue;
@@ -23,6 +24,7 @@ namespace CommonCore.World
         public Animator AnimController;
         public ActorInteractableComponent InteractComponent;
         public NavMeshAgent NavComponent;
+        public Transform TargetPoint;
 
         [Header("State")]
         public ActorAiState BaseAiState = ActorAiState.Idle;
@@ -40,6 +42,7 @@ namespace CommonCore.World
         [Header("Damage")]
         public float Health = 1.0f;
         public float MaxHealth { get; private set; }
+        public bool Invincible = false;
         public bool DieImmediately = false;
         public bool DestroyOnDeath = false;
         [Tooltip("Normal, Impact, Explosive, Energy, Poison, Radiation")]
@@ -48,13 +51,16 @@ namespace CommonCore.World
         public float[] DamageThreshold = { 0, 0, 0, 0, 0, 0 };
         public ActionSpecial OnDeathSpecial;
         public bool FeelPain = true;
+        public float PainChance = 0.5f;
         public float PainWaitTime = 1.0f;
+        public string DefaultHitPuff = "DefaultHitPuff";
 
         [Header("Aggression")]
         public bool Aggressive = false;
-        public bool TargetPlayer = false;
-        public bool TargetNpc = false; //TODO factions, but not yet
-        public bool Defensive = true;        
+        public string Faction = "None";
+        public float Detectability = 1.0f;
+        public bool Defensive = true;
+        public bool Infighting = false;
         public bool Relentless = false;
         public bool UseLineOfSight = false;
         public float SearchRadius = 25.0f;
@@ -65,8 +71,10 @@ namespace CommonCore.World
         [Header("Attack")]
         public bool UseMelee = true;
         public float AttackRange = 1.0f;
+        public float AttackStateWarmup = 0;
         public float AttackStateDelay = 1.0f;
         public float AttackInterval = 1.0f;
+        public float AttackSpread = 0.25f;
         public float BulletSpeed = 100;
         public ActorHitInfo AttackHit;
         public GameObject BulletPrefab;
@@ -75,6 +83,7 @@ namespace CommonCore.World
         public string AttackAnimationOverride;
 
         private float LastAttackTime = -1;
+        private bool DidAttack;
 
         [Header("Interaction")]
         public ActorInteractionType Interaction;
@@ -86,8 +95,15 @@ namespace CommonCore.World
         public string AltInteractionTarget;
         public ActionSpecial AltInteractionSpecial;
 
+        public bool UseDeadAction = true;
+        public ActorInteractionType DeadInteraction;
+        public string DeadInteractionTarget;
+        public ActionSpecial DeadInteractionSpecial;
+
         public bool InteractionForceDisabled;
         public string TooltipOverride;
+
+        public int GrantXpOnDeath;
 
         [Header("Movement")]
         public bool ForceNavmeshOff = false;
@@ -174,7 +190,6 @@ namespace CommonCore.World
             EmulateNav();
         }
 
-        //TODO handle aggression
         public void EnterState(ActorAiState newState)
         {
             if (LockAiState)
@@ -189,7 +204,9 @@ namespace CommonCore.World
             switch (newState)
             {
                 case ActorAiState.Idle:
+                    Target = null;
                     SetAnimation(ActorAnimState.Idle);
+                    AbortNav();
                     break;
                 case ActorAiState.Dead:
                     if (CurrentAiState == ActorAiState.Dead) //fix for glitchy looking behaviour
@@ -206,8 +223,12 @@ namespace CommonCore.World
 
                     if (OnDeathSpecial != null)
                         OnDeathSpecial.Execute(new ActionInvokerData { Activator = this });
+
+                    if (Target.GetComponent<PlayerController>() && GrantXpOnDeath > 0)
+                        GameState.Instance.PlayerRpgState.Experience += GrantXpOnDeath;
                     break;
                 case ActorAiState.Wandering:
+                    Target = null;
                     SetAnimation(ActorAnimState.Walking);
                     //set initial destination
                     Vector2 newpos = CCBaseUtil.GetRandomVector(InitialPosition.ToFlatVec(), WanderRadius);
@@ -241,8 +262,11 @@ namespace CommonCore.World
                     //set animation, fire projectile, set timer
                     SetAnimation(UseMelee ? ActorAnimState.Punching : ActorAnimState.Shooting);
                     transform.forward = CCBaseUtil.GetFlatVectorToTarget(transform.position, Target.position); //ugly but workable
-                    DoAttack(); //waaaaay too complicated to cram here
-                    LastAttackTime = Time.time;
+                    if(AttackStateWarmup <= 0)
+                    {
+                        DoAttack(); //waaaaay too complicated to cram here
+                        LastAttackTime = Time.time;
+                    }                    
                     break;
                 case ActorAiState.Covering:
                     break;
@@ -329,14 +353,19 @@ namespace CommonCore.World
                     }
                     break;
                 case ActorAiState.Chasing:
-                    //TODO actually go to attack
                     if(!WorldUtils.TargetIsAlive(Target))
                     {
                         EnterState(BaseAiState);
                         break;
                     }
 
-                    if((Time.time - LastAttackTime >= AttackInterval) && (Target.position - transform.position).magnitude <= AttackRange)
+                    if (MetaState.Instance.SessionFlags.Contains("NoTarget") && Target.GetComponent<PlayerController>())
+                    {
+                        EnterState(BaseAiState);
+                        break;
+                    }
+
+                    if ((Time.time - LastAttackTime >= AttackInterval) && (Target.position - transform.position).magnitude <= AttackRange)
                     {
                         EnterState(ActorAiState.Attacking);
                         return;
@@ -369,7 +398,12 @@ namespace CommonCore.World
                     break;
                 case ActorAiState.Attacking:
                     //wait...
-                    if(TimeInState >= AttackStateDelay)
+                    if (!DidAttack && AttackStateWarmup > 0 && TimeInState >= AttackStateWarmup)
+                    {
+                        DoAttack(); //waaaaay too complicated to cram here
+                        LastAttackTime = Time.time;                        
+                    }
+                    if (TimeInState >= AttackStateDelay + AttackStateWarmup)
                     {
                         //just return
                         if (!WorldUtils.TargetIsAlive(Target))
@@ -428,6 +462,7 @@ namespace CommonCore.World
                     AbortNav();
                     break;
                 case ActorAiState.Attacking:
+                    DidAttack = false;
                     break;
                 case ActorAiState.Covering:
                     break;
@@ -441,11 +476,20 @@ namespace CommonCore.World
 
         private void DoAttack()
         {
-            //hardcoded spread for now
+            
             Vector3 aimPoint = Target.position;
-            aimPoint.y += UnityEngine.Random.Range(0.5f, 1.5f); //so we don't aim at feet
-            aimPoint.x += UnityEngine.Random.Range(-0.25f, 0.25f);
-            aimPoint.z += UnityEngine.Random.Range(-0.25f, 0.25f);
+
+            var targetAC = Target.GetComponent<ActorController>();
+            if (targetAC != null && targetAC.TargetPoint != null)
+                aimPoint = targetAC.TargetPoint.position;
+
+            var targetPC = Target.GetComponent<PlayerController>();
+            if (targetPC != null && targetPC.TargetPoint != null)
+                aimPoint = targetPC.TargetPoint.position;
+
+            aimPoint.y += UnityEngine.Random.Range(-AttackSpread, AttackSpread);
+            aimPoint.x += UnityEngine.Random.Range(-AttackSpread, AttackSpread);
+            aimPoint.z += UnityEngine.Random.Range(-AttackSpread, AttackSpread);
 
             Vector3 shootPos = ShootPoint == null ? (transform.position + (transform.forward * 0.6f) + (transform.up * 1.25f)) : ShootPoint.position;
             Vector3 shootVec = (aimPoint - shootPos).normalized; //I screwed this up the first time
@@ -457,6 +501,9 @@ namespace CommonCore.World
             {
                 //melee path (raycast)
                 LayerMask lm = LayerMask.GetMask("Default", "ActorHitbox");
+
+                //TODO 2D/3D attack range, or just increase attack range?
+
                 var rc = Physics.RaycastAll(shootPos, shootVec, AttackRange, lm, QueryTriggerInteraction.Collide);
                 BaseController ac = null;
                 foreach (var r in rc)
@@ -503,6 +550,8 @@ namespace CommonCore.World
             {
                 Instantiate(AttackEffectPrefab, shootPos, Quaternion.identity, (ShootPoint == null ? transform : ShootPoint));
             }
+
+            DidAttack = true;
         }
 
         private void SelectTarget()
@@ -511,12 +560,15 @@ namespace CommonCore.World
                 return;
 
             //check player first since it's (relatively) cheap
-            if(TargetPlayer)
+            if(FactionModel.GetRelation(Faction, "Player") == FactionRelationStatus.Hostile && !MetaState.Instance.SessionFlags.Contains("NoTarget"))
             {
                 var playerObj = WorldUtils.GetPlayerObject();
-                if(playerObj != null)
+                if(playerObj != null && WorldUtils.TargetIsAlive(playerObj.transform))
                 {
-                    if((playerObj.transform.position - transform.position).magnitude <= SearchRadius)
+                    PlayerController pc = playerObj.GetComponent<PlayerController>();
+
+                    if((playerObj.transform.position - transform.position).magnitude <= SearchRadius
+                        && UnityEngine.Random.Range(0f, 1f) <= RpgValues.DetectionChance(GameState.Instance.PlayerRpgState, pc.IsCrouching, pc.IsRunning))
                     {
                         if(UseLineOfSight)
                         {
@@ -543,13 +595,20 @@ namespace CommonCore.World
 
             //stupid and inefficient; we'll fix it later
             //should work well enough as long as n is small and your computer is fast enough
-            if(TargetNpc)
+            //if(TargetNpc)
             {
                 var potentialTargets = transform.root.GetComponentsInChildren<ActorController>();
                 foreach (var potentialTarget in potentialTargets)
                 {
-                    if(WorldUtils.TargetIsAlive(potentialTarget.transform) && (potentialTarget.transform.position - transform.position).magnitude <= SearchRadius)
+                    if(WorldUtils.TargetIsAlive(potentialTarget.transform) 
+                        && (potentialTarget.transform.position - transform.position).magnitude <= SearchRadius
+                        && FactionModel.GetRelation(Faction, potentialTarget.Faction) == FactionRelationStatus.Hostile
+                        && !(potentialTarget == this))
                     {
+                        //roll some dice
+                        if (potentialTarget.Detectability < 1 && UnityEngine.Random.Range(0f, 1f) > potentialTarget.Detectability)
+                            continue;
+
                         if (UseLineOfSight)
                         {
                             //additional check
@@ -572,6 +631,9 @@ namespace CommonCore.World
                     }
                 }
             }
+
+            if (!WorldUtils.TargetIsAlive(Target))
+                Target = null;
             
         }
 
@@ -659,7 +721,7 @@ namespace CommonCore.World
             {
                 string stateName = GetNameForAnimation(state);
 
-                if (string.IsNullOrEmpty(AttackAnimationOverride) && (state == ActorAnimState.Punching || state == ActorAnimState.Shooting))
+                if (!string.IsNullOrEmpty(AttackAnimationOverride) && (state == ActorAnimState.Punching || state == ActorAnimState.Shooting))
                     stateName = AttackAnimationOverride;
 
                 AnimController.Play(stateName);
@@ -668,16 +730,16 @@ namespace CommonCore.World
             }
         }
 
-        private static string GetNameForAnimation(ActorAnimState state)
+        private static string GetNameForAnimation(ActorAnimState state) //TODO non-stupid standard names
         {
             switch (state)
             {
                 case ActorAnimState.Idle:
                     return "idle";
                 case ActorAnimState.Dead:
-                    return "fall_flat_fast";
+                    return "die";
                 case ActorAnimState.Dying:
-                    return "fall_flat";
+                    return "dead";
                 case ActorAnimState.Hurting:
                     return "pain";
                 case ActorAnimState.Walking:
@@ -687,7 +749,9 @@ namespace CommonCore.World
                 case ActorAnimState.Running:
                     return "run";
                 case ActorAnimState.Shooting:
-                    return "gunplay";
+                    return "attack";
+                case ActorAnimState.Punching:
+                    return "attack";
                 default:
                     return string.Empty;
             }
@@ -698,15 +762,24 @@ namespace CommonCore.World
             if (InteractionForceDisabled)
                 return;
 
-            if(AltInteraction != ActorInteractionType.None && AlternateCondition.Parse().Evaluate())
+            if(UseDeadAction && CurrentAiState == ActorAiState.Dead)
             {
-                ExecuteInteraction(AltInteraction, AltInteractionTarget, AltInteractionSpecial, data);
+                if(DeadInteraction != ActorInteractionType.None)
+                {
+                    ExecuteInteraction(DeadInteraction, DeadInteractionTarget, DeadInteractionSpecial, data);
+                }
             }
             else
             {
-                ExecuteInteraction(Interaction, InteractionTarget, InteractionSpecial, data);
+                if (AltInteraction != ActorInteractionType.None && AlternateCondition.Parse().Evaluate())
+                {
+                    ExecuteInteraction(AltInteraction, AltInteractionTarget, AltInteractionSpecial, data);
+                }
+                else
+                {
+                    ExecuteInteraction(Interaction, InteractionTarget, InteractionSpecial, data);
+                }
             }
-
         }
 
         private void ExecuteInteraction(ActorInteractionType type, string target, ActionSpecial special, ActionInvokerData data)
@@ -720,7 +793,8 @@ namespace CommonCore.World
                     break;
                 case ActorInteractionType.AmbientMonologue:
                     string msg = DialogueModule.GetMonologue(target).GetLineRandom(); //VERY inefficient, will fix later
-                    QdmsMessageBus.Instance.PushBroadcast(new HUDPushMessage(msg));//also a very temporary display
+                    //QdmsMessageBus.Instance.PushBroadcast(new HUDPushMessage(msg));//also a very temporary display
+                    QdmsMessageBus.Instance.PushBroadcast(new SubtitleMessage(msg, 5.0f, true, -1));
                     //and we need to rework Monologue and implement an audio manager before we can do speech
                     break;
                 case ActorInteractionType.Dialogue:
@@ -746,25 +820,55 @@ namespace CommonCore.World
             else if (data.HitLocation == ActorBodyPart.LeftArm || data.HitLocation == ActorBodyPart.LeftLeg || data.HitLocation == ActorBodyPart.RightArm || data.HitLocation == ActorBodyPart.RightLeg)
                 damageTaken *= 0.75f;
 
-            Health -= damageTaken;
+            if(!Invincible)
+                Health -= damageTaken;
+
+            if(!string.IsNullOrEmpty(data.HitPuff))
+            {
+                Vector3 hitCoords = data.HitCoords.HasValue ? data.HitCoords.Value : transform.position;
+                WorldUtils.SpawnEffect(data.HitPuff, hitCoords, transform.eulerAngles, null);
+            }
+            else if(!string.IsNullOrEmpty(DefaultHitPuff))
+            {
+                Vector3 hitCoords = data.HitCoords.HasValue ? data.HitCoords.Value : transform.position;
+                WorldUtils.SpawnEffect(DefaultHitPuff, hitCoords, transform.eulerAngles, null);
+            }
 
             if (CurrentAiState == ActorAiState.Dead) //abort if we're already dead
                 return;
 
-            if(Defensive && data.Originator != null)
+            bool didTakePain = UnityEngine.Random.Range(0f, 1f) < PainChance;
+
+            if (Defensive && data.Originator != null && data.Originator != this)
             {
-                Target = data.Originator.transform;
-                BeenHit = true;
+                FactionRelationStatus relation = FactionRelationStatus.Neutral;
+                if(data.Originator is PlayerController)
+                {
+                    relation = FactionModel.GetRelation(Faction, "Player");
+                }
+                else if(data.Originator is ActorController)
+                {
+                    relation = FactionModel.GetRelation(Faction, ((ActorController)data.Originator).Faction);
+                }
 
-                if (DisableInteractionOnHit)
-                    InteractionForceDisabled = true;
+                if(relation != FactionRelationStatus.Friendly || Infighting)
+                {
+                    Target = data.Originator.transform;
+                    BeenHit = true;
 
-                if (FeelPain)
-                    EnterState(ActorAiState.Hurting);
+                    if (DisableInteractionOnHit)
+                        InteractionForceDisabled = true;
+
+                    if (FeelPain && didTakePain)
+                        EnterState(ActorAiState.Hurting);
+                    else
+                        EnterState(ActorAiState.Chasing);
+                }
                 else
-                    EnterState(ActorAiState.Chasing);
+                    EnterState(ActorAiState.Hurting);
+
             }
-            else if(FeelPain)
+            else if(FeelPain && didTakePain)
                 EnterState(ActorAiState.Hurting);
         }
 

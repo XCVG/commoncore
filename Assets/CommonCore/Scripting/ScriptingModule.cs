@@ -71,7 +71,7 @@ namespace CommonCore.Scripting
                         }
                     }
 
-                    Debug.Log(string.Format("Loaded script: {0}", callableName));
+                    //Debug.Log(string.Format("Loaded script: {0}", callableName));
 
                     if (CallableMethods.ContainsKey(callableName))
                     {

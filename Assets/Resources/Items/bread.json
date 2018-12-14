@@ -1,0 +1,22 @@
+{
+  "bread": {
+    "model": {
+		"$type": "CommonCore.Rpg.AidItemModel, Assembly-CSharp",
+		"AType": "Health",
+		"RType": "Add",
+		"Amount": 5.0,
+		"Value": 5.0,
+		"Name": "bread",
+		"WorldModel": "item_bread",
+		"Weight": 0.5,
+		"MaxCondition": 1.0,
+		"Unique": false,
+		"Essential": false
+    },
+    "def": {
+    "NiceName": "Bread",
+    "Image": "bread",
+    "Description": "A loaf of slightly stale bread that heals some health"
+	}
+  }
+}

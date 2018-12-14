@@ -18,6 +18,20 @@ namespace CommonCore.Rpg
 
         public Sex Gender { get; set; }
 
+        public float Energy
+        {
+            get
+            {
+                return DerivedStats.MaxEnergy * EnergyFraction;
+            }
+            set
+            {
+                EnergyFraction = value / DerivedStats.MaxEnergy;
+            }
+        }
+
+        public float EnergyFraction { get; set; }
+
         public float Health
         {
             get
@@ -34,13 +48,16 @@ namespace CommonCore.Rpg
         public int Experience { get; set; }
         public int Level { get; set; }
 
+
         public StatsSet BaseStats { get; private set; }
+
         public StatsSet DerivedStats { get; private set; }
 
         public List<Condition> Conditions { get; private set; }
 
+        
         public InventoryModel Inventory { get; private set; }
-
+        public int AmmoInMagazine { get; set; }
         public Dictionary<EquipSlot, InventoryItemInstance> Equipped { get; private set; }
 
         public CharacterModel() //TODO with a model base parameter
@@ -53,7 +70,7 @@ namespace CommonCore.Rpg
             Equipped = new Dictionary<EquipSlot, InventoryItemInstance>();
 
             //create blank stats and derive stats
-            BaseStats = new StatsSet(); //TODO load defaults
+            BaseStats = new StatsSet();
             UpdateStats();
         }
 
@@ -61,9 +78,6 @@ namespace CommonCore.Rpg
         {
             //copy base stats
             DerivedStats = new StatsSet(BaseStats);
-
-            //recalculate max health
-            DerivedStats.MaxHealth = RpgValues.MaxHealthForLevel(Level);
 
             //apply conditions
             foreach(Condition c in Conditions)
@@ -91,6 +105,14 @@ namespace CommonCore.Rpg
                 }
             }
 
+            //apply derived skills
+            if(CCParams.UseDerivedSkills)
+                RpgValues.SkillsFromStats(BaseStats, DerivedStats);
+
+            //recalculate max health and energy
+            DerivedStats.MaxHealth = RpgValues.MaxHealthForLevel(Level);
+            DerivedStats.MaxEnergy = RpgValues.MaxEnergy(this);
+
             QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgStatsUpdated"));
 
         }
@@ -106,18 +128,31 @@ namespace CommonCore.Rpg
                 throw new InvalidOperationException();
 
             if (Equipped.ContainsKey(slot))
-                UnequipItem(Equipped[slot]);
+                UnequipItem(Equipped[slot], false);
 
             Equipped[slot] = item;
+
+            //magazine logic
+            if (item.ItemModel is RangedWeaponItemModel)
+            {
+                var rwim = (RangedWeaponItemModel)item.ItemModel;
+                AmmoInMagazine = Math.Min(rwim.MagazineSize, Inventory.CountItem(rwim.AType.ToString()));
+                Inventory.RemoveItem(rwim.AType.ToString(), AmmoInMagazine);
+            }
 
             item.Equipped = true;
 
             UpdateStats();
 
-            QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgChangeWeapon"));
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgChangeWeapon", "Slot", slot));
         }
 
         public void UnequipItem(InventoryItemInstance item)
+        {
+            UnequipItem(item, true);
+        }
+
+        private void UnequipItem(InventoryItemInstance item, bool postMessage)
         {
             if (!item.Equipped)
                 throw new InvalidOperationException();
@@ -130,11 +165,19 @@ namespace CommonCore.Rpg
             }           
             //allow continuing even if it's not actually equippable, for fixing bugs
 
+            //magazine logic
+            if(item.ItemModel is RangedWeaponItemModel)
+            {
+                var rwim = (RangedWeaponItemModel)item.ItemModel;
+                Inventory.AddItem(rwim.AType.ToString(), AmmoInMagazine);
+                AmmoInMagazine = 0;
+            }
+
             item.Equipped = false;
 
             UpdateStats();
 
-            QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgChangeWeapon"));
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgChangeWeapon", "Slot", slot));
         }
 
         public void SetAV(string av, object value)

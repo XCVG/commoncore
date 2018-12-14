@@ -33,17 +33,21 @@ namespace CommonCore.World
                 if (ac == HitInfo.Originator) //no friendly fire for now
                     return;
 
+                HitInfo.HitCoords = transform.position;
                 ac.TakeDamage(HitInfo);
                 Destroy(this.gameObject);
                 return;
             }
 
             var pc = collision.gameObject.GetComponent<PlayerController>();
+            if (pc == null)
+                pc = collision.gameObject.GetComponentInParent<PlayerController>();
             if(pc != null)
             {
                 if (pc == HitInfo.Originator)
                     return;
 
+                HitInfo.HitCoords = transform.position;
                 pc.TakeDamage(HitInfo);
                 Destroy(this.gameObject);
                 return;

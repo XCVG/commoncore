@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,9 +11,10 @@ namespace CommonCore
      */
     public static class CCParams
     {
-        //*****version info
-        public static readonly SemanticVersion VersionCode = new SemanticVersion(1,0,0); //1.0.0
-        public const string VersionName = "Arroyo"; //start with A, locations from RPGs
+
+        //*****system version info
+        public static readonly Version VersionCode = new Version(1,0,0); //1.0.0
+        public static readonly string VersionName = "Arroyo"; //start with A, locations from RPGs
         public static string UnityVersion
         {
             get
@@ -21,18 +23,28 @@ namespace CommonCore
             }
         }
 
+        //*****game version info
+        [Obsolete("Use Unity Application version instead")]
+        public static readonly Version GameVersion = new Version(0,0,0);
+        public static readonly string GameVersionName = "Example Version";
+
         //*****basic config settings
-        public const bool AutoInit = true;
-        public const bool AutoloadModules = true;
-        private const DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
+        public static readonly bool AutoInit = true;
+        public static readonly bool AutoloadModules = true;
+        private static readonly DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
 
         //*****additional config settings
-        public const bool UseVerboseLogging = true;
+        public static readonly bool UseVerboseLogging = true;
+        public static readonly float DelayedEventPollInterval = 1.0f;
+        public static readonly bool UseAggressiveLookups = true;
 
         //*****game config settings
-        public const string InitialScene = "TestScene";
-        public const bool UseCustomLeveling = false;
-        public const PlayerViewType DefaultPlayerView = PlayerViewType.PreferFirst;
+        public static readonly string InitialScene = "World_Ext_TestIsland";
+        public static readonly bool UseCustomLeveling = true;
+        public static readonly bool UseDerivedSkills = true;
+        public static readonly PlayerViewType DefaultPlayerView = PlayerViewType.PreferFirst;
+        public static readonly bool UseRandomDamage = true;
+        public static readonly bool AutoQuestNotifications = true;
 
         //*****automatic environment params
         public static bool IsDebug

@@ -1,9 +1,10 @@
-﻿using CommonCore;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using CommonCore;
+using CommonCore.Config;
 
 public class InitSceneController : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class InitSceneController : MonoBehaviour
     {
 		if(CCBase.Initialized)
         {
+            ConfigModule.Apply();
             GameObject.Find("Text").GetComponent<Text>().text = "Loaded!";
             SceneManager.LoadScene("MainMenuScene");
         }

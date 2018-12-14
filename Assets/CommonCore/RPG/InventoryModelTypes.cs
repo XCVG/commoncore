@@ -9,7 +9,7 @@ namespace CommonCore.Rpg
 {
     public enum MoneyType
     {
-        Dollars
+        Gold
     }
 
     public enum AmmoType
@@ -32,7 +32,7 @@ namespace CommonCore.Rpg
     [JsonObject(IsReference = true)]
     public class InventoryItemInstance
     {
-        public const int UnstackableQuantity = -1;
+        //public const int UnstackableQuantity = -1;
 
         public int Quantity { get; set; }
         public float Condition { get; set; } //it's here but basically unimplemented
@@ -54,7 +54,7 @@ namespace CommonCore.Rpg
             ItemModel = model;
             Condition = model.MaxCondition;
             Equipped = false;
-            Quantity = model.Stackable ? 1 : UnstackableQuantity;
+            Quantity = 1;
         }
     }
 
@@ -116,18 +116,21 @@ namespace CommonCore.Rpg
         public readonly bool Unique;
         public readonly bool Essential;
         public readonly string WorldModel;
+        public readonly string[] Flags;
 
         public bool Stackable { get; protected set; }
 
-        public InventoryItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string worldModel)
+        public InventoryItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags, string worldModel)
         {
             Name = name;
             Weight = weight;
+            Value = value;
             MaxCondition = maxCondition;
             Unique = unique;
             Essential = essential;
             Stackable = false;
             WorldModel = worldModel;
+            Flags = (flags == null || flags.Length == 0) ? new string[0] : flags;
         }
 
         public virtual string GetStatsString()
@@ -135,12 +138,18 @@ namespace CommonCore.Rpg
             return Essential ? "Essential" : string.Empty;
         }
 
+        public bool CheckFlag(string flag)
+        {
+            return Array.Exists(Flags, x => flag.Equals(x, StringComparison.OrdinalIgnoreCase));
+        }
+
+
     }
 
     public class MiscItemModel : InventoryItemModel
     {
-        public MiscItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string worldModel)
-            : base(name, weight, value, maxCondition, unique, essential, worldModel)
+        public MiscItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags, string worldModel)
+            : base(name, weight, value, maxCondition, unique, essential, flags, worldModel)
         {
         }
     }
@@ -151,14 +160,17 @@ namespace CommonCore.Rpg
         public readonly float DamagePierce; //superclass
         public readonly DamageType DType; //superclass
         public readonly string ViewModel; //superclass
+        public readonly string FireEffect;
 
-        public WeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, float damage, float damagePierce, DamageType dType, string viewModel, string worldModel)
-            : base(name, weight, value, maxCondition, unique, essential, worldModel)
+        public WeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags,
+            float damage, float damagePierce, DamageType dType, string viewModel, string worldModel, string fireEffect)
+            : base(name, weight, value, maxCondition, unique, essential, flags, worldModel)
         {
             Damage = damage;
             DamagePierce = damagePierce;
             DType = dType;
             ViewModel = viewModel;
+            FireEffect = fireEffect;
         }
     }
 
@@ -166,12 +178,16 @@ namespace CommonCore.Rpg
     {
         public readonly float Reach;
         public readonly float Rate;
+        public readonly float EnergyCost;
 
-        public MeleeWeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, float damage, float damagePierce, float reach, float rate, DamageType dType, string viewModel, string worldModel) 
-            : base(name, weight, value, maxCondition, unique, essential, damage, damagePierce, dType, viewModel, worldModel)
+        public MeleeWeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags,
+            float damage, float damagePierce, float reach, float rate, float energyCost, DamageType dType,
+            string viewModel, string worldModel, string fireEffect) 
+            : base(name, weight, value, maxCondition, unique, essential, flags, damage, damagePierce, dType, viewModel, worldModel, fireEffect)
         {
             Reach = reach;
             Rate = rate;
+            EnergyCost = energyCost;
         }
     }
 
@@ -182,12 +198,14 @@ namespace CommonCore.Rpg
         public readonly float FireRate; //ranged subclass
         public readonly int MagazineSize; //ranged subclass
         public readonly float ReloadTime; //ranged subclass
-        public readonly AmmoType AType; //ranged subclass        
+        public readonly AmmoType AType; //ranged subclass     
+        public readonly string Projectile;
+        public readonly string ReloadEffect;
 
-        public RangedWeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential,
-            float damage, float damagePierce, float velocity, float spread, float fireRate,
-            int magazineSize, float reloadTime, AmmoType aType, DamageType dType, string viewModel, string worldModel)
-            : base(name, weight, value, maxCondition, unique, essential, damage, damagePierce, dType, viewModel, worldModel)
+        public RangedWeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags,
+            float damage, float damagePierce, float velocity, float spread, float fireRate, int magazineSize, float reloadTime,
+            AmmoType aType, DamageType dType, string viewModel, string worldModel, string fireEffect, string projectile, string reloadEffect)
+            : base(name, weight, value, maxCondition, unique, essential, flags, damage, damagePierce, dType, viewModel, worldModel, fireEffect)
         {
             Velocity = velocity;
             Spread = spread;
@@ -195,6 +213,8 @@ namespace CommonCore.Rpg
             MagazineSize = magazineSize;
             ReloadTime = reloadTime;
             AType = aType;
+            Projectile = projectile;
+            ReloadEffect = reloadEffect;
             
         }
 
@@ -212,9 +232,9 @@ namespace CommonCore.Rpg
         public readonly Dictionary<DamageType, float> DamageResistance;
         public readonly Dictionary<DamageType, float> DamageThreshold;
 
-        public ArmorItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string worldModel,
+        public ArmorItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags, string worldModel,
             Dictionary<DamageType, float> damageResistance, Dictionary<DamageType, float> damageThreshold)
-            : base(name, weight, value, maxCondition, unique, essential, worldModel)
+            : base(name, weight, value, maxCondition, unique, essential, flags, worldModel)
         {
             DamageResistance = new Dictionary<DamageType, float>(damageResistance);
             DamageThreshold = new Dictionary<DamageType, float>(damageThreshold);
@@ -227,9 +247,9 @@ namespace CommonCore.Rpg
         public readonly RestoreType RType;
         public float Amount;
 
-        public AidItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string worldModel,
+        public AidItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags, string worldModel,
             AidType aType, RestoreType rType, float amount)
-            : base(name, weight, value, maxCondition, unique, essential, worldModel)
+            : base(name, weight, value, maxCondition, unique, essential, flags, worldModel)
         {
             AType = aType;
             RType = rType;
@@ -271,7 +291,8 @@ namespace CommonCore.Rpg
     {
         public readonly MoneyType Type;
 
-        public MoneyItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string worldModel, MoneyType type) : base(name, weight, value, maxCondition, unique, essential, worldModel)
+        public MoneyItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags, string worldModel, MoneyType type) :
+            base(name, weight, value, maxCondition, unique, essential, flags, worldModel)
         {
             Type = type;
             Stackable = true;
@@ -282,7 +303,8 @@ namespace CommonCore.Rpg
     {
         public readonly AmmoType Type;
 
-        public AmmoItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string worldModel, AmmoType type) : base(name, weight, value, maxCondition, unique, essential, worldModel)
+        public AmmoItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags, string worldModel, AmmoType type) :
+            base(name, weight, value, maxCondition, unique, essential, flags, worldModel)
         {
             Type = type;
             Stackable = true;

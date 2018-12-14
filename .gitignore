@@ -39,6 +39,8 @@ LightingData.asset.meta
 
 # Explicitly excluded
 /Assets/ThirdParty/
-/Assets/Plugins/
 /Assets/Objects/ThirdParty/
 /Assets/Standard Assets/
+/Assets/ProCore/
+/Assets/Resources/ThirdParty/
+/Assets/Plugins/DevConsole/

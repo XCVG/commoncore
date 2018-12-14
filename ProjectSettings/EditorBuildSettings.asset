@@ -29,3 +29,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/World/World_Ext_MichaelCity.unity
     guid: 07529644afcd4144b9d872abd3fac110
+  - enabled: 1
+    path: Assets/Scenes/World/World_Int_TestIsland_House1.unity
+    guid: 8951a7a12a22cd04ea72021b9b163e11
+  - enabled: 1
+    path: Assets/Scenes/World/World_Int_TestIsland_MechanicShack.unity
+    guid: b73f50aef4e97da47b4923ed4f64b3b3
+  - enabled: 1
+    path: Assets/Scenes/World/World_Int_TestIsland_House2.unity
+    guid: 16713daefbb55f14d8b4d177090ca387

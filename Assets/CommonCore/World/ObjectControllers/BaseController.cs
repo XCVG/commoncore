@@ -16,10 +16,10 @@ namespace CommonCore.World
         public virtual void Awake()
         {
             FormID = EditorFormID;
-            Debug.Log("FID: " + FormID + " TID: " + name);
-
+            
             if(FormID == name)
             {
+                Debug.Log("FID: " + FormID + " TID: " + name);
                 Debug.LogWarning("TID is the same as FID (did you forget to assign TID?)");
             }
 

@@ -8,11 +8,13 @@ namespace CommonCore.Dialogue
     {
         public Dictionary<string, Frame> Frames { get; private set; }
         public string Default;
+        public string Music;
 
-        public DialogueScene(Dictionary<string, Frame> frames, string defaultFrame)
+        public DialogueScene(Dictionary<string, Frame> frames, string defaultFrame, string music)
         {
             Frames = frames;
             Default = defaultFrame;
+            Music = music;
         }
     }
 
@@ -51,7 +53,16 @@ namespace CommonCore.Dialogue
             for (int i = NextConditional.Length - 1; i >= 0; i--)
             {
                 var nc = NextConditional[i];
-                if (nc.Evaluate())
+                bool ncResult = false;
+                try
+                {
+                    ncResult = nc.Evaluate();
+                }
+                catch(Exception e)
+                {
+                    UnityEngine.Debug.LogException(e);
+                }
+                if (ncResult)
                     return nc.Next;
             }
             return null;
@@ -64,7 +75,14 @@ namespace CommonCore.Dialogue
 
             foreach (MicroscriptNode mn in NextMicroscript)
             {
-                mn.Execute();
+                try
+                {
+                    mn.Execute();
+                }
+                catch(Exception e)
+                {
+                    UnityEngine.Debug.LogException(e);
+                }
             }
         }
 

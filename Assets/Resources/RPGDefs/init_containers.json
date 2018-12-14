@@ -1,0 +1,55 @@
+{
+  "TestSharedContainer": {
+    "Items": [
+      {
+        "ItemModel": "medkit"
+      },
+      {
+        "ItemModel": "stimpack"
+      },
+	  {
+        "ItemModel": "Acp45",
+        "Quantity": 16
+      },
+	  {
+        "ItemModel": "Gold",
+        "Quantity": 50
+      }
+    ]
+  },
+  "TestSharedContainer2": {
+    "Items": [
+      {
+        "ItemModel": "Acp45",
+        "Quantity": 16
+      }
+    ]
+  },
+  "DemoTrader": {
+    "Items": [
+      {
+        "ItemModel": "Gold",
+        "Quantity": 500
+      },
+	  {
+        "ItemModel": "stimpack"
+      },
+	  {
+        "ItemModel": "stimpack"
+      },
+	  {
+        "ItemModel": "Bolt",
+        "Quantity": 36
+      },
+	  {
+        "ItemModel": "bread",
+      },
+	  {
+        "ItemModel": "bread",
+      },
+	  {
+        "ItemModel": "bread",
+      }
+    ]
+  }
+}

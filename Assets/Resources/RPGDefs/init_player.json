@@ -1,0 +1,130 @@
+{
+    "FormID": null,
+    "DisplayName": "PlayerExample",
+    "Gender": "Female",
+    "Health": 110.0,
+    "HealthFraction": 1.0,
+    "Experience": 0,
+    "Level": 1,
+    "BaseStats": {
+      "MaxHealth": 0.0,
+      "DamageResistance": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "DamageThreshold": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Stats": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "Skills": [
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10
+      ]
+    },
+    "Conditions": [],
+    "Inventory": {
+      "Items": [
+        {
+		  "$id": "1",
+          "Quantity": 1,
+          "Condition": 1.0,
+          "Equipped": true,
+          "ItemModel": {
+            "$ItemModel": "lightarmor"
+          }
+        },
+        {
+		  "$id": "2",
+          "Quantity": 1,
+          "Condition": 1.0,
+          "Equipped": true,
+          "ItemModel": {
+            "$ItemModel": "sword"
+          }
+        },
+        {
+		  "$id": "3",
+          "Quantity": 1,
+          "Condition": 1.0,
+          "Equipped": true,
+          "ItemModel": {
+            "$ItemModel": "crossbow"
+          }
+        },
+        {
+          "Quantity": 1,
+          "Condition": 1.0,
+          "Equipped": false,
+          "ItemModel": {
+            "$ItemModel": "medkit"
+          }
+        },
+		{
+          "Quantity": 50,
+          "Condition": 1.0,
+          "Equipped": false,
+          "ItemModel": {
+            "$ItemModel": "Gold"
+          }
+        },
+		{
+          "Quantity": 50,
+          "Condition": 1.0,
+          "Equipped": false,
+          "ItemModel": {
+            "$ItemModel": "Bolt"
+          }
+        }
+      ]
+    },
+	"AmmoInMagazine": 1,
+	"Equipped": {
+      "Body": {
+        "$ref": "1"
+      },
+      "MeleeWeapon": {
+        "$ref": "2"
+      },
+      "RangedWeapon": {
+        "$ref": "3"
+      }
+    }
+  }

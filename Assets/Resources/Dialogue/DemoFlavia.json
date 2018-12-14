@@ -1,0 +1,833 @@
+{
+  "image": "Flavia",
+  "nameText": "Flavia",
+  "default": "base",
+  "frames": {
+    "matsuda1": {
+      "type": "text",
+      "image": "matsuda",
+      "nameText": "Matsuda Toyoda",
+      "next": "this.matsuda2",
+      "text": "Hey, there you are! I made it into the academy, too!"
+    },
+    "filterd1": {
+      "type": "choice",
+      "text": "A machine? It does not look or sound like any machine I have ever seen!",
+      "choices": [
+        {
+          "text": "It's like a flour mill or a catapult, it's just a lot more complicated.",
+          "next": "this.filter2"
+        },
+        {
+          "text": "It's new technology. You're going to be seeing more of that.",
+          "next": "this.filter2"
+        },
+        {
+          "text": "Yeah, I don't know how it works either",
+          "next": "this.filterfail"
+        }
+      ]
+    },
+    "started1": {
+      "type": "choice",
+      "text": "Were you able to vanquish the monsters, Aegustae Aurelia?",
+      "choices": [
+        {
+          "text": "(LIE) They fell swiftly by the edge of my sword",
+          "conditional": [
+            {
+              "next": "this.endlie2",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "greater": 35
+                }
+              ]
+            }
+          ],
+          "next": "this.endlie1",
+          "showCondition": {
+            "noflag": "DemoWellMonstersKilled"
+          },
+          "hidecondition": {
+            "flag": "DemoFlaviaDidFailLie"
+          }
+        },
+        {
+          "text": "Yes, I killed them all",
+          "next": "this.endgood1",
+          "showCondition": {
+            "flag": "DemoWellMonstersKilled"
+          }
+        },
+        {
+          "next": "this.movefail",
+          "text": "I think you should all move instead",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidTryMove",
+              "set": true
+            }
+          ],
+          "showCondition": {
+            "actorvalue": "DerivedStats.Skills.SocialLeverage",
+            "greater": 25
+          },
+          "hideCondition": {
+            "flag": "DemoFlaviaDidTryMove"
+          },
+          "conditional": [
+            {
+              "next": "this.movesucceed",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "greater": 60
+                }
+              ]
+            },
+            {
+              "next": "this.movesucceed",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "greater": 40
+                },
+                {
+                  "noflag": "DemoFlaviaDidOffend"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "I'm working on it",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "doneDefault": {
+      "type": "choice",
+      "text": "Thank you for helping us, Aegustae Aurelia. The village is forever in your debt.",
+      "choices": [
+        {
+          "text": "Don't mention it. Really, don't.",
+          "next": "meta.return"
+        },
+        {
+          "text": "It's fine, you're welcome",
+          "next": "meta.return"
+        },
+        {
+          "text": "I didn't do this for you",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "filter1": {
+      "type": "choice",
+      "text": "What is that THING?",
+      "choices": [
+        {
+          "text": "Clean water. That's all you need to know.",
+          "next": "this.filter2"
+        },
+        {
+          "text": "A magical artifact that cleans the water.",
+          "next": "this.filterm1"
+        },
+        {
+          "text": "It's a machine that cleans the water.",
+          "next": "this.filterd1"
+        },
+        {
+          "text": "I don't know either. It was there when I got here.",
+          "next": "this.filter2"
+        },
+        {
+          "text": "Um, I'll get back to you on that.",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "filter2": {
+      "type": "choice",
+      "text": "It is strange and unfamiliar. Can we trust the water? Is it safe, or more poisonous than the river? How can we know this?",
+      "choices": [
+        {
+          "text": "Are you questioning me?",
+          "next": "this.filterq1"
+        },
+        {
+          "text": "It's filtered water. It's perfectly fine.",
+          "next": "this.filterfail",
+          "conditional": [
+            {
+              "next": "this.filtersuccess",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "less": 75
+                },
+                {
+                  "noflag": "DemoFlaviaDidOffend"
+                }
+              ]
+            },
+            {
+              "next": "this.filtersuccess",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "less": 60
+                },
+                {
+                  "noflag": "DemoFlaviaDidOffend"
+                },
+                {
+                  "variable": "reputation",
+                  "greater": 50
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "It's clean enough that I'll drink it myself.",
+          "conditional": [
+            {
+              "next": "this.filterfail",
+              "conditions": [
+                {
+                  "actorvalue": "DerivedStats.Skills.SocialLeverage",
+                  "less": 35
+                },
+                {
+                  "flag": "DemoFlaviaDidOffend"
+                }
+              ]
+            }
+          ],
+          "next": "this.filtersuccess",
+          "showCondition": {
+            "actorvalue": "DerivedStats.Skills.SocialLeverage",
+            "greater": 25
+          }
+        },
+        {
+          "text": "For all I know it's actually worse.",
+          "next": "this.filterfail"
+        }
+      ]
+    },
+    "filterm1": {
+      "type": "choice",
+      "text": "It does not look like any magic I have ever seen, though I have seen little. And I have never entirely trusted mages.",
+      "choices": [
+        {
+          "text": "Not only is it magic, it's perfectly safe magic.",
+          "next": "this.filter2"
+        },
+        {
+          "text": "It's a new kind of magic!",
+          "next": "this.filter2"
+        },
+        {
+          "text": "It's not actually magic, it's a machine",
+          "next": "this.filterd1",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidOffend",
+              "set": true
+            }
+          ]
+        }
+      ]
+    },
+    "filterfail": {
+      "type": "choice",
+      "text": "Thank you for trying to help us, Aegustae Aurelia. But I fear your efforts have been in vain. I do not trust that thing, and neither will the rest of the village.",
+      "choices": [
+        {
+          "text": "I understand. I shouldn't have pushed this on you.",
+          "next": "meta.return",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "set": -22
+            },
+            {
+              "variable": "Reputation",
+              "add": -10
+            },
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            }
+          ]
+        },
+        {
+          "text": "I tried. If you're not willing to accept help, so be it.",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "set": -22
+            },
+            {
+              "variable": "Reputation",
+              "add": -10
+            },
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            }
+          ],
+          "next": "meta.return"
+        },
+        {
+          "text": "Really? You backwards fucking hicks!",
+          "next": "meta.return",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "set": -22
+            },
+            {
+              "variable": "Reputation",
+              "add": -15
+            },
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            }
+          ]
+        }
+      ]
+    },
+    "filtersuccess": {
+      "type": "choice",
+      "text": "Thank you for your help, Aegustae Aurelia. I still fear that thing. But I will drink the water, and try to convince the other villagers to drink the water also.",
+      "choices": [
+        {
+          "text": "You're welcome. I'm just happy to lend a hand.",
+          "next": "meta.return",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "set": -21
+            },
+            {
+              "variable": "Reputation",
+              "add": 6
+            },
+            {
+              "item": "Gold",
+              "add": 50
+            },
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            }
+          ]
+        },
+        {
+          "text": "Trust me, this kind of thing is where the future is headed.",
+          "next": "meta.return",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "set": -21
+            },
+            {
+              "variable": "Reputation",
+              "add": 5
+            },
+            {
+              "item": "Gold",
+              "add": 50
+            },
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            }
+          ]
+        },
+        {
+          "text": "I'm just glad to be done with this.",
+          "next": "meta.return",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "set": -21
+            },
+            {
+              "variable": "Reputation",
+              "add": 4
+            },
+            {
+              "item": "Gold",
+              "add": 50
+            },
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            }
+          ]
+        }
+      ]
+    },
+    "first1": {
+      "type": "choice",
+      "text": "Greetings, Aegustae",
+      "choices": [
+        {
+          "text": "You know, Aurelia is fine. I'm not that big on titles.",
+          "next": "this.first2",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidTryCasual",
+              "set": true
+            }
+          ]
+        },
+        {
+          "text": "What's the word around town?",
+          "next": "this.first3"
+        },
+        {
+          "text": "That water doesn't look clean... or even close to clean...",
+          "next": "this.first4"
+        },
+        {
+          "text": "I should get going",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "first2": {
+      "type": "choice",
+      "text": "My apologies, Aegustae. I am a simple farmer's wife, and you are of the noble house. I bow humbly to your presence.",
+      "choices": [
+        {
+          "text": "Okay...",
+          "next": "this.first1"
+        }
+      ]
+    },
+    "first3": {
+      "type": "choice",
+      "text": "Nothing that would be of interest to a woman of your stature, I am afraid. Just the simple affairs of peasants and farmers.",
+      "choices": [
+        {
+          "text": "Thanks",
+          "next": "this.first1"
+        }
+      ]
+    },
+    "first4": {
+      "type": "choice",
+      "text": "It's not, I'm afraid. Some raiders dumped their refuse in the lake upstream a few weeks ago. Since then, the water has been foul and several of us have taken ill. ",
+      "choices": [
+        {
+          "text": "Is that normal for a village like this?",
+          "next": "this.first5"
+        },
+        {
+          "text": "Is there something I can do about it?",
+          "next": "this.first6"
+        },
+        {
+          "text": "Sorry, but I can't do anything about it",
+          "next": "this.first1"
+        },
+        {
+          "text": "Hah! Sucks being you, I guess.",
+          "next": "this.first1",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidOffend",
+              "set": true
+            }
+          ]
+        }
+      ]
+    },
+    "first5": {
+      "type": "choice",
+      "text": "By the gods, no! The river has never been clean, mind you, but we used to be able to drink it and rarely get sick.",
+      "choices": [
+        {
+          "text": "Is there anywhere else you could get water?",
+          "next": "this.first6"
+        },
+        {
+          "text": "Wow, that sucks",
+          "next": "this.first1"
+        }
+      ]
+    },
+    "first6": {
+      "type": "choice",
+      "text": "There is the old well halfway down the island. Back in my mother's time, when the garrison was still here, they would get there water there. I believe it's still good, but monsters have nested nearby and it is too dangerous to approach.",
+      "choices": [
+        {
+          "text": "I'll see what I can do.",
+          "next": "meta.return",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "start": true
+            },
+            {
+              "flag": "DemoFlaviaDidAskWater",
+              "set": true
+            }
+          ]
+        },
+        {
+          "text": "I'm sorry, but I'm not a warrior. I can't help you with that.",
+          "next": "this.first1"
+        },
+        {
+          "text": "Yeah, you're on your own.",
+          "next": "this.first1",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidOffend",
+              "set": true
+            }
+          ]
+        }
+      ]
+    },
+    "endgood1": {
+      "type": "choice",
+      "text": "That is great news! We shall begin fetching water at once. The village cannot thank you enough, Aegustae.",
+      "choices": [
+        {
+          "text": "You're welcome",
+          "next": "meta.return",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "set": -1
+            },
+            {
+              "variable": "Reputation",
+              "add": 5
+            },
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            },
+            {
+              "item": "Gold",
+              "give": 50
+            }
+          ]
+        }
+      ]
+    },
+    "endlie1": {
+      "type": "choice",
+      "text": "That is great news! We shall begin fetching water at once. The village cannot thank you enough, Aegustae.",
+      "choices": [
+        {
+          "text": "You're welcome",
+          "next": "meta.return",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "set": -2
+            },
+            {
+              "variable": "Reputation",
+              "add": -10
+            },
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            },
+            {
+              "item": "Gold",
+              "give": 50
+            }
+          ]
+        }
+      ]
+    },
+    "endlie2": {
+      "type": "choice",
+      "text": "Forgive me, Aegustae, but I have my doubts. I fear the well may not truly be safe, with monsters still lurking in the shadows.",
+      "choices": [
+        {
+          "text": "You dare question me? Know your place!",
+          "next": "this.endlie3",
+          "microscript": [
+            {
+              "quest": "DemoQuest",
+              "set": -2
+            },
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            },
+            {
+              "variable": "reputation",
+              "give": -25
+            }
+          ]
+        },
+        {
+          "text": "I really did kill the monsters!",
+          "next": "this.endlie4",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidFailLie",
+              "set": true
+            }
+          ]
+        },
+        {
+          "text": "You're right, I'm lying, I didn't do it.",
+          "next": "meta.endlie9"
+        }
+      ]
+    },
+    "endlie3": {
+      "type": "choice",
+      "text": "I am sorry for my transgressions, Aegustae. Your word is law. Thank you for your help.",
+      "choices": [
+        {
+          "text": "Was that sarcasm? I detected sarcasm.",
+          "next": "meta.return"
+        },
+        {
+          "text": "You're welcome",
+          "next": "meta.return"
+        },
+        {
+          "text": "(Sarcastic) You're welcome",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "endlie4": {
+      "type": "choice",
+      "text": "Please, I implore you, Aegustae Aurelia, to act. I know it is much to ask from a simple villager, but we are dying and we are forgotten. We need the monsters killed so we can get water.",
+      "choices": [
+        {
+          "text": "I understand. I'll try to help you.",
+          "next": "meta.return"
+        },
+        {
+          "text": "I'm done with you.",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidOffend",
+              "set": true
+            }
+          ],
+          "next": "meta.return"
+        }
+      ]
+    },
+    "endlie9": {
+      "type": "choice",
+      "text": "Then I implore you, Aegustae Aurelia, to act. I know it is much to ask from a simple villager, but please. We are dying and we are forgotten.",
+      "choices": [
+        {
+          "text": "I understand. I'll try to help you.",
+          "next": "meta.return"
+        },
+        {
+          "text": "You're right. This isn't really my problem.",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidOffend",
+              "set": true
+            }
+          ],
+          "next": "meta.return"
+        }
+      ]
+    },
+    "doneRelocated": {
+      "type": "choice",
+      "text": "We shall begin to leave soon. This is the only home many of us have known, and there are few places for us to go, but it is better than dying here.",
+      "choices": [
+        {
+          "text": "Wow, I kind of feel like a jerk now",
+          "next": "meta.return"
+        },
+        {
+          "text": "I know it's hard, but it's for your own good",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "doneFilterPassed": {
+      "type": "choice",
+      "text": "I still fear this strange mechanism you brought. Many of us do not trust it, but we have no other choice.",
+      "choices": [
+        {
+          "text": "Welcome to the future",
+          "next": "meta.return"
+        },
+        {
+          "text": "Come on, don't be stupid",
+          "next": "meta.return"
+        },
+        {
+          "text": "Just think of it like magic",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "doneFilterFailed": {
+      "type": "choice",
+      "text": "Why did you bring that strange thing to our village? It makes strange noises and keeps us awake at night, and I fear to even go near it.",
+      "choices": [
+        {
+          "text": "You're not going to like the future very much",
+          "next": "meta.return"
+        },
+        {
+          "text": "Oh, come on, it's just a filter",
+          "next": "meta.return"
+        },
+        {
+          "text": "Suit yourself. I was only trying to help",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "movefail": {
+      "type": "choice",
+      "text": "We cannot, Aegustae, even if we wished to. We are simple, poor villagers, without means to leave the island and without another place to go. For most of us, the village is all we have ever known, and all we shall ever know.",
+      "choices": [
+        {
+          "text": "Well, it was worth a shot.",
+          "next": "meta.return"
+        },
+        {
+          "text": "Wow, that's kind of sad, actually",
+          "microscript": [
+            {
+              "flag": "DemoFlaviaDidOffend",
+              "set": true
+            }
+          ],
+          "next": "meta.return"
+        },
+        {
+          "text": "I didn't know that. I'll find another way.",
+          "next": "meta.return"
+        }
+      ]
+    },
+    "movesucceed": {
+      "type": "choice",
+      "text": "If that is our only choice, then it shall be our only choice. We are simple, poor villagers, Aegustae. We hardly have the means to leave the island, and many of us have nowhere else to go. But we will find a way.",
+      "choices": [
+        {
+          "text": "I'm sorry. I know it's going to be hard for you.",
+          "microscript": [
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            },
+            {
+              "quest": "DemoQuest",
+              "set": -3
+            }
+          ],
+          "next": "meta.return"
+        },
+        {
+          "text": "Your village sucks anyways. I'm doing you a favour.",
+          "microscript": [
+            {
+              "actorvalue": "Experience",
+              "add": 100
+            },
+            {
+              "quest": "DemoQuest",
+              "set": -3
+            }
+          ],
+          "next": "meta.return"
+        }
+      ]
+    },
+    "base": {
+      "type": "choice",
+      "nameText": "Flavia",
+      "choices": [
+        {
+          "text": "Hello",
+          "next": "this.first1",
+          "conditional": [
+            {
+              "next": "this.started1",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "started": true
+                },
+                {
+                  "flag": "DemoFlaviaDidAskWater"
+                }
+              ]
+            },
+            {
+              "next": "this.filter1",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "equal": 220
+                }
+              ]
+            },
+            {
+              "next": "this.doneDefault",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "finished": true
+                }
+              ]
+            },
+            {
+              "next": "this.doneRelocated",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "equal": -3
+                }
+              ]
+            },
+            {
+              "next": "this.doneFilterPassed",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "equal": -21
+                }
+              ]
+            },
+            {
+              "next": "this.doneFilterFailed",
+              "conditions": [
+                {
+                  "quest": "DemoQuest",
+                  "equal": -22
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

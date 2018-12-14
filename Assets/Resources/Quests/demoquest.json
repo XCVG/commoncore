@@ -1,0 +1,24 @@
+{
+	"DemoQuest": {
+		"def": {
+			"NiceName": "The Waters of Life",
+			"Image": "quest_demo",
+			"Description": "With the river polluted and the well infested by monsters, the villagers are desperate for clean water. A local woman, Flavia, has urged you to kill the monsters so they can get water again.",
+			"Stages": {
+				"0": "Quest not started, this should never show up :(",
+				"1": "Find a solution to the village's water problems",
+				"-3": "The villagers were convinced to relocate",
+				"-2": "The monsters were not killed, but the villagers believe the well is safe to approach",
+				"-1": "The monsters were killed and the villagers informed the well is now safe to approach",
+				"50": "Kill all the monsters around the well",
+				"60": "Inform Flavia that the water is safe",
+				"200": "Talk to the Mechanic about a filtration system",
+				"201": "Retrieve a Fuel Converter Assembly and High-Pressure Pump and return to the Mechanic",
+				"210": "Install the Filter by the river's edge",
+				"220": "Convince the villagers the Filter is safe",
+				"-21": "A filtration system was installed to provide purified water to the village",
+				"-22": "A filtration system was installed in the village. Unfortunately, they believe it is unsafe and refuse to use it",
+			}
+		}
+	}
+}

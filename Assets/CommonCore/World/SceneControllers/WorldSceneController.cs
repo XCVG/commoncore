@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using CommonCore.State;
+using CommonCore.Audio;
 
 namespace CommonCore.World
 {
@@ -13,6 +14,7 @@ namespace CommonCore.World
     {
         public bool AutoGameover = true;
         public bool Autoload = true;
+        public string SetMusic;
         
         public override void Awake()
         {
@@ -30,13 +32,20 @@ namespace CommonCore.World
                 Restore();
                 MetaState.Instance.IntentsExecutePostload();
             }
+
+            if (!string.IsNullOrEmpty(SetMusic))
+            {
+                AudioPlayer.Instance.SetMusic(SetMusic, true, false);
+                AudioPlayer.Instance.StartMusic();
+            }
+                
         }
 
         public override void Update()
         {
             base.Update();
 
-            if(AutoGameover && GameState.Instance.PlayerRpgState.Health <= 0)
+            if(AutoGameover && GameState.Instance.PlayerRpgState.Health <= 0) //TODO move this, this is dumb, we'll set a flag in MetaState but handle the actual check in PlayerController or explicitly
             {
                 MetaState.Instance.NextScene = SceneManager.GetActiveScene().name; //in case we need it...
                 SceneManager.LoadScene("GameOverScene");
@@ -305,6 +314,7 @@ namespace CommonCore.World
                 {
                     //spawn the player object in
                     player = Instantiate(Resources.Load("entities/" + "spec_player"), transform) as GameObject;
+                    player.name = "Player";
                     if (mgs.TransitionType == SceneTransitionType.LoadGame)
                     {
                         player.GetComponent<PlayerRestorableComponent>().Restore(prd);
@@ -336,6 +346,15 @@ namespace CommonCore.World
             }
             else
             {
+                if(player == null)
+                {
+                    player = Instantiate(Resources.Load("entities/" + "spec_player"), transform) as GameObject;
+                    player.name = "Player";
+                }
+                    
+
+                RestorePlayerToIntent(mgs, player);
+
                 //warn that no player data exists
                 Debug.LogWarning("No player world data exists!");
             }
@@ -351,6 +370,15 @@ namespace CommonCore.World
                     player.transform.position = spawnPoint.transform.position;
                     player.transform.rotation = spawnPoint.transform.rotation;
                 }
+                else if(mgs.PlayerIntent.SpawnPoint != null) //not null, but is empty
+                {
+                    GameObject spawnPoint = WorldUtils.FindObjectByTID("DefaultPlayerSpawn");
+                    if(spawnPoint != null)
+                    {
+                        player.transform.position = spawnPoint.transform.position;
+                        player.transform.rotation = spawnPoint.transform.rotation;
+                    }                    
+                }
                 else
                 {
                     player.transform.position = mgs.PlayerIntent.Position;
@@ -359,6 +387,14 @@ namespace CommonCore.World
             }
             else
             {
+
+                GameObject spawnPoint = WorldUtils.FindObjectByTID("DefaultPlayerSpawn");
+                if (spawnPoint != null)
+                {
+                    player.transform.position = spawnPoint.transform.position;
+                    player.transform.rotation = spawnPoint.transform.rotation;
+                }
+
                 Debug.LogWarning("No player spawn intent exists!");
             }
         }

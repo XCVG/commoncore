@@ -5,6 +5,7 @@
 		"AType": "Health",
 		"RType": "Add",
 		"Amount": 50.0,
+		"Value": 20.0,
 		"Name": "medkit",
 		"Weight": 1.0,
 		"MaxCondition": 1.0,

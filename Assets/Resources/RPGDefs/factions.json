@@ -1,0 +1,10 @@
+{
+  "Player": {
+    "ChaoticEvil": "Hostile"
+  },
+  "ChaoticEvil": {
+    "Player": "Hostile",
+	"Neutral": "Hostile",
+    "Monster": "Hostile"
+  }
+}

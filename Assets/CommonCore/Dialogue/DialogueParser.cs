@@ -27,6 +27,7 @@ namespace CommonCore.Dialogue
             string sMusic = string.Empty;
             string sNext = string.Empty;
             string sText = string.Empty;
+            string sName = string.Empty;
             if (jo["background"] != null)
                 sBackground = jo["background"].Value<string>();
             if (jo["image"] != null)
@@ -37,7 +38,9 @@ namespace CommonCore.Dialogue
                 sNext = jo["default"].Value<string>();
             if (jo["text"] != null)
                 sText = jo["text"].Value<string>();
-            Frame baseFrame = new Frame(sBackground, sImage, sNext, sMusic, string.Empty, sText, null, null);
+            if (jo["nameText"] != null)
+                sName = jo["nameText"].Value<string>();
+            Frame baseFrame = new Frame(sBackground, sImage, sNext, sMusic, sName, sText, null, null);
 
             //parse frames
             Dictionary<string, Frame> frames = new Dictionary<string, Frame>();
@@ -59,7 +62,7 @@ namespace CommonCore.Dialogue
                 }
             }
 
-            return new DialogueScene(frames, sNext);
+            return new DialogueScene(frames, sNext, sMusic);
         }
 
         public static Frame ParseSingleFrame(JToken jt, Frame baseFrame)
@@ -87,7 +90,7 @@ namespace CommonCore.Dialogue
             if (jt["type"] != null)
                 type = jt["type"].Value<string>();
 
-            //TODO load/parse conditionals and microscripts
+            //load/parse conditionals and microscripts
             ConditionNode[] conditional = null;
             MicroscriptNode[] microscript = null;
 
@@ -247,7 +250,7 @@ namespace CommonCore.Dialogue
             {
                 type = ConditionType.Affinity;
                 target = jt["affinity"].Value<string>();
-            }
+            }            
             else if (jt["quest"] != null)
             {
                 type = ConditionType.Quest;
@@ -257,6 +260,11 @@ namespace CommonCore.Dialogue
             {
                 type = ConditionType.Item;
                 target = jt["item"].Value<string>();
+            }
+            else if (jt["actorvalue"] != null)
+            {
+                type = ConditionType.ActorValue;
+                target = jt["actorvalue"].Value<string>();
             }
             else
             {
@@ -276,7 +284,7 @@ namespace CommonCore.Dialogue
                 }
 
             }
-            else if (type == ConditionType.Affinity || type == ConditionType.Quest || type == ConditionType.Variable)
+            else if (type == ConditionType.Affinity || type == ConditionType.Quest || type == ConditionType.Variable || type == ConditionType.ActorValue)
             {
                 if (jt["greater"] != null)
                 {
@@ -320,8 +328,12 @@ namespace CommonCore.Dialogue
 
         public static MicroscriptNode ParseMicroscript(JToken jt)
         {
+            //parse type and target
             MicroscriptType type;
             string target;
+            MicroscriptAction action;
+            object value = 0;
+
             if (jt["flag"] != null)
             {
                 type = MicroscriptType.Flag;
@@ -347,13 +359,26 @@ namespace CommonCore.Dialogue
                 type = MicroscriptType.Quest;
                 target = jt["quest"].Value<string>();
             }
+            else if (jt["actorvalue"] != null)
+            {
+                type = MicroscriptType.ActorValue;
+                target = jt["actorvalue"].Value<string>();
+            }
+            else if(jt["exec"] != null)
+            {
+                type = MicroscriptType.Exec;
+                target = jt["exec"].Value<string>();
+                if(jt["arg"] != null)
+                {
+                    value = CCBaseUtil.StringToNumericAuto(jt["arg"].Value<string>());
+                }
+            }
             else
             {
                 throw new NotSupportedException();
             }
 
-            MicroscriptAction action;
-            object value = 0;
+            //parse action/value            
             if (jt["set"] != null)
             {
                 action = MicroscriptAction.Set;
@@ -396,7 +421,37 @@ namespace CommonCore.Dialogue
                 throw new NotSupportedException();
             }
 
-            return new MicroscriptNode(type, target, action, value);
+            //parse delay, if applicable
+            DelayTimeType delayType = DelayTimeType.None;
+            double delayTime = default(double);
+            bool delayAbsolute = false;
+            if (jt["delay"] != null)
+            {
+                delayType = DelayTimeType.Game;
+                delayTime = double.Parse(jt["delay"].Value<string>());
+                if(jt["delayType"] != null)
+                {
+                    string delayTypeString = jt["delayType"].Value<string>();
+                    switch (delayTypeString)
+                    {
+                        case "real":
+                            delayType = DelayTimeType.Real;
+                            break;
+                        case "world":
+                            delayType = DelayTimeType.World;
+                            break;
+                        case "game":
+                            delayType = DelayTimeType.Game;
+                            break;
+                    }
+                }
+                if(jt["delayAbsolute"] != null)
+                {
+                    delayAbsolute = jt["delayAbsolute"].Value<bool>();
+                }
+            }
+
+            return new MicroscriptNode(type, target, action, value, delayType, delayTime, delayAbsolute);
         }
 
         public static KeyValuePair<string, string> ParseLocation(string loc)

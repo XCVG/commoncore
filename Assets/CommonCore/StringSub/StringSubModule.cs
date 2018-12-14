@@ -178,6 +178,18 @@ namespace CommonCore.StringSub
                 case "/em":
                     result = "</i>"; //handling dialogue written for proper html
                     break;
+                case "b":
+                    result = "<b>"; //handling dialogue written for improper html
+                    break;
+                case "/b":
+                    result = "</b>"; //handling dialogue written for improper html
+                    break;
+                case "i":
+                    result = "<i>"; //handling dialogue written for improper html
+                    break;
+                case "/i":
+                    result = "</i>"; //handling dialogue written for improper html
+                    break;
                 default:
                     result = string.Format("<MISSING:{0}>", sequence);
                     break;

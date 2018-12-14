@@ -114,32 +114,73 @@ namespace CommonCore.State
         }
     }
 
-    internal enum MicroscriptType
+    public enum MicroscriptType
     {
-        Flag, Item, Variable, Affinity, Quest, ActorValue //eval is again not supported
+        Flag, Item, Variable, Affinity, Quest, ActorValue, Exec //eval is again not supported
     }
 
-    internal enum MicroscriptAction
+    public enum MicroscriptAction
     {
         Set, Toggle, Add, Give, Take, Start, Finish
     }
 
-    internal class MicroscriptNode //"directive" in Katana parlance
+    [Serializable]
+    public struct EditorMicroscript
+    {
+        public MicroscriptType Type;
+        public string Target;
+        public MicroscriptAction Action;
+        public string Value;
+        public DelayTimeType DelayType;
+        public float DelayTime;
+        public bool DelayAbsolute;
+
+        public MicroscriptNode Parse()
+        {
+            object val = CCBaseUtil.StringToNumericAuto(Value);
+            return new MicroscriptNode(Type, Target, Action, val, DelayType, DelayTime, DelayAbsolute);
+        }
+
+    }
+
+    public class MicroscriptNode //"directive" in Katana parlance
     {
         public readonly MicroscriptType Type;
         public readonly string Target;
         public readonly MicroscriptAction Action;
         public readonly object Value;
+        public readonly DelayTimeType DelayType;
+        public readonly double DelayTime;
+        public readonly bool DelayAbsolute;
 
-        public MicroscriptNode(MicroscriptType type, string target, MicroscriptAction action, object value)
+        public MicroscriptNode(MicroscriptType type, string target, MicroscriptAction action, object value,
+            DelayTimeType delayType, double delayTime, bool delayAbsolute)
         {
             Type = type;
             Target = target;
             Action = action;
             Value = value;
+            DelayType = delayType;
+            DelayTime = delayTime;
+            DelayAbsolute = delayAbsolute;
         }
 
         public void Execute()
+        {
+            if (DelayType != DelayTimeType.None)
+                ExecuteDelayed();
+            else
+                ExecuteImmediate();
+
+        }
+
+        private void ExecuteDelayed()
+        {
+            MicroscriptNode dupNode = new MicroscriptNode(Type, Target, Action, Value, DelayTimeType.None, default(float), default(bool));
+            DelayedEventScheduler.ScheduleEvent(dupNode, DelayType, DelayTime, DelayAbsolute);
+        }
+
+        private void ExecuteImmediate()
         {
             switch (Type)
             {
@@ -222,10 +263,12 @@ namespace CommonCore.State
                         throw new NotSupportedException();
                     }
                     break;
+                case MicroscriptType.Exec:
+                    Scripting.ScriptingModule.Call(Target, new Scripting.ScriptExecutionContext() { Caller = this }, Value);
+                    break;
                 default:
                     throw new NotSupportedException();
             }
-
         }
     }
 }

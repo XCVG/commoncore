@@ -1,0 +1,14 @@
+# Blender MTL File: 'mage_tower.blend'
+# Material Count: 1
+
+newmtl Material
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.112023 0.112023 0.112023
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd mage_tower_uv.png
+map_Bump mage_tower_nrm.png

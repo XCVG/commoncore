@@ -10,6 +10,7 @@ namespace CommonCore.World
     {
         public string Scene;
         public string SpawnPoint;
+        public bool UsePosition = false;
         public Vector3 Position;
         public Vector3 Rotation;
 
@@ -17,7 +18,13 @@ namespace CommonCore.World
         {
             if (CheckEligibility(activator))
             {
-                WorldUtils.ChangeScene(Scene, SpawnPoint, Position, Rotation);
+                string spawnPointHack = SpawnPoint;
+                if (UsePosition)
+                    spawnPointHack = null;
+                else if (string.IsNullOrEmpty(SpawnPoint))
+                    spawnPointHack = string.Empty;
+
+                WorldUtils.ChangeScene(Scene, spawnPointHack, Position, Rotation);
             }
         }
     }

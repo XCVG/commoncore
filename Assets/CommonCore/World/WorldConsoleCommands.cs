@@ -34,6 +34,53 @@ namespace CommonCore.World
             DevConsole.singleton.Log(JsonConvert.SerializeObject(GameState.Instance.PlayerRpgState));
         }
 
+        [Command]
+        static void PrintSceneList()
+        {   try
+            {
+                var sceneNames = SceneUtils.GetSceneList();
+                StringBuilder sb = new StringBuilder(sceneNames.Length * 16);
+                foreach (var s in sceneNames)
+                {
+                    sb.AppendLine(s);
+                }
+                DevConsole.singleton.Log(sb.ToString());
+            }
+            catch(Exception e)
+            {
+                Debug.LogException(e);
+            }
+            
+        }
+
+        //***** CHEATS
+
+        [Command]
+        static void God()
+        {
+            if (MetaState.Instance.SessionFlags.Contains("GodMode"))
+                MetaState.Instance.SessionFlags.Remove("GodMode");
+            else
+                MetaState.Instance.SessionFlags.Add("GodMode");
+        }
+
+        [Command]
+        static void Noclip()
+        {
+            var player = WorldUtils.GetPlayerController();
+
+            player.Clipping = !(player.Clipping);
+        }
+
+        [Command]
+        static void Notarget()
+        {
+            if (MetaState.Instance.SessionFlags.Contains("NoTarget"))
+                MetaState.Instance.SessionFlags.Remove("NoTarget");
+            else
+                MetaState.Instance.SessionFlags.Add("NoTarget");
+        }
+
         //***** LOAD/SAVE
 
         //force a full load from file with scene transition
@@ -86,7 +133,7 @@ namespace CommonCore.World
         [Command]
         static void Warp(string scene)
         {
-            Warp(scene, null);
+            Warp(scene, string.Empty);
         }
 
         [Command]
