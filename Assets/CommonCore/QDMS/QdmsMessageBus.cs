@@ -33,7 +33,7 @@ namespace CommonCore.Messaging
             _Instance = this;
         }
 
-        public override void OnApplicationQuit()
+        public override void Dispose()
         {
             foreach (IQdmsMessageReceiver r in Receivers)
             {

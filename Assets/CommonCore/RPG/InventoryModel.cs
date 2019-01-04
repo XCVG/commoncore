@@ -102,7 +102,7 @@ namespace CommonCore.Rpg
             //load new model/def/etc file-per-item entries
             //we've turned our data structures sideways pretty much
             //we could add more try/catch and make this absolutely bulletproof but I feel it isn't necessary
-            TextAsset[] tas = CCBaseUtil.LoadResources<TextAsset>("Items/");
+            TextAsset[] tas = CoreUtils.LoadResources<TextAsset>("Items/");
             foreach(TextAsset ta in tas)
             {
                 try

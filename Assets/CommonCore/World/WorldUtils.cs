@@ -85,7 +85,7 @@ namespace CommonCore.World
                 return go;
             }
 
-            var tf = CCBaseUtil.GetWorldRoot().FindDeepChild("Player");
+            var tf = CoreUtils.GetWorldRoot().FindDeepChild("Player");
 
             if(tf != null)
                 go = tf.gameObject;
@@ -223,7 +223,7 @@ namespace CommonCore.World
         [Obsolete]
         public static GameObject SpawnObject(string formID, Vector3 position, Vector3 rotation)
         {
-            return UnityEngine.Object.Instantiate(Resources.Load("entities/" + formID), position, Quaternion.Euler(rotation), CCBaseUtil.GetWorldRoot()) as GameObject;
+            return UnityEngine.Object.Instantiate(Resources.Load("entities/" + formID), position, Quaternion.Euler(rotation), CoreUtils.GetWorldRoot()) as GameObject;
         }
         [Obsolete]
         public static GameObject SpawnObject(Transform parent, string formID, Vector3 position, Vector3 rotation)
@@ -234,7 +234,7 @@ namespace CommonCore.World
         public static GameObject SpawnObject(string formID, string thingID, Vector3 position, Vector3 rotation, Transform parent)
         {
             if (parent == null)
-                parent = CCBaseUtil.GetWorldRoot();
+                parent = CoreUtils.GetWorldRoot();
 
             var prefab = Resources.Load("entities/" + formID);
             if (prefab == null)
@@ -250,7 +250,7 @@ namespace CommonCore.World
         public static GameObject SpawnEffect(string effectID, Vector3 position, Vector3 rotation, Transform parent)
         {
             if (parent == null)
-                parent = CCBaseUtil.GetWorldRoot();
+                parent = CoreUtils.GetWorldRoot();
 
             var prefab = Resources.Load("DynamicFX/" + effectID);
             if (prefab == null)
@@ -310,6 +310,17 @@ namespace CommonCore.World
             var ic = go.GetComponent<ItemController>();
             ic.ItemId = item.Name;
             ic.ItemQuantity = quantity;
+        }
+
+        //a stupid place to put this, but not as stupid as the last place
+        public static float CalculateDamage(float Damage, float Pierce, float Threshold, float Resistance) //this is a dumb spot and we will move it later
+        {
+            float d1 = Damage * ((100f - Mathf.Min(Resistance, 99f)) / 100f);
+            float dt = Mathf.Max(0, Threshold - Pierce);
+            float d2 = Mathf.Max(d1 - dt, Damage * 0.1f);
+            if (CoreParams.UseRandomDamage)
+                d2 *= UnityEngine.Random.Range(0.75f, 1.25f);
+            return d2;
         }
 
     }

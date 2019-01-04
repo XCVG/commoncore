@@ -77,7 +77,7 @@ namespace CommonCore.Dialogue
     {
         public static Monologue LoadMonologue(string monologueName)
         {
-            TextAsset ta = CCBaseUtil.LoadResource<TextAsset>("Monologue/" + monologueName);
+            TextAsset ta = CoreUtils.LoadResource<TextAsset>("Monologue/" + monologueName);
             return LoadMonologueFromString(ta.text);
         }
 

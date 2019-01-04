@@ -106,7 +106,7 @@ namespace CommonCore.Rpg
             }
 
             //apply derived skills
-            if(CCParams.UseDerivedSkills)
+            if(CoreParams.UseDerivedSkills)
                 RpgValues.SkillsFromStats(BaseStats, DerivedStats);
 
             //recalculate max health and energy
@@ -278,7 +278,7 @@ namespace CommonCore.Rpg
             {
                 //search and modify property
                 var prop = GetType().GetProperty(av);
-                if(CCBaseUtil.IsNumericType(prop.PropertyType))
+                if(CoreUtils.IsNumericType(prop.PropertyType))
                 {
                     decimal newVal = Convert.ToDecimal(prop.GetValue(this, null)) + Convert.ToDecimal(value);
                     prop.SetValue(this, Convert.ChangeType(newVal, prop.PropertyType), null);

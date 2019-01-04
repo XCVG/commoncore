@@ -25,7 +25,7 @@ namespace CommonCore.State
         {
             Elapsed += Time.deltaTime;
 
-            if(Elapsed >= CCParams.DelayedEventPollInterval)
+            if(Elapsed >= CoreParams.DelayedEventPollInterval)
             {
                 WorldModel wm = GameState.Instance.WorldState;
                 

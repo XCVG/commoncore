@@ -29,7 +29,7 @@ namespace CommonCore.State
             if (Type == ConditionType.Item || Type == ConditionType.Quest || Type == ConditionType.ActorValue)
                 opt = Option;
 
-            IComparable val = (IComparable)CCBaseUtil.StringToNumericAuto(OptionValue);
+            IComparable val = (IComparable)CoreUtils.StringToNumericAuto(OptionValue);
 
             return new Conditional(Type, Target, opt, val);
         }
@@ -137,7 +137,7 @@ namespace CommonCore.State
 
         public MicroscriptNode Parse()
         {
-            object val = CCBaseUtil.StringToNumericAuto(Value);
+            object val = CoreUtils.StringToNumericAuto(Value);
             return new MicroscriptNode(Type, Target, Action, val, DelayType, DelayTime, DelayAbsolute);
         }
 

@@ -83,7 +83,7 @@ namespace CommonCore.Dialogue
             if (VoiceAudioSource.isPlaying)
                 VoiceAudioSource.Stop();
             string voicePath = string.Format("DialogueVoice/{0}/{1}", CurrentSceneName, CurrentFrameName);
-            var voiceClip = CCBaseUtil.LoadResource<AudioClip>(voicePath);
+            var voiceClip = CoreUtils.LoadResource<AudioClip>(voicePath);
             if(voiceClip != null)
             {
                 VoiceAudioSource.clip = voiceClip;

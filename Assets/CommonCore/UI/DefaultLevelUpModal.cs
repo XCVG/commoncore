@@ -195,9 +195,9 @@ namespace CommonCore.UI
         
         public static void PushModal(LevelUpModalCallback callback)
         {
-            if(CCParams.UseCustomLeveling)
+            if(CoreParams.UseCustomLeveling)
             {
-                var go = Instantiate<GameObject>(Resources.Load<GameObject>(AltPrefab), CCBaseUtil.GetWorldRoot());
+                var go = Instantiate<GameObject>(Resources.Load<GameObject>(AltPrefab), CoreUtils.GetWorldRoot());
                 var modal = go.GetComponent<GameUI.LevelUpModal>();
                 modal.Callback = callback;
                 if (IngameMenuController.Current != null)
@@ -205,7 +205,7 @@ namespace CommonCore.UI
             }
             else
             {
-                var go = Instantiate<GameObject>(Resources.Load<GameObject>(DefaultPrefab), CCBaseUtil.GetWorldRoot());
+                var go = Instantiate<GameObject>(Resources.Load<GameObject>(DefaultPrefab), CoreUtils.GetWorldRoot());
                 var modal = go.GetComponent<DefaultLevelUpModal>();
                 modal.Callback = callback;
                 if (IngameMenuController.Current != null)

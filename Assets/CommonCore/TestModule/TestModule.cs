@@ -17,7 +17,7 @@ namespace CommonCore.TestModule
             Debug.Log("Test module loaded!");
         }
 
-        public override void OnApplicationQuit()
+        public override void Dispose()
         {
             Debug.Log("Test module unloaded!");
         }
@@ -40,6 +40,11 @@ namespace CommonCore.TestModule
         public override void OnGameEnd()
         {
             Debug.Log("Test module: game end!");
+        }
+
+        public override void OnAllModulesLoaded()
+        {
+            Debug.Log("Test module: all modules loaded!");
         }
 
     }

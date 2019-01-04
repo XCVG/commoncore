@@ -37,8 +37,8 @@ namespace GameUI
 
             SystemText.text = string.Format("{0}\n{1} {2}\nCommonCore {3} {4}\nUnity {5}",
                 Application.productName,
-                CCParams.GameVersion, CCParams.GameVersionName,
-                CCParams.VersionCode.ToString(), CCParams.VersionName,
+                Application.version, CoreParams.GameVersionName,
+                CoreParams.VersionCode.ToString(), CoreParams.VersionName,
                 Application.unityVersion);
         }
 
@@ -49,7 +49,7 @@ namespace GameUI
 
         public void OnClickContinue()
         {
-            string savePath = CCParams.SavePath;
+            string savePath = CoreParams.SavePath;
             DirectoryInfo saveDInfo = new DirectoryInfo(savePath);
             FileInfo saveFInfo = saveDInfo.GetFiles().OrderBy(f => f.CreationTime).Last();
 

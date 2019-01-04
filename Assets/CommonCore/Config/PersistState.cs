@@ -8,20 +8,20 @@ namespace CommonCore.Config
 
     public class PersistState
     {
-        private static readonly string Path = CCParams.PersistentDataPath + "/persist.json";
+        private static readonly string Path = CoreParams.PersistentDataPath + "/persist.json";
 
         public static PersistState Instance { get; private set; }
 
         internal static void Load()
         {
-            Instance = CCBaseUtil.LoadExternalJson<PersistState>(Path);
+            Instance = CoreUtils.LoadExternalJson<PersistState>(Path);
             if (Instance == null)
                 Instance = new PersistState();
         }
 
         internal static void Save()
         {
-            CCBaseUtil.SaveExternalJson(Path, Instance);
+            CoreUtils.SaveExternalJson(Path, Instance);
         }
 
         //set defaults in constructor

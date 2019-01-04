@@ -231,7 +231,7 @@ namespace CommonCore.World
                     Target = null;
                     SetAnimation(ActorAnimState.Walking);
                     //set initial destination
-                    Vector2 newpos = CCBaseUtil.GetRandomVector(InitialPosition.ToFlatVec(), WanderRadius);
+                    Vector2 newpos = CoreUtils.GetRandomVector(InitialPosition.ToFlatVec(), WanderRadius);
                     SetDestination(newpos.ToSpaceVec());
                     break;
                 case ActorAiState.Chasing:
@@ -261,7 +261,7 @@ namespace CommonCore.World
                 case ActorAiState.Attacking:
                     //set animation, fire projectile, set timer
                     SetAnimation(UseMelee ? ActorAnimState.Punching : ActorAnimState.Shooting);
-                    transform.forward = CCBaseUtil.GetFlatVectorToTarget(transform.position, Target.position); //ugly but workable
+                    transform.forward = CoreUtils.GetFlatVectorToTarget(transform.position, Target.position); //ugly but workable
                     if(AttackStateWarmup <= 0)
                     {
                         DoAttack(); //waaaaay too complicated to cram here
@@ -340,7 +340,7 @@ namespace CommonCore.World
                     //TODO aggression
                     if((transform.position - AltTarget).magnitude <= WanderThreshold || TimeInState >= WanderTimeout)
                     {
-                        Vector2 newpos = CCBaseUtil.GetRandomVector(InitialPosition.ToFlatVec(), WanderRadius);
+                        Vector2 newpos = CoreUtils.GetRandomVector(InitialPosition.ToFlatVec(), WanderRadius);
                         SetDestination(newpos.ToSpaceVec());
                         TimeInState = 0;
                     }
@@ -813,7 +813,7 @@ namespace CommonCore.World
             //damage model is very stupid right now, we will make it better later
             float dt = DamageThreshold[(int)data.DType];
             float dr = DamageResistance[(int)data.DType];
-            float damageTaken = CCBaseUtil.CalculateDamage(data.Damage, data.DamagePierce, dt, dr);
+            float damageTaken = WorldUtils.CalculateDamage(data.Damage, data.DamagePierce, dt, dr);
 
             if (data.HitLocation == ActorBodyPart.Head)
                 damageTaken *= 2.0f;

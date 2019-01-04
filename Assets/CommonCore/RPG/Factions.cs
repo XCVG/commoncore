@@ -43,7 +43,7 @@ namespace CommonCore.Rpg
             try
             {
                 TextAsset ta = Resources.Load<TextAsset>("RPGDefs/factions");
-                var newFactions = CCBaseUtil.LoadJson<Dictionary<string, Dictionary<string, FactionRelationStatus>>>(ta.text);
+                var newFactions = CoreUtils.LoadJson<Dictionary<string, Dictionary<string, FactionRelationStatus>>>(ta.text);
 
                 foreach(var row in newFactions)
                 {

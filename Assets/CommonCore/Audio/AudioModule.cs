@@ -34,29 +34,29 @@ namespace CommonCore.Audio
             if (sType == SoundType.Any)
             {
                 //attempt to load in order
-                clip = CCBaseUtil.LoadResource<AudioClip>("DynamicSound/" + name);
+                clip = CoreUtils.LoadResource<AudioClip>("DynamicSound/" + name);
                 if(clip == null)
-                    clip = CCBaseUtil.LoadResource<AudioClip>("Voice/" + name);
+                    clip = CoreUtils.LoadResource<AudioClip>("Voice/" + name);
                 if(clip == null)
-                    clip = CCBaseUtil.LoadResource<AudioClip>("DynamicMusic/" + name);
+                    clip = CoreUtils.LoadResource<AudioClip>("DynamicMusic/" + name);
                 if (clip == null)
-                    clip = CCBaseUtil.LoadResource<AudioClip>(name);
+                    clip = CoreUtils.LoadResource<AudioClip>(name);
             }
             else
             {
                 switch (sType)
                 {
                     case SoundType.Sound:
-                        clip = CCBaseUtil.LoadResource<AudioClip>("DynamicSound/" + name);
+                        clip = CoreUtils.LoadResource<AudioClip>("DynamicSound/" + name);
                         break;
                     case SoundType.Voice:
-                        clip = CCBaseUtil.LoadResource<AudioClip>("Voice/" + name);
+                        clip = CoreUtils.LoadResource<AudioClip>("Voice/" + name);
                         break;
                     case SoundType.Music:
-                        clip = CCBaseUtil.LoadResource<AudioClip>("DynamicMusic/" + name);
+                        clip = CoreUtils.LoadResource<AudioClip>("DynamicMusic/" + name);
                         break;
                     case SoundType.Root:
-                        clip = CCBaseUtil.LoadResource<AudioClip>(name);
+                        clip = CoreUtils.LoadResource<AudioClip>(name);
                         break;
                 }
 

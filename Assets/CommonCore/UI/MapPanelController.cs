@@ -22,7 +22,7 @@ namespace CommonCore.UI
         {
             get
             {
-                return CCBaseUtil.LoadResource<Sprite>("UI/MapMarkers/player");
+                return CoreUtils.LoadResource<Sprite>("UI/MapMarkers/player");
             }
         }
 
@@ -30,7 +30,7 @@ namespace CommonCore.UI
         {
             get
             {
-                return CCBaseUtil.LoadResource<Sprite>("UI/MapMarkers/known");
+                return CoreUtils.LoadResource<Sprite>("UI/MapMarkers/known");
             }
         }
 
@@ -38,7 +38,7 @@ namespace CommonCore.UI
         {
             get
             {
-                return CCBaseUtil.LoadResource<Sprite>("UI/MapMarkers/visited");
+                return CoreUtils.LoadResource<Sprite>("UI/MapMarkers/visited");
             }
         }
 
@@ -86,7 +86,7 @@ namespace CommonCore.UI
             TitleText.text = string.Empty;
             MarkerText.text = string.Empty;
             MapImage.texture = null;
-            CCBaseUtil.DestroyAllChildren(OverlayContainer);
+            CoreUtils.DestroyAllChildren(OverlayContainer);
         }
 
         private void ClearMarkerText()
@@ -173,7 +173,7 @@ namespace CommonCore.UI
                 return null;
             }
 
-            Sprite loadedSprite = CCBaseUtil.LoadResource<Sprite>(string.Format("UI/MapMarkers/{0}/{1}", markerOverride, state.ToString().ToLowerInvariant()));
+            Sprite loadedSprite = CoreUtils.LoadResource<Sprite>(string.Format("UI/MapMarkers/{0}/{1}", markerOverride, state.ToString().ToLowerInvariant()));
 
             if(loadedSprite == null)
             {

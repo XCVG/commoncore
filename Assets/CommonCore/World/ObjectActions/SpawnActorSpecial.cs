@@ -39,7 +39,7 @@ namespace CommonCore.ObjectActions
             Transform parent;
             if (SpawnParent == null)
             {
-                parent = CCBaseUtil.GetWorldRoot();
+                parent = CoreUtils.GetWorldRoot();
             }
             else
                 parent = SpawnParent;

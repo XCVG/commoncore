@@ -63,9 +63,9 @@ namespace CommonCore.World
                 else if (UseResourceFallback)
                 {
                     string mapPath = "Maps/" + SceneManager.GetActiveScene().name;
-                    if (CCBaseUtil.CheckResource<Texture2D>(mapPath))
+                    if (CoreUtils.CheckResource<Texture2D>(mapPath))
                     {
-                        Texture2D mapTexture = CCBaseUtil.LoadResource<Texture2D>(mapPath);
+                        Texture2D mapTexture = CoreUtils.LoadResource<Texture2D>(mapPath);
                         return mapTexture;
                     }
                 }
@@ -78,7 +78,7 @@ namespace CommonCore.World
         {
             get
             {
-                Transform worldRoot = CCBaseUtil.GetWorldRoot();
+                Transform worldRoot = CoreUtils.GetWorldRoot();
                 if(worldRoot != null)
                 {
                     Cartographer cartographer = worldRoot.GetComponent<Cartographer>();

@@ -46,7 +46,7 @@ namespace CommonCore.State
                 else if (MetaState.Instance.TransitionType == SceneTransitionType.LoadGame)
                 {
                     //we are loading a game, so load the game data and then load the next scene (which is part of save data)
-                    GameState.DeserializeFromFile(CCParams.SavePath + @"\" + MetaState.Instance.LoadSave);
+                    GameState.DeserializeFromFile(CoreParams.SavePath + @"\" + MetaState.Instance.LoadSave);
                     MetaState.Instance.NextScene = GameState.Instance.CurrentScene;
                     SceneManager.LoadScene(MetaState.Instance.NextScene); //when this fails, it doesn't return a status code or throw an exception, only logs an error
                     //oh, and no, it doesn't halt execution, either, so you can't check that way (which would be dumb, but at least workable)
@@ -59,7 +59,7 @@ namespace CommonCore.State
                 {
                     GameState.Reset();
                     MetaState.Reset();
-                    MetaState.Instance.NextScene = CCParams.InitialScene;
+                    MetaState.Instance.NextScene = CoreParams.InitialScene;
                     GameState.Instance.CurrentScene = MetaState.Instance.NextScene;
                     GameState.LoadInitial();
                     SceneManager.LoadScene(MetaState.Instance.NextScene);

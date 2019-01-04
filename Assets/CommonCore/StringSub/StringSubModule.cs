@@ -27,12 +27,12 @@ namespace CommonCore.StringSub
 
             //load all substitution lists
             Strings = new Dictionary<string, Dictionary<string, string>>();
-            TextAsset[] tas = CCBaseUtil.LoadResources<TextAsset>("Strings/");
+            TextAsset[] tas = CoreUtils.LoadResources<TextAsset>("Strings/");
             foreach(TextAsset ta in tas)
             {
                 try
                 {
-                    var lists = CCBaseUtil.LoadJson<Dictionary<string, Dictionary<string, string>>>(ta.text);
+                    var lists = CoreUtils.LoadJson<Dictionary<string, Dictionary<string, string>>>(ta.text);
                     foreach(var list in lists)
                     {
                         //merge new lists onto old

@@ -25,10 +25,10 @@ namespace CommonCore.Dialogue
 
         private void LoadAll()
         {
-            if (CCParams.LoadPolicy != DataLoadPolicy.OnStart)
+            if (CoreParams.LoadPolicy != DataLoadPolicy.OnStart)
                 return;
 
-            TextAsset[] tas = CCBaseUtil.LoadResources<TextAsset>("Dialogue/");
+            TextAsset[] tas = CoreUtils.LoadResources<TextAsset>("Dialogue/");
             foreach(var ta in tas)
             {
                 try
@@ -42,7 +42,7 @@ namespace CommonCore.Dialogue
                 }
             }
 
-            TextAsset[] tasm = CCBaseUtil.LoadResources<TextAsset>("Monologue/");
+            TextAsset[] tasm = CoreUtils.LoadResources<TextAsset>("Monologue/");
             foreach (var ta in tasm)
             {
                 try
@@ -57,9 +57,9 @@ namespace CommonCore.Dialogue
             }
         }
 
-        public override void OnApplicationQuit()
+        public override void Dispose()
         {
-            base.OnApplicationQuit();
+            base.Dispose();
 
             Instance = null;
         }

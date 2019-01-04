@@ -47,7 +47,7 @@ namespace World.Ext.TestIsland
             //TODO: face WaterLady and initiate conversation
             var playerTransform = WorldUtils.GetPlayerObject().transform;
             var npcTransform = WorldUtils.FindObjectByTID("WaterLady").transform;
-            playerTransform.forward = CCBaseUtil.GetFlatVectorToTarget(playerTransform.position, npcTransform.position).normalized;
+            playerTransform.forward = CoreUtils.GetFlatVectorToTarget(playerTransform.position, npcTransform.position).normalized;
 
             yield return new WaitForSeconds(0.5f);
 

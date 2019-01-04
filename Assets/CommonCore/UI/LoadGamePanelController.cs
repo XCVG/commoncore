@@ -50,7 +50,7 @@ namespace CommonCore.UI
 
         private void ListSaves()
         {
-            string savePath = CCParams.SavePath;
+            string savePath = CoreParams.SavePath;
             DirectoryInfo saveDInfo = new DirectoryInfo(savePath);
             FileInfo[] savesFInfo = saveDInfo.GetFiles().OrderBy(f => f.CreationTime).Reverse().ToArray();
 

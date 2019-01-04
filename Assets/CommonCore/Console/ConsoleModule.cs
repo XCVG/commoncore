@@ -28,8 +28,10 @@ namespace CommonCore.Console
             Debug.Log("Console module loaded!");
         }
 
-        public override void OnApplicationQuit()
+        public override void Dispose()
         {
+            base.Dispose();
+
             ConsoleMessagingThing = null;
             GameObject.Destroy(ConsoleObject);
             Debug.Log("Console module unloaded!");
@@ -43,7 +45,7 @@ namespace CommonCore.Console
 
         string GetVersion()
         {
-            return string.Format("{0} {1} (Unity {2})", CCParams.VersionCode, CCParams.VersionName, CCParams.UnityVersion);
+            return string.Format("{0} {1} (Unity {2})", CoreParams.VersionCode, CoreParams.VersionName, CoreParams.UnityVersion);
         }
 
         void Quit()

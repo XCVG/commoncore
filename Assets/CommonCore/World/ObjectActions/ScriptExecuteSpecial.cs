@@ -24,7 +24,7 @@ namespace CommonCore.ObjectActions
             {
                 for (int i = 0; i < args.Length; i++)
                 {
-                    args[i] = CCBaseUtil.StringToNumericAuto((string)args[i]);
+                    args[i] = CoreUtils.StringToNumericAuto((string)args[i]);
                 }
             }
 

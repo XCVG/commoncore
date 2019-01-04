@@ -56,7 +56,7 @@ namespace CommonCore.Rpg
             //load quest defs (and in the future other things?) from files in Quests/
             CDebug.LogEx("Loading new style quest defs!", LogLevel.Verbose, null);
 
-            TextAsset[] tas = CCBaseUtil.LoadResources<TextAsset>("Quests/");
+            TextAsset[] tas = CoreUtils.LoadResources<TextAsset>("Quests/");
             foreach (TextAsset ta in tas)
             {
                 try

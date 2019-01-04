@@ -270,7 +270,7 @@ namespace CommonCore.UI
                 return;
             }
 
-            int quantity = CCBaseUtil.Clamp<int>(Convert.ToInt32(QuantityInputField.text), 1, Mathf.Abs(SelectedItem.Quantity));
+            int quantity = CoreUtils.Clamp<int>(Convert.ToInt32(QuantityInputField.text), 1, Mathf.Abs(SelectedItem.Quantity));
 
             //if it's a shop and we don't have money, check and possibly fail
             //(we would also handle carry weight here if that was actually implemented ?)
@@ -371,7 +371,7 @@ namespace CommonCore.UI
             //clamp values
             if(itemQuantity <= 0 || itemQuantity > SelectedItem.Quantity)
             {
-                itemQuantity = CCBaseUtil.Clamp<int>(itemQuantity, 1, SelectedItem.Quantity);
+                itemQuantity = CoreUtils.Clamp<int>(itemQuantity, 1, SelectedItem.Quantity);
                 QuantityInputField.text = itemQuantity.ToString();
             }
 
@@ -403,7 +403,7 @@ namespace CommonCore.UI
 
         public static void PushModal(InventoryModel inventory, ContainerModel container, bool isShop, ContainerCallback callback)
         {
-            var go = Instantiate<GameObject>(Resources.Load<GameObject>(DefaultPrefab), CCBaseUtil.GetWorldRoot());
+            var go = Instantiate<GameObject>(Resources.Load<GameObject>(DefaultPrefab), CoreUtils.GetWorldRoot());
             var modal = go.GetComponent<ContainerModal>();
 
             modal.Inventory = inventory;

@@ -13,7 +13,7 @@ namespace GameUI
 
         void Start()
         {
-            ContentText.text = CCBaseUtil.LoadResource<TextAsset>("User/startmessage").text;
+            ContentText.text = CoreUtils.LoadResource<TextAsset>("User/startmessage").text;
         }
 
     }

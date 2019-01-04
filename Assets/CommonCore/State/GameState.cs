@@ -91,7 +91,7 @@ namespace CommonCore.State
             try
             {
                 instance.PlayerRpgState = new CharacterModel();
-                JsonConvert.PopulateObject(CCBaseUtil.LoadResource<TextAsset>("RPGDefs/init_player").text, instance.PlayerRpgState, new JsonSerializerSettings
+                JsonConvert.PopulateObject(CoreUtils.LoadResource<TextAsset>("RPGDefs/init_player").text, instance.PlayerRpgState, new JsonSerializerSettings
                 {
                     Converters = CCJsonConverters.Defaults.Converters,
                     TypeNameHandling = TypeNameHandling.Auto,
@@ -109,7 +109,7 @@ namespace CommonCore.State
             //we will actually need to load additional containers ex post facto when we add mod support
             try
             {
-                var rawContainers = CCBaseUtil.LoadJson<Dictionary<string, SerializableContainerModel>>(CCBaseUtil.LoadResource<TextAsset>("RPGDefs/init_containers").text);
+                var rawContainers = CoreUtils.LoadJson<Dictionary<string, SerializableContainerModel>>(CoreUtils.LoadResource<TextAsset>("RPGDefs/init_containers").text);
                 foreach(var key in rawContainers.Keys)
                 {
                     var value = rawContainers[key];

@@ -188,7 +188,7 @@ namespace CommonCore.World
             GameObject tpCamera = CameraRoot.Find("Main Camera").gameObject;
             GameObject fpCamera = CameraRoot.Find("FP Camera").gameObject;
 
-            switch (CCParams.DefaultPlayerView)
+            switch (CoreParams.DefaultPlayerView)
             {
                 case PlayerViewType.PreferFirst:
                     tpCamera.SetActive(false);
@@ -216,7 +216,7 @@ namespace CommonCore.World
                     break;
             }
 
-            PushViewChangeMessage(CCParams.DefaultPlayerView);
+            PushViewChangeMessage(CoreParams.DefaultPlayerView);
         }
 
         private void SetInitialViewModels()
@@ -271,7 +271,7 @@ namespace CommonCore.World
 
         private void HandleView()
         {
-            if (!(CCParams.DefaultPlayerView == PlayerViewType.PreferFirst || CCParams.DefaultPlayerView == PlayerViewType.PreferThird))
+            if (!(CoreParams.DefaultPlayerView == PlayerViewType.PreferFirst || CoreParams.DefaultPlayerView == PlayerViewType.PreferThird))
                 return;
 
             if(MappedInput.GetButtonDown("ChangeView")) 
@@ -324,7 +324,7 @@ namespace CommonCore.World
                     if (hit.distance > nearestDist)
                         continue;
 
-                    float fDist = CCBaseUtil.GetFlatVectorToTarget(transform.position, hit.point).magnitude;
+                    float fDist = CoreUtils.GetFlatVectorToTarget(transform.position, hit.point).magnitude;
                     if (fDist > MaxProbeDist)
                         continue;
 
@@ -845,7 +845,7 @@ namespace CommonCore.World
 
                         if (!string.IsNullOrEmpty(wim.Projectile))
                         {
-                            var wimBulletPrefab = CCBaseUtil.LoadResource<GameObject>("DynamicFX/" + wim.Projectile);
+                            var wimBulletPrefab = CoreUtils.LoadResource<GameObject>("DynamicFX/" + wim.Projectile);
                             if (wimBulletPrefab != null)
                                 bullet = Instantiate<GameObject>(wimBulletPrefab, ShootPoint.position + (ShootPoint.forward.normalized * 0.25f), ShootPoint.rotation, transform.root);
 
@@ -874,7 +874,7 @@ namespace CommonCore.World
                         }
                         else if (!string.IsNullOrEmpty(wim.FireEffect))
                         {
-                            var fireEffectPrefab = CCBaseUtil.LoadResource<GameObject>("DynamicFX/" + wim.FireEffect);
+                            var fireEffectPrefab = CoreUtils.LoadResource<GameObject>("DynamicFX/" + wim.FireEffect);
                             if (fireEffectPrefab != null)
                                 fireEffect = Instantiate(fireEffectPrefab, ShootPoint.position, ShootPoint.rotation, ShootPoint);
                         }
@@ -980,7 +980,7 @@ namespace CommonCore.World
                     MeleeWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.MeleeWeapon].ItemModel as MeleeWeaponItemModel;
                     if (wim != null && !string.IsNullOrEmpty(wim.ViewModel))
                     {
-                        var prefab = CCBaseUtil.LoadResource<GameObject>("WeaponViewModels/" + wim.ViewModel);
+                        var prefab = CoreUtils.LoadResource<GameObject>("WeaponViewModels/" + wim.ViewModel);
                         if(prefab != null)
                         {
                             var go = Instantiate<GameObject>(prefab, LeftViewModelPoint);
@@ -1015,7 +1015,7 @@ namespace CommonCore.World
                     RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RangedWeapon].ItemModel as RangedWeaponItemModel;
                     if (wim != null && !string.IsNullOrEmpty(wim.ViewModel))
                     {
-                        var prefab = CCBaseUtil.LoadResource<GameObject>("WeaponViewModels/" + wim.ViewModel);
+                        var prefab = CoreUtils.LoadResource<GameObject>("WeaponViewModels/" + wim.ViewModel);
                         if (prefab != null)
                         {
                             var go = Instantiate<GameObject>(prefab, RightViewModelPoint);
@@ -1048,7 +1048,7 @@ namespace CommonCore.World
             //damage model is very stupid right now, we will make it better later
             float dt = playerModel.DerivedStats.DamageThreshold[(int)data.DType];
             float dr = playerModel.DerivedStats.DamageResistance[(int)data.DType];
-            float damageTaken = CCBaseUtil.CalculateDamage(data.Damage, data.DamagePierce, dt, dr);
+            float damageTaken = WorldUtils.CalculateDamage(data.Damage, data.DamagePierce, dt, dr);
 
             if (data.HitLocation == ActorBodyPart.Head)
                 damageTaken *= 2.0f;

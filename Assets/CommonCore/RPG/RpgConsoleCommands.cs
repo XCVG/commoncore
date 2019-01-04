@@ -31,7 +31,7 @@ namespace CommonCore.Rpg
         [Command(className = "Player")]
         static void SetAV(string av, string value)
         {
-            object convertedValue = CCBaseUtil.StringToNumericAuto(value);
+            object convertedValue = CoreUtils.StringToNumericAuto(value);
 
             //we *should* now have the correct type in the box
             //DevConsole.singleton.Log(convertedValue.GetType().Name);
@@ -55,7 +55,7 @@ namespace CommonCore.Rpg
         [Command(className = "Player")]
         static void ModAV(string av, string value)
         {
-            object convertedValue = CCBaseUtil.StringToNumericAuto(value);
+            object convertedValue = CoreUtils.StringToNumericAuto(value);
 
             //we *should* now have the correct type in the box
             //DevConsole.singleton.Log(convertedValue.GetType().Name);

@@ -104,7 +104,7 @@ namespace CommonCore.DebugLog
                         Debug.Log(string.Format("{0} [{1}]", message, context));
                     break;
                 case LogLevel.Verbose:
-                    if (CCParams.UseVerboseLogging)
+                    if (CoreParams.UseVerboseLogging)
                     {
                         if (context is UnityEngine.Object)
                             Debug.Log(message, (UnityEngine.Object)context);
