@@ -20,7 +20,17 @@ namespace CommonCore
         public virtual void Dispose() { }
     }
 
-    public class CCExplicitModule : System.Attribute
+    public class CCExplicitModuleAttribute : System.Attribute
+    {
+
+    }
+
+    public class CCEarlyModuleAttribute : System.Attribute
+    {
+
+    }
+
+    public class CCLateModuleAttribute : System.Attribute
     {
 
     }

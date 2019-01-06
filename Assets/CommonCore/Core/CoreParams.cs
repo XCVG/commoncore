@@ -32,6 +32,7 @@ namespace CommonCore
         //*****basic config settings
         public static readonly bool AutoInit = true;
         public static readonly bool AutoloadModules = true;
+        public static readonly string[] ExplicitModules = new string[] { "DebugModule", "QdmsMessageBus", "ConfigModule", "ConsoleModule" };
         private static readonly DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
 
         //*****additional config settings

@@ -1,8 +1,4 @@
-﻿using CommonCore.Config;
-using CommonCore.Console;
-using CommonCore.DebugLog;
-using CommonCore.Messaging;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -39,11 +35,13 @@ namespace CommonCore
 
             if (CoreParams.AutoloadModules)
             {
-                InitializeEarlyModules();
                 PrintSystemData(); //we wait until the console is loaded so we can see it in the console
                 InitializeModules();
                 ExecuteAllModulesLoaded();
             }
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
 
             Initialized = true;
             Debug.Log("...done!");
@@ -94,37 +92,86 @@ namespace CommonCore
             Debug.Log(sb.ToString());
         }
 
-        private static void InitializeEarlyModules()
-        {
-            //initialize Debug, Config, Console, MessageBus
-            Modules.Add(new DebugModule());
-            Modules.Add(new QdmsMessageBus());
-            Modules.Add(new ConfigModule());
-            Modules.Add(new ConsoleModule());            
-        }
-
         private static void InitializeModules()
         {
-            //initialize other modules using reflection
+            //initialize modules using reflection
 
-            var types = AppDomain.CurrentDomain.GetAssemblies()
+            var allModules = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany((assembly) => assembly.GetTypes())
                 .Where((type) => typeof(CCModule).IsAssignableFrom(type))
                 .Where((type) => (!type.IsAbstract && !type.IsGenericTypeDefinition))
-                .Where((type) => null != type.GetConstructor(new Type[0]))
-                .Where((type) => type.GetCustomAttributes(typeof(CCExplicitModule),true).Length == 0)
-                .ToArray();
+                .Where((type) => null != type.GetConstructor(new Type[0]))                
+                .ToList();
 
-            foreach (var t in types)
+            //initialize explicit modules
+            foreach(string moduleName in CoreParams.ExplicitModules)
             {
-                try
+                Type t = allModules.Find(x => x.Name == moduleName);
+                if(t != null)
                 {
-                    Modules.Add((CCModule)Activator.CreateInstance(t));
+                    InitializeModule(t);
                 }
-                catch (Exception e)
+                else
+                    Debug.LogError("Can't find explicit module " + moduleName);
+            }
+
+            //sort out our modules
+            var earlyModules = new List<Type>();
+            var normalModules = new List<Type>();
+            var lateModules = new List<Type>();
+
+            foreach(var t in allModules)
+            {
+                if (t.GetCustomAttributes(typeof(CCExplicitModuleAttribute), true).Length > 0)
+                    continue;
+
+                bool isEarly = t.GetCustomAttributes(typeof(CCEarlyModuleAttribute), true).Length > 0;
+                bool isLate = t.GetCustomAttributes(typeof(CCLateModuleAttribute), true).Length > 0;
+
+                if(isEarly ^ isLate)
                 {
-                    Debug.Log(e);
+                    if (isEarly)
+                        earlyModules.Add(t);
+                    else
+                        lateModules.Add(t);
                 }
+                else
+                {
+                    if (isEarly && isLate)
+                        Debug.LogWarning($"Module {t.Name} is declared as both early and late (attributes will be ignored)");
+
+                    normalModules.Add(t);
+                }
+            }
+
+            //initialize early modules
+            foreach (var t in earlyModules)
+            {
+                InitializeModule(t);
+            }
+
+            //initialize non-explicit modules
+            foreach (var t in normalModules)
+            {
+                InitializeModule(t);
+            }
+
+            //initialize late modules
+            foreach(var t in lateModules)
+            {
+                InitializeModule(t);
+            }
+        }
+
+        private static void InitializeModule(Type moduleType)
+        {
+            try
+            {
+                Modules.Add((CCModule)Activator.CreateInstance(moduleType));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
             }
         }
 
