@@ -19563,6 +19563,19 @@ PrefabInstance:
       propertyPath: Faction
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 95898923526475470, guid: c78c79f4a528df8499e5b89355a2ceb2,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: d7dbe25864372ce48ad1ff4d5595e15e, type: 2}
+    - target: {fileID: 4769093696021620, guid: c78c79f4a528df8499e5b89355a2ceb2, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.11242213
+      objectReference: {fileID: 0}
+    - target: {fileID: 4769093696021620, guid: c78c79f4a528df8499e5b89355a2ceb2, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.005316935
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c78c79f4a528df8499e5b89355a2ceb2, type: 3}
 --- !u!1001 &1966496450
