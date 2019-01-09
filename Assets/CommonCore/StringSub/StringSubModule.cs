@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using CommonCore.DebugLog;
-using SickDev.CommandSystem;
-using System.Text;
 using CommonCore.State;
 
 namespace CommonCore.StringSub
@@ -214,11 +213,11 @@ namespace CommonCore.StringSub
         {
             try
             {
-                DevConsole.singleton.Log(Instance.GetString(baseString, listName, false));
+                Debug.Log(Instance.GetString(baseString, listName, false));
             }
             catch(Exception e)
             {
-                DevConsole.singleton.LogError(e.ToString());
+                Debug.LogError(e.ToString());
             }
         }
 
@@ -226,12 +225,12 @@ namespace CommonCore.StringSub
         public static void CommandMacro(string baseString)
         {
             try
-            { 
-                DevConsole.singleton.Log(Instance.SubstituteMacros(baseString));
+            {
+                Debug.Log(Instance.SubstituteMacros(baseString));
             }
             catch (Exception e)
             {
-                DevConsole.singleton.LogError(e.ToString());
+                Debug.LogError(e.ToString());
             }
         }
 

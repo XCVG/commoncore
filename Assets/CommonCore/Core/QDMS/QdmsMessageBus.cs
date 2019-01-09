@@ -48,7 +48,7 @@ namespace CommonCore.Messaging
 
         private List<IQdmsMessageReceiver> Receivers;
 
-        internal void PushBroadcast(QdmsMessage msg) //internal doesn't work the way I thought it did, gah
+        public void PushBroadcast(QdmsMessage msg) //internal doesn't work the way I thought it did, gah
         {
             foreach(IQdmsMessageReceiver r in Receivers)
             {
@@ -63,12 +63,12 @@ namespace CommonCore.Messaging
             }
         }
 
-        internal void RegisterReceiver(IQdmsMessageReceiver receiver)
+        public void RegisterReceiver(IQdmsMessageReceiver receiver)
         {
             Receivers.Add(receiver);
         }
 
-        internal void UnregisterReceiver(IQdmsMessageReceiver receiver)
+        public void UnregisterReceiver(IQdmsMessageReceiver receiver)
         {
             Receivers.Remove(receiver);
         }

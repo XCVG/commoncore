@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using SickDev.CommandSystem;
 using CommonCore.Messaging;
+using System;
+using System.Linq;
 
 namespace CommonCore.Console
 {
@@ -13,6 +15,8 @@ namespace CommonCore.Console
     [CCExplicitModule]
     public class ConsoleModule : CCModule
     {
+        //TODO change this over to provide actual abstraction
+
         private GameObject ConsoleObject;
         private ConsoleMessagingIntegrationComponent ConsoleMessagingThing;
 
@@ -41,6 +45,51 @@ namespace CommonCore.Console
         {
             DevConsole.singleton.AddCommand(new ActionCommand(Quit) { useClassName = false });
             DevConsole.singleton.AddCommand(new FuncCommand<string>(GetVersion) { className = "Core" });
+
+            //this is pretty tightly coupled still but we'll fix that soon enough
+
+            var allCommands = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(a => !(a.FullName.StartsWith("Unity") || a.FullName.StartsWith("System") ||
+                            a.FullName.StartsWith("mscorlib") || a.FullName.StartsWith("mono") ||
+                            a.FullName.StartsWith("Boo") || a.FullName.StartsWith("I18N")))
+                .SelectMany((assembly) => assembly.GetTypes())
+                .SelectMany(t => t.GetMethods())
+                .Where(m => m.GetCustomAttributes(typeof(CommandAttribute), false).Length > 0)
+                .ToArray();
+
+            Debug.Log($"Registering {allCommands.Length} console commands!");
+
+            foreach(var command in allCommands)
+            {
+                try
+                {
+                    SickDev.CommandSystem.Command sdCommand;
+                    if (command.ReturnType == typeof(string))
+                    {
+                        sdCommand = new FuncCommand<string>((Func<string>)Delegate.CreateDelegate(typeof(Func<string>), command));
+                    }
+                    else
+                    {
+                        sdCommand = new ActionCommand((Action)Delegate.CreateDelegate(typeof(Action), command));
+                    }
+
+                    CommandAttribute commandAttr = (CommandAttribute)command.GetCustomAttributes(typeof(CommandAttribute), false)[0];
+                    if (!string.IsNullOrEmpty(commandAttr.alias))
+                        sdCommand.alias = commandAttr.alias;
+                    if (!string.IsNullOrEmpty(commandAttr.className))
+                        sdCommand.className = commandAttr.className;
+                    if (!string.IsNullOrEmpty(commandAttr.description))
+                        sdCommand.description = commandAttr.description;
+                    sdCommand.useClassName = commandAttr.useClassName;
+
+                    DevConsole.singleton.AddCommand(sdCommand);
+                }
+                catch(Exception e)
+                {
+                    Debug.LogError("Failed to add command " + command.Name);
+                    Debug.LogException(e);
+                }
+            }
         }
 
         string GetVersion()
@@ -87,5 +136,14 @@ namespace CommonCore.Console
             }
         }
 
+    }
+
+    public class TestCommands
+    {
+        [Command]
+        public static void CCTestCommand()
+        {
+            Debug.Log("hello world");
+        }
     }
 }

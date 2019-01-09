@@ -26,4 +26,20 @@ namespace CommonCore
     {
         PreferFirst, PreferThird, ForceFirst, ForceThird, ExplicitOther
     }
+
+    /// <summary>
+    /// Console command attribute, syntactically compatible with SickDev.CommandSystem
+    /// </summary>
+    public class CommandAttribute : Attribute
+    {
+        public CommandAttribute()
+        {
+
+        }
+
+        public string description { get; set; }
+        public string alias { get; set; }
+        public string className { get; set; }
+        public bool useClassName { get; set; }
+    }
 }

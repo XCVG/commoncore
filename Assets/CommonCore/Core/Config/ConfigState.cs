@@ -11,14 +11,14 @@ namespace CommonCore.Config
 
         public static ConfigState Instance { get; private set; }
 
-        internal static void Load()
+        public static void Load()
         {
             Instance = CoreUtils.LoadExternalJson<ConfigState>(Path);
             if (Instance == null)
                 Instance = new ConfigState();
         }
 
-        internal static void Save()
+        public static void Save()
         {
             CoreUtils.SaveExternalJson(Path, Instance);
         }
