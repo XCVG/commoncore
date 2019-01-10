@@ -24,6 +24,9 @@ namespace CommonCore
             if (!CoreParams.AutoInit)
                 return;
 
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+
             Debug.Log("Initializing CommonCore...");
 
             HookMonobehaviourEvents();
@@ -44,7 +47,10 @@ namespace CommonCore
             GC.WaitForPendingFinalizers();
 
             Initialized = true;
-            Debug.Log("...done!");
+
+            stopwatch.Stop();
+
+            Debug.Log($"...done! ({stopwatch.Elapsed.TotalMilliseconds:F4} ms)");
         }
 
         public static T GetModule<T>() where T : CCModule

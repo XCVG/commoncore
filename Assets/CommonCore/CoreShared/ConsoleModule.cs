@@ -5,23 +5,34 @@ using SickDev.CommandSystem;
 using CommonCore.Messaging;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace CommonCore.Console
 {
-    /*
-     * CommonCore Console Integration Module
-     * Provides lifecycle management and integration of third-party command console
-     */
+
+    /// <summary>
+    /// CommonCore Console Integration Module
+    /// Provides integration of third-party console components
+    /// WIP - will eventually have flexible backends
+    /// </summary>
     [CCExplicitModule]
     public class ConsoleModule : CCModule
     {
         //TODO change this over to provide actual abstraction
 
+        private static ConsoleModule Instance;
+
         private GameObject ConsoleObject;
         private ConsoleMessagingIntegrationComponent ConsoleMessagingThing;
 
+        /// <summary>
+        /// Initialize the Console module
+        /// </summary>
         public ConsoleModule()
         {
+            Instance = this;
+
             GameObject ConsolePrefab = Resources.Load<GameObject>("DevConsole");
             ConsoleObject = GameObject.Instantiate(ConsolePrefab);
 
@@ -41,7 +52,29 @@ namespace CommonCore.Console
             Debug.Log("Console module unloaded!");
         }
 
-        public void AddCommands()
+        /// <summary>
+        /// Register a command with the command parser
+        /// </summary>
+        /// <param name="command">The method the command will execute</param>
+        /// <param name="useClassName">Whether to prepend the class name or not</param>
+        /// <param name="alias">Override for command name (optional)</param>
+        /// <param name="className">Override for the class name (optional)</param>
+        /// <param name="description">Description of the command (optional)</param>
+        public static void RegisterCommand(Delegate command, bool useClassName, string alias, string className, string description)
+        {
+            Instance.AddCommand(command, useClassName, alias, className, description);
+        }
+
+        /// <summary>
+        /// Write a line of text to the active command console
+        /// </summary>
+        /// <param name="text">The text to write</param>
+        public static void WriteLine(string text)
+        {
+            DevConsole.singleton.Log(text);
+        }
+
+        private void AddCommands()
         {
             DevConsole.singleton.AddCommand(new ActionCommand(Quit) { useClassName = false });
             DevConsole.singleton.AddCommand(new FuncCommand<string>(GetVersion) { className = "Core" });
@@ -63,26 +96,8 @@ namespace CommonCore.Console
             {
                 try
                 {
-                    SickDev.CommandSystem.Command sdCommand;
-                    if (command.ReturnType == typeof(string))
-                    {
-                        sdCommand = new FuncCommand<string>((Func<string>)Delegate.CreateDelegate(typeof(Func<string>), command));
-                    }
-                    else
-                    {
-                        sdCommand = new ActionCommand((Action)Delegate.CreateDelegate(typeof(Action), command));
-                    }
-
                     CommandAttribute commandAttr = (CommandAttribute)command.GetCustomAttributes(typeof(CommandAttribute), false)[0];
-                    if (!string.IsNullOrEmpty(commandAttr.alias))
-                        sdCommand.alias = commandAttr.alias;
-                    if (!string.IsNullOrEmpty(commandAttr.className))
-                        sdCommand.className = commandAttr.className;
-                    if (!string.IsNullOrEmpty(commandAttr.description))
-                        sdCommand.description = commandAttr.description;
-                    sdCommand.useClassName = commandAttr.useClassName;
-
-                    DevConsole.singleton.AddCommand(sdCommand);
+                    AddCommand(CreateDelegate(command), commandAttr.useClassName, commandAttr.alias, commandAttr.className, commandAttr.description);
                 }
                 catch(Exception e)
                 {
@@ -91,17 +106,62 @@ namespace CommonCore.Console
                 }
             }
         }
+               
 
-        string GetVersion()
+        private void AddCommand(Delegate command, bool useClassName, string alias, string className, string description)
+        {
+            SickDev.CommandSystem.Command sdCommand = new Command(command);
+
+            if (!string.IsNullOrEmpty(alias))
+                sdCommand.alias = alias;
+            if (!string.IsNullOrEmpty(className))
+                sdCommand.className = className;
+            if (!string.IsNullOrEmpty(description))
+                sdCommand.description = description;
+            sdCommand.useClassName = useClassName;
+
+            DevConsole.singleton.AddCommand(sdCommand);
+        }
+
+        private static Delegate CreateDelegate(MethodInfo methodInfo)
+        {
+            Func<Type[], Type> getType;
+            var isAction = methodInfo.ReturnType.Equals((typeof(void)));
+            var types = methodInfo.GetParameters().Select(p => p.ParameterType);
+
+            if (isAction)
+            {
+                getType = Expression.GetActionType;
+            }
+            else
+            {
+                getType = Expression.GetFuncType;
+                types = types.Concat(new[] { methodInfo.ReturnType });
+            }
+
+            if (methodInfo.IsStatic)
+            {
+                return Delegate.CreateDelegate(getType(types.ToArray()), methodInfo);
+            }
+
+            throw new ArgumentException("Method must be static!", "methodInfo");
+        }
+
+        //System commands TODO MOVE
+
+        private static string GetVersion()
         {
             return string.Format("{0} {1} (Unity {2})", CoreParams.VersionCode, CoreParams.VersionName, CoreParams.UnityVersion);
         }
 
-        void Quit()
+        private static void Quit()
         {
             Application.Quit();
         }
 
+        /// <summary>
+        /// Provides integration between the console system and messaging system
+        /// </summary>
         private class ConsoleMessagingIntegrationComponent : IQdmsMessageReceiver
         {
             public ConsoleMessagingIntegrationComponent()
@@ -138,12 +198,21 @@ namespace CommonCore.Console
 
     }
 
+    /// <summary>
+    /// Test commands for the command system
+    /// </summary>
     public class TestCommands
     {
         [Command]
         public static void CCTestCommand()
         {
             Debug.Log("hello world");
+        }
+
+        [Command]
+        public static void CCTestArgCommand(string mystring)
+        {
+            Debug.Log(mystring);
         }
     }
 }
