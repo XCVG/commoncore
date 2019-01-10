@@ -86,7 +86,7 @@ namespace CommonCore.Console
                             a.FullName.StartsWith("mscorlib") || a.FullName.StartsWith("mono") ||
                             a.FullName.StartsWith("Boo") || a.FullName.StartsWith("I18N")))
                 .SelectMany((assembly) => assembly.GetTypes())
-                .SelectMany(t => t.GetMethods())
+                .SelectMany(t => t.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
                 .Where(m => m.GetCustomAttributes(typeof(CommandAttribute), false).Length > 0)
                 .ToArray();
 
@@ -94,6 +94,8 @@ namespace CommonCore.Console
 
             foreach(var command in allCommands)
             {
+                Debug.Log(command.Name);
+
                 try
                 {
                     CommandAttribute commandAttr = (CommandAttribute)command.GetCustomAttributes(typeof(CommandAttribute), false)[0];
@@ -112,13 +114,18 @@ namespace CommonCore.Console
         {
             SickDev.CommandSystem.Command sdCommand = new Command(command);
 
+            sdCommand.useClassName = useClassName;
+
             if (!string.IsNullOrEmpty(alias))
                 sdCommand.alias = alias;
             if (!string.IsNullOrEmpty(className))
+            {
                 sdCommand.className = className;
+                sdCommand.useClassName = true;
+            }
             if (!string.IsNullOrEmpty(description))
                 sdCommand.description = description;
-            sdCommand.useClassName = useClassName;
+            
 
             DevConsole.singleton.AddCommand(sdCommand);
         }

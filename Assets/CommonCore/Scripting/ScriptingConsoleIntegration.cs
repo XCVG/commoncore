@@ -12,6 +12,8 @@ namespace CommonCore.Scripting
     public static class ScriptingConsoleIntegration
     {
 
+        //these don't work
+
         [Command(alias = "Call", className = "Scripting")]
         static void Call(string script)
         {
@@ -63,6 +65,8 @@ namespace CommonCore.Scripting
                 DevConsole.singleton.LogError(string.Format("Error in script {0}\n{1}\n{2}", script, e.ToString(), e.StackTrace));
             }
         }
+
+        //this does
 
         [Command(alias = "ListAll", className = "Scripting")]
         static void ListAll()

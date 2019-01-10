@@ -3,7 +3,6 @@ using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SickDev.CommandSystem;
 
 namespace CommonCore.LockPause
 {
@@ -11,13 +10,13 @@ namespace CommonCore.LockPause
     public partial class LockPauseModule //yes, I have a strategy
     {
         [Command(alias ="ClearLocks", useClassName = false)]
-        static void ForceClearAll()
+        public static void ForceClearAll()
         {
             ForceClearLocks();
         }
 
         [Command(alias = "ListLocks", useClassName = false)]
-        static void ListLocks()
+        public static void ListLocks()
         {
             StringBuilder sb = new StringBuilder(255);
 
@@ -41,7 +40,7 @@ namespace CommonCore.LockPause
                 }
             }
 
-            DevConsole.singleton.Log(sb.ToString());
+            Debug.Log(sb.ToString());
         }
     }
 }
