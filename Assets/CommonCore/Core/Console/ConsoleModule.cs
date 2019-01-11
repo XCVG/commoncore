@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SickDev.CommandSystem;
 using CommonCore.Messaging;
 using System;
 using System.Linq;
@@ -14,7 +13,6 @@ namespace CommonCore.Console
     /// <summary>
     /// CommonCore Console Integration Module
     /// Provides integration of third-party console components
-    /// WIP - will eventually have flexible backends
     /// </summary>
     [CCExplicitModule]
     public class ConsoleModule : CCModule
@@ -23,7 +21,7 @@ namespace CommonCore.Console
 
         private static ConsoleModule Instance;
 
-        private GameObject ConsoleObject;
+        private IConsole Console;
         private ConsoleMessagingIntegrationComponent ConsoleMessagingThing;
 
         /// <summary>
@@ -33,8 +31,7 @@ namespace CommonCore.Console
         {
             Instance = this;
 
-            GameObject ConsolePrefab = Resources.Load<GameObject>("DevConsole");
-            ConsoleObject = GameObject.Instantiate(ConsolePrefab);
+            CreateConsole();
 
             //any hooking into the console could be done here
             AddCommands();
@@ -43,12 +40,49 @@ namespace CommonCore.Console
             Debug.Log("Console module loaded!");
         }
 
+        /// <summary>
+        /// Find a console implemntation and instantiate it
+        /// </summary>
+        private void CreateConsole()
+        {
+            Type[] possibleConsoles = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(a => !(a.FullName.StartsWith("Unity") || a.FullName.StartsWith("System") ||
+                            a.FullName.StartsWith("mscorlib") || a.FullName.StartsWith("mono") ||
+                            a.FullName.StartsWith("Boo") || a.FullName.StartsWith("I18N")))
+                .SelectMany((assembly) => assembly.GetTypes())
+                .Where((type) => type.GetInterfaces().Contains(typeof(IConsole)))
+                .ToArray();
+
+            Debug.Log(possibleConsoles.ToNiceString());
+
+            //get our preferred console implmentation...
+            Type preferredConsole = Array.Find(possibleConsoles, (t) => t.Name == CoreParams.PreferredCommandConsole);
+
+            //...fall back to whatever we can find
+            if (preferredConsole == null)
+            {
+                if (possibleConsoles.Length > 0)
+                    preferredConsole = possibleConsoles[0];
+            }
+
+            if (preferredConsole != null)
+            {
+                Console = (IConsole)Activator.CreateInstance(preferredConsole);
+
+                Debug.Log($"Using {preferredConsole.Name} console implementation");
+            }                      
+
+        }
+
+        /// <summary>
+        /// Clean up the console module
+        /// </summary>
         public override void Dispose()
         {
             base.Dispose();
 
             ConsoleMessagingThing = null;
-            GameObject.Destroy(ConsoleObject);
+            (Console as IDisposable)?.Dispose();
             Debug.Log("Console module unloaded!");
         }
 
@@ -62,7 +96,7 @@ namespace CommonCore.Console
         /// <param name="description">Description of the command (optional)</param>
         public static void RegisterCommand(Delegate command, bool useClassName, string alias, string className, string description)
         {
-            Instance.AddCommand(command, useClassName, alias, className, description);
+            Instance.Console.AddCommand(command, useClassName, alias, className, description);
         }
 
         /// <summary>
@@ -71,13 +105,13 @@ namespace CommonCore.Console
         /// <param name="text">The text to write</param>
         public static void WriteLine(string text)
         {
-            DevConsole.singleton.Log(text);
+            Instance.Console.WriteLine(text);
         }
 
         private void AddCommands()
         {
-            DevConsole.singleton.AddCommand(new ActionCommand(Quit) { useClassName = false });
-            DevConsole.singleton.AddCommand(new FuncCommand<string>(GetVersion) { className = "Core" });
+            //DevConsole.singleton.AddCommand(new ActionCommand(Quit) { useClassName = false });
+            //DevConsole.singleton.AddCommand(new FuncCommand<string>(GetVersion) { className = "Core" });
 
             //this is pretty tightly coupled still but we'll fix that soon enough
 
@@ -94,12 +128,12 @@ namespace CommonCore.Console
 
             foreach(var command in allCommands)
             {
-                Debug.Log(command.Name);
+                //Debug.Log(command.Name);
 
                 try
                 {
                     CommandAttribute commandAttr = (CommandAttribute)command.GetCustomAttributes(typeof(CommandAttribute), false)[0];
-                    AddCommand(CreateDelegate(command), commandAttr.useClassName, commandAttr.alias, commandAttr.className, commandAttr.description);
+                    Console.AddCommand(CreateDelegate(command), commandAttr.useClassName, commandAttr.alias, commandAttr.className, commandAttr.description);
                 }
                 catch(Exception e)
                 {
@@ -107,28 +141,7 @@ namespace CommonCore.Console
                     Debug.LogException(e);
                 }
             }
-        }
-               
-
-        private void AddCommand(Delegate command, bool useClassName, string alias, string className, string description)
-        {
-            SickDev.CommandSystem.Command sdCommand = new Command(command);
-
-            sdCommand.useClassName = useClassName;
-
-            if (!string.IsNullOrEmpty(alias))
-                sdCommand.alias = alias;
-            if (!string.IsNullOrEmpty(className))
-            {
-                sdCommand.className = className;
-                sdCommand.useClassName = true;
-            }
-            if (!string.IsNullOrEmpty(description))
-                sdCommand.description = description;
-            
-
-            DevConsole.singleton.AddCommand(sdCommand);
-        }
+        }               
 
         private static Delegate CreateDelegate(MethodInfo methodInfo)
         {
@@ -152,18 +165,6 @@ namespace CommonCore.Console
             }
 
             throw new ArgumentException("Method must be static!", "methodInfo");
-        }
-
-        //System commands TODO MOVE
-
-        private static string GetVersion()
-        {
-            return string.Format("{0} {1} (Unity {2})", CoreParams.VersionCode, CoreParams.VersionName, CoreParams.UnityVersion);
-        }
-
-        private static void Quit()
-        {
-            Application.Quit();
         }
 
         /// <summary>
@@ -198,7 +199,7 @@ namespace CommonCore.Console
             {
                 if(msg is HUDPushMessage)
                 {
-                    DevConsole.singleton.Log(string.Format("{0} : {1}", "*HUD PUSH MESSAGE*", ((HUDPushMessage)msg).Contents));
+                    ConsoleModule.WriteLine(string.Format("{0} : {1}", "*HUD PUSH MESSAGE*", ((HUDPushMessage)msg).Contents));
                 }
             }
         }
@@ -220,6 +221,18 @@ namespace CommonCore.Console
         public static void CCTestArgCommand(string mystring)
         {
             Debug.Log(mystring);
+        }
+
+        [Command]
+        private static string GetVersion()
+        {
+            return string.Format("{0} {1} (Unity {2})", CoreParams.VersionCode, CoreParams.VersionName, CoreParams.UnityVersion);
+        }
+
+        [Command]
+        private static void Quit()
+        {
+            Application.Quit();
         }
     }
 }

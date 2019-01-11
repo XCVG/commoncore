@@ -15,6 +15,8 @@ namespace CommonCore
      */
     public class CCBase
     {
+        //TODO provide "relevant types" here
+
         public static bool Initialized { get; private set; }
         private static List<CCModule> Modules;
 
@@ -53,6 +55,9 @@ namespace CommonCore
             Debug.Log($"...done! ({stopwatch.Elapsed.TotalMilliseconds:F4} ms)");
         }
 
+        /// <summary>
+        /// Retrieves a loaded module specified by the type parameter
+        /// </summary>
         public static T GetModule<T>() where T : CCModule
         {
             if (Modules == null || Modules.Count < 1)
@@ -67,6 +72,9 @@ namespace CommonCore
             return null;
         }
 
+        /// <summary>
+        /// Retrieves a loaded module specified by name
+        /// </summary>
         public static CCModule GetModule(string moduleName)
         {
             if (Modules == null || Modules.Count < 1)

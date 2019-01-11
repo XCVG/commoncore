@@ -34,6 +34,7 @@ namespace CommonCore
         public static readonly bool AutoloadModules = true;
         public static readonly string[] ExplicitModules = new string[] { "DebugModule", "QdmsMessageBus", "ConfigModule", "ConsoleModule" };
         private static readonly DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
+        public static readonly string PreferredCommandConsole = "SickDevConsoleImplementation";
 
         //*****additional config settings
         public static readonly bool UseVerboseLogging = true;
@@ -72,7 +73,7 @@ namespace CommonCore
         {
             get
             {
-                return Application.persistentDataPath;
+                return Application.persistentDataPath; //TODO thread-safe variants of this and StreamingAssets (and others?)
             }
         }
 
