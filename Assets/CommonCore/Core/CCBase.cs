@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,11 +16,21 @@ namespace CommonCore
      */
     public class CCBase
     {
-        //TODO provide "relevant types" here
+        /// <summary>
+        /// A collection of all relevant (ie not system or unity) types available when the game was started
+        /// </summary>
+        public static ImmutableArray<Type> BaseGameTypes { get; private set; }
 
+        /// <summary>
+        /// Whether the game has been initialized or not (all modules loaded)
+        /// </summary>
         public static bool Initialized { get; private set; }
-        private static List<CCModule> Modules;
 
+        /// <summary>
+        /// Loaded modules
+        /// </summary>
+        private static List<CCModule> Modules;
+        
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void OnApplicationStart()
         {
@@ -31,6 +42,7 @@ namespace CommonCore
 
             Debug.Log("Initializing CommonCore...");
 
+            LoadGameTypes();
             HookMonobehaviourEvents();
             HookQuitEvent();
             HookSceneEvents();
@@ -87,6 +99,18 @@ namespace CommonCore
             }
 
             return null;
+        }
+
+        private static void LoadGameTypes()
+        {
+            //TODO refine excluded assemblies
+            BaseGameTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(a => !(a.FullName.StartsWith("Unity") || a.FullName.StartsWith("System") || a.FullName.StartsWith("netstandard") ||
+                            a.FullName.StartsWith("mscorlib") || a.FullName.StartsWith("mono", StringComparison.OrdinalIgnoreCase) ||
+                            a.FullName.StartsWith("Boo") || a.FullName.StartsWith("I18N")))
+                .SelectMany((assembly) => assembly.GetTypes())
+                .ToImmutableArray();
+
         }
 
         private static void PrintSystemData()

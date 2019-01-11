@@ -45,11 +45,7 @@ namespace CommonCore.Console
         /// </summary>
         private void CreateConsole()
         {
-            Type[] possibleConsoles = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => !(a.FullName.StartsWith("Unity") || a.FullName.StartsWith("System") ||
-                            a.FullName.StartsWith("mscorlib") || a.FullName.StartsWith("mono") ||
-                            a.FullName.StartsWith("Boo") || a.FullName.StartsWith("I18N")))
-                .SelectMany((assembly) => assembly.GetTypes())
+            Type[] possibleConsoles = CCBase.BaseGameTypes
                 .Where((type) => type.GetInterfaces().Contains(typeof(IConsole)))
                 .ToArray();
 
@@ -115,11 +111,7 @@ namespace CommonCore.Console
 
             //this is pretty tightly coupled still but we'll fix that soon enough
 
-            var allCommands = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => !(a.FullName.StartsWith("Unity") || a.FullName.StartsWith("System") ||
-                            a.FullName.StartsWith("mscorlib") || a.FullName.StartsWith("mono") ||
-                            a.FullName.StartsWith("Boo") || a.FullName.StartsWith("I18N")))
-                .SelectMany((assembly) => assembly.GetTypes())
+            var allCommands = CCBase.BaseGameTypes
                 .SelectMany(t => t.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
                 .Where(m => m.GetCustomAttributes(typeof(CommandAttribute), false).Length > 0)
                 .ToArray();

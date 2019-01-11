@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using CommonCore.DebugLog;
-using CommonCore.State;
+using System.Linq;
 
 namespace CommonCore.StringSub
 {
@@ -18,28 +18,37 @@ namespace CommonCore.StringSub
     {
         internal static StringSubModule Instance { get; private set; }
 
-        private Dictionary<string, Dictionary<string, string>> Strings;
+        private Dictionary<string, Dictionary<string, string>> Strings = new Dictionary<string, Dictionary<string, string>>();
+        private List<IStringSubber> Subbers = new List<IStringSubber>();
+        private Dictionary<string, Func<string[], string>> SubMap = new Dictionary<string, Func<string[], string>>();
 
         public StringSubModule()
         {
             Instance = this;
 
+            LoadLists();
+            LoadSubbers();
+
+            Debug.Log("StringSub: Finished loading!");
+        }
+
+        private void LoadLists()
+        {
             //load all substitution lists
-            Strings = new Dictionary<string, Dictionary<string, string>>();
             TextAsset[] tas = CoreUtils.LoadResources<TextAsset>("Strings/");
-            foreach(TextAsset ta in tas)
+            foreach (TextAsset ta in tas)
             {
                 try
                 {
                     var lists = CoreUtils.LoadJson<Dictionary<string, Dictionary<string, string>>>(ta.text);
-                    foreach(var list in lists)
+                    foreach (var list in lists)
                     {
                         //merge new lists onto old
-                        if(Strings.ContainsKey(list.Key))
+                        if (Strings.ContainsKey(list.Key))
                         {
                             //list already exists, need to merge
                             var oldList = Strings[list.Key];
-                            foreach(var item in list.Value)
+                            foreach (var item in list.Value)
                             {
                                 oldList[item.Key] = item.Value;
                             }
@@ -51,16 +60,46 @@ namespace CommonCore.StringSub
                         }
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    Debug.LogError("Error loading string file: " + ta.name);
+                    Debug.LogError("StringSub: Error loading string file: " + ta.name);
                     Debug.LogException(e);
                 }
             }
 
             string statusString = string.Format("({0} files, {1} lists)", tas.Length, Strings.Count);
+            Debug.Log("StringSub: Loaded lists " + statusString);
+        }
 
-            Debug.Log("String Substitution module loaded!" + statusString);
+        private void LoadSubbers()
+        {
+            Type[] subberTypes = CCBase.BaseGameTypes
+                .Where((type) => type.GetInterfaces().Contains(typeof(IStringSubber)))
+                .ToArray();
+
+            foreach(Type subberType in subberTypes)
+            {
+                try
+                {
+                    IStringSubber subber = (IStringSubber)Activator.CreateInstance(subberType);
+                    Subbers.Add(subber);
+
+                    foreach(string pattern in subber.MatchPatterns)
+                    {
+                        if (SubMap.ContainsKey(pattern))
+                            Debug.LogWarning(string.Format("StringSub: pattern \"{0}\" from {1} already registered by {2}", pattern, subber.GetType().Name, SubMap[pattern].Method.DeclaringType.Name));
+
+                        SubMap[pattern] = subber.Substitute;
+                    }
+                }
+                catch(Exception e)
+                {
+                    Debug.LogError("StringSub: Failed to load subber " + subberType.Name);
+                }
+            }
+
+            Debug.Log("StringSub: Loaded subbers " + Subbers.Select(s => s.GetType().Name).ToNiceString());
+
         }
 
         internal string GetString(string baseString, string listName, bool suppressWarnings)
@@ -150,21 +189,6 @@ namespace CommonCore.StringSub
                 case "l":
                     result = GetString(sequenceParts[2], sequenceParts[1], false);
                     break;
-                case "av":
-                    result = GameState.Instance.PlayerRpgState.GetAV<object>(sequenceParts[1]).ToString();
-                    break;
-                case "inv":
-                    result = GameState.Instance.PlayerRpgState.Inventory.CountItem(sequenceParts[1]).ToString();
-                    break;
-                case "cpf":
-                    result = GameState.Instance.CampaignState.HasFlag(sequenceParts[1]).ToString();
-                    break;
-                case "cpv":
-                    result = GameState.Instance.CampaignState.GetVar(sequenceParts[1]);
-                    break;
-                case "cqs":
-                    result = GameState.Instance.CampaignState.GetQuestStage(sequenceParts[1]).ToString();
-                    break;
                 case "strong":
                     result = "<b>"; //handling dialogue written for proper html
                     break;
@@ -190,7 +214,14 @@ namespace CommonCore.StringSub
                     result = "</i>"; //handling dialogue written for improper html
                     break;
                 default:
-                    result = string.Format("<MISSING:{0}>", sequence);
+                    if(SubMap.ContainsKey(sequenceParts[0]))
+                    {
+                        result = SubMap[sequenceParts[0]].Invoke(sequenceParts);
+                    }
+                    else
+                    {
+                        result = string.Format("<MISSING:{0}>", sequence);
+                    }                    
                     break;
             }
 
