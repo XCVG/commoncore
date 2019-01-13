@@ -11,10 +11,11 @@ using CommonCore.State;
 using CommonCore.Messaging;
 using CommonCore.Audio;
 using CommonCore.Config;
+using CommonCore.World;
 using CommonCore.RpgGame.Rpg;
 using CommonCore.RpgGame.UI;
 
-namespace CommonCore.World
+namespace CommonCore.RpgGame.World
 {
     public class PlayerController : BaseController
     {

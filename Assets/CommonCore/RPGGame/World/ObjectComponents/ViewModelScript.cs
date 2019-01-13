@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CommonCore.World
+namespace CommonCore.RpgGame.World
 {
     public enum ViewModelState
     {

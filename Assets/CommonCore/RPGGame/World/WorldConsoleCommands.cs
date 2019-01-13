@@ -7,8 +7,10 @@ using UnityEngine.SceneManagement;
 using SickDev.CommandSystem;
 using Newtonsoft.Json;
 using CommonCore.State;
+using CommonCore.RpgGame.World;
+using CommonCore.World;
 
-namespace CommonCore.World
+namespace CommonCore.RpgGame.World
 {
     /*
      * WorldConsoleInterpreter

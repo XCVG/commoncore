@@ -6,8 +6,9 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using CommonCore.State;
 using CommonCore.Audio;
+using CommonCore.World;
 
-namespace CommonCore.World
+namespace CommonCore.RpgGame.World
 {
 
     public class WorldSceneController : BaseSceneController

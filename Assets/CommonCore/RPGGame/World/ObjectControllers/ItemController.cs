@@ -6,8 +6,9 @@ using CommonCore.DebugLog;
 using CommonCore.State;
 using CommonCore.ObjectActions;
 using CommonCore.RpgGame.Rpg;
+using CommonCore.World;
 
-namespace CommonCore.World
+namespace CommonCore.RpgGame.World
 {
     //pretty hacky but okay
     public class ItemController : ThingController

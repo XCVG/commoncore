@@ -6,7 +6,7 @@ using CommonCore;
 using CommonCore.State;
 using UnityEngine.SceneManagement;
 
-namespace CommonCore.World
+namespace CommonCore.RpgGame.World
 {
     [Serializable]
     public class EditorMapMarker

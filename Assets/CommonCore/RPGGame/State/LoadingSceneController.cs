@@ -9,6 +9,7 @@ using CommonCore.UI;
 
 namespace CommonCore.RpgGame.State
 {
+    //TODO move this into Core or Scenes
     
     //TODO refactor and document this, it's a disaster zone holdover
     public class LoadingSceneController : MonoBehaviour

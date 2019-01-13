@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using CommonCore.RpgGame.Rpg; //THIS is the interdependency we're trying to avoid
+using CommonCore.World;
+using CommonCore.RpgGame.Rpg;
 
-namespace CommonCore.World
+namespace CommonCore.RpgGame.World
 {
     public enum ActorInteractionType
     {

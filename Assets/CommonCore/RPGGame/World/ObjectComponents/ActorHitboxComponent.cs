@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CommonCore.DebugLog;
+using CommonCore.World;
 
-namespace CommonCore.World
+namespace CommonCore.RpgGame.World
 {
 
     public class ActorHitboxComponent : MonoBehaviour

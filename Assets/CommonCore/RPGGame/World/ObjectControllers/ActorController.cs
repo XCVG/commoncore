@@ -8,11 +8,12 @@ using CommonCore.State;
 using CommonCore.DebugLog;
 using CommonCore.Messaging;
 using CommonCore.LockPause;
+using CommonCore.World;
 using CommonCore.RpgGame.Dialogue;
 using CommonCore.RpgGame.Rpg;
 using CommonCore.RpgGame.State;
 
-namespace CommonCore.World
+namespace CommonCore.RpgGame.World
 {
     //TODO restorable, animation, and eventually a full refactor
     //I say that now, but I bet this will still be mostly the same until, say, Downwarren

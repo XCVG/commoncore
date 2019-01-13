@@ -228,7 +228,7 @@ namespace CommonCore.RpgGame.Dialogue
             {
                 CloseDialogue();
 
-                var sceneController = World.BaseSceneController.Current;
+                var sceneController = BaseSceneController.Current;
 
                 if (sceneController != null)
                 {

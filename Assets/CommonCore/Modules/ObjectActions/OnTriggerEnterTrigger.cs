@@ -23,12 +23,14 @@ namespace CommonCore.ObjectActions
             if (Triggered)
                 return;
 
+            //FIXME this is super ugly and weak
+
             //reject not-player if we're not allowing not-player
-            if (OnPlayerOnly && other.GetComponent<PlayerController>() == null)
+            if (OnPlayerOnly && other.GetComponent("PlayerController") == null)
                 return;
 
             //reject non-actors if we're not allowing not-actor
-            if (OnActorsOnly && other.GetComponent<ActorController>() == null)
+            if (OnActorsOnly && other.GetComponent("ActorController") == null)
                 return;
 
             //execute special

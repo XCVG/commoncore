@@ -7,6 +7,7 @@ using CommonCore.State;
 using CommonCore.DebugLog;
 using CommonCore.RpgGame.Rpg; //TODO split this into dependent and non-dependent classes
 using CommonCore.RpgGame.State;
+using CommonCore.RpgGame.World;
 
 namespace CommonCore.World
 {

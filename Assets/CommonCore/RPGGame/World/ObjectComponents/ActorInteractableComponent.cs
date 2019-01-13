@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CommonCore.ObjectActions;
+using CommonCore.World;
 
-namespace CommonCore.World
+namespace CommonCore.RpgGame.World
 {
 
     public class ActorInteractableComponent : InteractableComponent

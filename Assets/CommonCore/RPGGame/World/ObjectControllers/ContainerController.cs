@@ -7,8 +7,9 @@ using CommonCore.State;
 using CommonCore.ObjectActions;
 using CommonCore.RpgGame.Rpg;
 using CommonCore.RpgGame.UI;
+using CommonCore.World;
 
-namespace CommonCore.World
+namespace CommonCore.RpgGame.World
 {
 
     public class ContainerController : ThingController

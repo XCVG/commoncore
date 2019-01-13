@@ -5,6 +5,7 @@ using CommonCore;
 using CommonCore.State;
 using CommonCore.World;
 using CommonCore.ObjectActions;
+using CommonCore.RpgGame.World;
 
 namespace World.Ext.TestIsland
 {

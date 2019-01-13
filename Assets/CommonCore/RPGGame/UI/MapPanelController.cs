@@ -8,6 +8,7 @@ using CommonCore.State;
 using CommonCore.UI;
 using CommonCore.World;
 using CommonCore.RpgGame.State;
+using CommonCore.RpgGame.World;
 
 namespace CommonCore.RpgGame.UI
 {
