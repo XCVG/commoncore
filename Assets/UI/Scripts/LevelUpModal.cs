@@ -8,6 +8,7 @@ using CommonCore.Rpg;
 using CommonCore.State;
 using CommonCore.LockPause;
 using CommonCore.DebugLog;
+using CommonCore.RpgGame.UI;
 
 namespace GameUI
 {

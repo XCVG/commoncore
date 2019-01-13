@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using SickDev.CommandSystem;
 using CommonCore.State;
-
+using CommonCore.RpgGame.UI;
 
 namespace CommonCore.Rpg
 {
@@ -140,7 +140,7 @@ namespace CommonCore.Rpg
             var rContainer = GameState.Instance.ContainerState[container];
             bool bIsShop = Convert.ToBoolean(asShop);
 
-            UI.ContainerModal.PushModal(GameState.Instance.PlayerRpgState.Inventory, rContainer, bIsShop, null);
+            ContainerModal.PushModal(GameState.Instance.PlayerRpgState.Inventory, rContainer, bIsShop, null);
         }
 
         [Command(className = "Player")]

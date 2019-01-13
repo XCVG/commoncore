@@ -12,6 +12,7 @@ using CommonCore.Rpg;
 using CommonCore.Messaging;
 using CommonCore.Audio;
 using CommonCore.Config;
+using CommonCore.RpgGame.UI;
 
 namespace CommonCore.World
 {

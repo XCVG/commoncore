@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using CommonCore.State;
 using CommonCore.StringSub;
 using CommonCore.LockPause;
+using CommonCore.RpgGame.UI;
 
 namespace CommonCore.Dialogue
 {
@@ -219,7 +220,7 @@ namespace CommonCore.Dialogue
             else if (nextLoc.Key == "shop")
             {
                 var container = GameState.Instance.ContainerState[nextLoc.Value];
-                UI.ContainerModal.PushModal(GameState.Instance.PlayerRpgState.Inventory, container, true, null);
+                ContainerModal.PushModal(GameState.Instance.PlayerRpgState.Inventory, container, true, null);
                 CloseDialogue();
             }
             else if (nextLoc.Key == "scene")

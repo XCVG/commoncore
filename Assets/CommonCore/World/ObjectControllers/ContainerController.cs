@@ -6,6 +6,7 @@ using CommonCore.DebugLog;
 using CommonCore.State;
 using CommonCore.Rpg;
 using CommonCore.ObjectActions;
+using CommonCore.RpgGame.UI;
 
 namespace CommonCore.World
 {
@@ -40,7 +41,7 @@ namespace CommonCore.World
 
             //Debug.Log("Opened container");
 
-            UI.ContainerModal.PushModal(GameState.Instance.PlayerRpgState.Inventory, MyContainer, IsStore, null);
+            ContainerModal.PushModal(GameState.Instance.PlayerRpgState.Inventory, MyContainer, IsStore, null);
         }
         
 

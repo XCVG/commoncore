@@ -8,10 +8,12 @@ using CommonCore.StringSub;
 using CommonCore.State;
 using CommonCore.Rpg;
 
-namespace CommonCore.UI
+namespace CommonCore.RpgGame.UI
 {
     public class WorldHUDController : MonoBehaviour
     {
+        //TODO consider a weird partial class split
+
         public static WorldHUDController Current { get; private set; }
 
         public Text TargetText;

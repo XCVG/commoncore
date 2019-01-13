@@ -6,8 +6,9 @@ using UnityEngine.UI;
 using CommonCore.Messaging;
 using CommonCore.State;
 using CommonCore.World;
+using CommonCore.UI;
 
-namespace CommonCore.UI
+namespace CommonCore.RpgGame.UI
 {
 
     public class InventoryPanelController : PanelController

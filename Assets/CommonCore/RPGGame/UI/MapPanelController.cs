@@ -6,8 +6,9 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using CommonCore.State;
 using UnityEngine.EventSystems;
+using CommonCore.UI;
 
-namespace CommonCore.UI
+namespace CommonCore.RpgGame.UI
 {
 
     public class MapPanelController : PanelController

@@ -6,8 +6,9 @@ using UnityEngine.UI;
 using CommonCore.State;
 using CommonCore.Rpg;
 using CommonCore.LockPause;
+using CommonCore.UI;
 
-namespace CommonCore.UI
+namespace CommonCore.RpgGame.UI
 {
 
     public class ContainerModal : BaseMenuController

@@ -1,9 +1,8 @@
-﻿using CommonCore.Rpg;
-using CommonCore.State;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using CommonCore.Rpg;
+using CommonCore.RpgGame.UI;
+using CommonCore.State;
 
 namespace CommonCore.UI
 {

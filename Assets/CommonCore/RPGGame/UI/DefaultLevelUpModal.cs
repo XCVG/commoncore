@@ -8,8 +8,9 @@ using CommonCore.LockPause;
 using CommonCore.Rpg;
 using CommonCore.State;
 using CommonCore.StringSub;
+using CommonCore.UI;
 
-namespace CommonCore.UI
+namespace CommonCore.RpgGame.UI
 {
     public delegate void LevelUpModalCallback();
 
