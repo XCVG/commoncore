@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using CommonCore.ObjectActions;
 using CommonCore.State;
-using CommonCore.Rpg;
 using CommonCore.World;
 using CommonCore.Audio;
 using CommonCore.Messaging;
+using CommonCore.RpgGame.Rpg;
 
 namespace World.Ext.TestIsland
 {

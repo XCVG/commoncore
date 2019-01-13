@@ -1,7 +1,7 @@
 {
   "drink": {
     "model": {
-		"$type": "CommonCore.Rpg.AidItemModel, Assembly-CSharp",
+		"$type": "CommonCore.RpgGame.Rpg.AidItemModel, Assembly-CSharp",
 		"AType": "Health",
 		"RType": "Add",
 		"Amount": 5.0,

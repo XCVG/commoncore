@@ -1,42 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using CommonCore.RpgGame.State;
 
 namespace CommonCore.State
 {
-    //TODO split this one like we did for GameState
-    public sealed class MetaState
+    //EDIT THIS FILE AND PUT YOUR GAME DATA HERE
+
+    public sealed partial class MetaState
     {
-        private static MetaState instance;
-
-        private MetaState()
-        {
-            //TODO initialization
-            Intents = new List<Intent>();
-            SessionFlags = new HashSet<string>();
-        }
-
-        public static MetaState Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new MetaState();
-                }
-                return instance;
-            }
-        }
-
-        public static void Reset()
-        {
-            instance = new MetaState();
-        }
+        //TODO refactor the way Intents work
 
         public void IntentsExecutePreload()
         {
-            Debug.Log(string.Format("Executing intents preload ({0} total)",Intents.Count));
-            foreach(Intent i in Intents)
+            Debug.Log(string.Format("Executing intents preload ({0} total)", Intents.Count));
+            foreach (Intent i in Intents)
             {
                 i.PreloadExecute();
             }
@@ -60,22 +37,12 @@ namespace CommonCore.State
             }
         }
 
-        //actual instance data
-        public SceneTransitionType TransitionType { get; set; }
-        public string PreviousScene { get; set; }
-        public string NextScene { get; set; }
-        public string LoadSave { get; set; }
-        public List<Intent> Intents { get; set; }
+
+        public List<Intent> Intents { get; set; } = new List<Intent>();
         public PlayerSpawnIntent PlayerIntent { get; set; } //horrible for cleanliness but should be faster
-        public string LoadingScreenPropOverride { get; set; }
-        public bool SkipLoadingScreen { get; set; }
-        public HashSet<string> SessionFlags { get; set; }
 
     }
 
-    public enum SceneTransitionType
-    {
-        NewGame, LoadGame, ChangeScene
-    }
+    
 
 }

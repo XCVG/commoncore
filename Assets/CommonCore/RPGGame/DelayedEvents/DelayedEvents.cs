@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using CommonCore.DebugLog;
+using CommonCore.State;
+using CommonCore.RpgGame.State;
 
-namespace CommonCore.State
+namespace CommonCore.DelayedEvents
 {
 
     public enum DelayTimeType

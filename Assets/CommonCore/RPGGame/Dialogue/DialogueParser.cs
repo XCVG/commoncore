@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
-using CommonCore.State;
+using CommonCore.DelayedEvents;
+using CommonCore.RpgGame.State;
 
-namespace CommonCore.Dialogue
+namespace CommonCore.RpgGame.Dialogue
 {
     internal static class DialogueParser
     {

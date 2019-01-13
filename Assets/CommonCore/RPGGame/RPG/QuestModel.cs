@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace CommonCore.Rpg
+namespace CommonCore.RpgGame.Rpg
 {
 
     public class QuestModel

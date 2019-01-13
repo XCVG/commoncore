@@ -7,7 +7,7 @@ using CommonCore.World;
 using CommonCore.State;
 using CommonCore.UI;
 
-namespace CommonCore.State
+namespace CommonCore.RpgGame.State
 {
     
     //TODO refactor and document this, it's a disaster zone holdover

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using CommonCore.DebugLog;
 using CommonCore.State;
-using CommonCore.Rpg;
 using CommonCore.ObjectActions;
+using CommonCore.RpgGame.Rpg;
 using CommonCore.RpgGame.UI;
 
 namespace CommonCore.World

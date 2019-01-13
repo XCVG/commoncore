@@ -6,8 +6,9 @@ using UnityEngine;
 using SickDev.CommandSystem;
 using CommonCore.State;
 using CommonCore.RpgGame.UI;
+using CommonCore.RpgGame.State;
 
-namespace CommonCore.Rpg
+namespace CommonCore.RpgGame.Rpg
 {
     public static class RpgConsoleCommands //will probably break this up at some point, but maybe not until Balmora
     {

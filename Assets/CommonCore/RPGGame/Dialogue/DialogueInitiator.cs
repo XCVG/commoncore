@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 using SickDev.CommandSystem;
 using CommonCore.LockPause;
 
-namespace CommonCore.Dialogue
+namespace CommonCore.RpgGame.Dialogue
 {
     public delegate void DialogueFinishedDelegate();
 

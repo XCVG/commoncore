@@ -1,5 +1,5 @@
 ﻿
-namespace CommonCore.State
+namespace CommonCore.RpgGame.State
 {
     //base class for Intents
     //Intents are created by one scene and executed on the next or on the loading screen

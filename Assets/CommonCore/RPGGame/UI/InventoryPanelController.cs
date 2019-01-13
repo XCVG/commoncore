@@ -1,12 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using CommonCore.Rpg;
 using UnityEngine.UI;
 using CommonCore.Messaging;
 using CommonCore.State;
 using CommonCore.World;
 using CommonCore.UI;
+using CommonCore.RpgGame.Rpg;
 
 namespace CommonCore.RpgGame.UI
 {

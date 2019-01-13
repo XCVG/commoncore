@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CommonCore.State
+namespace CommonCore.RpgGame.State
 {
     public enum MapMarkerState
     { 

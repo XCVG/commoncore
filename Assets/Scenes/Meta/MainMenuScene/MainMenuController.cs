@@ -10,6 +10,7 @@ using CommonCore;
 using CommonCore.State;
 using CommonCore.UI;
 using CommonCore.DebugLog;
+using CommonCore.RpgGame.State;
 
 namespace GameUI
 {

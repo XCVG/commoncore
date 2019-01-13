@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using CommonCore.Rpg; //THIS is the interdependency we're trying to avoid
+using CommonCore.RpgGame.Rpg; //THIS is the interdependency we're trying to avoid
 
 namespace CommonCore.World
 {

@@ -4,11 +4,11 @@ using UnityEngine;
 using CommonCore;
 using CommonCore.ObjectActions;
 using CommonCore.State;
-using CommonCore.Rpg;
 using CommonCore.World;
 using CommonCore.Audio;
 using CommonCore.Messaging;
-using CommonCore.Dialogue;
+using CommonCore.RpgGame.Dialogue;
+using CommonCore.RpgGame.Rpg;
 
 namespace World.Ext.TestIsland
 {

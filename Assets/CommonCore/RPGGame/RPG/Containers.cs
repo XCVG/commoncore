@@ -5,7 +5,7 @@ using UnityEngine;
 using CommonCore.State;
 using CommonCore.DebugLog;
 
-namespace CommonCore.Rpg
+namespace CommonCore.RpgGame.Rpg
 {
 
     public class ContainerModel

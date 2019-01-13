@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using CommonCore.ObjectActions;
-using CommonCore.Rpg;
 using CommonCore.State;
 using CommonCore.DebugLog;
-using CommonCore.Dialogue;
 using CommonCore.Messaging;
 using CommonCore.LockPause;
+using CommonCore.RpgGame.Dialogue;
+using CommonCore.RpgGame.Rpg;
+using CommonCore.RpgGame.State;
 
 namespace CommonCore.World
 {

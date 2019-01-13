@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json.Linq;
-using CommonCore.State;
+using CommonCore.RpgGame.State;
 
-namespace CommonCore.Dialogue
+namespace CommonCore.RpgGame.Dialogue
 {
     public class Monologue
     {

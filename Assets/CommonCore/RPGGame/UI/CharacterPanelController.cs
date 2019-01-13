@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
-using CommonCore.Rpg;
+using CommonCore.RpgGame.Rpg;
 using CommonCore.State;
 using CommonCore.StringSub;
 using CommonCore.UI;

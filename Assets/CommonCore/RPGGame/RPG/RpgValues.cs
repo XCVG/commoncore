@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CommonCore.Rpg
+namespace CommonCore.RpgGame.Rpg
 {
     /*
      * This is pretty hacky, but honestly I'd expect it to stay until at least Downwarren

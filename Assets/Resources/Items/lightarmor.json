@@ -1,7 +1,7 @@
 {
   "lightarmor": {
     "model": {
-		"$type": "CommonCore.Rpg.ArmorItemModel, Assembly-CSharp",
+		"$type": "CommonCore.RpgGame.Rpg.ArmorItemModel, Assembly-CSharp",
 		"DamageResistance": {
 			"Normal": 5.0,
 			"Impact": 6.0,

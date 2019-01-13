@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace CommonCore.State
+namespace CommonCore.RpgGame.State
 {
     public class PlayerSpawnIntent : Intent
     {

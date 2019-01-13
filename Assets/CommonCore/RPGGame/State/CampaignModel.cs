@@ -7,7 +7,7 @@ using System;
 using System.Text;
 using CommonCore.Messaging;
 
-namespace CommonCore.State
+namespace CommonCore.RpgGame.State
 {
 
     public class CampaignModel

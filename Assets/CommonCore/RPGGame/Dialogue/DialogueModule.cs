@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using CommonCore.DebugLog;
 
-namespace CommonCore.Dialogue
+namespace CommonCore.RpgGame.Dialogue
 {
 
     public class DialogueModule : CCModule

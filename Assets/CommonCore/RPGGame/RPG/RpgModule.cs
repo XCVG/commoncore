@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CommonCore.Rpg
+namespace CommonCore.RpgGame.Rpg
 {
     /*
      * CommonCore RPG Module

@@ -8,10 +8,10 @@ using CommonCore.UI;
 using CommonCore.LockPause;
 using CommonCore.DebugLog;
 using CommonCore.State;
-using CommonCore.Rpg;
 using CommonCore.Messaging;
 using CommonCore.Audio;
 using CommonCore.Config;
+using CommonCore.RpgGame.Rpg;
 using CommonCore.RpgGame.UI;
 
 namespace CommonCore.World

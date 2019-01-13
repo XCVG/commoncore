@@ -11,7 +11,7 @@ using CommonCore.StringSub;
 using CommonCore.LockPause;
 using CommonCore.RpgGame.UI;
 
-namespace CommonCore.Dialogue
+namespace CommonCore.RpgGame.Dialogue
 {
 
     public class DialogueController : MonoBehaviour

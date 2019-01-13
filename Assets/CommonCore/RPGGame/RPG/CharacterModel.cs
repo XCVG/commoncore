@@ -5,7 +5,7 @@ using UnityEngine;
 using Newtonsoft.Json;
 using CommonCore.Messaging;
 
-namespace CommonCore.Rpg
+namespace CommonCore.RpgGame.Rpg
 { 
     /*
      * This is a complete character model, right now used only for players

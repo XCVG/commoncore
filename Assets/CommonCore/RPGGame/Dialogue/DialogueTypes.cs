@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using CommonCore.State;
+using CommonCore.RpgGame.State;
 
-namespace CommonCore.Dialogue
+namespace CommonCore.RpgGame.Dialogue
 {
     internal class DialogueScene
     {

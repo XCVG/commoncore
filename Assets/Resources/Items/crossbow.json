@@ -1,7 +1,7 @@
 {
   "crossbow": {
     "model": {
-      "$type": "CommonCore.Rpg.RangedWeaponItemModel, Assembly-CSharp",
+      "$type": "CommonCore.RpgGame.Rpg.RangedWeaponItemModel, Assembly-CSharp",
       "Damage": 6,
       "DamagePierce": 2,
       "Velocity": 50,

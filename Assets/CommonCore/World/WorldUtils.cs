@@ -4,8 +4,9 @@ using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
 using CommonCore.State;
-using CommonCore.Rpg;
 using CommonCore.DebugLog;
+using CommonCore.RpgGame.Rpg; //TODO split this into dependent and non-dependent classes
+using CommonCore.RpgGame.State;
 
 namespace CommonCore.World
 {

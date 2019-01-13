@@ -1,7 +1,7 @@
 {
   "demo_filter": {
     "model": {
-		"$type": "CommonCore.Rpg.MiscItemModel, Assembly-CSharp",
+		"$type": "CommonCore.RpgGame.Rpg.MiscItemModel, Assembly-CSharp",
 		"Name": "demo_filter",
 		"Value": 0,
 		"Weight": 0,
@@ -17,7 +17,7 @@
   },
   "demo_part1": {
     "model": {
-		"$type": "CommonCore.Rpg.MiscItemModel, Assembly-CSharp",
+		"$type": "CommonCore.RpgGame.Rpg.MiscItemModel, Assembly-CSharp",
 		"Name": "demo_part1",
 		"Value": 0,
 		"Weight": 0,
@@ -33,7 +33,7 @@
   },
   "demo_part2": {
     "model": {
-		"$type": "CommonCore.Rpg.MiscItemModel, Assembly-CSharp",
+		"$type": "CommonCore.RpgGame.Rpg.MiscItemModel, Assembly-CSharp",
 		"Name": "demo_part2",
 		"Value": 0,
 		"Weight": 0,

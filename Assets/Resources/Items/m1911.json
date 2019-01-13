@@ -1,7 +1,7 @@
 {
   "m1911": {
     "model": {
-      "$type": "CommonCore.Rpg.RangedWeaponItemModel, Assembly-CSharp",
+      "$type": "CommonCore.RpgGame.Rpg.RangedWeaponItemModel, Assembly-CSharp",
       "Damage": 6,
       "DamagePierce": 0,
       "Velocity": 70,

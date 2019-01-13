@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using CommonCore.State;
-using CommonCore.Rpg;
+using CommonCore.RpgGame.Rpg;
 using CommonCore.LockPause;
 using CommonCore.UI;
 

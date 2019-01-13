@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-namespace CommonCore.Rpg
+namespace CommonCore.RpgGame.Rpg
 {
     public enum Sex //we could get into arguments about sex vs gender etc but these are enough for game logic purposes
     {

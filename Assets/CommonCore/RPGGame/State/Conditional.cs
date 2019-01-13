@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CommonCore.DelayedEvents;
+using CommonCore.State;
 
-namespace CommonCore.State
+namespace CommonCore.RpgGame.State
 {
     public enum ConditionType
     {

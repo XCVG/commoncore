@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using CommonCore.State;
+using CommonCore.RpgGame.State;
 
 namespace CommonCore.ObjectActions
 {

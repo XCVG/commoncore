@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using CommonCore.DebugLog;
 
-namespace CommonCore.Rpg
+namespace CommonCore.RpgGame.Rpg
 {
     public enum PredefinedFaction
     {

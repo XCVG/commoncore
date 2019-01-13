@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using CommonCore.Rpg;
+using CommonCore.RpgGame.Rpg;
 using CommonCore.RpgGame.UI;
 using CommonCore.State;
 

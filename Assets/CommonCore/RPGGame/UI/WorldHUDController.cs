@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using CommonCore.Messaging;
 using CommonCore.StringSub;
 using CommonCore.State;
-using CommonCore.Rpg;
+using CommonCore.RpgGame.Rpg;
 
 namespace CommonCore.RpgGame.UI
 {
