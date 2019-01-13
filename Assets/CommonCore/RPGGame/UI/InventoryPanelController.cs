@@ -147,7 +147,7 @@ namespace CommonCore.RpgGame.UI
             GameState.Instance.PlayerRpgState.Inventory.RemoveItem(itemInstance, quantity);
             Transform playerT = WorldUtils.GetPlayerObject().transform;
             Vector3 dropPos = (playerT.position + (playerT.forward.normalized * 1.0f));
-            WorldUtils.DropItem(itemModel, quantity, dropPos);
+            GameWorldUtils.DropItem(itemModel, quantity, dropPos);
 
             SignalPaint();
         }

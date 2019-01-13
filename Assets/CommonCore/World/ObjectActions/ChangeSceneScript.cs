@@ -22,7 +22,7 @@ namespace CommonCore.ObjectActions
             else if (string.IsNullOrEmpty(SpawnPoint))
                 spawnPointHack = string.Empty;
 
-            WorldUtils.ChangeScene(NextScene, spawnPointHack, SpawnPosition, SpawnRotation);
+            GameWorldUtils.ChangeScene(NextScene, spawnPointHack, SpawnPosition, SpawnRotation);
         }
 
         public override void Execute(ActionInvokerData data)

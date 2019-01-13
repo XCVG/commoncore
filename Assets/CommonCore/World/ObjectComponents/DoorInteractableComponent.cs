@@ -24,7 +24,7 @@ namespace CommonCore.World
                 else if (string.IsNullOrEmpty(SpawnPoint))
                     spawnPointHack = string.Empty;
 
-                WorldUtils.ChangeScene(Scene, spawnPointHack, Position, Rotation);
+                GameWorldUtils.ChangeScene(Scene, spawnPointHack, Position, Rotation);
             }
         }
     }

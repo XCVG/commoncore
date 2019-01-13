@@ -16,6 +16,8 @@ namespace CommonCore.World
      */
     public class WorldConsoleCommands
     {
+        //TODO split this, because it's a mess
+
         static GameObject SelectedObject;
         static string SelectedTID;
 
@@ -38,7 +40,7 @@ namespace CommonCore.World
         static void PrintSceneList()
         {   try
             {
-                var sceneNames = SceneUtils.GetSceneList();
+                var sceneNames = WorldUtils.GetSceneList();
                 StringBuilder sb = new StringBuilder(sceneNames.Length * 16);
                 foreach (var s in sceneNames)
                 {
@@ -67,7 +69,7 @@ namespace CommonCore.World
         [Command]
         static void Noclip()
         {
-            var player = WorldUtils.GetPlayerController();
+            var player = GameWorldUtils.GetPlayerController();
 
             player.Clipping = !(player.Clipping);
         }
@@ -139,7 +141,7 @@ namespace CommonCore.World
         [Command]
         static void Warp(string scene, string spawnPoint)
         {
-            WorldUtils.ChangeScene(scene, spawnPoint, Vector3.zero, Vector3.zero);
+            GameWorldUtils.ChangeScene(scene, spawnPoint, Vector3.zero, Vector3.zero);
         }
 
         [Command]
@@ -151,19 +153,19 @@ namespace CommonCore.World
         [Command]
         static void Warp(string scene, Vector3 position, Vector3 rotation)
         {
-            WorldUtils.ChangeScene(scene, null, position, rotation);
+            GameWorldUtils.ChangeScene(scene, null, position, rotation);
         }
 
         [Command]
         static void WarpEx(string scene, bool hideloading)
         {
-            WorldUtils.ChangeScene(scene, null, Vector3.zero, Vector3.zero, hideloading, null);
+            GameWorldUtils.ChangeScene(scene, null, Vector3.zero, Vector3.zero, hideloading, null);
         }
 
         [Command]
         static void WarpEx(string scene, bool hideloading, string overrideobject)
         {
-            WorldUtils.ChangeScene(scene, null, Vector3.zero, Vector3.zero, hideloading, overrideobject);
+            GameWorldUtils.ChangeScene(scene, null, Vector3.zero, Vector3.zero, hideloading, overrideobject);
         }
 
         //***** OBJECT MANIPULATION

@@ -43,7 +43,7 @@ namespace World.Ext.TestIsland
 
             //otherwise, activate spawners!
             GameState.Instance.CampaignState.AddFlag("DemoWellMonstersSpawned");
-            SpawnerSpecial.Invoke(new ActionInvokerData() { Activator = WorldUtils.GetPlayerController() });
+            SpawnerSpecial.Invoke(new ActionInvokerData() { Activator = GameWorldUtils.GetPlayerController() });
 
             //also set quest stage
             if (GameState.Instance.CampaignState.GetQuestStage("DemoQuest") < 50)

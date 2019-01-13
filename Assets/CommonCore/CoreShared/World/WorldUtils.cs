@@ -1,21 +1,47 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 using UnityEngine.SceneManagement;
 using CommonCore.State;
-using CommonCore.DebugLog;
-using CommonCore.RpgGame.Rpg; //TODO split this into dependent and non-dependent classes
-using CommonCore.RpgGame.State;
 
 namespace CommonCore.World
 {
-    /*
-     * Utility class for world manipulation
-     * Some of these will be moved soon
-     */
+
+    /// <summary>
+    /// General utilities for working with (CommonCore) scenes and the objects in them
+    /// </summary>
     public static class WorldUtils
     {
+                
+        /// <summary>
+        /// Gets a list of scenes (by name) in the game
+        /// </summary>
+        /// <returns>A list of scenes in the game</returns>
+        public static string[] GetSceneList() //TODO we'll probably move this into some kind of CommonCore.SceneManagement
+        {
+            int sceneCount = SceneManager.sceneCountInBuildSettings;
+            var scenes = new List<string>(sceneCount);
+            for (int i = 0; i < sceneCount; i++)
+            {
+                try
+                {
+                    scenes.Add(SceneUtility.GetScenePathByBuildIndex(i));
+                }
+                catch (Exception e)
+                {
+                    //ignore it, we've gone over or some stupid bullshit
+                }
+
+            }
+
+            return scenes.ToArray();
+            
+        }
+
+        /// <summary>
+        /// Finds all game objects with a given name. No, I don't know what it's for either.
+        /// </summary>
         public static List<GameObject> FindAllGameObjects(string name)
         {
             var goList = new List<GameObject>();
@@ -29,6 +55,7 @@ namespace CommonCore.World
             return goList;
         }
 
+        [Obsolete("use GameObject.GetComponentsInChildren<T> instead")]
         public static List<T> GetComponentsInDescendants<T>(Transform root)
         {
             List<T> components = new List<T>();
@@ -38,6 +65,7 @@ namespace CommonCore.World
             return components;
         }
 
+        [Obsolete("use GameObject.GetComponentsInChildren<T> instead")]
         public static void GetComponentsInDescendants<T>(Transform root, List<T> components)
         {
             //base case: root has no children
@@ -65,14 +93,16 @@ namespace CommonCore.World
 
         private static GameObject PlayerObject;
 
-        //TODO split into Get and TryGet
-        public static GameObject GetPlayerObject()
+        /// <summary>
+        /// Gets the player object (or null)
+        /// </summary>
+        public static GameObject GetPlayerObject() //TODO split into Get() and TryGet()
         {
             if (PlayerObject != null)
                 return PlayerObject;
 
             GameObject go = GameObject.FindGameObjectWithTag("Player");
-            if(go != null)
+            if (go != null)
             {
                 PlayerObject = go;
                 return go;
@@ -80,7 +110,7 @@ namespace CommonCore.World
 
             go = GameObject.Find("Player");
 
-            if(go != null)
+            if (go != null)
             {
                 PlayerObject = go;
                 return go;
@@ -88,7 +118,7 @@ namespace CommonCore.World
 
             var tf = CoreUtils.GetWorldRoot().FindDeepChild("Player");
 
-            if(tf != null)
+            if (tf != null)
                 go = tf.gameObject;
 
             if (go != null)
@@ -102,11 +132,13 @@ namespace CommonCore.World
             return null;
         }
 
-        //TODO split into Get and TryGet
-        public static PlayerController GetPlayerController()
+        /// <summary>
+        /// Finds the player and returns their controller (does not guarantee a PlayerController!)
+        /// </summary>
+        public static BaseController GetPlayerController() //TODO split into Get() and TryGet()
         {
-            PlayerController pc = GetPlayerObject().GetComponent<PlayerController>();
-            if(pc != null)
+            var pc = WorldUtils.GetPlayerObject()?.GetComponent<BaseController>(); //should be safe because GetPlayerObject returns true null
+            if (pc != null)
             {
                 return pc;
             }
@@ -117,8 +149,13 @@ namespace CommonCore.World
             }
         }
 
+        /// <summary>
+        /// Gets the scene controller (returns null on fail)
+        /// </summary>
         public static BaseSceneController TryGetSceneController()
         {
+            //TODO refactor this to use CoreUtils.GetWorldRoot
+
             GameObject go = GameObject.FindGameObjectWithTag("GameController");
             if (go != null)
             {
@@ -141,6 +178,9 @@ namespace CommonCore.World
             return null;
         }
 
+        /// <summary>
+        /// Gets the scene controller (throws on fail)
+        /// </summary>
         public static BaseSceneController GetSceneController()
         {
             BaseSceneController bsc = TryGetSceneController();
@@ -154,6 +194,9 @@ namespace CommonCore.World
             throw new NullReferenceException(); //not having a scene controller is fatal
         }
 
+        /// <summary>
+        /// Finds an object by thing ID (name)
+        /// </summary>
         public static GameObject FindObjectByTID(string TID)
         {
             var targetTransform = GameObject.Find("WorldRoot").transform.FindDeepChild(TID);
@@ -162,6 +205,9 @@ namespace CommonCore.World
             return null;
         }
 
+        /// <summary>
+        /// Finds all objects with form ID (entity name)
+        /// </summary>
         public static GameObject[] FindObjectsWithFormID(string formID)
         {
             List<BaseController> bcs = new List<BaseController>();
@@ -178,14 +224,17 @@ namespace CommonCore.World
             return foundObjects.ToArray();
         }
 
+        /// <summary>
+        /// Finds all objects with CommonCore tag
+        /// </summary>
         public static GameObject[] FindObjectsWithTag(string tag)
         {
             List<BaseController> bcs = new List<BaseController>();
             GetComponentsInDescendants<BaseController>(GameObject.Find("WorldRoot").transform, bcs);
             List<GameObject> foundObjects = new List<GameObject>();
-            foreach(BaseController c in bcs)
+            foreach (BaseController c in bcs)
             {
-                if(c.Tags.Contains(tag))
+                if (c.Tags.Contains(tag))
                 {
                     foundObjects.Add(c.gameObject);
                 }
@@ -194,33 +243,6 @@ namespace CommonCore.World
             return foundObjects.ToArray();
         }
 
-        public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Vector3 rotation, bool skipLoading, string objectOverride)
-        {
-            MetaState.Instance.LoadingScreenPropOverride = objectOverride;
-            ChangeScene(scene, spawnPoint, position, rotation, skipLoading);
-        }
-
-        public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Vector3 rotation, bool skipLoading)
-        {
-            MetaState.Instance.SkipLoadingScreen = skipLoading;
-            ChangeScene(scene, spawnPoint, position, rotation);
-        }
-
-        public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Vector3 rotation)
-        {
-            MetaState mgs = MetaState.Instance;
-            mgs.PreviousScene = SceneManager.GetActiveScene().name;
-            mgs.NextScene = scene;
-            if (spawnPoint != null)
-                mgs.PlayerIntent = new PlayerSpawnIntent(spawnPoint); //handle string.Empty as default spawn point
-            else
-                mgs.PlayerIntent = new PlayerSpawnIntent(position, Quaternion.Euler(rotation));            
-            mgs.LoadSave = null;
-            mgs.TransitionType = SceneTransitionType.ChangeScene;
-            WorldUtils.GetSceneController().ExitScene();
-        }
-
-        //spawn object methods
         [Obsolete]
         public static GameObject SpawnObject(string formID, Vector3 position, Vector3 rotation)
         {
@@ -229,9 +251,12 @@ namespace CommonCore.World
         [Obsolete]
         public static GameObject SpawnObject(Transform parent, string formID, Vector3 position, Vector3 rotation)
         {
-            return UnityEngine.Object.Instantiate(CoreUtils.LoadResource<GameObject>("entities/" + formID),position,Quaternion.Euler(rotation), parent) as GameObject;
+            return UnityEngine.Object.Instantiate(CoreUtils.LoadResource<GameObject>("entities/" + formID), position, Quaternion.Euler(rotation), parent) as GameObject;
         }
 
+        /// <summary>
+        /// Spawn an entity into the world (entities/*)
+        /// </summary>
         public static GameObject SpawnObject(string formID, string thingID, Vector3 position, Vector3 rotation, Transform parent)
         {
             if (parent == null)
@@ -248,6 +273,9 @@ namespace CommonCore.World
             return go;
         }
 
+        /// <summary>
+        /// Spawn an effect into the world (DynamicFX/*)
+        /// </summary>
         public static GameObject SpawnEffect(string effectID, Vector3 position, Vector3 rotation, Transform parent)
         {
             if (parent == null)
@@ -262,7 +290,9 @@ namespace CommonCore.World
             return go;
         }
 
-        //from StackOverflow, an extension method
+        /// <summary>
+        /// Find a child by name, recursively
+        /// </summary>
         public static Transform FindDeepChild(this Transform aParent, string aName)
         {
             var result = aParent.Find(aName);
@@ -277,52 +307,6 @@ namespace CommonCore.World
             return null;
         }
 
-        public static bool TargetIsAlive(Transform target)
-        {
-            if (target == null)
-                return false;
-
-            var bc = target.GetComponent<BaseController>();
-            if (bc == null)
-                return target.gameObject.activeInHierarchy;
-
-            bool healthPass = true;
-            if (bc is PlayerController)
-                healthPass = GameState.Instance.PlayerRpgState.HealthFraction > 0;
-            else if (bc is ActorController)
-                healthPass = ((ActorController)bc).Health > 0;
-
-            return target.gameObject.activeInHierarchy && healthPass;
-        }
-
-        //hacky inventory hack
-        public static void DropItem(InventoryItemModel item, int quantity, Vector3 position)
-        {
-            string spawnName = "spec_item";
-
-            if(!string.IsNullOrEmpty(item.WorldModel))
-            {
-                var ent = CoreUtils.LoadResource<GameObject>("entities/" + item.WorldModel); //yup, you can't check this, you have to try it
-                if (ent != null)
-                    spawnName = item.WorldModel;
-            }
-
-            var go = SpawnObject(spawnName, "inv_drop_" + GameState.Instance.NextUID, position, Vector3.zero, null); //TODO switch to one that works with loaded prefab
-            var ic = go.GetComponent<ItemController>();
-            ic.ItemId = item.Name;
-            ic.ItemQuantity = quantity;
-        }
-
-        //a stupid place to put this, but not as stupid as the last place
-        public static float CalculateDamage(float Damage, float Pierce, float Threshold, float Resistance) //this is a dumb spot and we will move it later
-        {
-            float d1 = Damage * ((100f - Mathf.Min(Resistance, 99f)) / 100f);
-            float dt = Mathf.Max(0, Threshold - Pierce);
-            float d2 = Mathf.Max(d1 - dt, Damage * 0.1f);
-            if (CoreParams.UseRandomDamage)
-                d2 *= UnityEngine.Random.Range(0.75f, 1.25f);
-            return d2;
-        }
 
     }
 }

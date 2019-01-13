@@ -10,6 +10,7 @@ using CommonCore.State;
 using CommonCore.StringSub;
 using CommonCore.LockPause;
 using CommonCore.RpgGame.UI;
+using CommonCore.World;
 
 namespace CommonCore.RpgGame.Dialogue
 {
@@ -238,7 +239,7 @@ namespace CommonCore.RpgGame.Dialogue
                         spawnPoint = arr[2];
 
                     //clean exit
-                    World.WorldUtils.ChangeScene(nextLoc.Value, spawnPoint, Vector3.zero, Vector3.zero);
+                    GameWorldUtils.ChangeScene(nextLoc.Value, spawnPoint, Vector3.zero, Vector3.zero);
                 }
                 else
                 {
