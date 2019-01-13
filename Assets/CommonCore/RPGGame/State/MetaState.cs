@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CommonCore.State
 {
-    //TODO move away from static singleton model
+    //TODO split this one like we did for GameState
     public sealed class MetaState
     {
         private static MetaState instance;
