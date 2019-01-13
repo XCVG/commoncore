@@ -8,6 +8,8 @@ namespace CommonCore.Config
 
     public class PersistState
     {
+        //TODO move this to CommonCore.State
+
         private static readonly string Path = CoreParams.PersistentDataPath + "/persist.json";
 
         public static PersistState Instance { get; private set; }

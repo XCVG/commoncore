@@ -7,85 +7,42 @@ using CommonCore.Rpg;
 using UnityEngine;
 
 namespace CommonCore.State
-{ 
-    //TODO move away from the static singleton model
-    public sealed class GameState
+{
+    //EDIT THIS FILE AND PUT YOUR GAME DATA HERE
+
+    public partial class GameState
     {
-        private static GameState instance;
+        // actual instance data
+        public WorldModel WorldState = new WorldModel();
+        public CampaignModel CampaignState = new CampaignModel();
 
-        private GameState()
+        public List<DelayedEvent> DelayedEvents = new List<DelayedEvent>();
+
+        public Dictionary<string, object> GlobalDataState = new Dictionary<string, object>();
+        public Dictionary<string, Dictionary<string, object>> LocalDataState = new Dictionary<string, Dictionary<string, object>>();
+
+        public Dictionary<string, Dictionary<string, RestorableData>> LocalObjectState = new Dictionary<string, Dictionary<string, RestorableData>>();
+        public Dictionary<string, RestorableData> MotileObjectState = new Dictionary<string, RestorableData>();
+
+        public Dictionary<string, ContainerModel> ContainerState = new Dictionary<string, ContainerModel>();
+        public Dictionary<string, MapMarkerState> MapMarkers = new Dictionary<string, MapMarkerState>();
+        public HashSet<string> LibraryUnlocks = new HashSet<string>();
+
+        public RestorableData PlayerWorldState;
+        public CharacterModel PlayerRpgState = new CharacterModel();
+
+        public string CurrentScene;
+        public bool SaveLocked;
+        public bool InitialLoaded; //mostly for editor hacks
+
+        [JsonProperty]
+        private int CurrentUID;
+        [JsonIgnore]
+        public int NextUID { get { return ++CurrentUID; } }
+
+        partial void Init()
         {
-            WorldState = new WorldModel();
-            CampaignState = new CampaignModel();
-
-            DelayedEvents = new List<DelayedEvent>();
-
-            GlobalDataState = new Dictionary<string, object>();
-            LocalDataState = new Dictionary<string, Dictionary<string, object>>();
-
-            LocalObjectState = new Dictionary<string, Dictionary<string, RestorableData>>(); //maps will have to deal with initialization/non-initialization themselves or on load
-            MotileObjectState = new Dictionary<string, RestorableData>();
-
-            ContainerState = new Dictionary<string, ContainerModel>();
-            MapMarkers = new Dictionary<string, MapMarkerState>();
-            LibraryUnlocks = new HashSet<string>();
-
-            PlayerRpgState = new CharacterModel();
-        }
-
-        public static GameState Instance
-        {
-            get
-            {
-                if(instance == null)
-                {
-                    instance = new GameState();
-                }
-                return instance;
-            }
-        }        
-
-        public static void Reset()
-        {
-            instance = new GameState();
-        }
-
-        public static void SerializeToFile(string path)
-        {
-            string data = Serialize();
-            File.WriteAllText(path, data);
-        }
-
-        public static string Serialize()
-        {
-            return JsonConvert.SerializeObject(Instance,
-                Formatting.Indented,
-                new JsonSerializerSettings
-                {
-                Converters = CCJsonConverters.Defaults.Converters,
-                TypeNameHandling = TypeNameHandling.Auto
-            });
-        }
-
-        public static void DeserializeFromFile(string path)
-        {
-            Deserialize(File.ReadAllText(path));
-        }
-
-        public static void Deserialize(string data)
-        {
-            instance = JsonConvert.DeserializeObject<GameState>(data,
-            new JsonSerializerSettings
-            {
-                Converters = CCJsonConverters.Defaults.Converters,
-                TypeNameHandling = TypeNameHandling.Auto
-            });
-        }
-
-        
-        public static void LoadInitial()
-        {
-            //TODO: better debugging and logging
+            //TODO better debugging and logging
 
             //load initial player
             try
@@ -99,7 +56,7 @@ namespace CommonCore.State
                 });
                 instance.PlayerRpgState.UpdateStats();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debug.LogError("Failed to load initial player");
                 Debug.LogException(e);
@@ -110,7 +67,7 @@ namespace CommonCore.State
             try
             {
                 var rawContainers = CoreUtils.LoadJson<Dictionary<string, SerializableContainerModel>>(CoreUtils.LoadResource<TextAsset>("RPGDefs/init_containers").text);
-                foreach(var key in rawContainers.Keys)
+                foreach (var key in rawContainers.Keys)
                 {
                     var value = rawContainers[key];
                     try
@@ -118,7 +75,7 @@ namespace CommonCore.State
                         var realContainer = SerializableContainerModel.MakeContainerModel(value);
                         instance.ContainerState.Add(key, realContainer);
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         Debug.LogError("Failed to load one container");
                         Debug.LogException(e);
@@ -133,34 +90,6 @@ namespace CommonCore.State
 
             instance.InitialLoaded = true;
         }
-
-        // actual instance data
-        public WorldModel WorldState;
-        public CampaignModel CampaignState;
-
-        public List<DelayedEvent> DelayedEvents;
-
-        public Dictionary<string, object> GlobalDataState;
-        public Dictionary<string, Dictionary<string, object>> LocalDataState;
-
-        public Dictionary<string, Dictionary<string, RestorableData>> LocalObjectState;        
-        public Dictionary<string, RestorableData> MotileObjectState;
-
-        public Dictionary<string, ContainerModel> ContainerState;
-        public Dictionary<string, MapMarkerState> MapMarkers;
-        public HashSet<string> LibraryUnlocks;
-
-        public RestorableData PlayerWorldState;
-        public CharacterModel PlayerRpgState;
-
-        public string CurrentScene;
-        public bool SaveLocked;
-        public bool InitialLoaded; //mostly for editor hacks
-
-        [JsonProperty]
-        private int CurrentUID;
-        [JsonIgnore]
-        public int NextUID { get { return ++CurrentUID; } }
 
     }
 
