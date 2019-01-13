@@ -8,11 +8,10 @@ using UnityEngine;
 
 namespace CommonCore.Scripting
 {
-    /*
-     * CommonCore Scripting Module
-     * Allows execution of arbitray methods as scripts
-     * Will eventually allow adding new ones at runtime
-     */
+
+    /// <summary>
+    /// Provides services for executing arbitrary methods as standalone scripts
+    /// </summary>
     public class ScriptingModule : CCModule
     {
         private static ScriptingModule Instance;
@@ -33,16 +32,8 @@ namespace CommonCore.Scripting
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
 
-            //this is INCREDIBLY dumb- it scans ALL loaded assemblies
-            //btw, both CCBase and WanzyeeStudio Json do this
-            //the former will be (eventually) fixed, and the latter will be (eventually) replaced
-            //I fixed it kinda
-            var methods = AppDomain.CurrentDomain.GetAssemblies()
-                    .Where(a => !(a.FullName.StartsWith("Unity") || a.FullName.StartsWith("System") ||  
-                            a.FullName.StartsWith("mscorlib") || a.FullName.StartsWith("mono") ||
-                            a.FullName.StartsWith("Boo") || a.FullName.StartsWith("I18N") ))
-                    .SelectMany((assembly) => assembly.GetTypes())
-                    .SelectMany(t => t.GetMethods())
+            var methods = CCBase.BaseGameTypes
+                    .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static))
                     .Where(m => !m.IsAbstract)
                     .Where(m => m.GetCustomAttributes(typeof(CCScriptAttribute), false).Length > 0)
                     .ToArray();
@@ -95,7 +86,7 @@ namespace CommonCore.Scripting
         private void CallScript(string name, ScriptExecutionContext context, params object[] args)
         {
             if (!CallableMethods.ContainsKey(name))
-                return;
+                throw new ArgumentException("Script not found!", "name");
 
             MethodInfo m = CallableMethods[name];
 
@@ -114,11 +105,17 @@ namespace CommonCore.Scripting
             m.Invoke(obj, trimmedArgs);
         }
 
+        /// <summary>
+        /// Calls a script through the scripting system
+        /// </summary>
         public static void Call(string name, ScriptExecutionContext context, params object[] args)
         {
             Instance.CallScript(name, context, args);
         }
 
+        /// <summary>
+        /// Lists executable scripts
+        /// </summary>
         public static List<KeyValuePair<string, MethodInfo>> GetCallableMethods()
         {
             List<KeyValuePair<string, MethodInfo>> results = new List<KeyValuePair<string, MethodInfo>>();

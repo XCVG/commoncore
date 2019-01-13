@@ -3,19 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using SickDev.CommandSystem;
-
+using CommonCore.Console;
 
 namespace CommonCore.Scripting
 {
 
     public static class ScriptingConsoleIntegration
     {
-
-        //these don't work
-
         [Command(alias = "Call", className = "Scripting")]
-        static void Call(string script)
+        private static void Call(string script)
         {
             try
             {
@@ -23,12 +19,12 @@ namespace CommonCore.Scripting
             }
             catch(Exception e)
             {
-                DevConsole.singleton.LogError(string.Format("Error in script {0}\n{1}\n{2}", script, e.ToString(), e.StackTrace));
+                ConsoleModule.WriteLine(string.Format("Error in script {0}\n{1}\n{2}", script, e.ToString(), e.StackTrace));
             }
         }
 
         [Command(alias = "Call", className = "Scripting")]
-        static void Call(string script, string arg0)
+        private static void Call(string script, string arg0)
         {
             try
             {
@@ -36,12 +32,12 @@ namespace CommonCore.Scripting
             }
             catch (Exception e)
             {
-                DevConsole.singleton.LogError(string.Format("Error in script {0}\n{1}\n{2}", script, e.ToString(), e.StackTrace));
+                ConsoleModule.WriteLine(string.Format("Error in script {0}\n{1}\n{2}", script, e.ToString(), e.StackTrace));
             }
         }
 
         [Command(alias = "Call", className = "Scripting")]
-        static void Call(string script, string arg0, string arg1)
+        private static void Call(string script, string arg0, string arg1)
         {
             try
             {
@@ -49,12 +45,12 @@ namespace CommonCore.Scripting
             }
             catch (Exception e)
             {
-                DevConsole.singleton.LogError(string.Format("Error in script {0}\n{1}\n{2}", script, e.ToString(), e.StackTrace));
+                ConsoleModule.WriteLine(string.Format("Error in script {0}\n{1}\n{2}", script, e.ToString(), e.StackTrace));
             }
         }
 
         [Command(alias = "Call", className = "Scripting")]
-        static void Call(string script, string arg0, string arg1, string arg2)
+        private static void Call(string script, string arg0, string arg1, string arg2)
         {
             try
             {
@@ -62,14 +58,14 @@ namespace CommonCore.Scripting
             }
             catch (Exception e)
             {
-                DevConsole.singleton.LogError(string.Format("Error in script {0}\n{1}\n{2}", script, e.ToString(), e.StackTrace));
+                ConsoleModule.WriteLine(string.Format("Error in script {0}\n{1}\n{2}", script, e.ToString(), e.StackTrace));
             }
         }
 
         //this does
 
         [Command(alias = "ListAll", className = "Scripting")]
-        static void ListAll()
+        private static void ListAll()
         {
             
             var scripts = ScriptingModule.GetCallableMethods();
@@ -78,7 +74,7 @@ namespace CommonCore.Scripting
             {
                 sb.AppendLine(string.Format("{0} : {1}", s.Key, s.Value.ToString()));
             }
-            DevConsole.singleton.Log(sb.ToString());
+            ConsoleModule.WriteLine(sb.ToString());
         }
 
     }

@@ -4,10 +4,8 @@ using UnityEngine;
 
 namespace CommonCore.Scripting
 {
-
-    public static class ScriptingTest
+    internal class ScriptingTest
     {
-
         [CCScript(ClassName = "Test", Name = "HelloWorld")]
         public static void TestMethod(ScriptExecutionContext context)
         {
@@ -15,19 +13,19 @@ namespace CommonCore.Scripting
         }
 
         [CCScript(ClassName = "Test", Name = "NoArgs")]
-        public static void NoArgsTest()
+        private static void NoArgsTest()
         {
             Debug.Log("Hello world! (no args)");
         }
 
         [CCScript(ClassName = "Test", Name = "ContextArg")]
-        public static void ContextArgTest(ScriptExecutionContext context)
+        public void ContextArgTest(ScriptExecutionContext context)
         {
             Debug.Log(context);
         }
 
         [CCScript(ClassName = "Test", Name = "SingleArg")]
-        public static void SingleArgTest(ScriptExecutionContext context, string arg0)
+        private void SingleArgTest(ScriptExecutionContext context, string arg0)
         {
             Debug.Log(arg0);
         }
