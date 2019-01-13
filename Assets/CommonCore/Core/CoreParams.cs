@@ -5,12 +5,18 @@ using UnityEngine;
 
 namespace CommonCore
 {
-    /*
-     * CommonCore Parameters class
-     * Includes common parameters, version info, etc
-     */
+
+    /// <summary>
+    /// CommonCore Parameters- core config, versioning, paths, etc
+    /// </summary>
     public static class CoreParams
     {
+        static CoreParams()
+        {
+            DataPath = Application.dataPath;
+            PersistentDataPath = Application.persistentDataPath;
+            StreamingAssetsPath = Application.streamingAssetsPath;
+        }
 
         //TODO move some of this into GameParams et al
         //TODO runtime overriding
@@ -41,7 +47,7 @@ namespace CommonCore
         public static readonly float DelayedEventPollInterval = 1.0f;
         public static readonly bool UseAggressiveLookups = true;
 
-        //*****game config settings
+        //*****game config settings (TODO move to GameParams)
         public static readonly string InitialScene = "World_Ext_TestIsland";
         public static readonly bool UseCustomLeveling = true;
         public static readonly bool UseDerivedSkills = true;
@@ -54,7 +60,11 @@ namespace CommonCore
         {
             get
             {
-                return Debug.isDebugBuild; //may change to PDC (#define DEVELOPMENT_BUILD)
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                return true;
+#else
+                return false;
+#endif
             }
         }
 
@@ -62,18 +72,11 @@ namespace CommonCore
         {
             get
             {
-                #if UNITY_EDITOR
+#if UNITY_EDITOR
                 return true;
-                #else
+#else
                 return false;
-                #endif
-            }
-        }
-        public static string PersistentDataPath
-        {
-            get
-            {
-                return Application.persistentDataPath; //TODO thread-safe variants of this and StreamingAssets (and others?)
+#endif
             }
         }
 
@@ -91,16 +94,21 @@ namespace CommonCore
             {
                 if (LoadData == DataLoadPolicy.Auto)
                 {
-                    #if UNITY_EDITOR
+#if UNITY_EDITOR
                     return DataLoadPolicy.OnDemand;
-                    #else
+#else
                     return DataLoadPolicy.OnStart;
-                    #endif
+#endif
                 }
                 else
                     return LoadData;
             }
         }
+
+        //*****path variables (some hackery to provide thread-safeish versions)
+        public static string DataPath { get; private set; }
+        public static string PersistentDataPath { get; private set; }
+        public static string StreamingAssetsPath { get; private set; }
     }
 
 

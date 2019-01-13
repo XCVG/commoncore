@@ -1,9 +1,8 @@
-﻿using System;
+﻿using CommonCore.Console;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SickDev.CommandSystem;
-using SickDev.DevConsole;
 
 namespace CommonCore.UI
 {
@@ -17,39 +16,60 @@ namespace CommonCore.UI
     public delegate void QuantityModalCallback(ModalStatusCode status, string tag, int quantity);
     public delegate void ConfirmModalCallback(ModalStatusCode status, string tag, bool result);
 
+    /// <summary>
+    /// Static class for managing modal system
+    /// </summary>
     public static class Modal //TODO modals should take out control locks
     {
         private const string MessageModalPrefab = "UI/Modal_Message";
         private const string QuantityModalPrefab = "UI/Modal_Quantity";
         private const string ConfirmModalPrefab = "UI/Modal_Confirm";
 
+        /// <summary>
+        /// Pushes a message modal and invokes the callback when dismissed
+        /// </summary>
         public static void PushMessageModal(string text, string heading, string tag, MessageModalCallback callback)
         {
             PushMessageModal(text, heading, tag, callback, false);
         }
 
+        /// <summary>
+        /// Pushes a message modal and invokes the callback when dismissed
+        /// </summary>
         public static void PushMessageModal(string text, string heading, string tag, MessageModalCallback callback, bool ephemeral)
         {
             var go = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(MessageModalPrefab), ephemeral ? GetEphemeralOrUIRoot() : CoreUtils.GetUIRoot());
             go.GetComponent<MessageModalController>().SetInitial(heading, text, null, tag, callback);
         }
 
+        /// <summary>
+        /// Pushes a quantity modal and invokes the callback when dismissed
+        /// </summary>
         public static void PushQuantityModal(string heading, int min, int max, int initial, bool allowCancel, string tag, QuantityModalCallback callback)
         {
             PushQuantityModal(heading, min, max, initial, allowCancel, tag, callback, false);
         }
 
+        /// <summary>
+        /// Pushes a quantity modal and invokes the callback when dismissed
+        /// </summary>
         public static void PushQuantityModal(string heading, int min, int max, int initial, bool allowCancel, string tag, QuantityModalCallback callback, bool ephemeral)
         {
             var go = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(QuantityModalPrefab), ephemeral ? GetEphemeralOrUIRoot() : CoreUtils.GetUIRoot());
             go.GetComponent<QuantityModalController>().SetInitial(heading, min, max, initial, allowCancel, tag, callback);
         }
 
+        /// <summary>
+        /// Pushes a confirm modal and invokes the callback when dismissed
+        /// </summary>
         public static void PushConfirmModal(string text, string heading, string yesText, string noText, string tag, ConfirmModalCallback callback)
         {
             PushConfirmModal(text, heading, yesText, noText, tag, callback, false);
         }
 
+        /// <summary>
+        /// Pushes a confirm modal and invokes the callback when dismissed
+        /// </summary>
         public static void PushConfirmModal(string text, string heading, string yesText, string noText, string tag, ConfirmModalCallback callback, bool ephemeral)
         {
             var go = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(ConfirmModalPrefab), ephemeral ? GetEphemeralOrUIRoot() : CoreUtils.GetUIRoot());
@@ -71,7 +91,7 @@ namespace CommonCore.UI
 
     }
 
-    public static class ModalCommandIntegration //TODO split this out properly
+    public static class ModalCommandIntegration
     {
         [Command(alias = "TestMessageModal", className = "UI")]
         static void TestMessageModal()
@@ -87,7 +107,7 @@ namespace CommonCore.UI
 
         static void TestMessageModalCallback(ModalStatusCode status, string tag)
         {
-            SickDev.DevConsole.DevConsole.singleton.Log(string.Format("Message Modal Returned \"{0}\" [{1}]", tag, status));
+            ConsoleModule.WriteLine(string.Format("Message Modal Returned \"{0}\" [{1}]", tag, status));
         }
         
         [Command(alias = "TestQuantityModal", className = "UI")]
@@ -112,12 +132,12 @@ namespace CommonCore.UI
 
         static void TestQuantityModalCallback(ModalStatusCode status, string tag, int quantity)
         {
-            SickDev.DevConsole.DevConsole.singleton.Log(string.Format("Quantity Modal Returned \"{0}\",{2} [{1}]", tag, status, quantity));
+            ConsoleModule.WriteLine(string.Format("Quantity Modal Returned \"{0}\",{2} [{1}]", tag, status, quantity));
         }
 
         static void TestConfirmModalCallback(ModalStatusCode status, string tag, bool result)
         {
-            SickDev.DevConsole.DevConsole.singleton.Log(string.Format("Confirm Modal Returned \"{0}\",{2} [{1}]", tag, status, result));
+            ConsoleModule.WriteLine(string.Format("Confirm Modal Returned \"{0}\",{2} [{1}]", tag, status, result));
         }
 
 

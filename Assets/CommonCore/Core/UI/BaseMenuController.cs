@@ -4,9 +4,12 @@ using UnityEngine;
 
 namespace CommonCore.UI
 {
-    public class BaseMenuController : MonoBehaviour
+    /// <summary>
+    /// Base class for menu controllers
+    /// </summary>
+    public abstract class BaseMenuController : MonoBehaviour
     {
-        //theme support probably won't arrive until Balmora but we'll rough it in anyway
+        //theme support probably won't arrive until Citadel but we'll rough it in anyway
         public bool ApplyTheme = true;
         public string OverrideTheme;
 

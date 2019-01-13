@@ -11,11 +11,12 @@ public class DummyCommandConsoleImplementation : IConsole
 {
     public void AddCommand(Delegate command, bool useClassName, string alias, string className, string description)
     {
-        throw new NotImplementedException();
+        //we can't do anything here
     }
 
     public void WriteLine(string line)
     {
-        throw new NotImplementedException();
+        //we can at least log this
+        Debug.Log(line);
     }
 }
