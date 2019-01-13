@@ -133,9 +133,9 @@ namespace CommonCore.World
             
             if(!HUDScript && AutoinitHud)
             {
-                Instantiate<GameObject>(Resources.Load<GameObject>("UI/DefaultWorldHUD"));
+                Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/DefaultWorldHUD"));
                 if (EventSystem.current == null)
-                    Instantiate(Resources.Load("UI/DefaultEventSystem"));
+                    Instantiate(CoreUtils.LoadResource<GameObject>("UI/DefaultEventSystem"));
 
                 HUDScript = WorldHUDController.Current;
             }

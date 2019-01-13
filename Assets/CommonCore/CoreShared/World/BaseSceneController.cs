@@ -53,11 +53,11 @@ namespace CommonCore.World
         protected void InitUI()
         {
             if (transform.Find("WorldHUD") == null)
-                Instantiate<GameObject>(Resources.Load<GameObject>("UI/DefaultWorldHUD"), transform).name = "WorldHUD";
+                Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/DefaultWorldHUD"), transform).name = "WorldHUD";
             if (transform.Find("InGameMenu") == null)
-                Instantiate<GameObject>(Resources.Load<GameObject>("UI/IGUI_Menu"), transform).name = "InGameMenu";
+                Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/IGUI_Menu"), transform).name = "InGameMenu";
             if (EventSystem.current == null)
-                Instantiate<GameObject>(Resources.Load<GameObject>("UI/DefaultEventSystem"), transform).name = "EventSystem";
+                Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/DefaultEventSystem"), transform).name = "EventSystem";
         }
 
         public virtual void Save()

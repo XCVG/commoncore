@@ -33,7 +33,7 @@ namespace CommonCore.UI
 
             //this is now somewhat broken because there are more choices in the struct
             string rid = pModel.Gender == Sex.Female ? "portrait_f" : "portrait_m";
-            CharacterImage.texture = Resources.Load<Texture2D>("UI/Portraits/" + rid);
+            CharacterImage.texture = CoreUtils.LoadResource<Texture2D>("UI/Portraits/" + rid);
         }
 
         //will generalize and move this

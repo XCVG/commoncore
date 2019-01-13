@@ -222,7 +222,7 @@ namespace CommonCore.UI
             {
                 SelectedItemText.text = itemDef.NiceName;
                 SelectedItemDescription.text = itemDef.Description;
-                Texture2D tex = Resources.Load<Texture2D>("UI/Icons/" + itemDef.Image);
+                Texture2D tex = CoreUtils.LoadResource<Texture2D>("UI/Icons/" + itemDef.Image);
                 if (tex != null)
                     SelectedItemImage.texture = tex;
             }
@@ -403,7 +403,7 @@ namespace CommonCore.UI
 
         public static void PushModal(InventoryModel inventory, ContainerModel container, bool isShop, ContainerCallback callback)
         {
-            var go = Instantiate<GameObject>(Resources.Load<GameObject>(DefaultPrefab), CoreUtils.GetWorldRoot());
+            var go = Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>(DefaultPrefab), CoreUtils.GetWorldRoot());
             var modal = go.GetComponent<ContainerModal>();
 
             modal.Inventory = inventory;

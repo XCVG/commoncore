@@ -38,7 +38,7 @@ namespace CommonCore.UI
         /// </summary>
         public static void PushMessageModal(string text, string heading, string tag, MessageModalCallback callback, bool ephemeral)
         {
-            var go = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(MessageModalPrefab), ephemeral ? GetEphemeralOrUIRoot() : CoreUtils.GetUIRoot());
+            var go = GameObject.Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>(MessageModalPrefab), ephemeral ? GetEphemeralOrUIRoot() : CoreUtils.GetUIRoot());
             go.GetComponent<MessageModalController>().SetInitial(heading, text, null, tag, callback);
         }
 
@@ -55,7 +55,7 @@ namespace CommonCore.UI
         /// </summary>
         public static void PushQuantityModal(string heading, int min, int max, int initial, bool allowCancel, string tag, QuantityModalCallback callback, bool ephemeral)
         {
-            var go = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(QuantityModalPrefab), ephemeral ? GetEphemeralOrUIRoot() : CoreUtils.GetUIRoot());
+            var go = GameObject.Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>(QuantityModalPrefab), ephemeral ? GetEphemeralOrUIRoot() : CoreUtils.GetUIRoot());
             go.GetComponent<QuantityModalController>().SetInitial(heading, min, max, initial, allowCancel, tag, callback);
         }
 
@@ -72,7 +72,7 @@ namespace CommonCore.UI
         /// </summary>
         public static void PushConfirmModal(string text, string heading, string yesText, string noText, string tag, ConfirmModalCallback callback, bool ephemeral)
         {
-            var go = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(ConfirmModalPrefab), ephemeral ? GetEphemeralOrUIRoot() : CoreUtils.GetUIRoot());
+            var go = GameObject.Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>(ConfirmModalPrefab), ephemeral ? GetEphemeralOrUIRoot() : CoreUtils.GetUIRoot());
             go.GetComponent<ConfirmModalController>().SetInitial(heading, text, yesText, noText, tag, callback);
         }
 

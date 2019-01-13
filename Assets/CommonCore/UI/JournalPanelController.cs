@@ -78,7 +78,7 @@ namespace CommonCore.UI
             {
                 SelectedTitle.text = qd.NiceName;
                 SelectedDescription.text = Sub.Macro(qd.Description);
-                Texture2D tex = Resources.Load<Texture2D>("UI/Icons/" + qd.Image);
+                Texture2D tex = CoreUtils.LoadResource<Texture2D>("UI/Icons/" + qd.Image);
                 if (tex != null)
                     SelectedImage.texture = tex;
                 string stageText = qd.GetStageText(questStage);

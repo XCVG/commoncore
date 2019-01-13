@@ -35,7 +35,7 @@ namespace CommonCore.Rpg
             try
             {
                 CDebug.LogEx("Loading legacy quest defs!", LogLevel.Verbose, null);
-                string data = Resources.Load<TextAsset>("RPGDefs/rpg_quests").text;
+                string data = CoreUtils.LoadResource<TextAsset>("RPGDefs/rpg_quests").text;
                 var newDefs = JsonConvert.DeserializeObject<Dictionary<string, QuestDef>>(data, new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.Auto

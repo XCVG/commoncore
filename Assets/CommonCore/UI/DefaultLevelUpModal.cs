@@ -98,7 +98,7 @@ namespace CommonCore.UI
             //double-check the prefab
             if(LevelItemPrefab == null)
             {
-                LevelItemPrefab = Resources.Load<GameObject>("UI/" + ItemPrefab);
+                LevelItemPrefab = CoreUtils.LoadResource<GameObject>("UI/" + ItemPrefab);
             }
 
             SelectedSkill = -1;
@@ -197,7 +197,7 @@ namespace CommonCore.UI
         {
             if(CoreParams.UseCustomLeveling)
             {
-                var go = Instantiate<GameObject>(Resources.Load<GameObject>(AltPrefab), CoreUtils.GetWorldRoot());
+                var go = Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>(AltPrefab), CoreUtils.GetWorldRoot());
                 var modal = go.GetComponent<GameUI.LevelUpModal>();
                 modal.Callback = callback;
                 if (IngameMenuController.Current != null)
@@ -205,7 +205,7 @@ namespace CommonCore.UI
             }
             else
             {
-                var go = Instantiate<GameObject>(Resources.Load<GameObject>(DefaultPrefab), CoreUtils.GetWorldRoot());
+                var go = Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>(DefaultPrefab), CoreUtils.GetWorldRoot());
                 var modal = go.GetComponent<DefaultLevelUpModal>();
                 modal.Callback = callback;
                 if (IngameMenuController.Current != null)

@@ -223,12 +223,12 @@ namespace CommonCore.World
         [Obsolete]
         public static GameObject SpawnObject(string formID, Vector3 position, Vector3 rotation)
         {
-            return UnityEngine.Object.Instantiate(Resources.Load("entities/" + formID), position, Quaternion.Euler(rotation), CoreUtils.GetWorldRoot()) as GameObject;
+            return UnityEngine.Object.Instantiate(CoreUtils.LoadResource<GameObject>("entities/" + formID), position, Quaternion.Euler(rotation), CoreUtils.GetWorldRoot()) as GameObject;
         }
         [Obsolete]
         public static GameObject SpawnObject(Transform parent, string formID, Vector3 position, Vector3 rotation)
         {
-            return UnityEngine.Object.Instantiate(Resources.Load("entities/" + formID),position,Quaternion.Euler(rotation), parent) as GameObject;
+            return UnityEngine.Object.Instantiate(CoreUtils.LoadResource<GameObject>("entities/" + formID),position,Quaternion.Euler(rotation), parent) as GameObject;
         }
 
         public static GameObject SpawnObject(string formID, string thingID, Vector3 position, Vector3 rotation, Transform parent)
@@ -236,7 +236,7 @@ namespace CommonCore.World
             if (parent == null)
                 parent = CoreUtils.GetWorldRoot();
 
-            var prefab = Resources.Load("entities/" + formID);
+            var prefab = CoreUtils.LoadResource<GameObject>("entities/" + formID);
             if (prefab == null)
                 return null;
 
@@ -252,7 +252,7 @@ namespace CommonCore.World
             if (parent == null)
                 parent = CoreUtils.GetWorldRoot();
 
-            var prefab = Resources.Load("DynamicFX/" + effectID);
+            var prefab = CoreUtils.LoadResource<GameObject>("DynamicFX/" + effectID);
             if (prefab == null)
                 return null;
 
@@ -301,7 +301,7 @@ namespace CommonCore.World
 
             if(!string.IsNullOrEmpty(item.WorldModel))
             {
-                var ent = Resources.Load("entities/" + item.WorldModel); //yup, you can't check this, you have to try it
+                var ent = CoreUtils.LoadResource<GameObject>("entities/" + item.WorldModel); //yup, you can't check this, you have to try it
                 if (ent != null)
                     spawnName = item.WorldModel;
             }

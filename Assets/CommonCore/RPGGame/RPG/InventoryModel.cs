@@ -41,7 +41,7 @@ namespace CommonCore.Rpg
 
         private static void LoadAllModels()
         {
-            string data = Resources.Load<TextAsset>("RPGDefs/rpg_items").text;
+            string data = CoreUtils.LoadResource<TextAsset>("RPGDefs/rpg_items").text;
             Models = new Dictionary<string, InventoryItemModel>();
 
             //first autocreate models (if enabled)
@@ -83,7 +83,7 @@ namespace CommonCore.Rpg
 
         private static void LoadAllDefs()
         {
-            TextAsset ta = Resources.Load<TextAsset>("RPGDefs/rpg_items_defs");
+            TextAsset ta = CoreUtils.LoadResource<TextAsset>("RPGDefs/rpg_items_defs");
             try
             {
 
