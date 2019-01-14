@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
+using CommonCore.State;
 
-namespace CommonCore.RpgGame.State
+namespace CommonCore.World
 {
     //TODO move this and whole intents system into Core
     public class PlayerSpawnIntent : Intent

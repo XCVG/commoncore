@@ -4,24 +4,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using SickDev.CommandSystem;
 using Newtonsoft.Json;
 using CommonCore.State;
-using CommonCore.RpgGame.World;
-using CommonCore.World;
+using CommonCore.Console;
 
-namespace CommonCore.RpgGame.World
+namespace CommonCore.World
 {
-    /*
-     * WorldConsoleInterpreter
-     * Console commands from ARES predescessor, may be refactored and/or split
-     */
-    public class WorldConsoleCommands
+    /// <summary>
+    /// World/object console commands (general)
+    /// </summary>
+    public static class WorldConsoleCommands
     {
-        //TODO split this, because it's a mess
+        //TODO cleanup and XML comments
 
-        static GameObject SelectedObject;
-        static string SelectedTID;
+        public static GameObject SelectedObject { get; private set; }
+        public static string SelectedTID { get; private set; }
 
         //***** UTILITIES 
 
@@ -29,32 +26,33 @@ namespace CommonCore.RpgGame.World
         [Command]
         static void PrintDataPath() //TODO move elsewhere
         {
-            DevConsole.singleton.Log(Application.persistentDataPath);
+            ConsoleModule.WriteLine(Application.persistentDataPath);
         }
 
         [Command]
         static void PrintPlayerInfo()
         {
-            DevConsole.singleton.Log(JsonConvert.SerializeObject(GameState.Instance.PlayerRpgState));
+            ConsoleModule.WriteLine(JsonConvert.SerializeObject(GameState.Instance.PlayerRpgState));
         }
 
         [Command]
         static void PrintSceneList()
-        {   try
+        {
+            try
             {
-                var sceneNames = WorldUtils.GetSceneList();
+                var sceneNames = CoreUtils.GetSceneList();
                 StringBuilder sb = new StringBuilder(sceneNames.Length * 16);
                 foreach (var s in sceneNames)
                 {
                     sb.AppendLine(s);
                 }
-                DevConsole.singleton.Log(sb.ToString());
+                ConsoleModule.WriteLine(sb.ToString());
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debug.LogException(e);
             }
-            
+
         }
 
         //***** CHEATS
@@ -66,14 +64,6 @@ namespace CommonCore.RpgGame.World
                 MetaState.Instance.SessionFlags.Remove("GodMode");
             else
                 MetaState.Instance.SessionFlags.Add("GodMode");
-        }
-
-        [Command]
-        static void Noclip()
-        {
-            var player = GameWorldUtils.GetPlayerController();
-
-            player.Clipping = !(player.Clipping);
         }
 
         [Command]
@@ -143,7 +133,7 @@ namespace CommonCore.RpgGame.World
         [Command]
         static void Warp(string scene, string spawnPoint)
         {
-            GameWorldUtils.ChangeScene(scene, spawnPoint, Vector3.zero, Vector3.zero);
+            WorldUtils.ChangeScene(scene, spawnPoint, Vector3.zero, Vector3.zero);
         }
 
         [Command]
@@ -155,19 +145,7 @@ namespace CommonCore.RpgGame.World
         [Command]
         static void Warp(string scene, Vector3 position, Vector3 rotation)
         {
-            GameWorldUtils.ChangeScene(scene, null, position, rotation);
-        }
-
-        [Command]
-        static void WarpEx(string scene, bool hideloading)
-        {
-            GameWorldUtils.ChangeScene(scene, null, Vector3.zero, Vector3.zero, hideloading, null);
-        }
-
-        [Command]
-        static void WarpEx(string scene, bool hideloading, string overrideobject)
-        {
-            GameWorldUtils.ChangeScene(scene, null, Vector3.zero, Vector3.zero, hideloading, overrideobject);
+            WorldUtils.ChangeScene(scene, null, position, rotation);
         }
 
         //***** OBJECT MANIPULATION
@@ -185,11 +163,11 @@ namespace CommonCore.RpgGame.World
             var objs = WorldUtils.FindObjectsWithFormID(fid);
             if (objs == null || objs.Length < 1)
             {
-                DevConsole.singleton.LogWarning("No refs found with form id!");
+                ConsoleModule.WriteLine("No refs found with form id!");
                 return;
             }
             if (objs.Length > 1)
-                DevConsole.singleton.LogWarning("More than one ref with form id!");
+                ConsoleModule.WriteLine("More than one ref with form id!");
             var obj = objs[0];
             if (obj != null && obj.GetComponent<BaseController>())
             {
@@ -198,10 +176,10 @@ namespace CommonCore.RpgGame.World
             }
             else
             {
-                DevConsole.singleton.LogWarning("Ref null or invalid!");
+                ConsoleModule.WriteLine("Ref null or invalid!");
             }
 
-            DevConsole.singleton.Log("Found TID: " + SelectedTID);
+            ConsoleModule.WriteLine("Found TID: " + SelectedTID);
         }
 
         //pick object by tag (ARES tag, not Unity tag)
@@ -211,11 +189,11 @@ namespace CommonCore.RpgGame.World
             var objs = WorldUtils.FindObjectsWithTag(tag);
             if (objs == null || objs.Length < 1)
             {
-                DevConsole.singleton.LogWarning("No refs found with tag!");
+                ConsoleModule.WriteLine("No refs found with tag!");
                 return;
             }
             if (objs.Length > 1)
-                DevConsole.singleton.LogWarning("More than one ref with tag!");
+                ConsoleModule.WriteLine("More than one ref with tag!");
             var obj = objs[0];
             if (obj != null && obj.GetComponent<BaseController>())
             {
@@ -224,10 +202,10 @@ namespace CommonCore.RpgGame.World
             }
             else
             {
-                DevConsole.singleton.LogWarning("Ref null or invalid!");
+                ConsoleModule.WriteLine("Ref null or invalid!");
             }
 
-            DevConsole.singleton.Log("Found TID: " + SelectedTID);
+            ConsoleModule.WriteLine("Found TID: " + SelectedTID);
         }
 
         //pick object by TID
@@ -237,25 +215,25 @@ namespace CommonCore.RpgGame.World
             var obj = WorldUtils.FindObjectByTID(tid);
             if (obj == null)
             {
-                DevConsole.singleton.LogWarning("Couldn't find TID!");
+                ConsoleModule.WriteLine("Couldn't find TID!");
                 return;
             }
             if (obj.GetComponent<BaseController>() == null)
             {
-                DevConsole.singleton.LogWarning("Ref has no controller!");
+                ConsoleModule.WriteLine("Ref has no controller!");
             }
 
             SelectedTID = tid;
             SelectedObject = obj;
 
-            DevConsole.singleton.Log("Found TID: " + tid);
+            ConsoleModule.WriteLine("Found TID: " + tid);
         }
 
         //display info of selected ref
         [Command]
         static void GetInfo()
         {
-            if(SelectedObject != null)
+            if (SelectedObject != null)
             {
                 StringBuilder sb = new StringBuilder(256);
 
@@ -268,11 +246,11 @@ namespace CommonCore.RpgGame.World
                 //enabled? active?
                 sb.AppendFormat("Active: {0} | Visible: {1}", SelectedObject.activeSelf, SelectedObject.GetComponent<BaseController>().GetVisibility());
 
-                DevConsole.singleton.Log(sb.ToString());
+                ConsoleModule.WriteLine(sb.ToString());
             }
             else
             {
-                DevConsole.singleton.Log("No object selected!");
+                ConsoleModule.WriteLine("No object selected!");
             }
         }
 
@@ -285,40 +263,18 @@ namespace CommonCore.RpgGame.World
         }
 
         //***** ACTOR MANIPULATION
-        [Command]
-        static void SetAiState(string newState, bool lockState)
-        {
-            var ac = SelectedObject.GetComponent<ActorController>();
-            bool wasLocked = ac.LockAiState;
-            if (wasLocked)
-                ac.LockAiState = false;
-            ac.EnterState((ActorAiState)Enum.Parse(typeof(ActorAiState), newState));
-            ac.LockAiState = wasLocked || lockState;
-        }
+        
 
         [Command]
-        static void SetAnimState(string newState, bool lockState)
+        static void Enable()
         {
-            var ac = SelectedObject.GetComponent<ActorController>();
-            bool wasLocked = ac.LockAnimState;
-            if (wasLocked)
-                ac.LockAnimState = false;
-            ac.SetAnimation((ActorAnimState)Enum.Parse(typeof(ActorAnimState), newState));
-            ac.LockAnimState = wasLocked || lockState;
-        }
-
-        [Command]
-        static void Kill()
-        {
-            var ac = SelectedObject.GetComponent<ActorController>();
-            ac.Health = 0;
+            SelectedObject.SetActive(false);
         }
 
         [Command]
         static void Disable()
         {
-            var ac = SelectedObject.GetComponent<BaseController>();
-            ac.gameObject.SetActive(false);
+            SelectedObject.SetActive(false);
         }
 
         [Command]
@@ -326,16 +282,6 @@ namespace CommonCore.RpgGame.World
         {
             GameObject.Destroy(SelectedObject);
         }
-
-        [Command]
-        static void Resurrect()
-        {
-            var ac = SelectedObject.GetComponent<ActorController>();
-            ac.gameObject.SetActive(true);
-            ac.Health = ac.MaxHealth;
-            ac.EnterState(ac.BaseAiState);
-        }
-
 
     }
 }

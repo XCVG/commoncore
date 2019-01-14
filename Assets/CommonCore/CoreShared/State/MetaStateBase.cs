@@ -46,15 +46,43 @@ namespace CommonCore.State
             instance = new MetaState();
         }
 
+        //TODO refactor the way Intents work
+
+        public void IntentsExecutePreload()
+        {
+            Debug.Log(string.Format("Executing intents preload ({0} total)", Intents.Count));
+            foreach (Intent i in Intents)
+            {
+                i.PreloadExecute();
+            }
+        }
+
+        public void IntentsExecutePostload()
+        {
+            Debug.Log(string.Format("Executing intents postload ({0} total)", Intents.Count));
+            foreach (Intent i in Intents)
+            {
+                i.PostloadExecute();
+            }
+        }
+
+        public void IntentsExecuteLoading()
+        {
+            Debug.Log(string.Format("Executing intents loading ({0} total)", Intents.Count));
+            foreach (Intent i in Intents)
+            {
+                i.LoadingExecute();
+            }
+        }
 
         //Actual instance data (shared across game types)
 
         public SceneTransitionType TransitionType { get; set; }
         public string PreviousScene { get; set; }
         public string NextScene { get; set; }
-        public string LoadSave { get; set; }
-        public string LoadingScreenPropOverride { get; set; }
+        public string LoadSave { get; set; }        
         public bool SkipLoadingScreen { get; set; }
         public HashSet<string> SessionFlags { get; set; } = new HashSet<string>();
+        public List<Intent> Intents { get; set; } = new List<Intent>();
     }
 }

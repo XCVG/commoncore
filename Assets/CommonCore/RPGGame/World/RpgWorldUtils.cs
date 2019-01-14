@@ -5,16 +5,16 @@ using System;
 using UnityEngine.SceneManagement;
 using CommonCore.State;
 using CommonCore.DebugLog;
-using CommonCore.RpgGame.Rpg; //TODO split this into dependent and non-dependent classes
+using CommonCore.World;
+using CommonCore.RpgGame.Rpg;
 using CommonCore.RpgGame.State;
-using CommonCore.RpgGame.World;
 
-namespace CommonCore.World
+namespace CommonCore.RpgGame.World
 {
     /// <summary>
-    /// Utility class for world manipulation (dependent on current game code)
+    /// Utility class for world/object manipulation specific to RpgGame package
     /// </summary>
-    public static class GameWorldUtils //TODO move this into something sane
+    public static class RpgWorldUtils //TODO try to find a better name
     {
         /// <summary>
         /// Gets the current player controller
@@ -36,37 +36,18 @@ namespace CommonCore.World
             }
         }
 
-
-        //TODO put a generic version of these in GameUtils
+        /// <summary>
+        /// Changes the scene, overriding the prop shown on the loading screen (see <see cref="WorldUtils.ChangeScene(string, string, Vector3, Vector3, bool)"/>)
+        /// </summary>
         public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Vector3 rotation, bool skipLoading, string objectOverride)
         {
             MetaState.Instance.LoadingScreenPropOverride = objectOverride;
-            ChangeScene(scene, spawnPoint, position, rotation, skipLoading);
+            WorldUtils.ChangeScene(scene, spawnPoint, position, rotation, skipLoading);
         }
 
-        public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Vector3 rotation, bool skipLoading)
-        {
-            MetaState.Instance.SkipLoadingScreen = skipLoading;
-            ChangeScene(scene, spawnPoint, position, rotation);
-        }
-
-        public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Vector3 rotation)
-        {
-            MetaState mgs = MetaState.Instance;
-            mgs.PreviousScene = SceneManager.GetActiveScene().name;
-            mgs.NextScene = scene;
-            if (spawnPoint != null)
-                mgs.PlayerIntent = new PlayerSpawnIntent(spawnPoint); //handle string.Empty as default spawn point
-            else
-                mgs.PlayerIntent = new PlayerSpawnIntent(position, Quaternion.Euler(rotation));            
-            mgs.LoadSave = null;
-            mgs.TransitionType = SceneTransitionType.ChangeScene;
-            WorldUtils.GetSceneController().ExitScene();
-        }
-
-        //spawn object methods
-
-
+        /// <summary>
+        /// Checks if a target is "alive"- exists and had nonzero HP
+        /// </summary>
         public static bool TargetIsAlive(Transform target)
         {
             if (target == null)
@@ -85,7 +66,9 @@ namespace CommonCore.World
             return target.gameObject.activeInHierarchy && healthPass;
         }
 
-        //hacky inventory hack
+        /// <summary>
+        /// HACK "drops" an inventory item; creates a spec_item object with that item
+        /// </summary>
         public static void DropItem(InventoryItemModel item, int quantity, Vector3 position)
         {
             string spawnName = "spec_item";
@@ -103,7 +86,9 @@ namespace CommonCore.World
             ic.ItemQuantity = quantity;
         }
 
-        //a stupid place to put this, but not as stupid as the last place
+        /// <summary>
+        /// Calculates applied damage given input damage and resistance
+        /// </summary>
         public static float CalculateDamage(float Damage, float Pierce, float Threshold, float Resistance) //this is a dumb spot and we will move it later
         {
             float d1 = Damage * ((100f - Mathf.Min(Resistance, 99f)) / 100f);

@@ -2,9 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using CommonCore.World;
 
-namespace CommonCore.RpgGame.World
+namespace CommonCore.World
 {
 
     public class DoorInteractableComponent : InteractableComponent
@@ -25,7 +24,7 @@ namespace CommonCore.RpgGame.World
                 else if (string.IsNullOrEmpty(SpawnPoint))
                     spawnPointHack = string.Empty;
 
-                GameWorldUtils.ChangeScene(Scene, spawnPointHack, Position, Rotation);
+                WorldUtils.ChangeScene(Scene, spawnPointHack, Position, Rotation);
             }
         }
     }

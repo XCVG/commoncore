@@ -239,7 +239,7 @@ namespace CommonCore.RpgGame.Dialogue
                         spawnPoint = arr[2];
 
                     //clean exit
-                    GameWorldUtils.ChangeScene(nextLoc.Value, spawnPoint, Vector3.zero, Vector3.zero);
+                    WorldUtils.ChangeScene(nextLoc.Value, spawnPoint, Vector3.zero, Vector3.zero);
                 }
                 else
                 {

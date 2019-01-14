@@ -15,31 +15,6 @@ namespace CommonCore.World
     {
                 
         /// <summary>
-        /// Gets a list of scenes (by name) in the game
-        /// </summary>
-        /// <returns>A list of scenes in the game</returns>
-        public static string[] GetSceneList() //TODO we'll probably move this into some kind of CommonCore.SceneManagement
-        {
-            int sceneCount = SceneManager.sceneCountInBuildSettings;
-            var scenes = new List<string>(sceneCount);
-            for (int i = 0; i < sceneCount; i++)
-            {
-                try
-                {
-                    scenes.Add(SceneUtility.GetScenePathByBuildIndex(i));
-                }
-                catch (Exception e)
-                {
-                    //ignore it, we've gone over or some stupid bullshit
-                }
-
-            }
-
-            return scenes.ToArray();
-            
-        }
-
-        /// <summary>
         /// Finds all game objects with a given name. No, I don't know what it's for either.
         /// </summary>
         public static List<GameObject> FindAllGameObjects(string name)
@@ -241,6 +216,32 @@ namespace CommonCore.World
             }
 
             return foundObjects.ToArray();
+        }
+
+        /// <summary>
+        /// Sets parameters and loads a different scene
+        /// </summary>
+        public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Vector3 rotation, bool skipLoading)
+        {
+            MetaState.Instance.SkipLoadingScreen = skipLoading;
+            ChangeScene(scene, spawnPoint, position, rotation);
+        }
+
+        /// <summary>
+        /// Sets parameters and loads a different scene
+        /// </summary>
+        public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Vector3 rotation)
+        {
+            MetaState mgs = MetaState.Instance;
+            mgs.PreviousScene = SceneManager.GetActiveScene().name;
+            mgs.NextScene = scene;
+            if (spawnPoint != null)
+                mgs.PlayerIntent = new PlayerSpawnIntent(spawnPoint); //handle string.Empty as default spawn point
+            else
+                mgs.PlayerIntent = new PlayerSpawnIntent(position, Quaternion.Euler(rotation));
+            mgs.LoadSave = null;
+            mgs.TransitionType = SceneTransitionType.ChangeScene;
+            WorldUtils.GetSceneController().ExitScene();
         }
 
         [Obsolete]

@@ -1050,7 +1050,7 @@ namespace CommonCore.RpgGame.World
             //damage model is very stupid right now, we will make it better later
             float dt = playerModel.DerivedStats.DamageThreshold[(int)data.DType];
             float dr = playerModel.DerivedStats.DamageResistance[(int)data.DType];
-            float damageTaken = GameWorldUtils.CalculateDamage(data.Damage, data.DamagePierce, dt, dr);
+            float damageTaken = RpgWorldUtils.CalculateDamage(data.Damage, data.DamagePierce, dt, dr);
 
             if (data.HitLocation == ActorBodyPart.Head)
                 damageTaken *= 2.0f;

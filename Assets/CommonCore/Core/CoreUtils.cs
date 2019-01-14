@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CommonCore
 {
@@ -64,6 +65,31 @@ namespace CommonCore
                 Converters = CCJsonConverters.Defaults.Converters,
                 TypeNameHandling = TypeNameHandling.Auto
             });
+        }
+
+        /// <summary>
+        /// Gets a list of scenes (by name) in the game
+        /// </summary>
+        /// <returns>A list of scenes in the game</returns>
+        public static string[] GetSceneList() //TODO we'll probably move this into some kind of CommonCore.SceneManagement
+        {
+            int sceneCount = SceneManager.sceneCountInBuildSettings;
+            var scenes = new List<string>(sceneCount);
+            for (int i = 0; i < sceneCount; i++)
+            {
+                try
+                {
+                    scenes.Add(SceneUtility.GetScenePathByBuildIndex(i));
+                }
+                catch (Exception e)
+                {
+                    //ignore it, we've gone over or some stupid bullshit
+                }
+
+            }
+
+            return scenes.ToArray();
+
         }
 
         /*

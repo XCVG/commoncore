@@ -2,11 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using CommonCore.State;
-using UnityEngine.EventSystems;
 
-namespace CommonCore.World
+namespace CommonCore
 {
     public abstract class BaseSceneController : MonoBehaviour
     {

@@ -355,7 +355,7 @@ namespace CommonCore.RpgGame.World
                     }
                     break;
                 case ActorAiState.Chasing:
-                    if(!GameWorldUtils.TargetIsAlive(Target))
+                    if(!RpgWorldUtils.TargetIsAlive(Target))
                     {
                         EnterState(BaseAiState);
                         break;
@@ -408,7 +408,7 @@ namespace CommonCore.RpgGame.World
                     if (TimeInState >= AttackStateDelay + AttackStateWarmup)
                     {
                         //just return
-                        if (!GameWorldUtils.TargetIsAlive(Target))
+                        if (!RpgWorldUtils.TargetIsAlive(Target))
                         {
                             EnterState(BaseAiState);
                         }
@@ -429,7 +429,7 @@ namespace CommonCore.RpgGame.World
                     break;
                 case ActorAiState.Fleeing:
                     //stop running if far enough away, or target is gone
-                    if(!GameWorldUtils.TargetIsAlive(Target) || (Target.position - transform.position).magnitude > SearchRadius)
+                    if(!RpgWorldUtils.TargetIsAlive(Target) || (Target.position - transform.position).magnitude > SearchRadius)
                     {
                         EnterState(BaseAiState);
                         Target = null;
@@ -565,7 +565,7 @@ namespace CommonCore.RpgGame.World
             if(FactionModel.GetRelation(Faction, "Player") == FactionRelationStatus.Hostile && !MetaState.Instance.SessionFlags.Contains("NoTarget"))
             {
                 var playerObj = WorldUtils.GetPlayerObject();
-                if(playerObj != null && GameWorldUtils.TargetIsAlive(playerObj.transform))
+                if(playerObj != null && RpgWorldUtils.TargetIsAlive(playerObj.transform))
                 {
                     PlayerController pc = playerObj.GetComponent<PlayerController>();
 
@@ -602,7 +602,7 @@ namespace CommonCore.RpgGame.World
                 var potentialTargets = transform.root.GetComponentsInChildren<ActorController>();
                 foreach (var potentialTarget in potentialTargets)
                 {
-                    if(GameWorldUtils.TargetIsAlive(potentialTarget.transform) 
+                    if(RpgWorldUtils.TargetIsAlive(potentialTarget.transform) 
                         && (potentialTarget.transform.position - transform.position).magnitude <= SearchRadius
                         && FactionModel.GetRelation(Faction, potentialTarget.Faction) == FactionRelationStatus.Hostile
                         && !(potentialTarget == this))
@@ -634,7 +634,7 @@ namespace CommonCore.RpgGame.World
                 }
             }
 
-            if (!GameWorldUtils.TargetIsAlive(Target))
+            if (!RpgWorldUtils.TargetIsAlive(Target))
                 Target = null;
             
         }
@@ -815,7 +815,7 @@ namespace CommonCore.RpgGame.World
             //damage model is very stupid right now, we will make it better later
             float dt = DamageThreshold[(int)data.DType];
             float dr = DamageResistance[(int)data.DType];
-            float damageTaken = GameWorldUtils.CalculateDamage(data.Damage, data.DamagePierce, dt, dr);
+            float damageTaken = RpgWorldUtils.CalculateDamage(data.Damage, data.DamagePierce, dt, dr);
 
             if (data.HitLocation == ActorBodyPart.Head)
                 damageTaken *= 2.0f;
