@@ -227,7 +227,7 @@ namespace CommonCore.World
                 //if it doesn't, create it
                 try
                 {
-                    GameObject go = Instantiate(CoreUtils.LoadResource<GameObject>("entities/" + rd.FormID), transform) as GameObject;
+                    GameObject go = Instantiate(CoreUtils.LoadResource<GameObject>("Entities/" + rd.FormID), transform) as GameObject;
 
                     if (go != null)
                     {
@@ -271,7 +271,7 @@ namespace CommonCore.World
                         //we have a match! since it's motile, we'll have to create a new object
                         try
                         {
-                            GameObject go = Instantiate(CoreUtils.LoadResource<GameObject>("entities/" + rd.FormID), transform) as GameObject;
+                            GameObject go = Instantiate(CoreUtils.LoadResource<GameObject>("Entities/" + rd.FormID), transform) as GameObject;
                             {
                                 go.name = kvp.Key;
 
@@ -311,7 +311,7 @@ namespace CommonCore.World
                 if (player == null)
                 {
                     //spawn the player object in
-                    player = Instantiate(CoreUtils.LoadResource<GameObject>("entities/" + "spec_player"), transform) as GameObject;
+                    player = Instantiate(CoreUtils.LoadResource<GameObject>("Entities/" + "spec_player"), transform) as GameObject;
                     player.name = "Player";
                     if (mgs.TransitionType == SceneTransitionType.LoadGame)
                     {
@@ -346,7 +346,7 @@ namespace CommonCore.World
             {
                 if(player == null)
                 {
-                    player = Instantiate(CoreUtils.LoadResource<GameObject>("entities/" + "spec_player"), transform) as GameObject;
+                    player = Instantiate(CoreUtils.LoadResource<GameObject>("Entities/" + "spec_player"), transform) as GameObject;
                     player.name = "Player";
                 }
                     

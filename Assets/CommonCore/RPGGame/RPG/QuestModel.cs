@@ -35,7 +35,7 @@ namespace CommonCore.RpgGame.Rpg
             try
             {
                 CDebug.LogEx("Loading legacy quest defs!", LogLevel.Verbose, null);
-                string data = CoreUtils.LoadResource<TextAsset>("RPGDefs/rpg_quests").text;
+                string data = CoreUtils.LoadResource<TextAsset>("Data/RPGDefs/rpg_quests").text;
                 var newDefs = JsonConvert.DeserializeObject<Dictionary<string, QuestDef>>(data, new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.Auto
@@ -56,7 +56,7 @@ namespace CommonCore.RpgGame.Rpg
             //load quest defs (and in the future other things?) from files in Quests/
             CDebug.LogEx("Loading new style quest defs!", LogLevel.Verbose, null);
 
-            TextAsset[] tas = CoreUtils.LoadResources<TextAsset>("Quests/");
+            TextAsset[] tas = CoreUtils.LoadResources<TextAsset>("Data/Quests/");
             foreach (TextAsset ta in tas)
             {
                 try

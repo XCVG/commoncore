@@ -28,7 +28,7 @@ namespace CommonCore.RpgGame.Dialogue
             if (CoreParams.LoadPolicy != DataLoadPolicy.OnStart)
                 return;
 
-            TextAsset[] tas = CoreUtils.LoadResources<TextAsset>("Dialogue/");
+            TextAsset[] tas = CoreUtils.LoadResources<TextAsset>("Data/Dialogue/");
             foreach(var ta in tas)
             {
                 try
@@ -42,7 +42,7 @@ namespace CommonCore.RpgGame.Dialogue
                 }
             }
 
-            TextAsset[] tasm = CoreUtils.LoadResources<TextAsset>("Monologue/");
+            TextAsset[] tasm = CoreUtils.LoadResources<TextAsset>("Data/Monologue/");
             foreach (var ta in tasm)
             {
                 try

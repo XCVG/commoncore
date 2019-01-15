@@ -35,7 +35,7 @@ namespace CommonCore.StringSub
         private void LoadLists()
         {
             //load all substitution lists
-            TextAsset[] tas = CoreUtils.LoadResources<TextAsset>("Strings/");
+            TextAsset[] tas = CoreUtils.LoadResources<TextAsset>("Data/Strings/");
             foreach (TextAsset ta in tas)
             {
                 try

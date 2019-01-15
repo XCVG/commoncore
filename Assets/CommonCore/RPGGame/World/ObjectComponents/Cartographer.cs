@@ -62,7 +62,7 @@ namespace CommonCore.RpgGame.World
                 }
                 else if (UseResourceFallback)
                 {
-                    string mapPath = "Maps/" + SceneManager.GetActiveScene().name;
+                    string mapPath = "UI/Maps/" + SceneManager.GetActiveScene().name;
                     if (CoreUtils.CheckResource<Texture2D>(mapPath))
                     {
                         Texture2D mapTexture = CoreUtils.LoadResource<Texture2D>(mapPath);

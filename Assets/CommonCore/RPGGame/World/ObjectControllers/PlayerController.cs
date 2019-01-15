@@ -847,7 +847,7 @@ namespace CommonCore.RpgGame.World
 
                         if (!string.IsNullOrEmpty(wim.Projectile))
                         {
-                            var wimBulletPrefab = CoreUtils.LoadResource<GameObject>("DynamicFX/" + wim.Projectile);
+                            var wimBulletPrefab = CoreUtils.LoadResource<GameObject>("Effects/" + wim.Projectile);
                             if (wimBulletPrefab != null)
                                 bullet = Instantiate<GameObject>(wimBulletPrefab, ShootPoint.position + (ShootPoint.forward.normalized * 0.25f), ShootPoint.rotation, transform.root);
 
@@ -876,7 +876,7 @@ namespace CommonCore.RpgGame.World
                         }
                         else if (!string.IsNullOrEmpty(wim.FireEffect))
                         {
-                            var fireEffectPrefab = CoreUtils.LoadResource<GameObject>("DynamicFX/" + wim.FireEffect);
+                            var fireEffectPrefab = CoreUtils.LoadResource<GameObject>("Effects/" + wim.FireEffect);
                             if (fireEffectPrefab != null)
                                 fireEffect = Instantiate(fireEffectPrefab, ShootPoint.position, ShootPoint.rotation, ShootPoint);
                         }

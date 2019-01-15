@@ -75,7 +75,7 @@ namespace CommonCore.RpgGame.World
 
             if(!string.IsNullOrEmpty(item.WorldModel))
             {
-                var ent = CoreUtils.LoadResource<GameObject>("entities/" + item.WorldModel); //yup, you can't check this, you have to try it
+                var ent = CoreUtils.LoadResource<GameObject>("Entities/" + item.WorldModel); //yup, you can't check this, you have to try it
                 if (ent != null)
                     spawnName = item.WorldModel;
             }

@@ -77,7 +77,7 @@ namespace CommonCore.RpgGame.Dialogue
     {
         public static Monologue LoadMonologue(string monologueName)
         {
-            TextAsset ta = CoreUtils.LoadResource<TextAsset>("Monologue/" + monologueName);
+            TextAsset ta = CoreUtils.LoadResource<TextAsset>("Data/Monologue/" + monologueName);
             return LoadMonologueFromString(ta.text);
         }
 

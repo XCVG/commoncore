@@ -13,7 +13,7 @@ namespace CommonCore.RpgGame.Dialogue
 
         public static DialogueScene LoadDialogue(string dialogueName)
         {
-            TextAsset ta = CoreUtils.LoadResource<TextAsset>("Dialogue/" + dialogueName);
+            TextAsset ta = CoreUtils.LoadResource<TextAsset>("Data/Dialogue/" + dialogueName);
             return LoadDialogueFromString(dialogueName, ta.text);
         }
 

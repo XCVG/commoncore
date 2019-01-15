@@ -42,7 +42,7 @@ namespace CommonCore.RpgGame.Rpg
             //load factions from defs
             try
             {
-                TextAsset ta = CoreUtils.LoadResource<TextAsset>("RPGDefs/factions");
+                TextAsset ta = CoreUtils.LoadResource<TextAsset>("Data/RPGDefs/factions");
                 var newFactions = CoreUtils.LoadJson<Dictionary<string, Dictionary<string, FactionRelationStatus>>>(ta.text);
 
                 foreach(var row in newFactions)

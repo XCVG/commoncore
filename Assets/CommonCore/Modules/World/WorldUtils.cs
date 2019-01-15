@@ -247,12 +247,12 @@ namespace CommonCore.World
         [Obsolete]
         public static GameObject SpawnObject(string formID, Vector3 position, Vector3 rotation)
         {
-            return UnityEngine.Object.Instantiate(CoreUtils.LoadResource<GameObject>("entities/" + formID), position, Quaternion.Euler(rotation), CoreUtils.GetWorldRoot()) as GameObject;
+            return UnityEngine.Object.Instantiate(CoreUtils.LoadResource<GameObject>("Entities/" + formID), position, Quaternion.Euler(rotation), CoreUtils.GetWorldRoot()) as GameObject;
         }
         [Obsolete]
         public static GameObject SpawnObject(Transform parent, string formID, Vector3 position, Vector3 rotation)
         {
-            return UnityEngine.Object.Instantiate(CoreUtils.LoadResource<GameObject>("entities/" + formID), position, Quaternion.Euler(rotation), parent) as GameObject;
+            return UnityEngine.Object.Instantiate(CoreUtils.LoadResource<GameObject>("Entities/" + formID), position, Quaternion.Euler(rotation), parent) as GameObject;
         }
 
         /// <summary>
@@ -263,7 +263,7 @@ namespace CommonCore.World
             if (parent == null)
                 parent = CoreUtils.GetWorldRoot();
 
-            var prefab = CoreUtils.LoadResource<GameObject>("entities/" + formID);
+            var prefab = CoreUtils.LoadResource<GameObject>("Entities/" + formID);
             if (prefab == null)
                 return null;
 
@@ -275,14 +275,14 @@ namespace CommonCore.World
         }
 
         /// <summary>
-        /// Spawn an effect into the world (DynamicFX/*)
+        /// Spawn an effect into the world (Effects/*)
         /// </summary>
         public static GameObject SpawnEffect(string effectID, Vector3 position, Vector3 rotation, Transform parent)
         {
             if (parent == null)
                 parent = CoreUtils.GetWorldRoot();
 
-            var prefab = CoreUtils.LoadResource<GameObject>("DynamicFX/" + effectID);
+            var prefab = CoreUtils.LoadResource<GameObject>("Effects/" + effectID);
             if (prefab == null)
                 return null;
 
