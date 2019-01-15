@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using CommonCore.State;
 using CommonCore.Audio;
-using CommonCore.World;
 
-namespace CommonCore.RpgGame.World
+namespace CommonCore.World
 {
 
     public class WorldSceneController : BaseSceneController
