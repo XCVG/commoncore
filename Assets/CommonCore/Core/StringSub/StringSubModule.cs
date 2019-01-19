@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using CommonCore.DebugLog;
 using System.Linq;
+using CommonCore.Console;
 
 namespace CommonCore.StringSub
 {
@@ -29,7 +30,7 @@ namespace CommonCore.StringSub
             LoadLists();
             LoadSubbers();
 
-            Debug.Log("StringSub: Finished loading!");
+            Log("StringSub: Finished loading!");
         }
 
         private void LoadLists()
@@ -62,13 +63,13 @@ namespace CommonCore.StringSub
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError("StringSub: Error loading string file: " + ta.name);
-                    Debug.LogException(e);
+                    LogError("StringSub: Error loading string file: " + ta.name);
+                    LogException(e);
                 }
             }
 
             string statusString = string.Format("({0} files, {1} lists)", tas.Length, Strings.Count);
-            Debug.Log("StringSub: Loaded lists " + statusString);
+            Log("StringSub: Loaded lists " + statusString);
         }
 
         private void LoadSubbers()
@@ -87,18 +88,18 @@ namespace CommonCore.StringSub
                     foreach(string pattern in subber.MatchPatterns)
                     {
                         if (SubMap.ContainsKey(pattern))
-                            Debug.LogWarning(string.Format("StringSub: pattern \"{0}\" from {1} already registered by {2}", pattern, subber.GetType().Name, SubMap[pattern].Method.DeclaringType.Name));
+                            LogWarning(string.Format("StringSub: pattern \"{0}\" from {1} already registered by {2}", pattern, subber.GetType().Name, SubMap[pattern].Method.DeclaringType.Name));
 
                         SubMap[pattern] = subber.Substitute;
                     }
                 }
-                catch(Exception e)
+                catch(Exception)
                 {
-                    Debug.LogError("StringSub: Failed to load subber " + subberType.Name);
+                    LogError("StringSub: Failed to load subber " + subberType.Name);
                 }
             }
 
-            Debug.Log("StringSub: Loaded subbers " + Subbers.Select(s => s.GetType().Name).ToNiceString());
+            Log("StringSub: Loaded subbers " + Subbers.Select(s => s.GetType().Name).ToNiceString());
 
         }
 
@@ -244,11 +245,11 @@ namespace CommonCore.StringSub
         {
             try
             {
-                Debug.Log(Instance.GetString(baseString, listName, false));
+                ConsoleModule.WriteLine(Instance.GetString(baseString, listName, false));
             }
             catch(Exception e)
             {
-                Debug.LogError(e.ToString());
+                ConsoleModule.WriteLine(e.ToString(), LogLevel.Error);
             }
         }
 
@@ -257,11 +258,11 @@ namespace CommonCore.StringSub
         {
             try
             {
-                Debug.Log(Instance.SubstituteMacros(baseString));
+                ConsoleModule.WriteLine(Instance.SubstituteMacros(baseString));
             }
             catch (Exception e)
             {
-                Debug.LogError(e.ToString());
+                ConsoleModule.WriteLine(e.ToString(), LogLevel.Error);
             }
         }
 

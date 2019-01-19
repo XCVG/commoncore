@@ -20,7 +20,6 @@ namespace CommonCore.Config
 
             ConfigState.Load();
             ConfigState.Save();
-            Debug.Log("Config module loaded!");
         }
 
         /// <summary>

@@ -1,7 +1,6 @@
-﻿using CommonCore.Console;
+﻿using CommonCore;
+using CommonCore.Console;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -18,5 +17,36 @@ public class DummyCommandConsoleImplementation : IConsole
     {
         //we can at least log this
         Debug.Log(line);
+    }
+
+    public void WriteLineEx(string line, LogLevel type, object context)
+    {
+        switch (type)
+        {
+            case LogLevel.Error:
+                {
+                    if (context is UnityEngine.Object uContext)
+                        Debug.LogError(line, uContext);
+                    else
+                        Debug.LogError(line);
+                }
+                break;
+            case LogLevel.Warning:
+                {
+                    if (context is UnityEngine.Object uContext)
+                        Debug.LogWarning(line, uContext);
+                    else
+                        Debug.LogWarning(line);
+                }
+                break;
+            default:
+                {
+                    if (context is UnityEngine.Object uContext)
+                        Debug.Log(line, uContext);
+                    else
+                        Debug.Log(line);
+                }
+                break;
+        }
     }
 }

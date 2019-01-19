@@ -40,7 +40,7 @@ namespace CommonCore
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
 
-            Debug.Log("Initializing CommonCore...");
+            Debug.Log("[Core] Initializing CommonCore...");
 
             LoadGameTypes();
             HookMonobehaviourEvents();
@@ -64,7 +64,7 @@ namespace CommonCore
 
             stopwatch.Stop();
 
-            Debug.Log($"...done! ({stopwatch.Elapsed.TotalMilliseconds:F4} ms)");
+            Debug.Log($"[Core] ...done! ({stopwatch.Elapsed.TotalMilliseconds:F4} ms)");
         }
 
         /// <summary>
@@ -142,7 +142,8 @@ namespace CommonCore
                 .ToList();
 
             //initialize explicit modules
-            foreach(string moduleName in CoreParams.ExplicitModules)
+            Debug.Log("[Core] Initializing explicit modules!");
+            foreach (string moduleName in CoreParams.ExplicitModules)
             {
                 Type t = allModules.Find(x => x.Name == moduleName);
                 if(t != null)
@@ -150,7 +151,7 @@ namespace CommonCore
                     InitializeModule(t);
                 }
                 else
-                    Debug.LogError("Can't find explicit module " + moduleName);
+                    Debug.LogError("[Core] Can't find explicit module " + moduleName);
             }
 
             //sort out our modules
@@ -176,26 +177,29 @@ namespace CommonCore
                 else
                 {
                     if (isEarly && isLate)
-                        Debug.LogWarning($"Module {t.Name} is declared as both early and late (attributes will be ignored)");
+                        Debug.LogWarning($"[Core] Module {t.Name} is declared as both early and late (attributes will be ignored)");
 
                     normalModules.Add(t);
                 }
             }
 
             //initialize early modules
+            Debug.Log("[Core] Initializing early modules!");
             foreach (var t in earlyModules)
             {
                 InitializeModule(t);
             }
 
+            Debug.Log("[Core] Initializing normal modules!");
             //initialize non-explicit modules
             foreach (var t in normalModules)
             {
                 InitializeModule(t);
             }
 
+            Debug.Log("[Core] Initializing late modules!");
             //initialize late modules
-            foreach(var t in lateModules)
+            foreach (var t in lateModules)
             {
                 InitializeModule(t);
             }
@@ -206,10 +210,12 @@ namespace CommonCore
             try
             {
                 Modules.Add((CCModule)Activator.CreateInstance(moduleType));
+                Debug.Log("[Core] Successfully loaded module " + moduleType.Name);
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                Debug.LogError("[Core] Failed to load module " + moduleType.Name);
+                Debug.LogException(e);
             }
         }
 
@@ -232,12 +238,12 @@ namespace CommonCore
         {            
             SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
-            Debug.Log("Hooked scene events!");
+            Debug.Log("[Core] Hooked scene events!");
         }
 
         static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            Debug.Log("CommonCore: Executing OnSceneLoaded...");
+            Debug.Log("[Core] Executing OnSceneLoaded...");
 
             foreach(CCModule m in Modules)
             {
@@ -247,16 +253,16 @@ namespace CommonCore
                 }
                 catch(Exception e)
                 {
-                    Debug.Log(e);
+                    Debug.LogException(e);
                 }
             }
 
-            Debug.Log("CommonCore: ...done!");
+            Debug.Log("[Core] ...done!");
         }
 
         static void OnSceneUnloaded(Scene current)
         {
-            Debug.Log("CommonCore: Executing OnSceneUnloaded...");
+            Debug.Log("[Core] Executing OnSceneUnloaded...");
 
             foreach (CCModule m in Modules)
             {
@@ -266,17 +272,17 @@ namespace CommonCore
                 }
                 catch (Exception e)
                 {
-                    Debug.Log(e);
+                    Debug.LogException(e);
                 }
             }
 
-            Debug.Log("CommonCore: ...done!");
+            Debug.Log("[Core] ...done!");
         }
 
         //Game start and end are not hooked and must be explicitly called
         public static void OnGameStart()
         {
-            Debug.Log("CommonCore: Executing OnGameStart...");
+            Debug.Log("[Core] Executing OnGameStart...");
 
             foreach (CCModule m in Modules)
             {
@@ -286,16 +292,16 @@ namespace CommonCore
                 }
                 catch (Exception e)
                 {
-                    Debug.Log(e);
+                    Debug.LogException(e);
                 }
             }
 
-            Debug.Log("CommonCore: ...done!");
+            Debug.Log("[Core] ...done!");
         }
 
         public static void OnGameEnd()
         {
-            Debug.Log("CommonCore: Executing OnGameEnd...");
+            Debug.Log("[Core] Executing OnGameEnd...");
 
             foreach (CCModule m in Modules)
             {
@@ -305,11 +311,11 @@ namespace CommonCore
                 }
                 catch (Exception e)
                 {
-                    Debug.Log(e);
+                    Debug.LogException(e);
                 }
             }
 
-            Debug.Log("CommonCore: ...done!");
+            Debug.Log("[Core] ...done!");
         }
 
         private static void HookMonobehaviourEvents()
@@ -318,7 +324,7 @@ namespace CommonCore
             CCMonoBehaviourHook hookScript = hookObject.AddComponent<CCMonoBehaviourHook>();
             hookScript.OnUpdateDelegate = new LifecycleEventDelegate(OnFrameUpdate);
 
-            Debug.Log("Hooked MonoBehaviour events!");
+            Debug.Log("[Core] Hooked MonoBehaviour events!");
         }
 
         internal static void OnFrameUpdate()
@@ -331,7 +337,7 @@ namespace CommonCore
                 }
                 catch (Exception e)
                 {
-                    Debug.Log(e);
+                    Debug.LogException(e);
                 }
             }
         }
@@ -343,25 +349,28 @@ namespace CommonCore
 
         internal static void OnApplicationQuit()
         {
-            Debug.Log("Cleaning up CommonCore...");
+            Debug.Log("[Core] Cleaning up CommonCore...");
 
             //execute quit methods and unload modules
             foreach(CCModule m in Modules)
             {
                 try
                 {
+                    Debug.Log("[Core] Unloading module " + m.GetType().Name);
                     m.Dispose();
                 }
                 catch(Exception e)
                 {
-                    Debug.Log(e);
+                    Debug.LogError("[Core] Failed to cleanly unload module " + m.GetType().Name);
+                    Debug.LogException(e);
                 }
             }
 
             Modules = null;
             GC.Collect();
+            GC.WaitForPendingFinalizers();
 
-            Debug.Log("...done!");
+            Debug.Log("[Core] ...done!");
         }
 
         private static void CreateFolders()
@@ -372,7 +381,7 @@ namespace CommonCore
             }
             catch(Exception e)
             {
-                Debug.LogError("Failed to setup directories (may cause problems during game execution)");
+                Debug.LogError("[Core] Failed to setup directories (may cause problems during game execution)");
                 Debug.LogException(e);
             }
         }

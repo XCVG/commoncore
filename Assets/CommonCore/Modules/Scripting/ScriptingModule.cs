@@ -66,20 +66,20 @@ namespace CommonCore.Scripting
 
                     if (CallableMethods.ContainsKey(callableName))
                     {
-                        Debug.LogWarning(string.Format("Multiple scripts with name: {0}", callableName));
+                        LogWarning(string.Format("Multiple scripts with name: {0}", callableName));
                     }
 
                     CallableMethods.Add(callableName, m);
                 }
                 catch(Exception e)
                 {
-                    Debug.LogError("Failed to register method " + m.Name);
-                    Debug.LogException(e);
+                    LogError("Failed to register method " + m.Name);
+                    LogException(e);
                 }
 
             }
 
-            Debug.Log(string.Format("Scripting module loaded! ({0:f2} ms)", sw.ElapsedMilliseconds));
+            Log(string.Format("Loaded {1} scripts in {0:f2} ms", sw.ElapsedMilliseconds, CallableMethods.Count));
 
         }
 

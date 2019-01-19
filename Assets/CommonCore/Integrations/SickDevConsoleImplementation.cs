@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using CommonCore.Console;
 using SickDev.CommandSystem;
+using CommonCore;
 
 /// <summary>
 /// Console interface that uses the third-party SickDev console system
@@ -47,5 +48,21 @@ public class SickDevConsoleImplementation : IConsole, IDisposable
     public void WriteLine(string line)
     {
         DevConsole.singleton.Log(line);
+    }
+
+    public void WriteLineEx(string line, LogLevel type, object context)
+    {
+        switch (type)
+        {
+            case LogLevel.Error:
+                DevConsole.singleton.LogError(line);
+                break;
+            case LogLevel.Warning:
+                DevConsole.singleton.LogWarning(line);
+                break;
+            default:
+                DevConsole.singleton.Log(line);
+                break;
+        }
     }
 }

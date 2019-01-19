@@ -28,6 +28,14 @@ namespace CommonCore
     }
 
     /// <summary>
+    /// Custom log level enum
+    /// </summary>
+    public enum LogLevel
+    {
+        Error, Warning, Message, Verbose
+    }
+
+    /// <summary>
     /// Console command attribute, syntactically compatible with SickDev.CommandSystem
     /// </summary>
     public class CommandAttribute : Attribute

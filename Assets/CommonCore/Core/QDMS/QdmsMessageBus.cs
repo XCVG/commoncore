@@ -6,6 +6,9 @@ using UnityEngine;
 namespace CommonCore.Messaging
 {
 
+    /// <summary>
+    /// Message bus and messaging support module
+    /// </summary>
     [CCExplicitModule]
     public class QdmsMessageBus: CCModule
     {
@@ -23,12 +26,12 @@ namespace CommonCore.Messaging
             //Singleton-ish guard
             if(_Instance != null)
             {
-                Debug.LogWarning("Message bus already exists!");
+                LogWarning("Message bus already exists!");
 
                 _Instance = null;
             }
 
-            Debug.Log("QDMS bus created!");
+            Log("QDMS bus created!");
             Receivers = new List<IQdmsMessageReceiver>();
             _Instance = this;
         }
@@ -41,7 +44,7 @@ namespace CommonCore.Messaging
                     r.IsValid = false;
             }
 
-            Debug.Log("QDMS bus destroyed!");
+            Log("QDMS bus destroyed!");
 
             _Instance = null;
         }

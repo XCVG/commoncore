@@ -14,7 +14,7 @@ namespace CommonCore.TestModule
     {
         public EarlyTestModule()
         {
-            UnityEngine.Debug.Log("Initializing early test module");
+            Log("Initializing early test module");
         }
     }
 
@@ -26,7 +26,7 @@ namespace CommonCore.TestModule
     {
         public LateTestModule()
         {
-            UnityEngine.Debug.Log("Initializing late test module");
+            Log("Initializing late test module");
         }
     }
 }

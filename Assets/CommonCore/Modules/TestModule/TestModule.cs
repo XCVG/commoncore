@@ -14,37 +14,37 @@ namespace CommonCore.TestModule
 
         public TestModule()
         {
-            Debug.Log("Test module loaded!");
+            Log("Test module loaded!");
         }
 
         public override void Dispose()
         {
-            Debug.Log("Test module unloaded!");
+            Log("Test module unloaded!");
         }
 
         public override void OnSceneLoaded()
         {
-            Debug.Log("Test module: scene loaded!");
+            Log("Test module: scene loaded!");
         }
 
         public override void OnSceneUnloaded()
         {
-            Debug.Log("Test module: scene unloaded!");
+            Log("Test module: scene unloaded!");
         }
 
         public override void OnGameStart()
         {
-            Debug.Log("Test module: game start!");
+            Log("Test module: game start!");
         }
 
         public override void OnGameEnd()
         {
-            Debug.Log("Test module: game end!");
+            Log("Test module: game end!");
         }
 
         public override void OnAllModulesLoaded()
         {
-            Debug.Log("Test module: all modules loaded!");
+            Log("Test module: all modules loaded!");
         }
 
     }

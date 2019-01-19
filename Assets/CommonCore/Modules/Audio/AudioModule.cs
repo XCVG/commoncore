@@ -24,7 +24,6 @@ namespace CommonCore.Audio
             AudioPlayer audioPlayer = audioObject.AddComponent<AudioPlayer>();
             audioPlayer.SetModule(this);
 
-            Debug.Log("Audio module loaded!");
         }
 
         public AudioClip GetSound(string name, SoundType sType)

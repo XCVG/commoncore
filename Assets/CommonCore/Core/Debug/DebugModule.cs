@@ -14,7 +14,7 @@ namespace CommonCore.DebugLog
     {
         public DebugModule()
         {
-            Debug.Log("Debug module loaded!");
+
         }
 
     }

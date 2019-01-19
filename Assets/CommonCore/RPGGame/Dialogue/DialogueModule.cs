@@ -20,7 +20,6 @@ namespace CommonCore.RpgGame.Dialogue
             LoadedDialogues = new Dictionary<string, DialogueScene>();
             LoadedMonologues = new Dictionary<string, Monologue>();
             LoadAll();
-            CDebug.LogEx("Dialogue module loaded!", LogLevel.Message, this);
         }
 
         private void LoadAll()

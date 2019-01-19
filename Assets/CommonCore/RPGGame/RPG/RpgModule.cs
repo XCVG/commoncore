@@ -18,7 +18,6 @@ namespace CommonCore.RpgGame.Rpg
             LoadInventoryModels();
             LoadQuestModels();
             
-            CDebug.Log("RPG module loaded!");
         }
 
         private void LoadFactionModels()

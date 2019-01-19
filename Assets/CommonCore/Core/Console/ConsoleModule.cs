@@ -37,7 +37,6 @@ namespace CommonCore.Console
             AddCommands();
             ConsoleMessagingThing = new ConsoleMessagingIntegrationComponent();
 
-            Debug.Log("Console module loaded!");
         }
 
         /// <summary>
@@ -49,7 +48,7 @@ namespace CommonCore.Console
                 .Where((type) => type.GetInterfaces().Contains(typeof(IConsole)))
                 .ToArray();
 
-            Debug.Log(possibleConsoles.ToNiceString());
+            Log(possibleConsoles.ToNiceString());
 
             //get our preferred console implmentation...
             Type preferredConsole = Array.Find(possibleConsoles, (t) => t.Name == CoreParams.PreferredCommandConsole);
@@ -65,7 +64,7 @@ namespace CommonCore.Console
             {
                 Console = (IConsole)Activator.CreateInstance(preferredConsole);
 
-                Debug.Log($"Using {preferredConsole.Name} console implementation");
+                Log($"Using {preferredConsole.Name} console implementation");
             }                      
 
         }
@@ -79,7 +78,7 @@ namespace CommonCore.Console
 
             ConsoleMessagingThing = null;
             (Console as IDisposable)?.Dispose();
-            Debug.Log("Console module unloaded!");
+            Log("Console module unloaded!");
         }
 
         /// <summary>
@@ -104,6 +103,27 @@ namespace CommonCore.Console
             Instance.Console.WriteLine(text);
         }
 
+        /// <summary>
+        /// Write a line of text to the active command console
+        /// </summary>
+        /// <param name="text">The text to write</param>
+        /// <param name="type">The type of message to write</param>
+        public static void WriteLine(string text, LogLevel type)
+        {
+            Instance.Console.WriteLineEx(text, type, null);
+        }
+
+        /// <summary>
+        /// Write a line of text to the active command console
+        /// </summary>
+        /// <param name="text">The text to write</param>
+        /// <param name="type">The type of message to write</param>
+        /// <param name="context">The object that is writing the message</param>
+        public static void WriteLine(string text, LogLevel type, object context)
+        {
+            Instance.Console.WriteLineEx(text, type, context);
+        }
+
         private void AddCommands()
         {
             //DevConsole.singleton.AddCommand(new ActionCommand(Quit) { useClassName = false });
@@ -116,7 +136,7 @@ namespace CommonCore.Console
                 .Where(m => m.GetCustomAttributes(typeof(CommandAttribute), false).Length > 0)
                 .ToArray();
 
-            Debug.Log($"Registering {allCommands.Length} console commands!");
+            Log($"Registering {allCommands.Length} console commands!");
 
             foreach(var command in allCommands)
             {
@@ -129,8 +149,8 @@ namespace CommonCore.Console
                 }
                 catch(Exception e)
                 {
-                    Debug.LogError("Failed to add command " + command.Name);
-                    Debug.LogException(e);
+                    LogError("Failed to add command " + command.Name);
+                    LogException(e);
                 }
             }
         }               

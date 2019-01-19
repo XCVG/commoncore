@@ -29,8 +29,6 @@ namespace CommonCore.Input
             {
                 CDebug.Log(e);
             }
-
-            CDebug.Log("Input module loaded!");
         }
 
     }

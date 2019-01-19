@@ -69,7 +69,7 @@ namespace CommonCore.LockPause
             InputLocks = new List<InputLock>();
             PauseLocks = new List<PauseLock>();
 
-            Debug.Log("Pause module started!");
+            Log("Pause module started!");
         }
 
         public override void OnSceneUnloaded()
