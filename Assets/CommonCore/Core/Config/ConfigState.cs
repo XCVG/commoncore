@@ -27,28 +27,28 @@ namespace CommonCore.Config
         [JsonConstructor]
         private ConfigState()
         {
-            MusicVolume = 0.8f;
-            SoundVolume = 0.8f;
 
-            QualityLevel = 4;
-            FxaaEnabled = true;
-
-            LookSpeed = 1.0f;
         }
+
 
         //actual config data here (TODO)
 
         //AUDIO CONFIG
-        public float MusicVolume { get; set; }
-        public float SoundVolume { get; set; }
+        public float MusicVolume { get; set; } = 0.8f;
+        public float SoundVolume { get; set; } = 0.8f;
         public AudioSpeakerMode SpeakerMode { get; set; }
 
         //VIDEO CONFIG
-        public int QualityLevel { get; set; }
-        public bool FxaaEnabled { get; set; }
+        [JsonIgnore]
+        public bool UseCustomVideoSettings => (QualitySettings.GetQualityLevel() >= QualitySettings.names.Length - 1);
+        public int MaxFrames { get; set; } = -1;
+        public int VsyncCount { get; set; } = 0;
+        public int QualityLevel { get; set; } = 4;
+        public bool FxaaEnabled { get; set; } = true; //TODO add support for selecting TAA and SMAA
+        
 
         //INPUT CONFIG
-        public float LookSpeed { get; set; }
+        public float LookSpeed { get; set; } = 1.0f;
         
     }
 

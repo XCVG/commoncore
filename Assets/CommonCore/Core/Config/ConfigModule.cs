@@ -19,16 +19,15 @@ namespace CommonCore.Config
             Instance = this;
 
             ConfigState.Load();
-            PersistState.Load();
             ConfigState.Save();
-            PersistState.Save();
             Debug.Log("Config module loaded!");
         }
 
+        /// <summary>
+        /// Apply the current ConfigState configuration to the game
+        /// </summary>
         public void ApplyConfiguration()
         {
-            //TODO apply configuration changes
-
             //AUDIO CONFIG
             AudioListener.volume = ConfigState.Instance.SoundVolume;
             var ac = AudioSettings.GetConfiguration();
@@ -36,7 +35,13 @@ namespace CommonCore.Config
             AudioSettings.Reset(ac);
 
             //VIDEO CONFIG
-            QualitySettings.SetQualityLevel(ConfigState.Instance.QualityLevel, true);
+            if(QualitySettings.GetQualityLevel() >= QualitySettings.names.Length - 1) //only apply quality settings if set to "custom" in the launcher
+            {
+                QualitySettings.SetQualityLevel(ConfigState.Instance.QualityLevel, true);
+                Application.targetFrameRate = ConfigState.Instance.MaxFrames;
+                QualitySettings.vSyncCount = ConfigState.Instance.VsyncCount;
+            }
+
 
             //INPUT CONFIG
 

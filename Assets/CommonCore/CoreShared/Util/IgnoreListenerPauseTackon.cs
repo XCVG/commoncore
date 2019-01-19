@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//very simple "tack on" script that makes an AudioSource ignore listener pause
+/// <summary>
+/// very simple "tack on" script that makes an AudioSource ignore listener pause
+/// </summary>
 public class IgnoreListenerPauseTackon : MonoBehaviour
 {
     

@@ -1152,6 +1152,11 @@ PrefabInstance:
       propertyPath: AutoinitHud
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114071243785619744, guid: cd005af43e73e74428bc7e6a16566c7f,
+        type: 3}
+      propertyPath: m_ShowToolkit
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd005af43e73e74428bc7e6a16566c7f, type: 3}
 --- !u!1 &1011540019
@@ -1525,7 +1530,7 @@ PrefabInstance:
     - target: {fileID: 224259548548557048, guid: d8faa095f4a287249a857510caf0f6cd,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00003666878
+      value: -0.00009298704
       objectReference: {fileID: 0}
     - target: {fileID: 224259548548557048, guid: d8faa095f4a287249a857510caf0f6cd,
         type: 3}
