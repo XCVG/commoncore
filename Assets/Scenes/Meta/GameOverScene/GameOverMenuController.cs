@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using CommonCore.UI;
 using CommonCore.State;
+using CommonCore;
 
 namespace GameUI
 {
@@ -22,10 +23,7 @@ namespace GameUI
         public void OnClickContinue()
         {
             //clear data and continue
-            GameState.Reset();
-            MetaState.Reset();
-            GC.Collect();
-            SceneManager.LoadScene("MainMenuScene");
+            SharedUtils.EndGame();
         }
     }
 }

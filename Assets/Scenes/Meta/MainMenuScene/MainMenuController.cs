@@ -54,12 +54,7 @@ namespace GameUI
             DirectoryInfo saveDInfo = new DirectoryInfo(savePath);
             FileInfo saveFInfo = saveDInfo.GetFiles().OrderBy(f => f.CreationTime).Last();
 
-            MetaState.Reset();
-            MetaState mgs = MetaState.Instance;
-            mgs.LoadSave = saveFInfo.Name;
-            mgs.TransitionType = SceneTransitionType.LoadGame;
-
-            SceneManager.LoadScene("LoadingScene");
+            SharedUtils.LoadGame(saveFInfo.Name);
         }
 
         public void OnClickNew()
@@ -70,12 +65,7 @@ namespace GameUI
         public void StartGame()
         {
             //start a new game the normal way
-            MetaState mgs = MetaState.Instance;
-            mgs.Intents = new List<Intent>();
-            mgs.LoadSave = null;
-            mgs.NextScene = null;
-            mgs.TransitionType = SceneTransitionType.NewGame;
-            SceneManager.LoadScene("LoadingScene");
+            SharedUtils.StartGame();
         }
 
         public void OnClickLoad()

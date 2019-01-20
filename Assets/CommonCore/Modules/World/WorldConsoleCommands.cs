@@ -79,7 +79,7 @@ namespace CommonCore.World
 
         //force a full load from file with scene transition
         [Command]
-        static void Load(string name)
+        static void LoadClean(string name)
         {
             MetaState.Instance.TransitionType = SceneTransitionType.LoadGame;
             MetaState.Instance.LoadSave = CoreParams.SavePath + @"\" + name;
@@ -89,7 +89,7 @@ namespace CommonCore.World
 
         //force loading from file
         [Command]
-        static void Restore(string name)
+        static void Load(string name)
         {
             GameState.DeserializeFromFile(CoreParams.SavePath + @"\" + name);
 
@@ -101,23 +101,23 @@ namespace CommonCore.World
         static void Restore()
         {
             MetaState.Instance.TransitionType = SceneTransitionType.LoadGame;
-            BaseSceneController bsc = WorldUtils.GetSceneController();
+            BaseSceneController bsc = SharedUtils.GetSceneController();
             bsc.Restore();
         }
 
         //force saving to gamestate
         [Command]
-        static void Save()
+        static void Commit()
         {
-            BaseSceneController bsc = WorldUtils.GetSceneController();
-            bsc.Save();
+            BaseSceneController bsc = SharedUtils.GetSceneController();
+            bsc.Commit();
         }
 
         //force saving to a file
         [Command]
         static void Save(string name)
         {
-            Save();
+            Commit();
 
             GameState.SerializeToFile(CoreParams.SavePath + @"\" + name);
         }

@@ -121,12 +121,7 @@ namespace CommonCore.UI
             if (SelectedSave == null)
                 return;
 
-            MetaState.Reset();
-            MetaState mgs = MetaState.Instance;
-            mgs.LoadSave = SelectedSave.FileName;
-            mgs.TransitionType = SceneTransitionType.LoadGame;
-
-            SceneManager.LoadScene("LoadingScene");
+            SharedUtils.LoadGame(SelectedSave.FileName);
         }
 
         private enum SaveType

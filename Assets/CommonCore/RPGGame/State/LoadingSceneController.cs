@@ -59,8 +59,9 @@ namespace CommonCore.RpgGame.State
                 else if (MetaState.Instance.TransitionType == SceneTransitionType.NewGame)
                 {
                     GameState.Reset();
-                    MetaState.Reset();
-                    MetaState.Instance.NextScene = CoreParams.InitialScene;
+                    MetaState.Instance.Clear();
+                    if(string.IsNullOrEmpty(MetaState.Instance.NextScene))
+                        MetaState.Instance.NextScene = CoreParams.InitialScene;
                     GameState.Instance.CurrentScene = MetaState.Instance.NextScene;
                     GameState.LoadInitial();
                     SceneManager.LoadScene(MetaState.Instance.NextScene);

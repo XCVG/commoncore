@@ -40,14 +40,13 @@ namespace CommonCore
 
         }
 
+        /// <summary>
+        /// Called when a scene is exiting. Should not actually exit the scene
+        /// </summary>
         public virtual void ExitScene()
         {
-            //whatever triggered the exit is responsible for setting up most of metastate
-            MetaState.Instance.PreviousScene = SceneManager.GetActiveScene().name;
-            MetaState.Instance.TransitionType = SceneTransitionType.ChangeScene;
             Debug.Log("Exiting scene: ");
-            Save();
-            SceneManager.LoadScene("LoadingScene");
+            Commit();
         }
 
         protected void InitUI()
@@ -60,7 +59,7 @@ namespace CommonCore
                 Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/DefaultEventSystem"), transform).name = "EventSystem";
         }
 
-        public virtual void Save()
+        public virtual void Commit()
         {
             GameState gs = GameState.Instance;
 

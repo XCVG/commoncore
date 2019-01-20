@@ -246,7 +246,7 @@ namespace CommonCore.RpgGame.World
                         SetAnimation(ActorAnimState.Walking);                    
                     {
                         //set target
-                        var d = Target.position;
+                        var d = Target.position; //FIXME what if Target is null?
                         SetDestination(d);
                     }
                     break;

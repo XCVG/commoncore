@@ -61,7 +61,7 @@ namespace CommonCore.UI
             {
                 if(!string.IsNullOrEmpty(SaveInputField.text))
                 {
-                    BaseSceneController.Current.Save();
+                    BaseSceneController.Current.Commit();
                     GameState.SerializeToFile(CoreParams.SavePath + @"\" + SaveInputField.text + ".json");
                     Modal.PushMessageModal("", "Saved Successfully", null, null);
                 }

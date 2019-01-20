@@ -46,6 +46,7 @@ namespace CommonCore
         public static readonly bool UseVerboseLogging = true;
         public static readonly float DelayedEventPollInterval = 1.0f;
         public static readonly bool UseAggressiveLookups = true;
+        public static readonly bool UseDirectSceneTransitions = false;
 
         //*****game config settings (TODO move to GameParams)
         public static readonly string InitialScene = "World_Ext_TestIsland";

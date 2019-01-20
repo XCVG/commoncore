@@ -39,6 +39,18 @@ namespace CommonCore.State
         }
 
         /// <summary>
+        /// Soft-resets session state related to the game world
+        /// </summary>
+        public void Clear()
+        {
+            Intents.Clear();
+            LoadSave = null;
+            PreviousScene = null;
+            NextScene = null;
+            SkipLoadingScreen = false;
+        }
+
+        /// <summary>
         /// Purges the current sessions state
         /// </summary>
         public static void Reset()

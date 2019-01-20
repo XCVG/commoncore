@@ -24,7 +24,7 @@ namespace World.Ext.TestIsland
         private void Start()
         {
             object monstersPrevious;
-            if(WorldUtils.GetSceneController().LocalStore.TryGetValue(MonstersKilledKey, out monstersPrevious))
+            if(SharedUtils.GetSceneController().LocalStore.TryGetValue(MonstersKilledKey, out monstersPrevious))
             {
                 MonstersKilled = (int)monstersPrevious;
             }
@@ -70,7 +70,7 @@ namespace World.Ext.TestIsland
                     GameState.Instance.CampaignState.SetQuestStage("DemoQuest", 60);
             }                
 
-            WorldUtils.GetSceneController().LocalStore[MonstersKilledKey] = MonstersKilled;
+            SharedUtils.GetSceneController().LocalStore[MonstersKilledKey] = MonstersKilled;
 
             Debug.Log(MonstersKilled + "monsters killed");
         }

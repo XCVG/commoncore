@@ -122,52 +122,7 @@ namespace CommonCore.World
                 Debug.LogWarning("Couldn't find PlayerController!");
                 return null;
             }
-        }
-
-        /// <summary>
-        /// Gets the scene controller (returns null on fail)
-        /// </summary>
-        public static BaseSceneController TryGetSceneController()
-        {
-            //TODO refactor this to use CoreUtils.GetWorldRoot
-
-            GameObject go = GameObject.FindGameObjectWithTag("GameController");
-            if (go != null)
-            {
-                BaseSceneController bsc = go.GetComponent<BaseSceneController>();
-
-                if (bsc != null)
-                    return bsc;
-            }
-
-            //couldn't find it, try grabbing WorldRoot
-            go = GameObject.Find("WorldRoot");
-            if (go != null)
-            {
-                BaseSceneController bsc = go.GetComponent<BaseSceneController>();
-
-                if (bsc != null)
-                    return bsc;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Gets the scene controller (throws on fail)
-        /// </summary>
-        public static BaseSceneController GetSceneController()
-        {
-            BaseSceneController bsc = TryGetSceneController();
-
-            if (bsc != null)
-                return bsc;
-
-            //still couldn't find it, throw an error
-            Debug.LogError("Couldn't find SceneController");
-
-            throw new NullReferenceException(); //not having a scene controller is fatal
-        }
+        }              
 
         /// <summary>
         /// Finds an object by thing ID (name)
@@ -223,8 +178,13 @@ namespace CommonCore.World
         /// </summary>
         public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Vector3 rotation, bool skipLoading)
         {
-            MetaState.Instance.SkipLoadingScreen = skipLoading;
-            ChangeScene(scene, spawnPoint, position, rotation);
+            MetaState mgs = MetaState.Instance;
+            if (spawnPoint != null)
+                mgs.PlayerIntent = new PlayerSpawnIntent(spawnPoint); //handle string.Empty as default spawn point
+            else
+                mgs.PlayerIntent = new PlayerSpawnIntent(position, Quaternion.Euler(rotation));
+
+            SharedUtils.ChangeScene(scene, skipLoading);
         }
 
         /// <summary>
@@ -232,16 +192,7 @@ namespace CommonCore.World
         /// </summary>
         public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Vector3 rotation)
         {
-            MetaState mgs = MetaState.Instance;
-            mgs.PreviousScene = SceneManager.GetActiveScene().name;
-            mgs.NextScene = scene;
-            if (spawnPoint != null)
-                mgs.PlayerIntent = new PlayerSpawnIntent(spawnPoint); //handle string.Empty as default spawn point
-            else
-                mgs.PlayerIntent = new PlayerSpawnIntent(position, Quaternion.Euler(rotation));
-            mgs.LoadSave = null;
-            mgs.TransitionType = SceneTransitionType.ChangeScene;
-            WorldUtils.GetSceneController().ExitScene();
+            ChangeScene(scene, spawnPoint, position, rotation, false);
         }
 
         [Obsolete]

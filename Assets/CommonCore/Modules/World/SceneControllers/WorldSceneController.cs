@@ -50,18 +50,7 @@ namespace CommonCore.World
             }
         }
 
-        public override void ExitScene()
-        {
-            //whatever triggered the exit is responsible for setting up most of metastate
-            //TODO gather intents here
-            MetaState.Instance.PreviousScene = SceneManager.GetActiveScene().name;
-            MetaState.Instance.TransitionType = SceneTransitionType.ChangeScene;
-            Debug.Log("Exiting scene: ");
-            Save();
-            SceneManager.LoadScene("LoadingScene");
-        }
-
-        public override void Save()
+        public override void Commit()
         {
             GameState gs = GameState.Instance;
 
