@@ -51,12 +51,12 @@ namespace CommonCore
 
         protected void InitUI()
         {
-            if (transform.Find("WorldHUD") == null)
-                Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/DefaultWorldHUD"), transform).name = "WorldHUD";
-            if (transform.Find("InGameMenu") == null)
-                Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/IGUI_Menu"), transform).name = "InGameMenu";
+            if (CoreUtils.GetUIRoot().Find("WorldHUD") == null)
+                Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/DefaultWorldHUD"), CoreUtils.GetUIRoot()).name = "WorldHUD";
+            if (CoreUtils.GetUIRoot().Find("InGameMenu") == null)
+                Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/IGUI_Menu"), CoreUtils.GetUIRoot()).name = "InGameMenu";
             if (EventSystem.current == null)
-                Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/DefaultEventSystem"), transform).name = "EventSystem";
+                Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/DefaultEventSystem"), CoreUtils.GetUIRoot()).name = "EventSystem";
         }
 
         public virtual void Commit()

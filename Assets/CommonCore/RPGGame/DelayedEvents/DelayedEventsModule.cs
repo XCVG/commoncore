@@ -10,7 +10,7 @@ namespace CommonCore.DelayedEvents
         public DelayedEventsModule()
         {
             //hook update loop for time update
-            GameObject hookObject = new GameObject();
+            GameObject hookObject = new GameObject(nameof(TimeHook));
             TimeHook hookScript = hookObject.AddComponent<TimeHook>();
         }
 

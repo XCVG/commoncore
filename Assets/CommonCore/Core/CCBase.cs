@@ -209,6 +209,12 @@ namespace CommonCore
         {
             try
             {
+                if(Modules.Find(m => m.GetType() == moduleType) != null)
+                {
+                    Debug.LogWarning("[Core] Attempted to initialize existing module " + moduleType.Name);
+                    return;
+                }
+
                 Modules.Add((CCModule)Activator.CreateInstance(moduleType));
                 Debug.Log("[Core] Successfully loaded module " + moduleType.Name);
             }
@@ -320,7 +326,7 @@ namespace CommonCore
 
         private static void HookMonobehaviourEvents()
         {
-            GameObject hookObject = new GameObject();
+            GameObject hookObject = new GameObject(nameof(CCMonoBehaviourHook));
             CCMonoBehaviourHook hookScript = hookObject.AddComponent<CCMonoBehaviourHook>();
             hookScript.OnUpdateDelegate = new LifecycleEventDelegate(OnFrameUpdate);
 

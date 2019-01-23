@@ -177,11 +177,17 @@ namespace CommonCore
             return WorldRoot;
         }
 
-
+        private static Transform UIRoot;
         public static Transform GetUIRoot()
         {
-            //not implemented yet, but the interface exists
-            return GetWorldRoot();
+            if(UIRoot == null)
+            {
+                GameObject rootGo = GameObject.Find("UIRoot");
+                if (rootGo == null)
+                    rootGo = new GameObject("UIRoot");
+                UIRoot = rootGo.transform;
+            }
+            return UIRoot;
         }
 
         public static void DestroyAllChildren(Transform root)
