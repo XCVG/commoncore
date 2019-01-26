@@ -13,7 +13,7 @@ using CommonCore.State;
 namespace CommonCore.UI
 {
 
-    public class LoadGamePanelController : MonoBehaviour
+    public class LoadGamePanelController : MonoBehaviour //wait shouldn't this inherit from BasePanelController?
     {
         public RectTransform ScrollContent;
         public GameObject SaveItemPrefab;
@@ -145,8 +145,10 @@ namespace CommonCore.UI
                 Location = location;
                 Date = date;
             }
-            
+
         }
+
+
     }
 
 
