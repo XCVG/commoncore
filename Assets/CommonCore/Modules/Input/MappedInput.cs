@@ -1,7 +1,9 @@
-﻿using CommonCore.DebugLog;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CommonCore.DebugLog;
+using System.Linq;
 
 namespace CommonCore.Input
 {
@@ -14,10 +16,39 @@ namespace CommonCore.Input
     {
         private static InputMapper Mapper;
 
+        internal static Dictionary<string, Type> Mappers { get; private set; } = new Dictionary<string, Type>();
+        
+        /// <summary>
+        /// Available input mappers
+        /// </summary>
+        public static string[] AvailableMappers => Mappers.Keys.ToArray();
+
+        /// <summary>
+        /// Set the current input mapper to a different one
+        /// </summary>
+        public static void SetMapper(string newMapper)
+        {
+            if (!Mappers.ContainsKey(newMapper))
+                throw new ArgumentOutOfRangeException();
+
+            if (Mapper is IDisposable dMapper)
+                dMapper.Dispose();
+
+            Mapper = (InputMapper)Activator.CreateInstance(Mappers[newMapper]);
+        }
+
         internal static void SetMapper(InputMapper newMapper)
         {
             CDebug.LogEx(string.Format("Set mapper to {0}", newMapper.GetType().Name), LogLevel.Message, typeof(MappedInput));
             Mapper = newMapper;
+        }
+
+        /// <summary>
+        /// Opens mapper configuration panel, if it exists
+        /// </summary>
+        public static void ConfigureMapper() //TODO options?
+        {
+            Mapper.Configure();
         }
 
         public static float GetAxis(string axis)

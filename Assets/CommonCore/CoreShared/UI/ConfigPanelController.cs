@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using CommonCore.Config;
 using CommonCore.UI;
+using CommonCore.Input;
 
 namespace CommonCore.UI
 {
@@ -22,6 +24,8 @@ namespace CommonCore.UI
         public Slider MusicVolumeSlider;
         public Dropdown ChannelDropdown;
 
+        public Dropdown InputDropdown;
+
         void OnEnable()
         {
             PaintValues();
@@ -31,6 +35,7 @@ namespace CommonCore.UI
         {
             LookSpeedSlider.value = ConfigState.Instance.LookSpeed;
 
+            GraphicsQualitySlider.maxValue = QualitySettings.names.Length - 1;
             GraphicsQualitySlider.value = ConfigState.Instance.QualityLevel;
             AntialiasingToggle.isOn = ConfigState.Instance.FxaaEnabled;
 
@@ -38,8 +43,14 @@ namespace CommonCore.UI
             MusicVolumeSlider.value = ConfigState.Instance.MusicVolume;
 
             var cList = new List<string>(Enum.GetNames(typeof(AudioSpeakerMode)));
+            ChannelDropdown.ClearOptions();
             ChannelDropdown.AddOptions(cList);
             ChannelDropdown.value = cList.IndexOf(AudioSettings.GetConfiguration().speakerMode.ToString());
+
+            var iList = MappedInput.AvailableMappers.ToList();
+            InputDropdown.ClearOptions();
+            InputDropdown.AddOptions(iList);
+            InputDropdown.value = iList.IndexOf(ConfigState.Instance.InputMapper);
         }
 
         public void OnQualitySliderChanged()
@@ -53,7 +64,28 @@ namespace CommonCore.UI
             UpdateValues();
             ConfigState.Save();
             ConfigModule.Apply();
+            MappedInput.SetMapper(ConfigState.Instance.InputMapper); //we need to do this manually unfortunately...
             Modal.PushMessageModal("Applied settings changes!", null, null, OnConfirmed);
+        }
+
+        public void OnClickRevert()
+        {
+            Modal.PushConfirmModal("This will revert all unsaved settings changes", "Revert Changes", null, null, null, (status, tag, result) =>
+            {
+                if(status == ModalStatusCode.Complete && result)
+                {
+                    PaintValues();
+                }
+                else
+                {
+
+                }
+            });
+        }
+
+        public void OnClickConfigureInput()
+        {
+            MappedInput.ConfigureMapper();
         }
 
         private void OnConfirmed(ModalStatusCode status, string tag)

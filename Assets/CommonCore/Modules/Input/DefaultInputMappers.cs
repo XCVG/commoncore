@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CommonCore.UI;
 
 namespace CommonCore.Input
 {
@@ -10,6 +11,11 @@ namespace CommonCore.Input
      */
     internal abstract class InputMapper
     {
+        public virtual void Configure()
+        {
+            Modal.PushMessageModal("No additional configuration is available for this input mapper.", "Not Available", null, null);
+        }
+
         public abstract float GetAxis(string axis);
         public abstract bool GetButton(string button);
         public abstract bool GetButtonDown(string button);
@@ -49,6 +55,11 @@ namespace CommonCore.Input
      */
     internal class UnityInputMapper : InputMapper
     {
+        public override void Configure()
+        {
+            Modal.PushMessageModal("Please configure the controls using the Unity launcher", "Not Available", null, null);
+        }
+
         public override float GetAxis(string axis)
         {
             return UnityEngine.Input.GetAxis(axis);

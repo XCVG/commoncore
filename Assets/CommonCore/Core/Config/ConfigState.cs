@@ -31,7 +31,7 @@ namespace CommonCore.Config
         }
 
 
-        //actual config data here (TODO)
+        //actual config data here (WIP)
 
         //AUDIO CONFIG
         public float MusicVolume { get; set; } = 0.8f;
@@ -45,9 +45,11 @@ namespace CommonCore.Config
         public int VsyncCount { get; set; } = 0;
         public int QualityLevel { get; set; } = 4;
         public bool FxaaEnabled { get; set; } = true; //TODO add support for selecting TAA and SMAA
-        
+
 
         //INPUT CONFIG
+        public string InputMapper { get; set; } = "UnityInputMapper";
+        public Dictionary<string, object> InputMapperData { get; set; } = new Dictionary<string, object>();
         public float LookSpeed { get; set; } = 1.0f;
         
     }
