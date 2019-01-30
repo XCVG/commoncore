@@ -34,7 +34,7 @@ namespace CommonCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void OnApplicationStart()
         {
-            if (!CoreParams.AutoInit)
+            if (!CoreParams.AutoInit) //this also calls the static constructor on CoreParams, btw
                 return;
 
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();

@@ -13,7 +13,7 @@ using CommonCore.State;
 namespace CommonCore.UI
 {
 
-    public class LoadGamePanelController : MonoBehaviour //wait shouldn't this inherit from BasePanelController?
+    public class LoadGamePanelController : PanelController //wait shouldn't this inherit from BasePanelController?
     {
         public RectTransform ScrollContent;
         public GameObject SaveItemPrefab;
@@ -28,8 +28,10 @@ namespace CommonCore.UI
         private SaveItem[] Saves;
         private SaveItem SelectedSave;
 
-        void OnEnable()
+        public override void SignalPaint()
         {
+            base.SignalPaint();
+
             SelectedSave = null;
 
             ClearList();

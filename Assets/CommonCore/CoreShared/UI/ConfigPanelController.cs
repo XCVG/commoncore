@@ -12,7 +12,7 @@ using CommonCore.Input;
 namespace CommonCore.UI
 {
 
-    public class ConfigPanelController : MonoBehaviour
+    public class ConfigPanelController : PanelController
     {
         public Slider LookSpeedSlider;
 
@@ -26,8 +26,10 @@ namespace CommonCore.UI
 
         public Dropdown InputDropdown;
 
-        void OnEnable()
+        public override void SignalPaint()
         {
+            base.SignalPaint();
+
             PaintValues();
         }
 
