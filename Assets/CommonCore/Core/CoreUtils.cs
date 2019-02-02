@@ -15,22 +15,30 @@ namespace CommonCore
      */
     public static class CoreUtils
     {
-        //this seems absolutely pointless but will make sense when eXPostFacto (mod support) is added
-        //basically we'll have redirection tables and will be able to handle overrides and load from virtual paths that don't really exist
+        internal static CCResourceManager ResourceManager {get; set;}
+
+        /// <summary>
+        /// Load a resource, respecting virtual/redirected paths
+        /// </summary>
         public static T LoadResource<T>(string path) where T: UnityEngine.Object
         {
-            return Resources.Load<T>(path);
+            return ResourceManager.GetResource<T>(path);
         }
 
-        //same with this one
+        /// <summary>
+        /// Load resources from a folder, respecting virtual/redirected paths
+        /// </summary>
         public static T[] LoadResources<T>(string path) where T: UnityEngine.Object
         {
-            return Resources.LoadAll<T>(path);
+            return ResourceManager.GetResources<T>(path);
         }
 
+        /// <summary>
+        /// Check if a resource exists, respecting virtual/redirected paths 
+        /// </summary>
         public static bool CheckResource<T>(string path) where T: UnityEngine.Object
         {
-            return Resources.Load<T>(path) != null;
+            return ResourceManager.ContainsResource<T>(path);
         }
         
         public static T LoadExternalJson<T>(string path)

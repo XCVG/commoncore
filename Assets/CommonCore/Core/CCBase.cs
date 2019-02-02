@@ -43,6 +43,7 @@ namespace CommonCore
             Debug.Log("[Core] Initializing CommonCore...");
 
             LoadGameTypes();
+            InitializeResourceManager();
             HookMonobehaviourEvents();
             HookQuitEvent();
             HookSceneEvents();
@@ -99,6 +100,11 @@ namespace CommonCore
             }
 
             return null;
+        }
+
+        private static void InitializeResourceManager()
+        {
+            CoreUtils.ResourceManager = new CCResourceManager();
         }
 
         private static void LoadGameTypes()
