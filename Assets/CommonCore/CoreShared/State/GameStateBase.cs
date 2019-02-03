@@ -1,5 +1,11 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using UnityEngine;
 
 namespace CommonCore.State
 {
@@ -87,9 +93,59 @@ namespace CommonCore.State
         /// <summary>
         /// Loads initial values into the current game state
         /// </summary>
-        /// <remarks>
-        /// Implement this in your variant of GameState
-        /// </remarks>
-        partial void Init();
+        private void Init()
+        {
+            //we actually use reflection to get all "decorated" methods and run them
+
+            var initMethods = GetType().GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                .Where(m => m.GetCustomAttributes(typeof(InitAttribute), false).Length > 0)
+                .ToList();
+
+            if (initMethods.Count == 0)
+                return; //abort if no init methods available
+            else if (initMethods.Count == 1)
+                initMethods[0].Invoke(this, null); //if we only have one, it's easy
+            else
+            {
+                initMethods.Sort((m1, m2) => ((InitAttribute)m2.GetCustomAttributes(typeof(InitAttribute), false)[0]).Priority
+                .CompareTo(((InitAttribute)m1.GetCustomAttributes(typeof(InitAttribute), false)[0]).Priority));
+                foreach (var m in initMethods)
+                    m.Invoke(this, null);
+            }
+        }
+
+        //basic game data to be shared across games
+
+        public Dictionary<string, object> GlobalDataState = new Dictionary<string, object>();
+        public Dictionary<string, Dictionary<string, object>> LocalDataState = new Dictionary<string, Dictionary<string, object>>();
+
+        public string CurrentScene;
+        public bool SaveLocked;
+        public bool InitialLoaded; //mostly for editor hacks
+
+        [JsonProperty]
+        private int CurrentUID;
+        [JsonIgnore]
+        public int NextUID { get { return ++CurrentUID; } }
+
+        //init system attribute
+
+        /// <summary>
+        /// Decorate methods with this atrribute to have them run on GameState initialization
+        /// </summary>
+        public class InitAttribute : Attribute
+        {
+            public int Priority { get; private set; } = 0;
+
+            public InitAttribute()
+            {
+
+            }
+
+            public InitAttribute(int priority)
+            {
+                Priority = priority;
+            }
+        }
     }
 }

@@ -1,16 +1,9 @@
-﻿using System;
+﻿using CommonCore;
+using CommonCore.UI;
 using System.IO;
 using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using CommonCore;
-using CommonCore.State;
-using CommonCore.UI;
-using CommonCore.DebugLog;
-using CommonCore.RpgGame.State;
 
 namespace GameUI
 {

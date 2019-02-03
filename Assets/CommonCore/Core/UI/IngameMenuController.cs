@@ -141,7 +141,7 @@ namespace CommonCore.UI
                 if(childPanel != null)
                 {
                     childPanel.gameObject.SetActive(true);
-                    childPanel.GetComponent<PanelController>().SignalPaint();
+                    childPanel.GetComponent<PanelController>().Ref()?.SignalPaint();
                 }
                 CurrentPanel = menuName;
             }

@@ -19,9 +19,7 @@ namespace CommonCore.State
 
         public List<DelayedEvent> DelayedEvents = new List<DelayedEvent>();
 
-        public Dictionary<string, object> GlobalDataState = new Dictionary<string, object>();
-        public Dictionary<string, Dictionary<string, object>> LocalDataState = new Dictionary<string, Dictionary<string, object>>();
-
+        //TODO move these to World module?
         public Dictionary<string, Dictionary<string, RestorableData>> LocalObjectState = new Dictionary<string, Dictionary<string, RestorableData>>();
         public Dictionary<string, RestorableData> MotileObjectState = new Dictionary<string, RestorableData>();
 
@@ -32,17 +30,11 @@ namespace CommonCore.State
         public RestorableData PlayerWorldState;
         public CharacterModel PlayerRpgState = new CharacterModel();
 
-        public string CurrentScene;
-        public bool SaveLocked;
-        public bool InitialLoaded; //mostly for editor hacks
-
-        [JsonProperty]
-        private int CurrentUID;
-        [JsonIgnore]
-        public int NextUID { get { return ++CurrentUID; } }
-
-        partial void Init()
+        [Init]
+        private void RpgInit()
         {
+            Debug.LogWarning(nameof(RpgInit));
+
             //TODO better debugging and logging
 
             //load initial player

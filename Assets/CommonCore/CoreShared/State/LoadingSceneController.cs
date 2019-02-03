@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using CommonCore.UI;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using CommonCore.World;
-using CommonCore.State;
-using CommonCore.UI;
 
-namespace CommonCore.RpgGame.State
+namespace CommonCore.State
 {
     //TODO move this into Core or Scenes
-    
+
     //TODO refactor and document this, it's a disaster zone holdover
     public class LoadingSceneController : MonoBehaviour
     {
-        public GameObject DefaultLoadingObject;
         public Canvas DefaultLoadingCanvas;
 
         AsyncOperation sceneLoadOperation;
