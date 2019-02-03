@@ -13,12 +13,8 @@ namespace CommonCore.RpgGame.UI
 {
     public class RpgHUDController : BaseHUDController
     {
-        //TODO move subtitle and messagebox handling into base
-
         public Text TargetText;
-        public Text MessageText;
-        public ScrollRect MessageScrollRect;
-
+        
         public Slider HealthSlider;
         public Text HealthText;
 
@@ -35,48 +31,35 @@ namespace CommonCore.RpgGame.UI
 
         public Image Crosshair;
 
-        public Text SubtitleText;
-        private float SubtitleTimer;
-        private int SubtitlePriority = int.MinValue;
-        
-        private QdmsMessageInterface MessageInterface;
-
         //local state is, as it turns out, unavoidable
         private bool WeaponReady = true;
 
-        void Awake()
+        protected override void Start()
         {
-            MessageInterface = new QdmsMessageInterface();
-            Current = this;
-        }
-
-        void Start()
-        {
-            MessageText.text = string.Empty;
+            base.Start();
 
             UpdateStatusDisplays();
-            UpdateWeaponDisplay();
-            UpdateSubtitles();
+            UpdateWeaponDisplay();            
         }
         
-        void Update()
+        protected override void Update()
         {
             //this is all slow and dumb and temporary... which means it'll probably be untouched until Ferelden
+            base.Update();
 
-            while(MessageInterface.HasMessageInQueue)
-            {
-                HandleMessage(MessageInterface.PopFromQueue());
-            }
-
-            UpdateStatusDisplays();
-            UpdateSubtitles();
+            UpdateStatusDisplays();            
         }
 
-        private void HandleMessage(QdmsMessage message)
+        protected override bool HandleMessage(QdmsMessage message)
         {
-            if(message is HUDPushMessage)
+            if(base.HandleMessage(message))
+            {
+                return true;
+            }
+            else if(message is HUDPushMessage)
             {
                 AppendHudMessage(Sub.Macro(((HUDPushMessage)message).Contents));
+                return true;
             }
             else if(message is QdmsFlagMessage)
             {
@@ -104,17 +87,12 @@ namespace CommonCore.RpgGame.UI
                         AddQuestMessage(message);
                         break;
                 }
+
+                return true;
             }
-            else if(message is SubtitleMessage)
-            {
-                SubtitleMessage subMessage = (SubtitleMessage)message;
-                if(subMessage.Priority >= SubtitlePriority)
-                {
-                    SubtitlePriority = subMessage.Priority;
-                    SubtitleTimer = subMessage.HoldTime;
-                    SubtitleText.text = subMessage.UseSubstitution ? Sub.Macro(subMessage.Contents) : subMessage.Contents;
-                }
-            }
+
+            return false;
+
         }
 
         private void SetCrosshair(QdmsMessage message)
@@ -129,20 +107,6 @@ namespace CommonCore.RpgGame.UI
                 Crosshair.gameObject.SetActive(false);
             else
                 Crosshair.gameObject.SetActive(false);
-        }
-
-        private void UpdateSubtitles()
-        {
-
-            if(SubtitleTimer <= 0)
-            {
-                SubtitleText.text = string.Empty;
-                SubtitlePriority = int.MinValue;
-            }
-            else
-            {
-                SubtitleTimer -= Time.deltaTime;
-            }
         }
 
         private void UpdateStatusDisplays()
@@ -224,21 +188,14 @@ namespace CommonCore.RpgGame.UI
             }
         }
 
-        private void AppendHudMessage(string newMessage)
-        {
-            MessageText.text = MessageText.text + "\n" + newMessage;
-            Canvas.ForceUpdateCanvases();
-            MessageScrollRect.verticalNormalizedPosition = 0;
-        }
-
         //TODO move to messaging
 
-        internal void ClearTarget()
+        public void ClearTarget()
         {
             TargetText.text = string.Empty;
         }
 
-        internal void SetTargetMessage(string message)
+        public void SetTargetMessage(string message)
         {
             TargetText.text = message;
         }
