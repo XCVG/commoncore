@@ -39,7 +39,7 @@ namespace CommonCore.RpgGame.World
         public float MaxUseDist;
 
         [Header("Components")]
-        public WorldHUDController HUDScript;
+        public RpgHUDController HUDScript;
         public CharacterController CharController;
         public Rigidbody CharRigidbody;
         public Animator AnimController;
@@ -130,7 +130,7 @@ namespace CommonCore.RpgGame.World
 
             if(!HUDScript)
             {
-                HUDScript = WorldHUDController.Current;
+                HUDScript = (RpgHUDController)BaseHUDController.Current; //I would not recommend this cast
             }
             
             if(!HUDScript && AutoinitHud)
@@ -139,7 +139,7 @@ namespace CommonCore.RpgGame.World
                 if (EventSystem.current == null)
                     Instantiate(CoreUtils.LoadResource<GameObject>("UI/DefaultEventSystem"));
 
-                HUDScript = WorldHUDController.Current;
+                HUDScript = (RpgHUDController)BaseHUDController.Current;
             }
 
             MessageInterface = new QdmsMessageInterface(gameObject);

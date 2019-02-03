@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using CommonCore.RpgGame.Rpg;
-using CommonCore.RpgGame.UI;
+using CommonCore.UI;
 using CommonCore.State;
+using CommonCore.RpgGame.Rpg;
 
-namespace CommonCore.UI
+namespace CommonCore.RpgGame.UI
 {
 
     public class StatusPanelController : PanelController

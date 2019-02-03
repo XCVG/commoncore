@@ -7,14 +7,13 @@ using CommonCore.Messaging;
 using CommonCore.StringSub;
 using CommonCore.State;
 using CommonCore.RpgGame.Rpg;
+using CommonCore.UI;
 
 namespace CommonCore.RpgGame.UI
 {
-    public class WorldHUDController : MonoBehaviour
+    public class RpgHUDController : BaseHUDController
     {
-        //TODO consider a weird partial class split
-
-        public static WorldHUDController Current { get; private set; }
+        //TODO move subtitle and messagebox handling into base
 
         public Text TargetText;
         public Text MessageText;
