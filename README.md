@@ -1,6 +1,6 @@
 # CommonCore RPG Libraries for Unity
-### Version Pre1.0
-### For Unity 2018.2
+### Version Pre2.0
+### For Unity 2018.3
 
 ## Introduction
 
@@ -20,9 +20,9 @@ CommonCore handles or will handle standard RPG mechanics, game state with saving
 
 ## Platform Support
 
-CommonCore supports Unity 2018.2 and (probably) later. The plan is to continue to target the latest stable version of 2018.x for the forseeable future. Unity 2017.x is no longer supported, and Unity 2019.x is very much a "we'll see" affair.
+CommonCore supports Unity 2018.3 and (probably) later. The plan is to continue to target the latest stable version of 2018.x for the forseeable future. Unity 2017.x is no longer supported, and Unity 2019.x is very much a "we'll see" affair.
 
-CommonCore supports standalone platforms using Mono and the .NET 4.x scripting runtime. When Balmora rolls around, the plan is to get the basic core working on mobile and WebGL (IL2CPP) platforms, but not the full feature set (at least, not yet).
+CommonCore supports standalone platforms using Mono and the .NET 4.x scripting runtime. The plan is to get the basic core working on mobile and WebGL (IL2CPP) platforms within the Balmora release, but not the full feature set (at least, not yet).
 
 ## Modules
 
@@ -45,7 +45,7 @@ CommonCore consists of several modules that encompass various functionality.
 * UI: Utility methods and implementation for user interface
 * World: Actors, objects, controllers and interaction
 
-Right now the modules are quite interdependent, but separating them is a major goal for future versions. It's also likely that some will be broken down or combined.
+Right now the modules are quite interdependent, but separating them is a design goal and work in progress. It's also likely that some will be broken down or combined.
 
 ## Current Status
 
@@ -88,13 +88,12 @@ This list is always in flux. As I implement features, I find there are even more
 **In-Progress Features**
 
 * Loading screen (appears but needs animation and better error handling)
+* Graphics, sound, and other configuration
 
 **Planned Features **
 
 * Levelled Lists
-* Graphics, sound, and other configuration
 * In-game remappable inputs (ExplicitKBM and XInput backends)
-* unified UI panels
 * custom dev console
 * improved messaging (MSDMS)
 * object pooling (POS/Calandria)
@@ -116,7 +115,7 @@ A rough plan is in place for the future of CommonCore.
 * 5.x _Endar Spire_ : Vehicles? Even more mod support?
 * 6.x and beyond : Keep iterating, improving and adding features as I think of them.
 
-There is no formal timeline. Ultimately, this is a hobby project for me, and is subject to the vagaries of real life. With that being said, I hope to have Arroyo finished by the end of 2018.
+There is no formal timeline. Ultimately, this is a hobby project for me, and is subject to the vagaries of real life. With that being said, I hope to have Balmora complete with a demo game in 2019.
 
 ## Usage
 
@@ -124,7 +123,7 @@ With the exceptions listed below, this repository is dual-licensed under the MIT
 
 It is **strongly** recommended that you license derivatives under the MIT License or dual-license them rather than using the Creative Commons license exclusively. The MIT License is a GPL-compatible permissive software license approved by the Free Software Foundation and the Open Source Initiative, while the Creative Commons license is designed for creative works and has several ambiguities when used to license software. The Creative Commons option is provided primarily for compliance with game jams that require entries to be released under such a license.
 
-CommonCore relies on a few third-party packages available from the Asset Store, listed in CREDITS. These will likely be replaced in future versions, but for the time being CommonCore won't work without at least DevConsole 2 and Json.NET Converters. Some of these require modifications or altered install paths, listed in CREDITS.
+CommonCore relies on a few third-party packages available from the Asset Store, listed in CREDITS. These will likely be replaced in future versions, but for the time being CommonCore won't work without at least DevConsole 2 and Post-Processing Stack. Some of these require modifications or altered install paths, listed in CREDITS.
 
 Some open-licensed third-party assets are included in the repository. These are also listed in CREDITS along with their respective licenses. In general, all may be reused and distributed with the same conditions as the code even if the specific license differs.
 
