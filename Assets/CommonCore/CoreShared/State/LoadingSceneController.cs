@@ -71,9 +71,7 @@ namespace CommonCore.State
             //TODO actually make this asynchronous, right now it just "loads" and locks up
 
             //clear certain metagamestate on use
-            MetaState.Instance.SkipLoadingScreen = false;
-            MetaState.Instance.LoadingScreenPropOverride = null;
-		
+            MetaState.Instance.SkipLoadingScreen = false;		
 	    }
 
         void OnErrorConfirmed(ModalStatusCode status, string tag)

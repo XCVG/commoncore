@@ -8,8 +8,6 @@ namespace CommonCore.State
 
     public sealed partial class MetaState
     {
-
-        public string LoadingScreenPropOverride { get; set; }
         public PlayerSpawnIntent PlayerIntent { get; set; } //horrible for cleanliness but should be faster
 
     }
