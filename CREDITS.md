@@ -127,14 +127,19 @@ These are included under permissive or copyleft licenses.
 James Newton-King - Json.NET
 	https://github.com/JamesNK/Newtonsoft.Json
 	Assets/Plugins/JsonNet
+	
+Microsoft - System.Collections.Immutable
+	https://www.nuget.org/packages/System.Collections.Immutable/
+	Assets/Plugins/Microsoft
 
 Steve Matteson - Croscore fonts (Arimo, Cousine, Tinos)
 	https://www.apache.org/licenses/LICENSE-2.0
+	Assets/CommonCore/Fonts
 	Assets/UI/Fonts
 	
 CodeAndReload - Loading Wheel (Transparent)
 	https://openclipart.org/detail/192512/loading-wheel-transparent
-	Assets/UI/Graphics/loadwheel
+	Assets/CommonCore/Graphics/loadwheel
 
 drummyfish - RPG Item collection 1 [CC0]
 	https://opengameart.org/content/rpg-item-collection-1
@@ -321,10 +326,6 @@ ckhoo - yellow target [CC0] [modified]
 Designer.io - Sword 2 [CC0] [modified]
 	https://openclipart.org/detail/289643/sword-2
 	Assets/UI/Graphics/melee.png
-	
-Luis Zuno (@ansimuz) - Mountain at Dusk Background [CC0] [modified]
-	https://opengameart.org/content/mountain-at-dusk-background
-	Assets/Scenes/Meta/GameOverScene/gameover_bg.png
 	
 # Miscelleneous
 

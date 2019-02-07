@@ -1,0 +1,10 @@
+{
+  "IGUI": {
+    "Welcome": "Bienvenue"
+  },
+  "IGUI_STATS": {
+    "SecurityMechanisms": "Lockpicking",
+    "SecurityComputers": "Hacking"
+  },
+  "TEST": {}
+}

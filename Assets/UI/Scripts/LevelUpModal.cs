@@ -4,10 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using CommonCore;
 using CommonCore.UI;
-using CommonCore.Rpg;
 using CommonCore.State;
 using CommonCore.LockPause;
 using CommonCore.DebugLog;
+using CommonCore.RpgGame.Rpg;
+using CommonCore.RpgGame.UI;
 
 namespace GameUI
 {

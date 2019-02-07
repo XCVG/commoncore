@@ -5,6 +5,7 @@ using CommonCore;
 using CommonCore.State;
 using CommonCore.World;
 using CommonCore.ObjectActions;
+using CommonCore.RpgGame.World;
 
 namespace World.Ext.TestIsland
 {
@@ -23,7 +24,7 @@ namespace World.Ext.TestIsland
         private void Start()
         {
             object monstersPrevious;
-            if(WorldUtils.GetSceneController().LocalStore.TryGetValue(MonstersKilledKey, out monstersPrevious))
+            if(SharedUtils.GetSceneController().LocalStore.TryGetValue(MonstersKilledKey, out monstersPrevious))
             {
                 MonstersKilled = (int)monstersPrevious;
             }
@@ -43,7 +44,7 @@ namespace World.Ext.TestIsland
 
             //otherwise, activate spawners!
             GameState.Instance.CampaignState.AddFlag("DemoWellMonstersSpawned");
-            SpawnerSpecial.Invoke(new ActionInvokerData() { Activator = WorldUtils.GetPlayerController() });
+            SpawnerSpecial.Invoke(new ActionInvokerData() { Activator = RpgWorldUtils.GetPlayerController() });
 
             //also set quest stage
             if (GameState.Instance.CampaignState.GetQuestStage("DemoQuest") < 50)
@@ -69,7 +70,7 @@ namespace World.Ext.TestIsland
                     GameState.Instance.CampaignState.SetQuestStage("DemoQuest", 60);
             }                
 
-            WorldUtils.GetSceneController().LocalStore[MonstersKilledKey] = MonstersKilled;
+            SharedUtils.GetSceneController().LocalStore[MonstersKilledKey] = MonstersKilled;
 
             Debug.Log(MonstersKilled + "monsters killed");
         }

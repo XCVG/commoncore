@@ -1,0 +1,32 @@
+{
+  "crossbow": {
+    "model": {
+      "$type": "CommonCore.RpgGame.Rpg.RangedWeaponItemModel, Assembly-CSharp",
+      "Damage": 6,
+      "DamagePierce": 2,
+      "Velocity": 50,
+      "Spread": 2,
+      "FireRate": 1,
+      "MagazineSize": 1,
+      "ReloadTime": 1.25,
+      "AType": "Bolt",
+      "DType": "Normal",
+      "FireEffect": "CrossbowEffect",
+	  "Projectile": "CrossbowBolt",
+      "ReloadEffect": "CrossbowDraw",
+	  "ViewModel": "Crossbow",
+      "Name": "crossbow",
+      "Weight": 3,
+	  "Value": 50,
+      "MaxCondition": 1,
+      "Unique": false,
+      "Essential": false,
+	  "Flags": ["AutoReload"]
+    },
+    "def": {
+    "NiceName": "Crossbow",
+    "Image": "crossbow",
+    "Description": "A simple crossbow made of wood and steel."
+  }
+  }
+}

@@ -39,7 +39,7 @@ namespace World.Ext.TestIsland
                 return;
             }
 
-            if(!string.IsNullOrEmpty(Flag) && WorldUtils.GetSceneController().LocalStore.ContainsKey(Flag))
+            if(!string.IsNullOrEmpty(Flag) && SharedUtils.GetSceneController().LocalStore.ContainsKey(Flag))
             {
                 //abort
                 if(!string.IsNullOrEmpty(AltSubtitleText))
@@ -60,7 +60,7 @@ namespace World.Ext.TestIsland
 
             if (!string.IsNullOrEmpty(Flag))
             {
-                WorldUtils.GetSceneController().LocalStore.Add(Flag, true);
+                SharedUtils.GetSceneController().LocalStore.Add(Flag, true);
             }
         }
     }

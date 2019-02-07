@@ -4,11 +4,11 @@ using UnityEngine;
 using CommonCore;
 using CommonCore.ObjectActions;
 using CommonCore.State;
-using CommonCore.Rpg;
 using CommonCore.World;
 using CommonCore.Audio;
 using CommonCore.Messaging;
-using CommonCore.Dialogue;
+using CommonCore.RpgGame.Dialogue;
+using CommonCore.RpgGame.Rpg;
 
 namespace World.Ext.TestIsland
 {
@@ -47,7 +47,7 @@ namespace World.Ext.TestIsland
             //TODO: face WaterLady and initiate conversation
             var playerTransform = WorldUtils.GetPlayerObject().transform;
             var npcTransform = WorldUtils.FindObjectByTID("WaterLady").transform;
-            playerTransform.forward = CCBaseUtil.GetFlatVectorToTarget(playerTransform.position, npcTransform.position).normalized;
+            playerTransform.forward = CoreUtils.GetFlatVectorToTarget(playerTransform.position, npcTransform.position).normalized;
 
             yield return new WaitForSeconds(0.5f);
 

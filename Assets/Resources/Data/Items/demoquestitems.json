@@ -1,0 +1,50 @@
+{
+  "demo_filter": {
+    "model": {
+		"$type": "CommonCore.RpgGame.Rpg.MiscItemModel, Assembly-CSharp",
+		"Name": "demo_filter",
+		"Value": 0,
+		"Weight": 0,
+		"MaxCondition": 1.0,
+		"Unique": true,
+		"Essential": true
+    },
+    "def": {
+    "NiceName": "Water Purifier",
+    "Image": "filter",
+    "Description": "An improvised filtration system that could provide clean water to an entire village"
+	}
+  },
+  "demo_part1": {
+    "model": {
+		"$type": "CommonCore.RpgGame.Rpg.MiscItemModel, Assembly-CSharp",
+		"Name": "demo_part1",
+		"Value": 0,
+		"Weight": 0,
+		"MaxCondition": 1.0,
+		"Unique": true,
+		"Essential": true
+    },
+    "def": {
+    "NiceName": "Fuel Converter Assembly",
+    "Image": "filter1",
+    "Description": "A key part of a shuttle engine system, broken but still usable for parts or repair"
+	}
+  },
+  "demo_part2": {
+    "model": {
+		"$type": "CommonCore.RpgGame.Rpg.MiscItemModel, Assembly-CSharp",
+		"Name": "demo_part2",
+		"Value": 0,
+		"Weight": 0,
+		"MaxCondition": 1.0,
+		"Unique": true,
+		"Essential": true
+    },
+    "def": {
+    "NiceName": "High-Pressure Pump",
+    "Image": "filter2",
+    "Description": "A generic industrial pump capable of generating high pressures for various applications"
+	}
+  }
+}

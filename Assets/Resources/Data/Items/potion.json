@@ -1,0 +1,21 @@
+{
+  "potion": {
+    "model": {
+		"$type": "CommonCore.RpgGame.Rpg.AidItemModel, Assembly-CSharp",
+		"AType": "Health",
+		"RType": "Add",
+		"Amount": 30.0,
+		"Value": 20.0,
+		"Name": "potion",
+		"Weight": 1.0,
+		"MaxCondition": 1.0,
+		"Unique": false,
+		"Essential": false
+    },
+    "def": {
+    "NiceName": "Potion of Healing",
+    "Image": "potion",
+    "Description": "A remedy brewed from herbs that heals 30 health"
+	}
+  }
+}
