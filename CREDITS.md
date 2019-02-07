@@ -131,6 +131,10 @@ James Newton-King - Json.NET
 Microsoft - System.Collections.Immutable
 	https://www.nuget.org/packages/System.Collections.Immutable/
 	Assets/Plugins/Microsoft
+	
+Microsoft - Xbox Live Unity Plugin
+	https://github.com/Microsoft/xbox-live-unity-plugin
+	Assets/CommonCoreModules/Async
 
 Steve Matteson - Croscore fonts (Arimo, Cousine, Tinos)
 	https://www.apache.org/licenses/LICENSE-2.0
