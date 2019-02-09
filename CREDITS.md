@@ -135,6 +135,10 @@ Microsoft - System.Collections.Immutable
 Microsoft - Xbox Live Unity Plugin
 	https://github.com/Microsoft/xbox-live-unity-plugin
 	Assets/CommonCoreModules/Async
+	
+Modest Tree Media - Unity3dAsyncAwaitUtil
+	https://github.com/modesttree/Unity3dAsyncAwaitUtil
+	Assets/CommonCoreModules/Async
 
 Steve Matteson - Croscore fonts (Arimo, Cousine, Tinos)
 	https://www.apache.org/licenses/LICENSE-2.0
