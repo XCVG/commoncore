@@ -112,6 +112,8 @@ namespace CommonCore.State
                 foreach (var m in initMethods)
                     m.Invoke(this, null);
             }
+
+            InitialLoaded = true;
         }
 
         //basic game data to be shared across games

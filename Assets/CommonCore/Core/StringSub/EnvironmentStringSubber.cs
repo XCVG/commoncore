@@ -18,7 +18,7 @@ namespace CommonCore.StringSub
             {
                 case "%PersistentData%":
                     return CoreParams.PersistentDataPath;
-                case "%StreamingAssets":
+                case "%StreamingAssets%":
                     return CoreParams.StreamingAssetsPath;
                 default:
                     throw new ArgumentException();

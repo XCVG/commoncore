@@ -10,7 +10,7 @@ namespace CommonCore.Messaging
 
     public abstract class QdmsMessage
     {
-        public QdmsMessageInterface Sender { get; private set; }
+        public object Sender { get; private set; }
 
         internal void SetSender(QdmsMessageInterface sender)
         {
