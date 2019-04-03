@@ -20,41 +20,6 @@ namespace CommonCore.World
         public static GameObject SelectedObject { get; private set; }
         public static string SelectedTID { get; private set; }
 
-        //***** UTILITIES 
-
-
-        [Command]
-        static void PrintDataPath() //TODO move elsewhere
-        {
-            ConsoleModule.WriteLine(Application.persistentDataPath);
-        }
-
-        [Command]
-        static void PrintPlayerInfo()
-        {
-            ConsoleModule.WriteLine(JsonConvert.SerializeObject(GameState.Instance.PlayerRpgState));
-        }
-
-        [Command]
-        static void PrintSceneList()
-        {
-            try
-            {
-                var sceneNames = CoreUtils.GetSceneList();
-                StringBuilder sb = new StringBuilder(sceneNames.Length * 16);
-                foreach (var s in sceneNames)
-                {
-                    sb.AppendLine(s);
-                }
-                ConsoleModule.WriteLine(sb.ToString());
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
-
-        }
-
         //***** CHEATS
 
         [Command]
@@ -75,60 +40,7 @@ namespace CommonCore.World
                 MetaState.Instance.SessionFlags.Add("NoTarget");
         }
 
-        //***** LOAD/SAVE
-
-        //force a full load from file with scene transition
-        [Command]
-        static void LoadClean(string name)
-        {
-            MetaState.Instance.TransitionType = SceneTransitionType.LoadGame;
-            MetaState.Instance.LoadSave = CoreParams.SavePath + @"\" + name;
-            MetaState.Instance.Intents.Clear();
-            SceneManager.LoadScene("LoadingScene");
-        }
-
-        //force loading from file
-        [Command]
-        static void Load(string name)
-        {
-            GameState.DeserializeFromFile(CoreParams.SavePath + @"\" + name);
-
-            Restore();
-        }
-
-        //force loading from state
-        [Command]
-        static void Restore()
-        {
-            MetaState.Instance.TransitionType = SceneTransitionType.LoadGame;
-            BaseSceneController bsc = SharedUtils.GetSceneController();
-            bsc.Restore();
-        }
-
-        //force saving to gamestate
-        [Command]
-        static void Commit()
-        {
-            BaseSceneController bsc = SharedUtils.GetSceneController();
-            bsc.Commit();
-        }
-
-        //force saving to a file
-        [Command]
-        static void Save(string name)
-        {
-            Commit();
-
-            GameState.SerializeToFile(CoreParams.SavePath + @"\" + name);
-        }
-
         //***** SCENE WARP
-
-        [Command]
-        static void Warp(string scene)
-        {
-            Warp(scene, string.Empty);
-        }
 
         [Command]
         static void Warp(string scene, string spawnPoint)

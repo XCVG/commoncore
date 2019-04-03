@@ -391,8 +391,7 @@ namespace CommonCore.RpgGame.World
             //fill renderer cache if empty
             if(ModelRendererCache == null || ModelRendererCache.Length == 0)
             {
-                List<Renderer> rendererList = WorldUtils.GetComponentsInDescendants<Renderer>(ModelRoot.transform);
-                ModelRendererCache = rendererList.ToArray();
+                ModelRendererCache = ModelRoot.GetComponentsInChildren<Renderer>(true);
             }
 
             foreach(var r in ModelRendererCache)

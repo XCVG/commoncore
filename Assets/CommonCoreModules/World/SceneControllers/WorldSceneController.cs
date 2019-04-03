@@ -61,7 +61,8 @@ namespace CommonCore.World
 
             //get restorable components
             List<RestorableComponent> rcs = new List<RestorableComponent>();
-            WorldUtils.GetComponentsInDescendants(transform, rcs);
+            rcs.AddRange(transform.gameObject.GetComponentsInChildren<RestorableComponent>());
+            //WorldUtils.GetComponentsInDescendants(transform, rcs);
 
             //purge local object state
             Dictionary<string, RestorableData> localState;

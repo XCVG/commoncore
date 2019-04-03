@@ -310,7 +310,7 @@ namespace CommonCore.RpgGame.World
             //hack to retrieve swizzled target after a load
             if(!string.IsNullOrEmpty(SavedTarget))
             {
-                var goList = WorldUtils.FindAllGameObjects(SavedTarget);
+                var goList = CoreUtils.FindAllGameObjects(SavedTarget);
                 if(goList.Count == 1)
                 {
                     Target = goList[0].transform;

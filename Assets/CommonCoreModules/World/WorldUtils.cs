@@ -14,34 +14,8 @@ namespace CommonCore.World
     public static class WorldUtils
     {
                 
-        /// <summary>
-        /// Finds all game objects with a given name. No, I don't know what it's for either.
-        /// </summary>
-        public static List<GameObject> FindAllGameObjects(string name)
-        {
-            var goList = new List<GameObject>();
-
-            foreach (GameObject go in GameObject.FindObjectsOfType(typeof(GameObject)))
-            {
-                if (go.name == name)
-                    goList.Add(go);
-            }
-
-            return goList;
-        }
-
         [Obsolete("use GameObject.GetComponentsInChildren<T> instead")]
-        public static List<T> GetComponentsInDescendants<T>(Transform root)
-        {
-            List<T> components = new List<T>();
-
-            GetComponentsInDescendants<T>(root, components);
-
-            return components;
-        }
-
-        [Obsolete("use GameObject.GetComponentsInChildren<T> instead")]
-        public static void GetComponentsInDescendants<T>(Transform root, List<T> components)
+        private static void GetComponentsInDescendants<T>(Transform root, List<T> components)
         {
             //base case: root has no children
             if (root.childCount == 0)
@@ -142,6 +116,7 @@ namespace CommonCore.World
         {
             List<BaseController> bcs = new List<BaseController>();
             GetComponentsInDescendants<BaseController>(GameObject.Find("WorldRoot").transform, bcs);
+            //bcs.AddRange(CoreUtils.GetWorldRoot().gameObject.GetComponentsInChildren<BaseController>());
             List<GameObject> foundObjects = new List<GameObject>();
             foreach (BaseController c in bcs)
             {
@@ -240,23 +215,6 @@ namespace CommonCore.World
             var go = UnityEngine.Object.Instantiate(prefab, position, Quaternion.Euler(rotation), parent) as GameObject;
 
             return go;
-        }
-
-        /// <summary>
-        /// Find a child by name, recursively
-        /// </summary>
-        public static Transform FindDeepChild(this Transform aParent, string aName)
-        {
-            var result = aParent.Find(aName);
-            if (result != null)
-                return result;
-            foreach (Transform child in aParent)
-            {
-                result = child.FindDeepChild(aName);
-                if (result != null)
-                    return result;
-            }
-            return null;
         }
 
 

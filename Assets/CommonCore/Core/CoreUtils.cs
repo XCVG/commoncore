@@ -12,6 +12,7 @@ namespace CommonCore
     /*
      * CommonCore Core Utilities class
      * Includes common/general utility functions that don't fit within a module
+     * Very badly needs to be split up
      */
     public static class CoreUtils
     {
@@ -198,12 +199,45 @@ namespace CommonCore
             return UIRoot;
         }
 
-        public static void DestroyAllChildren(Transform root)
+        public static void DestroyAllChildren(this Transform root)
         {
             foreach(Transform t in root)
             {
                 GameObject.Destroy(t.gameObject);
             }
+        }
+
+        /// <summary>
+        /// Find a child by name, recursively
+        /// </summary>
+        public static Transform FindDeepChild(this Transform aParent, string aName)
+        {
+            var result = aParent.Find(aName);
+            if (result != null)
+                return result;
+            foreach (Transform child in aParent)
+            {
+                result = child.FindDeepChild(aName);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Finds all game objects with a given name. No, I don't know what it's for either.
+        /// </summary>
+        public static List<GameObject> FindAllGameObjects(string name)
+        {
+            var goList = new List<GameObject>();
+
+            foreach (GameObject go in GameObject.FindObjectsOfType(typeof(GameObject)))
+            {
+                if (go.name == name)
+                    goList.Add(go);
+            }
+
+            return goList;
         }
 
         public static Vector2 ToFlatVec(this Vector3 vec3)

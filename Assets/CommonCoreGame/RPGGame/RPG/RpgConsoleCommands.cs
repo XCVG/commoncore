@@ -3,10 +3,11 @@ using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SickDev.CommandSystem;
 using CommonCore.State;
 using CommonCore.RpgGame.UI;
 using CommonCore.RpgGame.State;
+using CommonCore.Console;
+using Newtonsoft.Json;
 
 namespace CommonCore.RpgGame.Rpg
 {
@@ -15,17 +16,23 @@ namespace CommonCore.RpgGame.Rpg
 
         //***** Player Manipulation
 
+        [Command]
+        static void PrintPlayerInfo()
+        {
+            ConsoleModule.WriteLine(JsonConvert.SerializeObject(GameState.Instance.PlayerRpgState));
+        }
+
         [Command(className = "Player")]
         static void GetAV(string av)
         {
             try
             {
                 var value = GameState.Instance.PlayerRpgState.GetAV<object>(av);
-                DevConsole.singleton.Log(string.Format("{0} : {1}", av, value));
+                ConsoleModule.WriteLine(string.Format("{0} : {1}", av, value));
             }
             catch (Exception e)
             {
-                DevConsole.singleton.LogError(e.ToString());
+                ConsoleModule.WriteLine(e.ToString(), LogLevel.Error);
             }
         }
 
@@ -49,7 +56,7 @@ namespace CommonCore.RpgGame.Rpg
             }
             catch(Exception e)
             {
-                DevConsole.singleton.LogError(e.ToString() + e.StackTrace);
+                ConsoleModule.WriteLine(e.ToString() + e.StackTrace, LogLevel.Error);
             }
         }
 
@@ -73,7 +80,7 @@ namespace CommonCore.RpgGame.Rpg
             }
             catch (Exception e)
             {
-                DevConsole.singleton.LogError(e.ToString());
+                ConsoleModule.WriteLine(e.ToString(), LogLevel.Error);
             }
         }
 
@@ -90,7 +97,7 @@ namespace CommonCore.RpgGame.Rpg
         [Command]
         static void ListFactions()
         {
-            DevConsole.singleton.Log(FactionModel.GetFactionsList());
+            ConsoleModule.WriteLine(FactionModel.GetFactionsList());
         }
 
         //***** MapMarker manipulation
@@ -98,7 +105,7 @@ namespace CommonCore.RpgGame.Rpg
         [Command]
         static void ListMapMarkers()
         {
-            DevConsole.singleton.Log(GameState.Instance.MapMarkers.ToNiceString());
+            ConsoleModule.WriteLine(GameState.Instance.MapMarkers.ToNiceString());
         }
 
         [Command]
@@ -112,13 +119,13 @@ namespace CommonCore.RpgGame.Rpg
         [Command]
         static void ListInventoryModels()
         {
-            DevConsole.singleton.Log(InventoryModel.GetModelsList());
+            ConsoleModule.WriteLine(InventoryModel.GetModelsList());
         }
 
         [Command]
         static void ListInventoryDefs()
         {
-            DevConsole.singleton.Log(InventoryModel.GetDefsList());
+            ConsoleModule.WriteLine(InventoryModel.GetDefsList());
         }
 
         [Command]
@@ -132,7 +139,7 @@ namespace CommonCore.RpgGame.Rpg
                 sb.AppendFormat("{0} ({1} items) \n", kvp.Key, kvp.Value.ListItems().Length);
             }
 
-            DevConsole.singleton.Log(sb.ToString());
+            ConsoleModule.WriteLine(sb.ToString());
         }
 
         [Command]
@@ -150,7 +157,7 @@ namespace CommonCore.RpgGame.Rpg
             var items = GameState.Instance.PlayerRpgState.Inventory.GetItemsListActual();
             foreach(var item in items)
             {
-                DevConsole.singleton.Log(item.ToString());
+                ConsoleModule.WriteLine(item.ToString());
             }
         }
 
@@ -160,11 +167,11 @@ namespace CommonCore.RpgGame.Rpg
             try
             {
                 var quantity = GameState.Instance.PlayerRpgState.Inventory.CountItem(item);
-                DevConsole.singleton.Log(string.Format("{0}:{1}", item, quantity));
+                ConsoleModule.WriteLine(string.Format("{0}:{1}", item, quantity));
             }
             catch (Exception e)
             {
-                DevConsole.singleton.LogError(e.ToString());
+                ConsoleModule.WriteLine(e.ToString(), LogLevel.Error);
             }
         }
 
@@ -183,7 +190,7 @@ namespace CommonCore.RpgGame.Rpg
             }
             catch (Exception e)
             {
-                DevConsole.singleton.LogError(e.ToString());
+                ConsoleModule.WriteLine(e.ToString(), LogLevel.Error);
             }
         }
 
@@ -196,7 +203,7 @@ namespace CommonCore.RpgGame.Rpg
             }
             catch (Exception e)
             {
-                DevConsole.singleton.LogError(e.ToString());
+                ConsoleModule.WriteLine(e.ToString(), LogLevel.Error);
             }
         }
 
@@ -209,7 +216,7 @@ namespace CommonCore.RpgGame.Rpg
             }
             catch (Exception e)
             {
-                DevConsole.singleton.LogError(e.ToString());
+                ConsoleModule.WriteLine(e.ToString(), LogLevel.Error);
             }
         }
 
@@ -217,13 +224,13 @@ namespace CommonCore.RpgGame.Rpg
         [Command]
         static void ListQuestDefs()
         {
-            DevConsole.singleton.Log(QuestModel.GetDefsList());
+            ConsoleModule.WriteLine(QuestModel.GetDefsList());
         }
 
         [Command]
         static void GetQuestDef(string questDef)
         {
-            DevConsole.singleton.Log(QuestModel.GetDef(questDef).ToLongString());
+            ConsoleModule.WriteLine(QuestModel.GetDef(questDef).ToLongString());
         }
 
         //***** Campaign manipulation
@@ -231,7 +238,7 @@ namespace CommonCore.RpgGame.Rpg
         [Command(className = "Campaign")]
         static void GetVar(string varName)
         {
-            DevConsole.singleton.Log(GameState.Instance.CampaignState.GetVar(varName));
+            ConsoleModule.WriteLine(GameState.Instance.CampaignState.GetVar(varName));
         }
 
         [Command(className = "Campaign")]
@@ -243,13 +250,13 @@ namespace CommonCore.RpgGame.Rpg
         [Command(className = "Campaign")]
         static void ListAllVars()
         {
-            DevConsole.singleton.Log(GameState.Instance.CampaignState.ListAllVars());
+            ConsoleModule.WriteLine(GameState.Instance.CampaignState.ListAllVars());
         }
 
         [Command(className = "Campaign")]
         static void GetFlag(string flagName)
         {
-            DevConsole.singleton.Log(GameState.Instance.CampaignState.HasFlag(flagName).ToString());
+            ConsoleModule.WriteLine(GameState.Instance.CampaignState.HasFlag(flagName).ToString());
         }
 
         [Command(className = "Campaign")]
@@ -261,13 +268,13 @@ namespace CommonCore.RpgGame.Rpg
         [Command(className = "Campaign")]
         static void ListAllFlags()
         {
-            DevConsole.singleton.Log(GameState.Instance.CampaignState.ListAllFlags());
+            ConsoleModule.WriteLine(GameState.Instance.CampaignState.ListAllFlags());
         }
 
         [Command(className = "Campaign")]
         static void GetQuestStage(string questName)
         {
-            DevConsole.singleton.Log(GameState.Instance.CampaignState.GetQuestStage(questName).ToString());
+            ConsoleModule.WriteLine(GameState.Instance.CampaignState.GetQuestStage(questName).ToString());
         }
 
         [Command(className = "Campaign")]
@@ -279,7 +286,7 @@ namespace CommonCore.RpgGame.Rpg
         [Command(className = "Campaign")]
         static void ListAllQuests()
         {
-            DevConsole.singleton.Log(GameState.Instance.CampaignState.ListAllQuests());
+            ConsoleModule.WriteLine(GameState.Instance.CampaignState.ListAllQuests());
         }
 
         //***** Event manipulation
@@ -293,13 +300,13 @@ namespace CommonCore.RpgGame.Rpg
                 GameState.Instance.WorldState.WorldSecondsElapsed,
                 Time.timeScale,
                 GameState.Instance.WorldState.WorldTimeScale);
-            DevConsole.singleton.Log(timeStr);
+            ConsoleModule.WriteLine(timeStr);
         }
 
         [Command(className = "Events")]
         static void ListDelayedEvents()
         {
-            DevConsole.singleton.Log(GameState.Instance.DelayedEvents.ToNiceString());
+            ConsoleModule.WriteLine(GameState.Instance.DelayedEvents.ToNiceString());
         }
 
         [Command(className = "Events")]
