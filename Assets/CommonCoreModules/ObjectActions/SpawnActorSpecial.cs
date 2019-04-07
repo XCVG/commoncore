@@ -47,7 +47,7 @@ namespace CommonCore.ObjectActions
             Vector3 position = OverrideTransform ? OverridePosition : transform.position;
             Vector3 rotation = OverrideTransform ? OverrideRotation : transform.eulerAngles;
 
-            var go = WorldUtils.SpawnObject(FormId, null, position, rotation, parent);
+            var go = WorldUtils.SpawnEntity(FormId, null, position, rotation, parent);
 
             go.SetActive(ActivateObject);
 

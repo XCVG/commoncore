@@ -10,6 +10,9 @@ namespace CommonCore.State
     /// <summary>
     /// Represents state information to be retained across game sessions
     /// </summary>
+    /// <remarks>
+    /// Note that persist state is explicitly loaded and saved by state module.
+    /// </remarks>
     public sealed partial class PersistState
     {
 

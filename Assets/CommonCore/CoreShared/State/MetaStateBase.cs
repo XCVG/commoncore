@@ -15,7 +15,7 @@ namespace CommonCore.State
     }
 
     /// <summary>
-    /// Represents the state of the current game session
+    /// Represents the state of the current game session. Largely concerned with transitioning between scenes.
     /// </summary>
     public sealed partial class MetaState
     {
@@ -89,12 +89,39 @@ namespace CommonCore.State
 
         //Actual instance data (shared across game types)
 
+        /// <summary>
+        /// The type of scene transition we intend to execute
+        /// </summary>
         public SceneTransitionType TransitionType { get; set; }
+
+        /// <summary>
+        /// The scene we are transitioning from, or null if none
+        /// </summary>
         public string PreviousScene { get; set; }
+
+        /// <summary>
+        /// The scene to transition to, or the scene we are in
+        /// </summary>
         public string NextScene { get; set; }
-        public string LoadSave { get; set; }        
+
+        /// <summary>
+        /// The save file to load, if applicable
+        /// </summary>
+        public string LoadSave { get; set; }
+        
+        /// <summary>
+        /// Whether to skip the loading screen for this transition
+        /// </summary>
         public bool SkipLoadingScreen { get; set; }
-        public HashSet<string> SessionFlags { get; set; } = new HashSet<string>();
-        public List<Intent> Intents { get; set; } = new List<Intent>();
+
+        /// <summary>
+        /// Flags set for this game session (cheats, special behaviour, etc)
+        /// </summary>
+        public HashSet<string> SessionFlags { get; private set; } = new HashSet<string>();
+
+        /// <summary>
+        /// Intents to be persisted/executed across the next transition
+        /// </summary>
+        public List<Intent> Intents { get; private set; } = new List<Intent>();
     }
 }

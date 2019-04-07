@@ -80,7 +80,7 @@ namespace CommonCore.RpgGame.World
                     spawnName = item.WorldModel;
             }
 
-            var go = WorldUtils.SpawnObject(spawnName, "inv_drop_" + GameState.Instance.NextUID, position, Vector3.zero, null); //TODO switch to one that works with loaded prefab
+            var go = WorldUtils.SpawnEntity(spawnName, "inv_drop_" + GameState.Instance.NextUID, position, Vector3.zero, null); //TODO switch to one that works with loaded prefab
             var ic = go.GetComponent<ItemController>();
             ic.ItemId = item.Name;
             ic.ItemQuantity = quantity;

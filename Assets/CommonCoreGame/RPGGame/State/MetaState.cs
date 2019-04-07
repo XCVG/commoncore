@@ -8,10 +8,7 @@ namespace CommonCore.State
 
     public sealed partial class MetaState
     {
-        public PlayerSpawnIntent PlayerIntent { get; set; } //horrible for cleanliness but should be faster
-
-    }
-
-    
+        //PUT ANY STATE VARIABLES YOU WANT HERE        
+    }   
 
 }

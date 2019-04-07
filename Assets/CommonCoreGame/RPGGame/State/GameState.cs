@@ -14,22 +14,51 @@ namespace CommonCore.State
     public partial class GameState
     {
         // actual instance data
-        public WorldModel WorldState = new WorldModel();
-        public CampaignModel CampaignState = new CampaignModel();
 
-        public List<DelayedEvent> DelayedEvents = new List<DelayedEvent>();
+        /// <summary>
+        /// [RPGGame] State data of the RPG world (time, weather, etc)
+        /// </summary>
+        public WorldModel WorldState { get; private set; } = new WorldModel();
 
-        //TODO move these to World module?
-        public Dictionary<string, Dictionary<string, RestorableData>> LocalObjectState = new Dictionary<string, Dictionary<string, RestorableData>>();
-        public Dictionary<string, RestorableData> MotileObjectState = new Dictionary<string, RestorableData>();
+        /// <summary>
+        /// [RPGGame] State data of the RPG campaign (quests, flags, etc)
+        /// </summary>
+        public CampaignModel CampaignState { get; private set; } = new CampaignModel();
 
-        public Dictionary<string, ContainerModel> ContainerState = new Dictionary<string, ContainerModel>();
-        public Dictionary<string, MapMarkerState> MapMarkers = new Dictionary<string, MapMarkerState>();
-        public HashSet<string> LibraryUnlocks = new HashSet<string>();
+        /// <summary>
+        /// [RPGGame] Delayed events that will be checked and executed some time in the future
+        /// </summary>
+        public List<DelayedEvent> DelayedEvents { get; private set; } = new List<DelayedEvent>();
 
-        public RestorableData PlayerWorldState;
-        public CharacterModel PlayerRpgState = new CharacterModel();
+        /// <summary>
+        /// [RPGGame] State data for shared containers (chests, stores, etc)
+        /// </summary>
+        public Dictionary<string, ContainerModel> ContainerState { get; private set; } = new Dictionary<string, ContainerModel>();
 
+        /// <summary>
+        /// [RPGGame] State data for map markers status
+        /// </summary>
+        public Dictionary<string, MapMarkerState> MapMarkers { get; private set; } = new Dictionary<string, MapMarkerState>();
+
+        /// <summary>
+        /// [RPGGame] State data for book/library unlocks
+        /// </summary>
+        /// <remarks>
+        /// In fact, just a set of books the player has unlocked
+        /// </remarks>
+        public HashSet<string> LibraryUnlocks { get; private set; } = new HashSet<string>();
+
+        /// <summary>
+        /// [RPGGame] State data of the player's RPG character (stats, inventory, etc)
+        /// </summary>
+        public CharacterModel PlayerRpgState { get; private set; } = new CharacterModel();
+
+        /// <summary>
+        /// Initializes player state and containers from defs files
+        /// </summary>
+        /// <remarks>
+        /// Player data is in Data/RPGDefs/init_player and container data is in Data/RPGDefs/init_containers
+        /// </remarks>
         [Init]
         private void RpgInit()
         {

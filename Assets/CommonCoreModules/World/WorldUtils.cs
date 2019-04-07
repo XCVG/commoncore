@@ -13,39 +13,13 @@ namespace CommonCore.World
     /// </summary>
     public static class WorldUtils
     {
-                
-        [Obsolete("use GameObject.GetComponentsInChildren<T> instead")]
-        private static void GetComponentsInDescendants<T>(Transform root, List<T> components)
-        {
-            //base case: root has no children
-            if (root.childCount == 0)
-            {
-                T component = root.GetComponent<T>();
-                if (!((UnityEngine.Object)(object)component == null)) //!= null doesn't work, it doesn't return true null and instead they've overloaded ==... but not !=
-                {
-                    components.Add(component);
-                }
-            }
-            else //other case (could be cleaned up a bit)
-            {
-                T component = root.GetComponent<T>();
-                if (!((UnityEngine.Object)(object)component == null))
-                {
-                    components.Add(component);
-                }
-                foreach (Transform t in root)
-                {
-                    GetComponentsInDescendants<T>(t, components);
-                }
-            }
-        }
 
         private static GameObject PlayerObject;
 
         /// <summary>
-        /// Gets the player object (or null)
+        /// Gets the player object (or null if it doesn't exist)
         /// </summary>
-        public static GameObject GetPlayerObject() //TODO split into Get() and TryGet()
+        public static GameObject GetPlayerObject()
         {
             if (PlayerObject != null)
                 return PlayerObject;
@@ -82,7 +56,7 @@ namespace CommonCore.World
         }
 
         /// <summary>
-        /// Finds the player and returns their controller (does not guarantee a PlayerController!)
+        /// Finds the player and returns their controller (does not guarantee an actual PlayerController!)
         /// </summary>
         public static BaseController GetPlayerController() //TODO split into Get() and TryGet()
         {
@@ -114,11 +88,8 @@ namespace CommonCore.World
         /// </summary>
         public static GameObject[] FindObjectsWithFormID(string formID)
         {
-            List<BaseController> bcs = new List<BaseController>();
-            GetComponentsInDescendants<BaseController>(GameObject.Find("WorldRoot").transform, bcs);
-            //bcs.AddRange(CoreUtils.GetWorldRoot().gameObject.GetComponentsInChildren<BaseController>());
             List<GameObject> foundObjects = new List<GameObject>();
-            foreach (BaseController c in bcs)
+            foreach (BaseController c in CoreUtils.GetWorldRoot().gameObject.GetComponentsInChildren<BaseController>(true))
             {
                 if (c.FormID == formID)
                 {
@@ -134,10 +105,8 @@ namespace CommonCore.World
         /// </summary>
         public static GameObject[] FindObjectsWithTag(string tag)
         {
-            List<BaseController> bcs = new List<BaseController>();
-            GetComponentsInDescendants<BaseController>(GameObject.Find("WorldRoot").transform, bcs);
             List<GameObject> foundObjects = new List<GameObject>();
-            foreach (BaseController c in bcs)
+            foreach (BaseController c in CoreUtils.GetWorldRoot().gameObject.GetComponentsInChildren<BaseController>(true))
             {
                 if (c.Tags.Contains(tag))
                 {
@@ -170,21 +139,10 @@ namespace CommonCore.World
             ChangeScene(scene, spawnPoint, position, rotation, false);
         }
 
-        [Obsolete]
-        public static GameObject SpawnObject(string formID, Vector3 position, Vector3 rotation)
-        {
-            return UnityEngine.Object.Instantiate(CoreUtils.LoadResource<GameObject>("Entities/" + formID), position, Quaternion.Euler(rotation), CoreUtils.GetWorldRoot()) as GameObject;
-        }
-        [Obsolete]
-        public static GameObject SpawnObject(Transform parent, string formID, Vector3 position, Vector3 rotation)
-        {
-            return UnityEngine.Object.Instantiate(CoreUtils.LoadResource<GameObject>("Entities/" + formID), position, Quaternion.Euler(rotation), parent) as GameObject;
-        }
-
         /// <summary>
         /// Spawn an entity into the world (entities/*)
         /// </summary>
-        public static GameObject SpawnObject(string formID, string thingID, Vector3 position, Vector3 rotation, Transform parent)
+        public static GameObject SpawnEntity(string formID, string thingID, Vector3 position, Vector3 rotation, Transform parent)
         {
             if (parent == null)
                 parent = CoreUtils.GetWorldRoot();
@@ -213,6 +171,7 @@ namespace CommonCore.World
                 return null;
 
             var go = UnityEngine.Object.Instantiate(prefab, position, Quaternion.Euler(rotation), parent) as GameObject;
+            go.name = string.Format("{0}_{1}", go.name.Replace("(Clone)", "").Trim(), GameState.Instance.NextUID);
 
             return go;
         }

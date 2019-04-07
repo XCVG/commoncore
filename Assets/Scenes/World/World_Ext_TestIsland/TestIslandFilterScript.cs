@@ -35,7 +35,7 @@ namespace World.Ext.TestIsland
 
             //place and invoke
             Transform spawnPoint = transform.Find("SpawnPoint");
-            WorldUtils.SpawnObject("prop_filter", "FitlerObject", spawnPoint.position, spawnPoint.eulerAngles, null);
+            WorldUtils.SpawnEntity("prop_filter", "FitlerObject", spawnPoint.position, spawnPoint.eulerAngles, null);
             GameState.Instance.CampaignState.SetQuestStage("DemoQuest", 220);
             GameState.Instance.PlayerRpgState.Inventory.RemoveItem("demo_filter", 1);
 

@@ -118,19 +118,41 @@ namespace CommonCore.State
 
         //basic game data to be shared across games
 
-        public Dictionary<string, object> GlobalDataState = new Dictionary<string, object>();
-        public Dictionary<string, Dictionary<string, object>> LocalDataState = new Dictionary<string, Dictionary<string, object>>();
+        /// <summary>
+        /// Generic data store for global game state
+        /// </summary>
+        public Dictionary<string, object> GlobalDataState { get; private set; } = new Dictionary<string, object>();
 
-        public string CurrentScene;
-        public bool SaveLocked;
-        public bool InitialLoaded; //mostly for editor hacks
+        /// <summary>
+        /// Generic data store for scene-local game state
+        /// </summary>
+        public Dictionary<string, Dictionary<string, object>> LocalDataState { get; private set; } = new Dictionary<string, Dictionary<string, object>>();
+
+        /// <summary>
+        /// The current scene we are in
+        /// </summary>
+        public string CurrentScene { get; set; }
+
+        /// <summary>
+        /// If we are allowed to save at this point
+        /// </summary>
+        /// <remarks>May move this into a MetaState flag or something</remarks>
+        public bool SaveLocked { get; set; }
+
+        /// <summary>
+        /// Whether we have loaded initial data already
+        /// </summary>
+        public bool InitialLoaded { get; private set; }
 
         [JsonProperty]
         private int CurrentUID;
+
+        /// <summary>
+        /// The next available unique ID
+        /// </summary>
+        /// <remarks>Accessing this will increment the backing counter (<see cref="CurrentUID"/>)</remarks>
         [JsonIgnore]
         public int NextUID { get { return ++CurrentUID; } }
-
-        //init system attribute
 
         /// <summary>
         /// Decorate methods with this atrribute to have them run on GameState initialization

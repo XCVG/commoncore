@@ -65,7 +65,7 @@ namespace CommonCore.World
         [Command]
         static void Spawn(string fid)
         {
-            WorldUtils.SpawnObject(fid, null, (WorldUtils.GetPlayerObject().transform.position + (WorldUtils.GetPlayerObject().transform.forward * 1.0f)), Vector3.zero, null);
+            WorldUtils.SpawnEntity(fid, null, (WorldUtils.GetPlayerObject().transform.position + (WorldUtils.GetPlayerObject().transform.forward * 1.0f)), Vector3.zero, null);
         }
 
         //pick object by form id
