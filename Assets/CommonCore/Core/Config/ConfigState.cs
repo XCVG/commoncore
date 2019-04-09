@@ -45,7 +45,7 @@ namespace CommonCore.Config
         public int VsyncCount { get; set; } = 0;
         public int QualityLevel { get; set; } = 4;
         public bool FxaaEnabled { get; set; } = true; //TODO add support for selecting TAA and SMAA
-
+        public bool ShowFps { get; set; } = false;
 
         //INPUT CONFIG
         public string InputMapper { get; set; } = "UnityInputMapper";

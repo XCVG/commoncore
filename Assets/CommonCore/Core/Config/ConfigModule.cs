@@ -27,6 +27,7 @@ namespace CommonCore.Config
         /// </summary>
         public void ApplyConfiguration()
         {
+ 
             //AUDIO CONFIG
             AudioListener.volume = ConfigState.Instance.SoundVolume;
             var ac = AudioSettings.GetConfiguration();
@@ -44,6 +45,7 @@ namespace CommonCore.Config
 
             //INPUT CONFIG
 
+            //let other things handle it on their own
             QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("ConfigChanged"));
 
         }
