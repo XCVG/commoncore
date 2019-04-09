@@ -276,7 +276,7 @@ namespace CommonCore.RpgGame.World
             if (!(CoreParams.DefaultPlayerView == PlayerViewType.PreferFirst || CoreParams.DefaultPlayerView == PlayerViewType.PreferThird))
                 return;
 
-            if(MappedInput.GetButtonDown("ChangeView")) 
+            if(MappedInput.GetButtonDown(DefaultControls.ChangeView)) 
             {
                 //slow and stupid but it'll work for now
 
@@ -377,7 +377,7 @@ namespace CommonCore.RpgGame.World
                     HUDScript.SetTargetMessage(nearestInteractable.Tooltip);
 
                     //actual use
-                    if (MappedInput.GetButtonDown("Use"))
+                    if (MappedInput.GetButtonDown(DefaultControls.Use))
                     {
                         nearestInteractable.OnActivate(this.gameObject);
                     }
@@ -730,17 +730,17 @@ namespace CommonCore.RpgGame.World
                 FinishReload();
             }
 
-            if (ShootingEnabled && MappedInput.GetButtonDown("Fire1"))
+            if (ShootingEnabled && MappedInput.GetButtonDown(DefaultControls.Fire))
             {
                 //shoot
 
                 DoRangedAttack();
             }
-            else if (ShootingEnabled && MappedInput.GetButtonDown("Reload"))
+            else if (ShootingEnabled && MappedInput.GetButtonDown(DefaultControls.Reload))
             {
                 DoReload();
             }
-            else if(MeleeEnabled && MappedInput.GetButtonDown("Fire2"))
+            else if(MeleeEnabled && MappedInput.GetButtonDown(DefaultControls.AltFire))
             {
                 DoMeleeAttack();
             }

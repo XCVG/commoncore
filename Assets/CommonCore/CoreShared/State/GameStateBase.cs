@@ -155,10 +155,13 @@ namespace CommonCore.State
         public int NextUID { get { return ++CurrentUID; } }
 
         /// <summary>
-        /// Decorate methods with this atrribute to have them run on GameState initialization
+        /// Decorate methods with this atrribute to have them run on GameState initialization. Higher priority is sooner.
         /// </summary>
         public class InitAttribute : Attribute
         {
+            /// <summary>
+            /// Higher priority init methods are run first
+            /// </summary>
             public int Priority { get; private set; } = 0;
 
             public InitAttribute()
@@ -166,6 +169,7 @@ namespace CommonCore.State
 
             }
 
+            /// <param name="priority">When to run this init method; higher is sooner</param>
             public InitAttribute(int priority)
             {
                 Priority = priority;

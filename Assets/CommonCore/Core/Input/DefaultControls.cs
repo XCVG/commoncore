@@ -19,6 +19,13 @@ namespace CommonCore.Input
         public const string Crouch = "Crouch";
 
         public const string Fire = "Fire1";
+        public const string AltFire = "Fire2";
+        public const string Zoom = "Fire3";
+        public const string Reload = "Reload";
         public const string Use = "Use";
+        public const string AltUse = "Use2";
+
+        public const string OpenFastMenu = "OpenFastMenu";
+        public const string ChangeView = "ChangeView";
     }
 }
