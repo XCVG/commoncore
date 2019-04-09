@@ -86,8 +86,8 @@ namespace CommonCore.UI
                 }
                 catch (Exception e)
                 {
-                    CDebug.LogEx("Failed to load save!" + saveFI.ToString(), LogLevel.Error, this);
-                    CDebug.LogException(e);
+                    Debug.LogError("Failed to load save!" + saveFI.ToString(), this);
+                    Debug.LogException(e);
                 }
 
             }

@@ -37,7 +37,7 @@ namespace CommonCore.RpgGame.Dialogue
                 }
                 catch(Exception e)
                 {
-                    CDebug.LogException(e);
+                    Debug.LogException(e);
                 }
             }
 
@@ -51,7 +51,7 @@ namespace CommonCore.RpgGame.Dialogue
                 }
                 catch (Exception e)
                 {
-                    CDebug.LogException(e);
+                    Debug.LogException(e);
                 }
             }
         }

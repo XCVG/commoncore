@@ -63,8 +63,8 @@ namespace CommonCore.RpgGame.Rpg
             }
             catch(Exception e)
             {
-                CDebug.LogEx("Failed to load faction defs!", LogLevel.Error, typeof(FactionModel));
-                CDebug.LogError(e);
+                Debug.LogError("Failed to load faction defs!");
+                Debug.LogError(e);
             }
         }
 

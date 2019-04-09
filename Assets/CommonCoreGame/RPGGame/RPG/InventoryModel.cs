@@ -92,7 +92,7 @@ namespace CommonCore.RpgGame.Rpg
             }
             catch(Exception e)
             {
-                CDebug.LogError(e);
+                Debug.LogError(e);
                 LoadErrorCount++;
             }
         }

@@ -2,6 +2,7 @@
 using CommonCore.DebugLog;
 using CommonCore.State;
 using CommonCore.RpgGame.State;
+using UnityEngine;
 
 namespace CommonCore.DelayedEvents
 {
@@ -103,8 +104,8 @@ namespace CommonCore.DelayedEvents
                         }
                         catch (Exception e)
                         {
-                            CDebug.LogError("Failed to execute microscript of delayed event");
-                            CDebug.LogException(e);
+                            Debug.LogError("Failed to execute microscript of delayed event");
+                            Debug.LogException(e);
                         }
 
                         delayedEvents.RemoveAt(i);
@@ -114,7 +115,7 @@ namespace CommonCore.DelayedEvents
             }
             catch(Exception e)
             {
-                CDebug.LogException(e);
+                Debug.LogException(e);
                 GameState.Instance.DelayedEvents.Clear(); //purge the list, something went terribly wrong
             }
         }

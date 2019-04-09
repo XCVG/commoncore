@@ -8,78 +8,30 @@ namespace CommonCore.DebugLog
      * CDebug class provides (mostly) drop-in replacement for UnityEngine.Debug
      * Right now it basically passes it through, this will change eventually
      */
+
+    /// <summary>
+    /// Originally a mostly drop-in replacement for UnityEngine.Debug, repurposed when we realized we didn't need that.
+    /// </summary>
     public static class CDebug
     {
-        public static void Log(object message)
+        /// <summary>
+        /// Log a message, if and only if verbose logging is enabled
+        /// </summary>
+        public static void LogVerbose(object message)
         {
-            Debug.Log(message);
+            if(CoreParams.UseVerboseLogging)
+                Debug.Log(message);
         }
 
-        public static void Log(object message, UnityEngine.Object context)
+        /// <summary>
+        /// Log a message, if and only if verbose logging is enabled
+        /// </summary>
+        public static void LogVerbose(object message, UnityEngine.Object context)
         {
-            Debug.Log(message, context);
+            if (CoreParams.UseVerboseLogging)
+                Debug.Log(message, context);
         }
-
-        public static void Log2(string message, System.Object context)
-        {
-            Debug.Log(message);
-        }
-
-        public static void LogAssertion(object message)
-        {
-            Debug.LogAssertion(message);
-        }
-
-        public static void LogAssertion(object message, UnityEngine.Object context)
-        {
-            Debug.LogAssertion(message, context);
-        }
-
-        public static void LogAssertion2(string message, System.Object context)
-        {
-            Debug.LogAssertion(message);
-        }
-
-        public static void LogError(object message)
-        {
-            Debug.LogError(message);
-        }
-
-        public static void LogError(object message, UnityEngine.Object context)
-        {
-            Debug.LogError(message, context);
-        }
-
-        public static void LogError2(string message, System.Object context)
-        {
-            Debug.LogError(message);
-        }
-
-        public static void LogException(Exception exception)
-        {
-            Debug.LogException(exception);
-        }
-
-        public static void LogException(Exception exception, UnityEngine.Object context)
-        {
-            Debug.LogException(exception, context);
-        }
-
-        public static void LogWarning(object message)
-        {
-            Debug.LogWarning(message);
-        }
-
-        public static void LogWarning(object message, UnityEngine.Object context)
-        {
-            Debug.LogWarning(message, context);
-        }
-
-        public static void LogWarning2(string message, System.Object context)
-        {
-            Debug.LogError(message);
-        }
-        
+                
         /// <summary>
         /// Unified log method
         /// </summary>

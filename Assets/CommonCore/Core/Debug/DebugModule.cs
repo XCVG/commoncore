@@ -4,17 +4,15 @@ using UnityEngine;
 
 namespace CommonCore.DebugLog
 {
-    /*
-     * CommonCore Debug/Log Module
-     * Provides debugging services.
-     * Right now, it basically does nothing, but that will eventually change.
-     */
+    /// <summary>
+    /// CommonCore Debug/Log Module. Provides some debug logging/misc services.
+    /// </summary>
     [CCExplicitModule]
     public class DebugModule : CCModule
     {
         public DebugModule()
         {
-
+            FPSCounter.Initialize();
         }
 
     }

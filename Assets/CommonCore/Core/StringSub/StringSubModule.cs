@@ -289,7 +289,7 @@ namespace CommonCore.StringSub
             }
             catch(Exception e) //eventually we won't need this
             {
-                CDebug.LogException(e);
+                Debug.LogException(e);
                 return "<<ERROR>>";
             }
                    

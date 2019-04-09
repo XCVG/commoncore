@@ -17,7 +17,6 @@ namespace CommonCore.Console
     [CCExplicitModule]
     public class ConsoleModule : CCModule
     {
-        //TODO change this over to provide actual abstraction
 
         private static ConsoleModule Instance;
 

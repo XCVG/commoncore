@@ -27,7 +27,7 @@ namespace CommonCore.RpgGame.World
             base.Start();
 
             if (string.IsNullOrEmpty(ItemId) || ItemQuantity == 0)
-                CDebug.LogWarning(string.Format("ItemController on {0} has invalid values (id {1}, qty {2})", name, ItemId, ItemQuantity));
+                Debug.LogWarning(string.Format("ItemController on {0} has invalid values (id {1}, qty {2})", name, ItemId, ItemQuantity));
 
             if(!UseInteractPickup)
             {
@@ -71,7 +71,7 @@ namespace CommonCore.RpgGame.World
         {
             if (string.IsNullOrEmpty(ItemId) || ItemQuantity == 0)
             {
-                CDebug.LogError(string.Format("ItemController on {0} has invalid values (id {1}, qty {2})", name, ItemId, ItemQuantity));
+                Debug.LogError(string.Format("ItemController on {0} has invalid values (id {1}, qty {2})", name, ItemId, ItemQuantity));
                 return;
             }
 

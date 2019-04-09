@@ -16,7 +16,7 @@ namespace CommonCore.World
             BaseController controller = GetComponent<BaseController>();
             if (!controller)
             {
-                CDebug.LogWarning("Object " + name + " has no controller!");
+                Debug.LogWarning("Object " + name + " has no controller!");
             }
 
             //save object properties
@@ -67,14 +67,14 @@ namespace CommonCore.World
 
             if (data == null)
             {
-                CDebug.LogError("Object " + name + " has invalid data!");
+                Debug.LogError("Object " + name + " has invalid data!");
                 return;
             }
 
             BaseController controller = GetComponent<BaseController>();
             if (!controller)
             {
-                CDebug.LogWarning("Object " + name + " has no controller!");
+                Debug.LogWarning("Object " + name + " has no controller!");
             }
 
             //restore object properties
@@ -85,7 +85,7 @@ namespace CommonCore.World
                 controller.Tags = new List<string>(data.Tags);
 
                 if (controller.FormID != data.FormID)
-                    CDebug.LogWarning(string.Format("Saved form ID does not match (saved:{0} , object: {1})", data.FormID, controller.FormID));
+                    Debug.LogWarning(string.Format("Saved form ID does not match (saved:{0} , object: {1})", data.FormID, controller.FormID));
             }
 
             //restore transform
