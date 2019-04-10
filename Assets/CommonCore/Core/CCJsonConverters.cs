@@ -31,6 +31,7 @@ using UnityEngine;
 /// <remarks>
 /// <para>It is very aggressive about including $type value because there's no consistent way to tell when that's needed.</para>
 /// <para>Refer to the class documentation for details, but this should cover most of Unity's basic types.</para>
+/// <para>The serialization format is mostly compatible with Wanzyee Studio's Json.NET Converters and probably with parentElement, LLC's JSON.NET For Unity. It should at least deserialize output from those.</para>
 /// </remarks>
 namespace CCJsonConverters
 {
