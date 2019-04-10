@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CommonCore.Messaging;
+using CommonCore.Console;
+using System.Text;
+using System.Reflection;
+using System;
 
 namespace CommonCore.Config
 {
@@ -53,6 +57,64 @@ namespace CommonCore.Config
         public static void Apply()
         {
             Instance.ApplyConfiguration();
+        }
+
+        /// <summary>
+        /// Console command. Lists all config options.
+        /// </summary>
+        [Command(alias = "List", className = "Config", useClassName = true)]
+        public static void ListConfig()
+        {
+            StringBuilder sb = new StringBuilder(256);
+
+            var properties = ConfigState.Instance.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            foreach(var property in properties)
+            {
+                string key = property.Name;
+                string value = property.GetValue(ConfigState.Instance)?.ToString();
+
+                sb.AppendLine($"{key}={value}");
+            }
+
+            ConsoleModule.WriteLine(sb.ToString());
+        }
+
+        /// <summary>
+        /// Console command. Gets the set value of a config option.
+        /// </summary>
+        [Command(alias = "Get", className = "Config", useClassName = true)]
+        public static void GetConfig(string configOption)
+        {
+            var property = ConfigState.Instance.GetType().GetProperty(configOption, BindingFlags.Instance | BindingFlags.Public);
+            if(property != null)
+            {
+                var value = property.GetValue(ConfigState.Instance);
+                if (value is IEnumerable ievalue)
+                    ConsoleModule.WriteLine(ievalue.ToNiceString());
+                else
+                    ConsoleModule.WriteLine(value.ToString());
+            }
+            else
+            {
+                ConsoleModule.WriteLine("not found");
+            }
+        }
+
+        /// <summary>
+        /// Console command. Sets the value of a config option
+        /// </summary>
+        [Command(alias = "Set", className = "Config", useClassName = true)]
+        public static void SetConfig(string configOption, string newValue)
+        {
+            var property = ConfigState.Instance.GetType().GetProperty(configOption, BindingFlags.Instance | BindingFlags.Public);
+            if (property != null)
+            {
+                property.SetValue(ConfigState.Instance, Convert.ChangeType(newValue, property.PropertyType));
+            }
+            else
+            {
+                ConsoleModule.WriteLine("not found");
+            }
         }
 
     }
