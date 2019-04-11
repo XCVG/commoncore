@@ -1,6 +1,6 @@
 ﻿using CommonCore;
 using CommonCore.Console;
-using System;
+using System.Reflection;
 using UnityEngine;
 
 /// <summary>
@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class DummyCommandConsoleImplementation : IConsole
 {
-    public void AddCommand(Delegate command, bool useClassName, string alias, string className, string description)
+    public void AddCommand(MethodInfo command, bool useClassName, string alias, string className, string description)
     {
         //we can't do anything here
     }

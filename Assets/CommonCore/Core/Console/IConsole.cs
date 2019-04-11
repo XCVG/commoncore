@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Reflection;
 
 namespace CommonCore.Console
 {
@@ -13,7 +10,7 @@ namespace CommonCore.Console
         /// <summary>
         /// Add a command to the console system
         /// </summary>
-        void AddCommand(Delegate command, bool useClassName, string alias, string className, string description);
+        void AddCommand(MethodInfo command, bool useClassName, string alias, string className, string description);
         //FIXME will probably change this to MethodInfo and delegate delegate creation to the Console implementation
 
         /// <summary>

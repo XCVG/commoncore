@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using CommonCore;
 using CommonCore.Console;
 using SickDev.CommandSystem;
-using CommonCore;
+using System;
+using System.Reflection;
+using UnityEngine;
 
 /// <summary>
 /// Console interface that uses the third-party SickDev console system
@@ -25,9 +24,9 @@ public class SickDevConsoleImplementation : IConsole, IDisposable
             UnityEngine.Object.Destroy(ConsoleObject);
     }
 
-    public void AddCommand(Delegate command, bool useClassName, string alias, string className, string description)
+    public void AddCommand(MethodInfo command, bool useClassName, string alias, string className, string description)
     {
-        Command sdCommand = new Command(command);
+        Command sdCommand = new Command(ConsoleModule.CreateDelegate(command));
 
         sdCommand.useClassName = useClassName;
 

@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using CommonCore.Messaging;
+﻿using CommonCore.Messaging;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using UnityEngine;
 
 namespace CommonCore.Console
 {
@@ -88,7 +86,7 @@ namespace CommonCore.Console
         /// <param name="alias">Override for command name (optional)</param>
         /// <param name="className">Override for the class name (optional)</param>
         /// <param name="description">Description of the command (optional)</param>
-        public static void RegisterCommand(Delegate command, bool useClassName, string alias, string className, string description)
+        public static void RegisterCommand(MethodInfo command, bool useClassName, string alias, string className, string description)
         {
             Instance.Console.AddCommand(command, useClassName, alias, className, description);
         }
@@ -144,7 +142,7 @@ namespace CommonCore.Console
                 try
                 {
                     CommandAttribute commandAttr = (CommandAttribute)command.GetCustomAttributes(typeof(CommandAttribute), false)[0];
-                    Console.AddCommand(CreateDelegate(command), commandAttr.useClassName, commandAttr.alias, commandAttr.className, commandAttr.description);
+                    Console.AddCommand(command, commandAttr.useClassName, commandAttr.alias, commandAttr.className, commandAttr.description);
                 }
                 catch(Exception e)
                 {
@@ -154,7 +152,13 @@ namespace CommonCore.Console
             }
         }               
 
-        private static Delegate CreateDelegate(MethodInfo methodInfo)
+        /// <summary>
+        /// Creates a Delegate from a MethodInfo
+        /// </summary>
+        /// <param name="methodInfo">The MethodInfo representing the method to make a delegate for</param>
+        /// <returns>A Delegate created from the MethodInfo</returns>
+        /// <remarks>Currently only supports static methods</remarks>
+        public static Delegate CreateDelegate(MethodInfo methodInfo)
         {
             Func<Type[], Type> getType;
             var isAction = methodInfo.ReturnType.Equals((typeof(void)));
