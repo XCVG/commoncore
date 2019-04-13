@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using CommonCore.Config;
 
 namespace CommonCore.DebugLog
 {
@@ -13,6 +12,17 @@ namespace CommonCore.DebugLog
         public DebugModule()
         {
             FPSCounter.Initialize();
+        }
+
+        public override void OnFrameUpdate()
+        {
+            if(ConfigState.Instance.ScreenshotKey != default)
+            {
+                if(UnityEngine.Input.GetKeyDown(ConfigState.Instance.ScreenshotKey))
+                {
+                    DebugUtils.TakeScreenshot();
+                }
+            }
         }
 
     }

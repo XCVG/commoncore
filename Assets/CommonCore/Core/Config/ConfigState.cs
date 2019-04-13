@@ -52,6 +52,7 @@ namespace CommonCore.Config
         public string InputMapper { get; set; } = "UnityInputMapper";
         public Dictionary<string, object> InputMapperData { get; set; } = new Dictionary<string, object>();
         public float LookSpeed { get; set; } = 1.0f;
+        public KeyCode ScreenshotKey { get; set; } = KeyCode.F12;
         
     }
 

@@ -173,6 +173,17 @@ namespace CommonCore
             else return val;
         }
 
+        /// <summary>
+        /// Converts a string to a target type, handling enums and other special cases
+        /// </summary>
+        public static object Parse(string value, Type parseType)
+        {
+            if (parseType.IsEnum)
+                return Enum.Parse(parseType, value);
+
+            return Convert.ChangeType(value, parseType);
+        }
+
         private static Transform WorldRoot;
         public static Transform GetWorldRoot() //TODO really ought to move this
         {

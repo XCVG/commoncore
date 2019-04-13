@@ -109,7 +109,7 @@ namespace CommonCore.Config
             var property = ConfigState.Instance.GetType().GetProperty(configOption, BindingFlags.Instance | BindingFlags.Public);
             if (property != null)
             {
-                property.SetValue(ConfigState.Instance, Convert.ChangeType(newValue, property.PropertyType));
+                property.SetValue(ConfigState.Instance, CoreUtils.Parse(newValue, property.PropertyType)); //TODO handle enums
             }
             else
             {

@@ -14,6 +14,7 @@ namespace CommonCore.DebugLog
     public static class DebugUtils
     {
         private const string DebugPath = "debug";
+        private const string ScreenshotPath = "screenshot";
         private const string DateFormat = "yyyy-MM-dd_HHmmss";
 
         /// <summary>
@@ -106,5 +107,24 @@ namespace CommonCore.DebugLog
             }
         }
 
+        public static void TakeScreenshot()
+        {
+            try
+            {
+                string fileName = DateTime.Now.ToString(DateFormat) + ".png";
+                string filePath = Path.Combine(CoreParams.PersistentDataPath, ScreenshotPath, fileName);
+
+                if (!Directory.Exists(Path.GetDirectoryName(filePath)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+                ScreenCapture.CaptureScreenshot(filePath);
+
+                Debug.Log("Saved screenshot to " + filePath);
+            }
+            catch(Exception e)
+            {
+                CDebug.LogEx($"Failed to take screenshot ({e.GetType().Name})", LogLevel.Warning, null);
+            }
+        }
     }
 }
