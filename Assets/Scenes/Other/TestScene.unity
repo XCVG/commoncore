@@ -1184,6 +1184,26 @@ PrefabInstance:
       propertyPath: m_ShowToolkit
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114071243785619744, guid: cd005af43e73e74428bc7e6a16566c7f,
+        type: 3}
+      propertyPath: antialiasingMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1491905935902915833, guid: cd005af43e73e74428bc7e6a16566c7f,
+        type: 3}
+      propertyPath: UseAggressiveConfigurationCheck
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114577494278041528, guid: cd005af43e73e74428bc7e6a16566c7f,
+        type: 3}
+      propertyPath: antialiasingMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7874645604441645901, guid: cd005af43e73e74428bc7e6a16566c7f,
+        type: 3}
+      propertyPath: UseAggressiveConfigurationCheck
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd005af43e73e74428bc7e6a16566c7f, type: 3}
 --- !u!1 &1011540019

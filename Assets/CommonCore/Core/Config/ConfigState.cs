@@ -44,7 +44,8 @@ namespace CommonCore.Config
         public int MaxFrames { get; set; } = -1;
         public int VsyncCount { get; set; } = 0;
         public int QualityLevel { get; set; } = 4;
-        public bool FxaaEnabled { get; set; } = true; //TODO add support for selecting TAA and SMAA
+        public int AntialiasingQuality { get; set; } = 1;
+        public float ViewDistance { get; set; } = 1000.0f;
         public bool ShowFps { get; set; } = false;
 
         //INPUT CONFIG

@@ -12,13 +12,20 @@ using CommonCore.Input;
 namespace CommonCore.UI
 {
 
+    /// <summary>
+    /// Controller for config panel
+    /// </summary>
     public class ConfigPanelController : PanelController
     {
+        //labels for antialiasing quality names; these match CommonCore defaults
+        private static readonly string[] AntialiasingSettingNames = new string[] { "Off", "FXAA", "SMAA", "SMAA+" };
+
         public Slider LookSpeedSlider;
 
         public Slider GraphicsQualitySlider;
         public Text GraphicsQualityLabel;
-        public Toggle AntialiasingToggle;
+        public Slider AntialiasingQualitySlider;
+        public Text AntialiasingQualityLabel;
 
         public Slider SoundVolumeSlider;
         public Slider MusicVolumeSlider;
@@ -39,7 +46,7 @@ namespace CommonCore.UI
 
             GraphicsQualitySlider.maxValue = QualitySettings.names.Length - 1;
             GraphicsQualitySlider.value = ConfigState.Instance.QualityLevel;
-            AntialiasingToggle.isOn = ConfigState.Instance.FxaaEnabled;
+            AntialiasingQualitySlider.value = ConfigState.Instance.AntialiasingQuality;
 
             SoundVolumeSlider.value = ConfigState.Instance.SoundVolume;
             MusicVolumeSlider.value = ConfigState.Instance.MusicVolume;
@@ -60,6 +67,10 @@ namespace CommonCore.UI
             GraphicsQualityLabel.text = QualitySettings.names[(int)GraphicsQualitySlider.value];
         }
 
+        public void OnAntialiasingSliderChanged()
+        {
+            AntialiasingQualityLabel.text = AntialiasingSettingNames[(int)AntialiasingQualitySlider.value];
+        }
 
         public void OnClickConfirm()
         {
@@ -67,7 +78,7 @@ namespace CommonCore.UI
             ConfigState.Save();
             ConfigModule.Apply();
             MappedInput.SetMapper(ConfigState.Instance.InputMapper); //we need to do this manually unfortunately...
-            Modal.PushMessageModal("Applied settings changes!", null, null, OnConfirmed);
+            Modal.PushMessageModal("Applied settings changes!", "Changes Applied", null, OnConfirmed);
         }
 
         public void OnClickRevert()
@@ -102,7 +113,7 @@ namespace CommonCore.UI
             ConfigState.Instance.LookSpeed = LookSpeedSlider.value;
 
             ConfigState.Instance.QualityLevel = (int)GraphicsQualitySlider.value;
-            ConfigState.Instance.FxaaEnabled = AntialiasingToggle.isOn;
+            ConfigState.Instance.AntialiasingQuality = (int)AntialiasingQualitySlider.value;
 
             ConfigState.Instance.SoundVolume = SoundVolumeSlider.value;
             ConfigState.Instance.MusicVolume = MusicVolumeSlider.value;
