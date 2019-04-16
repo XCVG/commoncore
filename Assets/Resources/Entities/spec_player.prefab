@@ -682,6 +682,7 @@ GameObject:
   - component: {fileID: 81501925577054268}
   - component: {fileID: 114071243785619744}
   - component: {fileID: 1491905935902915833}
+  - component: {fileID: 2545220286573828681}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -830,6 +831,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2de984d320cf15b43b727e776bb455f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UseAggressiveConfigurationCheck: 1
+  AttachedCamera: {fileID: 0}
+--- !u!114 &2545220286573828681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1150011844830580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26365ddf330d6c2438e29fdb83de86da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   UseAggressiveConfigurationCheck: 0
@@ -3823,6 +3838,7 @@ GameObject:
   - component: {fileID: 81852084087554270}
   - component: {fileID: 114577494278041528}
   - component: {fileID: 7874645604441645901}
+  - component: {fileID: 3261293983706867529}
   m_Layer: 0
   m_Name: FP Camera
   m_TagString: MainCamera
@@ -3971,6 +3987,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2de984d320cf15b43b727e776bb455f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UseAggressiveConfigurationCheck: 1
+  AttachedCamera: {fileID: 0}
+--- !u!114 &3261293983706867529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1896938070193184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26365ddf330d6c2438e29fdb83de86da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   UseAggressiveConfigurationCheck: 0

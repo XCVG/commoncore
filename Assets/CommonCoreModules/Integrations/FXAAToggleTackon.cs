@@ -14,7 +14,6 @@ using CommonCore.Messaging;
 /// </remarks>
 public class FXAAToggleTackon : MonoBehaviour
 {
-
     //DO NOT CHANGE THESE UNLESS YOU KNOW WHAT YOU'RE DOING
     private static readonly AntialiasingSetting[] AntialiasingSettings = new AntialiasingSetting[] {
         new AntialiasingSetting() { Mode = PostProcessLayer.Antialiasing.None },
@@ -23,10 +22,18 @@ public class FXAAToggleTackon : MonoBehaviour
         new AntialiasingSetting() { Mode = PostProcessLayer.Antialiasing.SubpixelMorphologicalAntialiasing, Quality = SubpixelMorphologicalAntialiasing.Quality.High }
     };
 
+    private QdmsMessageInterface MessageInterface;
+
     [SerializeField, Tooltip("Check for changes to ConfigState after this tackon is started?")]
     private bool UseAggressiveConfigurationCheck = false;
     [SerializeField, Tooltip("Leave blank to attach to the camera on this GameObject")]
     private Camera AttachedCamera;
+
+    private void Awake()
+    {
+        MessageInterface = new QdmsMessageInterface(this.gameObject);
+        MessageInterface.SubscribeReceiver(HandleMessage);
+    }
 
     private void OnEnable()
     {
@@ -38,9 +45,13 @@ public class FXAAToggleTackon : MonoBehaviour
 
     private void Update()
     {
-        //TODO move this to messaging once we have support for calling delegates in QdmsMessageInterface
-
         if (UseAggressiveConfigurationCheck)
+            ApplyFXAAState();
+    }
+
+    private void HandleMessage(QdmsMessage message)
+    {
+        if (message is QdmsFlagMessage flagMessage && flagMessage.Flag == "ConfigChanged")
             ApplyFXAAState();
     }
 

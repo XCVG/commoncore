@@ -117,7 +117,10 @@ namespace CommonCore.Messaging
         {
             //handle lifecycle first
             if (Attachment == null)
+            {
                 Valid = false;
+                return;
+            }
 
             //if we have any receivers, fire them
             bool handledMessage = false;

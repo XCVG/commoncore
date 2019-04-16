@@ -6,6 +6,7 @@ namespace CommonCore.Config
 
     //setting group structs
     //note that capitalization matches that in UnityEngine.QualitySettings
+    //we will probably split these a bit
 
     public struct ShadowQuality
     {

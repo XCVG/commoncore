@@ -26,6 +26,8 @@ namespace CommonCore.UI
         public Text GraphicsQualityLabel;
         public Slider AntialiasingQualitySlider;
         public Text AntialiasingQualityLabel;
+        public Slider ViewDistanceSlider;
+        public Text ViewDistanceLabel;
 
         public Slider SoundVolumeSlider;
         public Slider MusicVolumeSlider;
@@ -47,6 +49,7 @@ namespace CommonCore.UI
             GraphicsQualitySlider.maxValue = QualitySettings.names.Length - 1;
             GraphicsQualitySlider.value = ConfigState.Instance.QualityLevel;
             AntialiasingQualitySlider.value = ConfigState.Instance.AntialiasingQuality;
+            ViewDistanceSlider.value = ConfigState.Instance.ViewDistance;
 
             SoundVolumeSlider.value = ConfigState.Instance.SoundVolume;
             MusicVolumeSlider.value = ConfigState.Instance.MusicVolume;
@@ -70,6 +73,11 @@ namespace CommonCore.UI
         public void OnAntialiasingSliderChanged()
         {
             AntialiasingQualityLabel.text = AntialiasingSettingNames[(int)AntialiasingQualitySlider.value];
+        }
+
+        public void OnViewDistanceSliderChanged()
+        {
+            ViewDistanceLabel.text = ((int)ViewDistanceSlider.value).ToString();
         }
 
         public void OnClickConfirm()
@@ -114,6 +122,7 @@ namespace CommonCore.UI
 
             ConfigState.Instance.QualityLevel = (int)GraphicsQualitySlider.value;
             ConfigState.Instance.AntialiasingQuality = (int)AntialiasingQualitySlider.value;
+            ConfigState.Instance.ViewDistance = ViewDistanceSlider.value;
 
             ConfigState.Instance.SoundVolume = SoundVolumeSlider.value;
             ConfigState.Instance.MusicVolume = MusicVolumeSlider.value;
