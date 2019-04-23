@@ -38,12 +38,6 @@ namespace CommonCore.Messaging
 
         public override void Dispose()
         {
-            foreach (IQdmsMessageReceiver r in Receivers)
-            {
-                if (r != null)
-                    r.IsValid = false;
-            }
-
             Log("QDMS bus destroyed!");
 
             _Instance = null;
@@ -55,13 +49,16 @@ namespace CommonCore.Messaging
         {
             foreach(IQdmsMessageReceiver r in Receivers)
             {
-                try
+                if (r != null && r.IsValid)
                 {
-                    r.ReceiveMessage(msg);
-                }
-                catch(Exception e) //steamroll errors
-                {
-                    Debug.Log(e);
+                    try
+                    {
+                        r.ReceiveMessage(msg);
+                    }
+                    catch (Exception e) //steamroll errors
+                    {
+                        Debug.Log(e);
+                    }
                 }
             }
         }
@@ -91,7 +88,7 @@ namespace CommonCore.Messaging
             for(int i = Receivers.Count-1; i >= 0; i--)
             {
                 var r = Receivers[i];
-                if (r == null)
+                if (r == null || !r.IsValid)
                     Receivers.RemoveAt(i);
             }
         }
@@ -99,7 +96,7 @@ namespace CommonCore.Messaging
     }
     public interface IQdmsMessageReceiver
     {
-        bool IsValid { get; set; }
+        bool IsValid { get; }
         void ReceiveMessage(QdmsMessage msg);
     }
 }

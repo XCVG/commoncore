@@ -8,6 +8,7 @@ using CommonCore.World;
 namespace CommonCore.RpgGame.World
 {
 
+    //TODO move this into World
     public class ActorHitboxComponent : MonoBehaviour
     {
         public BaseController ParentController;

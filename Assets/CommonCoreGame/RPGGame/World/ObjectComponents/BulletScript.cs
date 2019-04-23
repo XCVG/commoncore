@@ -28,6 +28,8 @@ namespace CommonCore.RpgGame.World
             }
 
             var ac = collision.gameObject.GetComponent<ActorController>();
+            if (ac == null)
+                ac = collision.gameObject.GetComponentInParent<ActorController>();
             if(ac != null)
             {
                 if (ac == HitInfo.Originator) //no friendly fire for now

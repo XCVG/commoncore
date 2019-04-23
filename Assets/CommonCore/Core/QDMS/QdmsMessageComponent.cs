@@ -29,12 +29,6 @@ namespace CommonCore.Messaging
                 MessageInterface.SubscribeReceiver(HandleMessage);
         }
 
-        private void LateUpdate()
-        {
-            if (!MessageInterface.IsValid)
-                MessageInterface = new QdmsMessageInterface();
-        }
-
         private void HandleMessage(QdmsMessage message)
         {
             MessageEvent.Invoke(message);

@@ -11,6 +11,7 @@ namespace CommonCore.RpgGame.Rpg
         Undefined, Female, Male, Other
     }
 
+    //TODO move into world (?)
     public enum DamageType
     {
         Normal, Impact, Explosive, Energy, Poison, Radiation

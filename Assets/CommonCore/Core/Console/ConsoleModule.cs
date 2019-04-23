@@ -203,11 +203,6 @@ namespace CommonCore.Console
                 {
                     return true;
                 }
-
-                set
-                {
-                    //do nothing
-                }
             }
 
             void IQdmsMessageReceiver.ReceiveMessage(QdmsMessage msg)

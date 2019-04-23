@@ -15,12 +15,16 @@ namespace CommonCore.Messaging
     public class QdmsMessageInterface: IQdmsMessageReceiver
     {
         internal Queue<QdmsMessage> MessageQueue;
-        protected bool Valid { get; set; }
 
         /// <summary>
         /// The GameObject this receiver is attached to (if it exists)
         /// </summary>
         public GameObject Attachment { get; private set; }
+
+        /// <summary>
+        /// Whether this interface has a GameObject attachment
+        /// </summary>
+        public bool HasAttachment { get; private set; }
 
         /// <summary>
         /// Whether to keep messages in the queue after handling them or not
@@ -39,6 +43,7 @@ namespace CommonCore.Messaging
         public QdmsMessageInterface(GameObject attachment) : this()
         {
             Attachment = attachment;
+            HasAttachment = true;
         }
 
         /// <summary>
@@ -51,7 +56,6 @@ namespace CommonCore.Messaging
             //register
             QdmsMessageBus.Instance.RegisterReceiver(this);
 
-            Valid = true;
         }
 
         ~QdmsMessageInterface()
@@ -115,13 +119,6 @@ namespace CommonCore.Messaging
 
         private void HandleMessage()
         {
-            //handle lifecycle first
-            if (Attachment == null)
-            {
-                Valid = false;
-                return;
-            }
-
             //if we have any receivers, fire them
             bool handledMessage = false;
             if(ReceiveActions.Count > 0)
@@ -130,14 +127,17 @@ namespace CommonCore.Messaging
 
                 foreach(var action in ReceiveActions)
                 {
-                    try
+                    if (action != null)
                     {
-                        action(message);
-                        handledMessage = true;
-                    }
-                    catch(Exception e)
-                    {
-                        Debug.LogException(e);
+                        try
+                        {
+                            action(message);
+                            handledMessage = true;
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogException(e);
+                        }
                     }
                 }
             }
@@ -155,11 +155,7 @@ namespace CommonCore.Messaging
         {
             get
             {
-                return Valid;
-            }
-            set
-            {
-                Valid = value;
+                return HasAttachment ? Attachment != null : true;
             }
         }
 
