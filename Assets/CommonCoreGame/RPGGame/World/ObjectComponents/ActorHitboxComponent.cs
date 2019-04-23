@@ -36,12 +36,8 @@ namespace CommonCore.RpgGame.World
                 if (BodyPartOverride != ActorBodyPart.Unspecified)
                     hi.HitLocation = BodyPartOverride;
 
-                //this is where dynamics would kick ass
-                //we could use an interface but that makes Too Much Sense (and also Unity hates them)
-                if(ParentController is ActorController)
-                    ((ActorController)ParentController).TakeDamage(hi);
-                else if (ParentController is PlayerController)
-                    ((PlayerController)ParentController).TakeDamage(hi);
+                if (ParentController is ITakeDamage)
+                    ((ITakeDamage)ParentController).TakeDamage(hi);
 
                 Destroy(other.gameObject);
             }

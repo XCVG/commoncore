@@ -17,7 +17,7 @@ namespace CommonCore.RpgGame.World
 {
     //TODO restorable, animation, and eventually a full refactor
     //I say that now, but I bet this will still be mostly the same until, say, Downwarren
-    public class ActorController : BaseController
+    public class ActorController : BaseController, ITakeDamage
     {
         public string CharacterModelIdOverride;
 

@@ -17,7 +17,7 @@ using CommonCore.RpgGame.UI;
 
 namespace CommonCore.RpgGame.World
 {
-    public class PlayerController : BaseController
+    public class PlayerController : BaseController, ITakeDamage
     {
         public bool AutoinitHud = true;
 

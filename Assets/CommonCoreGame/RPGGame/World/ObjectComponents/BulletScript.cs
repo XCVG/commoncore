@@ -1,17 +1,23 @@
-﻿using System.Collections;
+﻿using CommonCore.World;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace CommonCore.RpgGame.World
 {
+    /// <summary>
+    /// Script for a basic bullet that works with ActorHitboxComponent and ITakeDamage
+    /// </summary>
     public class BulletScript : MonoBehaviour
     {
+        private const int BulletLayer = 9; //9=bullet, TODO find a better way of doing this
+
         public ActorHitInfo HitInfo;
         public float StayTime = 0;
 
         void Start()
         {
-            gameObject.layer = 9; //9=bullet
+            gameObject.layer = BulletLayer; 
 
             if (StayTime > 0)
                 Destroy(this.gameObject, StayTime);
@@ -27,33 +33,17 @@ namespace CommonCore.RpgGame.World
                 return; //...but we won't destroy this one 
             }
 
-            var ac = collision.gameObject.GetComponent<ActorController>();
-            if (ac == null)
-                ac = collision.gameObject.GetComponentInParent<ActorController>();
-            if(ac != null)
+            var otherController = collision.gameObject.GetComponent<BaseController>();
+            if(otherController == null)
+                otherController = collision.gameObject.GetComponentInParent<BaseController>();
+            if (otherController != null && otherController is ITakeDamage itd)
             {
-                if (ac == HitInfo.Originator) //no friendly fire for now
+                if (otherController == HitInfo.Originator) //no friendly fire for now
                     return;
 
                 HitInfo.HitCoords = transform.position;
-                ac.TakeDamage(HitInfo);
-                Destroy(this.gameObject);
-                return;
+                itd.TakeDamage(HitInfo);
             }
-
-            var pc = collision.gameObject.GetComponent<PlayerController>();
-            if (pc == null)
-                pc = collision.gameObject.GetComponentInParent<PlayerController>();
-            if(pc != null)
-            {
-                if (pc == HitInfo.Originator)
-                    return;
-
-                HitInfo.HitCoords = transform.position;
-                pc.TakeDamage(HitInfo);
-                Destroy(this.gameObject);
-                return;
-            }            
 
             Destroy(this.gameObject);
         }
