@@ -11,6 +11,7 @@ namespace CommonCore.UI
         public GameObject ContainerPanel;
         public GameObject LoadPanel;
         public GameObject SavePanel;
+        public GameObject ConfigPanel;
         public InputField SaveInputField;
 
         public override void SignalPaint()
@@ -73,6 +74,19 @@ namespace CommonCore.UI
                 //can't save!
                 
                 HidePanels();
+            }
+        }
+
+        public void OnClickConfig()
+        {
+            if (ConfigPanel.activeSelf)
+            {
+                HidePanels();
+            }
+            else
+            {
+                HidePanels();
+                ConfigPanel.SetActive(true);
             }
         }
 
