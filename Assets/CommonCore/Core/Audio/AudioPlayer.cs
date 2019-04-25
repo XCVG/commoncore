@@ -9,6 +9,10 @@ using CommonCore.Config;
 
 namespace CommonCore.Audio
 {
+
+    /// <summary>
+    /// Represents a sound that is playing or enqueued to play
+    /// </summary>
     public struct SoundInfo
     {
         public AudioClip Clip;
@@ -16,8 +20,12 @@ namespace CommonCore.Audio
         public bool Retain;
     }
 
-    //generalized audio player to handle music and oneshot sound effects
-    //will eventually handle overridable channels and use an object pool, but not now
+    /// <summary>
+    /// Generalized audio player to handle music and oneshot sound effects
+    /// </summary>
+    /// <remarks>
+    /// <para>will eventually handle overridable channels and use an object pool, but not now</para>
+    /// </remarks>
     public class AudioPlayer : MonoBehaviour
     {
         private const float GCInterval = 2.5f;
@@ -32,6 +40,7 @@ namespace CommonCore.Audio
         private bool MusicRetain;
 
         private float TimeElapsed;
+        private bool MusicShouldBePlaying;
 
         private void Awake()
         {
@@ -75,7 +84,7 @@ namespace CommonCore.Audio
 
         void Update()
         {
-            //message bus integration (and this is why QDMS sucks)
+            //message bus integration
             while(MessageInterface.HasMessageInQueue)
             {
                 HandleMessage(MessageInterface.PopFromQueue());
@@ -108,6 +117,8 @@ namespace CommonCore.Audio
                 {
                     case "ConfigChanged":
                         MusicPlayer.volume = ConfigState.Instance.MusicVolume;
+                        if(MusicShouldBePlaying)
+                            MusicPlayer.Play(); //needed if audio system is reset
                         break;
                     default:
                         break;
@@ -129,7 +140,7 @@ namespace CommonCore.Audio
 
             if(!MusicRetain)
             {
-                MusicPlayer.Stop();
+                StopMusic();
             }
         }
                
@@ -140,45 +151,72 @@ namespace CommonCore.Audio
         //  "override" music
         //  ambients sound(s)
         //  fixed sound channels
+        //(some of this is coded in but not exposed)
 
+        /// <summary>
+        /// Plays a UI sound effect (ambient, retained)
+        /// </summary>
         public void PlayUISound(string sound)
         {
             try
             {
                 PlaySoundEx(sound, SoundType.Sound, true, true, false, false, 1.0f, Vector3.zero);
             }
-            catch(Exception)
+            catch(Exception e)
             {
-
+                Debug.LogWarning($"Failed to play sound {e.GetType().Name}");
             }
         }
 
-        //play a sound from a category, and maybe retain it on scene change
+        /// <summary>
+        /// Plays a sound effect
+        /// </summary>
+        /// <param name="sound">The sound to play</param>
+        /// <param name="type">The type of sound</param>
+        /// <param name="retain">Whether to retain the sound on scene transition</param>
         public void PlaySound(string sound, SoundType type, bool retain)
         {
             try
             {
                 PlaySoundEx(sound, type, retain, false, false, false, 1.0f, Vector3.zero);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                Debug.LogWarning($"Failed to play sound {e.GetType().Name}");
             }
         }
 
+        /// <summary>
+        /// Plays a sound effect at a certain position
+        /// </summary>
+        /// <param name="sound">The sound to play</param>
+        /// <param name="type">The type of sound</param>
+        /// <param name="retain">Whether to retain the sound on scene transition</param>
+        /// <param name="position">Where in the world to play the sound effect</param>
         public void PlaySoundPositional(string sound, SoundType type, bool retain, Vector3 position)
         {
             try
             {
                 PlaySoundEx(sound, type, retain, false, false, true, 1.0f, position);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                Debug.LogWarning($"Failed to play sound {e.GetType().Name}");
             }
         }
 
-
+        /// <summary>
+        /// Plays a sound with many available options
+        /// </summary>
+        /// <param name="sound">The sound to play</param>
+        /// <param name="type">The type of sound</param>
+        /// <param name="retain">Whether to retain the sound on scene transition</param>
+        /// <param name="ignorePause">Whether to ignore listener/game pause</param>
+        /// <param name="loop">Whether to loop the sound</param>
+        /// <param name="positional">Whether to play the sound positionally or ambiently</param>
+        /// <param name="volume">The volume to play the sound at</param>
+        /// <param name="position">The position to play the sound at (if it is positional)</param>
+        /// <returns>A struct that defines the playing sound</returns>
         private SoundInfo PlaySoundEx(string sound, SoundType type, bool retain, bool ignorePause, bool loop, bool positional, float volume, Vector3 position)
         {
             //get clip
@@ -211,6 +249,15 @@ namespace CommonCore.Audio
             return soundInfo;
         }
 
+        //TODO more music options like "play, or continue playing if already playing"
+        //things like fades and overrides would also be nice
+
+        /// <summary>
+        /// Sets the background music to a specified track and starts it
+        /// </summary>
+        /// <param name="sound">The music file to play</param>
+        /// <param name="loop">Whether to loop the music</param>
+        /// <param name="retain">Whether to retain the music across scene loads</param>
         public void SetMusic(string sound, bool loop, bool retain)
         {
             var clip = Module.GetSound(sound, SoundType.Music);
@@ -225,19 +272,37 @@ namespace CommonCore.Audio
             MusicPlayer.clip = clip;
             MusicPlayer.volume = ConfigState.Instance.MusicVolume;
             MusicRetain = retain;
-            MusicPlayer.loop = loop;
-            MusicPlayer.time = 0;
-            MusicPlayer.Play();
+            MusicPlayer.loop = loop;            
+            StartMusic();
         }
 
+        /// <summary>
+        /// Stops and clears the currently set background music
+        /// </summary>
+        public void ClearMusic()
+        {
+            MusicPlayer.Stop();
+            MusicPlayer.clip = null;
+            MusicShouldBePlaying = false;
+        }
+
+        /// <summary>
+        /// Plays the currently set background music
+        /// </summary>
         public void StartMusic()
         {
+            MusicPlayer.time = 0;
             MusicPlayer.Play();
+            MusicShouldBePlaying = true;
         }
 
+        /// <summary>
+        /// Stops the currently set background music
+        /// </summary>
         public void StopMusic()
         {
             MusicPlayer.Stop();
+            MusicShouldBePlaying = false;
         }
 
 

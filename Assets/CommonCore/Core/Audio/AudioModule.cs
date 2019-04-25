@@ -5,12 +5,17 @@ using CommonCore.DebugLog;
 
 namespace CommonCore.Audio
 {
-
+    /// <summary>
+    /// Sound types/namespaces
+    /// </summary>
     public enum SoundType
     {
         Any, Sound, Voice, Music, Root
     }
 
+    /// <summary>
+    /// Audio module handles music player and provides some functionality for getting sounds
+    /// </summary>
     public class AudioModule : CCModule
     {
         //private static AudioModule Instance;

@@ -39,7 +39,7 @@ namespace CommonCore.Config
             AudioSettings.Reset(ac);
 
             //VIDEO CONFIG
-            if(QualitySettings.GetQualityLevel() >= QualitySettings.names.Length - 1) //only apply quality settings if set to "custom" in the launcher
+            if(QualitySettings.GetQualityLevel() >= QualitySettings.names.Length - 1) //only apply quality settings if set to "custom" in the launcher (this won't work because the sublevels aren't implemented yet)
             {
                 QualitySettings.SetQualityLevel(ConfigState.Instance.QualityLevel, true);
                 Application.targetFrameRate = ConfigState.Instance.MaxFrames;
