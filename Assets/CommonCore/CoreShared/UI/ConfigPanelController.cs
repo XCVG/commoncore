@@ -46,8 +46,17 @@ namespace CommonCore.UI
         {
             LookSpeedSlider.value = ConfigState.Instance.LookSpeed;
 
-            GraphicsQualitySlider.maxValue = QualitySettings.names.Length - 1;
-            GraphicsQualitySlider.value = ConfigState.Instance.QualityLevel;
+            GraphicsQualitySlider.maxValue = QualitySettings.names.Length - 2;
+            if (ConfigState.Instance.UseCustomVideoSettings)
+            {                
+                GraphicsQualitySlider.value = ConfigState.Instance.QualityLevel;
+                GraphicsQualitySlider.interactable = true;
+            }
+            else
+            {
+                GraphicsQualitySlider.value = QualitySettings.GetQualityLevel();
+                GraphicsQualitySlider.interactable = false;
+            }
             AntialiasingQualitySlider.value = ConfigState.Instance.AntialiasingQuality;
             ViewDistanceSlider.value = ConfigState.Instance.ViewDistance;
 
