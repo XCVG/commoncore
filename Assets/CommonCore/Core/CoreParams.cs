@@ -40,7 +40,7 @@ namespace CommonCore
         public static readonly bool AutoloadModules = true;
         public static readonly string[] ExplicitModules = new string[] { "DebugModule", "QdmsMessageBus", "ConfigModule", "ConsoleModule" };
         private static readonly DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
-        public static readonly string PreferredCommandConsole = "SickDevConsoleImplementation";
+        public static readonly string PreferredCommandConsole = "BasicCommandConsoleImplementation";
 
         //*****additional config settings
         public static readonly bool UseVerboseLogging = true;

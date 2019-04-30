@@ -11,7 +11,6 @@ namespace CommonCore.Console
         /// Add a command to the console system
         /// </summary>
         void AddCommand(MethodInfo command, bool useClassName, string alias, string className, string description);
-        //FIXME will probably change this to MethodInfo and delegate delegate creation to the Console implementation
 
         /// <summary>
         /// Write a line of text to the console
