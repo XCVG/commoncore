@@ -620,6 +620,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CanvasObject: {fileID: 4703540438602769694}
+  ScrollPanel: {fileID: 4703540438182977355}
+  ScrollItemTemplate: {fileID: 8436487341172511353}
 --- !u!1 &4703540438602769694
 GameObject:
   m_ObjectHideFlags: 0
