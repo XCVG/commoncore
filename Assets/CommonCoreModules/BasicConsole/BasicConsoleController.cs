@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace CommonCore.BasicConsole
@@ -23,17 +24,29 @@ namespace CommonCore.BasicConsole
             public object Originator;
         }
 
-        [SerializeField]
+        [SerializeField, Header("References")]
         private GameObject CanvasObject = null;
         [SerializeField]
         private GameObject ScrollPanel = null;
         [SerializeField]
         private GameObject ScrollItemTemplate = null;
+        [SerializeField]
+        private Scrollbar ScrollBar = null;
+        [SerializeField]
+        private Toggle ScrollToggle = null;
+
+        [SerializeField, Header("Options")]
+        private float ScrollSpeed = 1;
 
         private int CurrentBottomLine = 0;
-        private bool AutoScroll = true;
+        private bool AutoScroll
+        {
+            get => ScrollToggle.isOn;
+            set => ScrollToggle.isOn = value;
+        } //nothing to see here
 
         private bool PaintLinesEmergencyAbort = false;
+        private bool IgnoreScrollBar = false; //blocking flag because stupid UI is stupid
 
         //we'll optimize these later
         private ConcurrentQueue<IncomingConsoleMessage> IncomingMessages = new ConcurrentQueue<IncomingConsoleMessage>();
@@ -64,6 +77,10 @@ namespace CommonCore.BasicConsole
                 CanvasObject.SetActive(!CanvasObject.activeSelf);
             }
 
+            //only execute the rest of the logic if canvas is active
+            if (!CanvasObject.activeSelf)
+                return;
+
             //dequeue messages and push them into the message list
             bool receivedMessages = false;
             while(!IncomingMessages.IsEmpty)
@@ -75,10 +92,18 @@ namespace CommonCore.BasicConsole
                 }
             }
 
-            if (receivedMessages && AutoScroll)
+            if (receivedMessages)
             {
-                CurrentBottomLine = GetShownLines() - 1; //will absolutely explode if we have expanded messages
-                PaintMessages();                
+                if (AutoScroll)
+                {
+                    CurrentBottomLine = GetShownLines() - 1; //will absolutely explode if we have expanded messages
+                    PaintMessages();
+                    SetScrollBar();
+                }
+                else
+                {
+                    SetScrollBar(); //at least update the scrollbar
+                }
             }
         }
 
@@ -111,8 +136,9 @@ namespace CommonCore.BasicConsole
                 float lineHeight = (ScrollItemTemplate.transform as RectTransform).rect.height;
                 int numLines = (int)((ScrollPanel.transform as RectTransform).rect.height / lineHeight);
                 int topLineIndex = Math.Max(CurrentBottomLine - numLines + 1, 0); //I'm not sure where the off-by-one actually is XD
+                int totalLines = GetShownLines();
 
-                for (int lineNum = 0; lineNum < numLines; lineNum++)
+                for (int lineNum = 0; lineNum < Math.Min(numLines, totalLines); lineNum++)
                 {
                     var (message, offset) = GetLineByNumber(topLineIndex + lineNum);
                     string text = message.Lines[offset];
@@ -124,7 +150,11 @@ namespace CommonCore.BasicConsole
                     lineObjectRectTransform.anchoredPosition = new Vector2(0, -yOffset); //we draw from top to bottom!
                     lineObject.GetComponentInChildren<Text>().text = text;
                     lineObject.SetActive(true);
+                    //TODO handle expansion button
                 }
+
+                //set scrollbar
+                //SetScrollBar();
                 
             }
             catch(Exception e)
@@ -133,6 +163,79 @@ namespace CommonCore.BasicConsole
                 Debug.LogException(e);
                 PaintLinesEmergencyAbort = true;
             }
+        }
+
+        /// <summary>
+        /// Sets the position of the scrollbar to the selected 
+        /// </summary>
+        private void SetScrollBar()
+        {
+            IgnoreScrollBar = true;
+            int totalLines = GetShownLines();
+            float ratio = (float)(CurrentBottomLine + 1) / (float)(totalLines);            
+            ScrollBar.numberOfSteps = totalLines;
+            ScrollBar.value = ratio;
+            ScrollBar.size = 1f / totalLines;
+            IgnoreScrollBar = false;
+        }
+
+        /// <summary>
+        /// Handler for scroll bar movement
+        /// </summary>
+        /// <remarks>Connected in the Inspector</remarks>
+        public void HandleScrollBarMoved(float scrollValue)
+        {
+            if (IgnoreScrollBar)
+                return;
+
+            if (Mathf.Approximately(scrollValue, 1))
+            {
+                AutoScroll = true;
+                CurrentBottomLine = GetShownLines() - 1;
+
+            }
+            else
+            {
+                AutoScroll = false;
+                int totalLines = GetShownLines();
+                CurrentBottomLine = CoreUtils.Clamp((int)(totalLines * scrollValue), 0, totalLines - 1);
+            }
+
+            PaintMessages();
+        }
+
+        /// <summary>
+        /// Handle for mouse scroll movement
+        /// </summary>
+        /// <remarks>Connected in the Inspector</remarks>
+        public void HandleScrollEvent(BaseEventData ev)
+        {
+            if(ev is PointerEventData pev)
+            {
+                int totalLines = GetShownLines();
+                int scrollDelta = Mathf.RoundToInt(pev.scrollDelta.y * ScrollSpeed * -1); //not sure why we need to reverse it
+                CurrentBottomLine = CoreUtils.Clamp(CurrentBottomLine + scrollDelta, 0, totalLines - 1);
+                                
+                if(CurrentBottomLine >= totalLines - 2)
+                {
+                    AutoScroll = true;
+                }                
+
+                PaintMessages();
+                SetScrollBar();
+            }
+        }
+
+        /// <summary>
+        /// Handle clearing the message list
+        /// </summary>
+        /// <remarks>Connected to the Clear button in the inspector</remarks>
+        public void HandleClear()
+        {
+            Messages.Clear();
+            CurrentBottomLine = 0;
+            ClearScrollWindow();
+            SetScrollBar();
         }
 
         /// <summary>
@@ -204,7 +307,7 @@ namespace CommonCore.BasicConsole
                 if (t.gameObject != ScrollItemTemplate)
                     Destroy(t.gameObject);
             }
-        }
+        }        
 
         //WIP capture debug logs and explicit messages
         private void HandleLog(string logString, string stackTrace, LogType type)
