@@ -34,9 +34,13 @@ namespace CommonCore.BasicConsole
         private Scrollbar ScrollBar = null;
         [SerializeField]
         private Toggle ScrollToggle = null;
+        [SerializeField]
+        private InputField CommandLine = null;
 
         [SerializeField, Header("Options")]
         private float ScrollSpeed = 1;
+        [SerializeField]
+        private int AbsoluteMaxMessages = 1000;
 
         private int CurrentBottomLine = 0;
         private bool AutoScroll
@@ -45,12 +49,25 @@ namespace CommonCore.BasicConsole
             set => ScrollToggle.isOn = value;
         } //nothing to see here
 
+        private BasicCommandConsoleImplementation BaseImplementation;
+
         private bool PaintLinesEmergencyAbort = false;
         private bool IgnoreScrollBar = false; //blocking flag because stupid UI is stupid
 
         //we'll optimize these later
         private ConcurrentQueue<IncomingConsoleMessage> IncomingMessages = new ConcurrentQueue<IncomingConsoleMessage>();
         private List<ConsoleMessage> Messages = new List<ConsoleMessage>();
+
+        //hacking around a lack of constructors
+        internal void SetBaseImplementation(BasicCommandConsoleImplementation impl)
+        {
+            if(BaseImplementation != null)
+            {
+                throw new InvalidOperationException("BaseImplementation already set!");
+            }
+
+            BaseImplementation = impl;
+        }
 
         private void Awake()
         {
@@ -75,6 +92,11 @@ namespace CommonCore.BasicConsole
             if(UnityEngine.Input.GetKeyDown(KeyCode.BackQuote) || UnityEngine.Input.GetKeyDown(KeyCode.Tilde))
             {
                 CanvasObject.SetActive(!CanvasObject.activeSelf);
+
+                if(CanvasObject.activeSelf)
+                {
+                    CommandLine.Select();
+                }
             }
 
             //only execute the rest of the logic if canvas is active
@@ -94,9 +116,15 @@ namespace CommonCore.BasicConsole
 
             if (receivedMessages)
             {
+                if (AbsoluteMaxMessages > 0 && Messages.Count > AbsoluteMaxMessages)
+                {
+                    HandleClear();
+                    Debug.LogWarning("[BasicConsole] Reached max message count and flushed messages!");
+                }
+
                 if (AutoScroll)
                 {
-                    CurrentBottomLine = GetShownLines() - 1; //will absolutely explode if we have expanded messages
+                    CurrentBottomLine = GetShownLines() - 1;
                     PaintMessages();
                     SetScrollBar();
                 }
@@ -106,10 +134,6 @@ namespace CommonCore.BasicConsole
                 }
             }
         }
-
-        //WIP handle the actual display
-
-        //TODO NEXT handle scrolling
 
         /// <summary>
         /// Repaint the scroll view with messages.
@@ -148,9 +172,20 @@ namespace CommonCore.BasicConsole
                     var lineObject = Instantiate(ScrollItemTemplate, ScrollPanel.transform);
                     var lineObjectRectTransform = lineObject.transform as RectTransform;
                     lineObjectRectTransform.anchoredPosition = new Vector2(0, -yOffset); //we draw from top to bottom!
-                    lineObject.GetComponentInChildren<Text>().text = text;
+                    var lineObjectText = lineObject.GetComponentInChildren<Text>();
+                    lineObjectText.text = text;
+                    lineObjectText.color = GetColorForMessageType(message.LogType);
                     lineObject.SetActive(true);
-                    //TODO handle expansion button
+
+                    //handle expansion button
+                    int capturedLineNumber = topLineIndex + lineNum;
+                    var lineObjectButton = lineObject.GetComponentInChildren<Button>();
+                    if (message.Expanded)
+                        lineObjectButton.GetComponentInChildren<Text>().text = "-";
+                    if (offset == 0 && message.Lines.Length > 1)
+                        lineObjectButton.onClick.AddListener(() => HandleExpandLine(capturedLineNumber));
+                    else
+                        lineObjectButton.gameObject.SetActive(false);
                 }
 
                 //set scrollbar
@@ -163,6 +198,39 @@ namespace CommonCore.BasicConsole
                 Debug.LogException(e);
                 PaintLinesEmergencyAbort = true;
             }
+        }
+
+        /// <summary>
+        /// Gets the color for a message/log type
+        /// </summary>
+        private Color GetColorForMessageType(LogType logType)
+        {
+            switch (logType)
+            {
+                case LogType.Exception:
+                case LogType.Error:
+                case LogType.Assert:
+                    return Color.red;
+                case LogType.Warning:
+                    return Color.yellow;
+                default:
+                    return Color.black;
+            }
+        }
+
+        /// <summary>
+        /// Handles expanding a line
+        /// </summary>
+        /// <remarks>Attached to the button on the line during console paint</remarks>
+        private void HandleExpandLine(int lineNumber)
+        {
+            var (message, _) = GetLineByNumber(lineNumber);
+            message.Expanded = !message.Expanded;
+
+            CurrentBottomLine += (message.Lines.Length - 1) * (message.Expanded ? 1 : -1);
+
+            PaintMessages();            
+            SetScrollBar();
         }
 
         /// <summary>
@@ -300,6 +368,9 @@ namespace CommonCore.BasicConsole
             return lines;
         }
 
+        /// <summary>
+        /// Clears the console scroll window
+        /// </summary>
         private void ClearScrollWindow()
         {
             foreach(Transform t in ScrollPanel.transform)
@@ -312,6 +383,9 @@ namespace CommonCore.BasicConsole
         //WIP capture debug logs and explicit messages
         private void HandleLog(string logString, string stackTrace, LogType type)
         {
+            if (!string.IsNullOrEmpty(stackTrace))
+                logString += Environment.NewLine + stackTrace;
+
             IncomingMessages.Enqueue(new IncomingConsoleMessage() { Message = logString, Type = type, Originator = null });
         }
 
@@ -322,6 +396,21 @@ namespace CommonCore.BasicConsole
 
 
         //TODO handling input of commands
+
+        /// <summary>
+        /// Handle an inputted command
+        /// </summary>
+        /// <remarks>
+        /// Connected in the Inspector
+        /// </remarks>
+        public void HandleCommandEnter()
+        {
+            string commandLine = CommandLine.text;
+            CommandLine.text = string.Empty;
+
+            BaseImplementation.ExecuteCommand(commandLine);
+            CommandLine.ActivateInputField();
+        }
 
     }
 }

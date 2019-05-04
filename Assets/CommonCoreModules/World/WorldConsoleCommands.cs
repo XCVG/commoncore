@@ -150,13 +150,13 @@ namespace CommonCore.World
                 StringBuilder sb = new StringBuilder(256);
 
                 //name, form id
-                sb.AppendFormat("TID: {0} | FID: {1} \n", SelectedObject.name, SelectedObject.GetComponent<BaseController>().FormID);
+                sb.AppendFormat("TID: {0} | FID: {1} \n", SelectedObject.name, SelectedObject.GetComponent<BaseController>().Ref()?.FormID ?? "N/A");
 
                 //coords
                 sb.AppendFormat("Location: ({0:f2},{1:f2},{2:f2})\n", SelectedObject.transform.position.x, SelectedObject.transform.position.y, SelectedObject.transform.position.z);
 
                 //enabled? active?
-                sb.AppendFormat("Active: {0} | Visible: {1}", SelectedObject.activeSelf, SelectedObject.GetComponent<BaseController>().GetVisibility());
+                sb.AppendFormat("Active: {0} | Visible: {1}", SelectedObject.activeSelf, SelectedObject.GetComponent<BaseController>().Ref()?.GetVisibility().ToString() ?? "N/A");
 
                 ConsoleModule.WriteLine(sb.ToString());
             }
