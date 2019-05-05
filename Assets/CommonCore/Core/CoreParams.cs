@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace CommonCore
@@ -11,13 +12,6 @@ namespace CommonCore
     /// </summary>
     public static class CoreParams
     {
-        static CoreParams()
-        {
-            DataPath = Application.dataPath;
-            PersistentDataPath = Application.persistentDataPath;
-            StreamingAssetsPath = Application.streamingAssetsPath;
-        }
-
         //TODO move some of this into GameParams et al
         //TODO runtime overriding
 
@@ -41,6 +35,7 @@ namespace CommonCore
         public static readonly string[] ExplicitModules = new string[] { "DebugModule", "QdmsMessageBus", "ConfigModule", "ConsoleModule" };
         private static readonly DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
         public static readonly string PreferredCommandConsole = "BasicCommandConsoleImplementation";
+        private static readonly WindowsPersistentDataPath PersistentDataPathWindows = WindowsPersistentDataPath.UnityDefault;
 
         //*****additional config settings
         public static readonly bool UseVerboseLogging = true;
@@ -55,6 +50,11 @@ namespace CommonCore
         public static readonly PlayerViewType DefaultPlayerView = PlayerViewType.PreferFirst;
         public static readonly bool UseRandomDamage = true;
         public static readonly bool AutoQuestNotifications = true;
+
+        //*****path variables (some hackery to provide thread-safeish versions)
+        public static string DataPath { get; private set; }
+        public static string PersistentDataPath { get; private set; }
+        public static string StreamingAssetsPath { get; private set; }
 
         //*****automatic environment params
         public static bool IsDebug
@@ -106,10 +106,33 @@ namespace CommonCore
             }
         }
 
-        //*****path variables (some hackery to provide thread-safeish versions)
-        public static string DataPath { get; private set; }
-        public static string PersistentDataPath { get; private set; }
-        public static string StreamingAssetsPath { get; private set; }
+        static CoreParams()
+        {
+            DataPath = Application.dataPath;
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            switch (PersistentDataPathWindows)
+            {
+                case WindowsPersistentDataPath.Corrected:
+                    PersistentDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Application.companyName, Application.productName);
+                    break;
+                case WindowsPersistentDataPath.Roaming:
+                    PersistentDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Application.companyName, Application.productName);
+                    break;
+                case WindowsPersistentDataPath.Documents:
+                    PersistentDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Application.companyName, Application.productName);
+                    break;
+                case WindowsPersistentDataPath.MyGames:
+                    PersistentDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", Application.companyName, Application.productName);
+                    break;
+                default:
+                    PersistentDataPath = Application.persistentDataPath;
+                    break;
+            }
+#else
+            PersistentDataPath = Application.persistentDataPath;
+#endif
+            StreamingAssetsPath = Application.streamingAssetsPath;
+        }
     }
 
 

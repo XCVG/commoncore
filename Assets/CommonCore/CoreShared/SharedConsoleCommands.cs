@@ -17,7 +17,7 @@ public static class SharedConsoleCommands
     [Command]
     static void PrintDataPath() //TODO move elsewhere
     {
-        ConsoleModule.WriteLine(Application.persistentDataPath);
+        ConsoleModule.WriteLine(CoreParams.PersistentDataPath);
     }
 
     [Command]

@@ -1,6 +1,5 @@
 ﻿using CommonCore.Console;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,6 +7,9 @@ using UnityEngine;
 
 namespace CommonCore.BasicConsole
 {
+    /// <summary>
+    /// IConsole implementation using homebuilt basic command console
+    /// </summary>
     public class BasicCommandConsoleImplementation : IConsole
     {
         private BasicConsoleController Console;
@@ -93,7 +95,7 @@ namespace CommonCore.BasicConsole
                 if(matchingCommandMethods.Length == 0)
                 {
                     Debug.LogError($"Failed to run command '{splitCommand[0]}' because no methods with matching parameter count were found!");
-                    Debug.Log("Did you mean:\n" + string.Join("\n", FindSimilarCommands(splitCommand[0], splitCommand.Length - 1)));
+                    ConsoleModule.WriteLine("Did you mean:\n" + string.Join("\n", FindSimilarCommands(splitCommand[0], splitCommand.Length - 1)));
                 }
                 else
                 {
@@ -128,7 +130,7 @@ namespace CommonCore.BasicConsole
             else
             {
                 Debug.LogError($"Failed to run command '{splitCommand[0]}' because no methods with matching name were found!");
-                Debug.Log("Did you mean:\n" + string.Join("\n", FindSimilarCommands(splitCommand[0], splitCommand.Length - 1)));
+                ConsoleModule.WriteLine("Did you mean:\n" + string.Join("\n", FindSimilarCommands(splitCommand[0], splitCommand.Length - 1)));
             }
         }
 

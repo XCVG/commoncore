@@ -694,18 +694,18 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: e8023a35ff1576e438055cbba9882d24, type: 3}
-    m_FontSize: 20
+    m_FontSize: 18
     m_FontStyle: 2
     m_BestFit: 0
-    m_MinSize: 2
-    m_MaxSize: 40
+    m_MinSize: 1
+    m_MaxSize: 300
     m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: command console
+  m_Text: enter command
 --- !u!1 &4703540438251985253
 GameObject:
   m_ObjectHideFlags: 0
@@ -1141,6 +1141,7 @@ MonoBehaviour:
   ScrollToggle: {fileID: 3128187560610308416}
   CommandLine: {fileID: 4703540438275461181}
   ScrollSpeed: 1
+  AbsoluteMaxMessages: 1000
 --- !u!1 &4703540438602769694
 GameObject:
   m_ObjectHideFlags: 0
@@ -1307,10 +1308,10 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: e8023a35ff1576e438055cbba9882d24, type: 3}
-    m_FontSize: 20
+    m_FontSize: 18
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 2
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -1544,7 +1545,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -24, y: 0}
+  m_AnchoredPosition: {x: -16, y: 0}
   m_SizeDelta: {x: 16, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &6556961116120160056

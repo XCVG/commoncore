@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using CommonCore.Console;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -11,7 +10,7 @@ namespace CommonCore.BasicConsole
 {
 
     /// <summary>
-    /// Controller for the basic console implementation
+    /// Controller for the basic console
     /// </summary>
     public class BasicConsoleController : MonoBehaviour
     {
@@ -407,6 +406,8 @@ namespace CommonCore.BasicConsole
         {
             string commandLine = CommandLine.text;
             CommandLine.text = string.Empty;
+
+            ConsoleModule.WriteLine("> " + commandLine);
 
             BaseImplementation.ExecuteCommand(commandLine);
             CommandLine.ActivateInputField();
