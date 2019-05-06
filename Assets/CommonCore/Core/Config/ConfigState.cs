@@ -43,7 +43,6 @@ namespace CommonCore.Config
         public bool UseCustomVideoSettings => (QualitySettings.GetQualityLevel() >= QualitySettings.names.Length - 1);
         public int MaxFrames { get; set; } = -1;
         public int VsyncCount { get; set; } = 0;
-        public int QualityLevel { get; set; } = 4;
         public int AntialiasingQuality { get; set; } = 1;
         public float ViewDistance { get; set; } = 1000.0f;
         public bool ShowFps { get; set; } = false;

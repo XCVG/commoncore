@@ -41,12 +41,13 @@ namespace CommonCore.Config
             //VIDEO CONFIG
             if(QualitySettings.GetQualityLevel() >= QualitySettings.names.Length - 1) //only apply quality settings if set to "custom" in the launcher
             {
-                QualitySettings.SetQualityLevel(ConfigState.Instance.QualityLevel, true);
-                Application.targetFrameRate = ConfigState.Instance.MaxFrames;
+                //QualitySettings.SetQualityLevel(ConfigState.Instance.QualityLevel, true);
                 QualitySettings.vSyncCount = ConfigState.Instance.VsyncCount;
             }
 
-
+            //TODO implement full config and clean this up
+            Application.targetFrameRate = ConfigState.Instance.MaxFrames;
+            
             //INPUT CONFIG
 
             //let other things handle it on their own
