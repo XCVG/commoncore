@@ -13,7 +13,6 @@
       "DType": "Normal",
       "FireEffect": "PistolEffect",
       "ReloadEffect": "ReloadNormal",
-      "Name": "bow",
       "Weight": 3,
 	  "Value": 50,
       "MaxCondition": 1,

@@ -27,7 +27,7 @@ namespace CommonCore
         }
 
         //*****game version info
-        public static readonly string GameVersionName = "Technological Preview 3";
+        public static readonly string GameVersionName = "Test Release 4";
 
         //*****basic config settings
         public static readonly bool AutoInit = true;
@@ -35,7 +35,7 @@ namespace CommonCore
         public static readonly string[] ExplicitModules = new string[] { "DebugModule", "QdmsMessageBus", "ConfigModule", "ConsoleModule" };
         private static readonly DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
         public static readonly string PreferredCommandConsole = "BasicCommandConsoleImplementation";
-        private static readonly WindowsPersistentDataPath PersistentDataPathWindows = WindowsPersistentDataPath.UnityDefault;
+        private static readonly WindowsPersistentDataPath PersistentDataPathWindows = WindowsPersistentDataPath.Roaming;
 
         //*****additional config settings
         public static readonly bool UseVerboseLogging = true;
@@ -43,7 +43,7 @@ namespace CommonCore
         public static readonly bool UseAggressiveLookups = true;
         public static readonly bool UseDirectSceneTransitions = false;
 
-        //*****game config settings (TODO move to GameParams)
+        //*****game config settings (TODO move some to GameParams)
         public static readonly string InitialScene = "World_Ext_TestIsland";
         public static readonly bool UseCustomLeveling = true;
         public static readonly bool UseDerivedSkills = true;
@@ -106,7 +106,10 @@ namespace CommonCore
             }
         }
 
-        static CoreParams()
+        /// <summary>
+        /// A hack necessary to preset path variables so they can be safely accessed across threads
+        /// </summary>
+        internal static void SetPaths()
         {
             DataPath = Application.dataPath;
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN

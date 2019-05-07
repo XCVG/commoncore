@@ -42,6 +42,7 @@ namespace CommonCore
 
             Debug.Log("[Core] Initializing CommonCore...");
 
+            CoreParams.SetPaths();
             LoadGameTypes();
             InitializeResourceManager();
             HookMonobehaviourEvents();

@@ -7,6 +7,7 @@ using CommonCore.State;
 using CommonCore.RpgGame.Rpg;
 using CommonCore.LockPause;
 using CommonCore.UI;
+using CommonCore.StringSub;
 
 namespace CommonCore.RpgGame.UI
 {
@@ -42,6 +43,8 @@ namespace CommonCore.RpgGame.UI
 
         public Text TransferText;
         public Button TransferButton;
+
+        public Text ContainerHeaderText;
 
         [Header("Other")]
         public GameObject ItemTemplatePrefab;
@@ -182,10 +185,12 @@ namespace CommonCore.RpgGame.UI
             {
                 int containerMoney = Container.CountItem(moneyTypeName);
                 ContainerTextMoney.text = string.Format("{0}: {1}", moneyTypeName, containerMoney);
+                ContainerHeaderText.text = Sub.Replace("Vendor", "IGUI_RPG");
             }
             else
             {
                 ContainerTextMoney.text = string.Empty;
+                ContainerHeaderText.text = Sub.Replace("Container", "IGUI_RPG");
             }
         }
 

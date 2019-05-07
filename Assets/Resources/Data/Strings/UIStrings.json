@@ -1,4 +1,8 @@
 {
+  "IGUI_RPG": {
+	"Vendor": "Store",
+	"Container": "Box"
+  },
   "IGUI_STATS": {
 	"MeleeAlacrity": "Alacrity (Melee)",
 	"MeleePrecision": "Precision (Melee)",

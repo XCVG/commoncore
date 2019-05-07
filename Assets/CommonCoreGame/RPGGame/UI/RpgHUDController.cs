@@ -126,7 +126,7 @@ namespace CommonCore.RpgGame.UI
 
             if(player.IsEquipped(EquipSlot.RangedWeapon))
             {
-                RangedWeaponText.text = InventoryModel.GetName(player.Equipped[EquipSlot.RangedWeapon].ItemModel);
+                RangedWeaponText.text = InventoryModel.GetNiceName(player.Equipped[EquipSlot.RangedWeapon].ItemModel);
                 AmmoType atype = ((RangedWeaponItemModel)player.Equipped[EquipSlot.RangedWeapon].ItemModel).AType;
                 if(atype != AmmoType.NoAmmo)
                 {
@@ -147,7 +147,7 @@ namespace CommonCore.RpgGame.UI
 
             if (player.IsEquipped(EquipSlot.MeleeWeapon))
             {
-                MeleeWeaponText.text = InventoryModel.GetName(player.Equipped[EquipSlot.MeleeWeapon].ItemModel);
+                MeleeWeaponText.text = InventoryModel.GetNiceName(player.Equipped[EquipSlot.MeleeWeapon].ItemModel);
             }
             else
             {

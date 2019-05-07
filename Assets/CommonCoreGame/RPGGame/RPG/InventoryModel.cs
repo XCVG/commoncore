@@ -24,25 +24,31 @@ namespace CommonCore.RpgGame.Rpg
         private static int LoadItemCount;
         private static int LoadDefCount;
 
+        /// <summary>
+        /// Loads all inventory models and defs
+        /// </summary>
         internal static void Load()
         {
             //a bit of a hack, this was originally a static constructor
+
+            Models = new Dictionary<string, InventoryItemModel>();
+            Defs = new Dictionary<string, InventoryItemDef>();
 
             LoadErrorCount = 0;
             LoadItemCount = 0;
             LoadDefCount = 0;
 
             LoadAllModels();
-            LoadAllDefs();
             LoadAllNew();
 
             CDebug.LogEx(string.Format("Loaded inventory ({0} items, {1} defs, {2} errors)", LoadItemCount, LoadDefCount, LoadErrorCount), LogLevel.Message, null);
         }
 
+        /// <summary>
+        /// Actually loads auto models if applicable; old rpg_items.json is no longer supported
+        /// </summary>
         private static void LoadAllModels()
         {
-            string data = CoreUtils.LoadResource<TextAsset>("Data/RPGDefs/rpg_items").text;
-            Models = new Dictionary<string, InventoryItemModel>();
 
             //first autocreate models (if enabled)
             if(AutocreateModels)
@@ -63,40 +69,11 @@ namespace CommonCore.RpgGame.Rpg
                 }
             }
 
-            //then load legacy models
-            CDebug.LogEx("Loading legacy item models!", LogLevel.Verbose, null);
-            try
-            {
-                var newModels = JsonConvert.DeserializeObject<Dictionary<string, InventoryItemModel>>(data, new JsonSerializerSettings
-                {
-                    TypeNameHandling = TypeNameHandling.Auto
-                });
-                newModels.ToList().ForEach(x => Models[x.Key] = x.Value);
-                LoadItemCount += newModels.Count;
-            }
-            catch(Exception e)
-            {
-                CDebug.LogEx(e.ToString(), LogLevel.Verbose, null);
-                LoadErrorCount++;
-            }
         }
 
-        private static void LoadAllDefs()
-        {
-            TextAsset ta = CoreUtils.LoadResource<TextAsset>("Data/RPGDefs/rpg_items_defs");
-            try
-            {
-
-                Defs = JsonConvert.DeserializeObject<Dictionary<string, InventoryItemDef>>(ta.text);
-                LoadDefCount += Defs.Count;
-            }
-            catch(Exception e)
-            {
-                Debug.LogError(e);
-                LoadErrorCount++;
-            }
-        }
-
+        /// <summary>
+        /// Loads all inventory item models from individual files (new style)
+        /// </summary>
         private static void LoadAllNew()
         {
             //load new model/def/etc file-per-item entries
@@ -117,10 +94,12 @@ namespace CommonCore.RpgGame.Rpg
                         JToken modelJToken = itemJToken["model"];
                         if(modelJToken != null)
                         {
-                            Models[itemName] = JsonConvert.DeserializeObject<InventoryItemModel>(modelJToken.ToString(), new JsonSerializerSettings
+                            var model = JsonConvert.DeserializeObject<InventoryItemModel>(modelJToken.ToString(), new JsonSerializerSettings
                             {
                                 TypeNameHandling = TypeNameHandling.Auto
                             });
+                            model.GetType().GetField("Name").SetValue(model, itemName); //slight hack to set name field
+                            Models[itemName] = model;
                             LoadItemCount++;
                         }
 
@@ -159,7 +138,10 @@ namespace CommonCore.RpgGame.Rpg
             return Defs[name];
         }
 
-        public static string GetName(InventoryItemModel item)
+        /// <summary>
+        /// Gets the nice name of an item, or its plain name if the nice name isn't available
+        /// </summary>
+        public static string GetNiceName(InventoryItemModel item)
         {
             var def = GetDef(item.Name);
             if (def != null)
