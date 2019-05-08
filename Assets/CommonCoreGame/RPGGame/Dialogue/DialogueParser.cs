@@ -8,8 +8,14 @@ using CommonCore.RpgGame.State;
 
 namespace CommonCore.RpgGame.Dialogue
 {
+    
+    /// <summary>
+    /// Parser for dialogue JSON files
+    /// </summary>
     internal static class DialogueParser
     {
+
+        //TODO split out non-dialogue parsing from the DIALOGUE parser
 
         public static DialogueScene LoadDialogue(string dialogueName)
         {
@@ -267,6 +273,11 @@ namespace CommonCore.RpgGame.Dialogue
                 type = ConditionType.ActorValue;
                 target = jt["actorvalue"].Value<string>();
             }
+            else if (jt["exec"] != null)
+            {
+                type = ConditionType.Exec;
+                target = jt["exec"].Value<string>();
+            }
             else
             {
                 throw new NotSupportedException();
@@ -321,6 +332,13 @@ namespace CommonCore.RpgGame.Dialogue
                 {
                     option = ConditionOption.Finished;
                     optionValue = Convert.ToInt32(jt["finished"].Value<bool>());
+                }
+            }
+            else if(type == ConditionType.Exec)
+            {
+                if (jt["arg"] != null)
+                {
+                    optionValue = (IComparable)CoreUtils.StringToNumericAuto(jt["arg"].Value<string>());
                 }
             }
 

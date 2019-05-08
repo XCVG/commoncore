@@ -46,32 +46,9 @@ namespace CommonCore.Scripting
             {
                 try
                 {
-                    var scriptAttribute = (CCScriptAttribute)m.GetCustomAttributes(typeof(CCScriptAttribute), false)[0];
-
-                    string callableName = m.DeclaringType.Name + "." + m.Name;
-
-                    if (!string.IsNullOrEmpty(scriptAttribute.Name))
-                    {
-                        if (!string.IsNullOrEmpty(scriptAttribute.ClassName))
-                        {
-                            callableName = scriptAttribute.ClassName + "." + scriptAttribute.Name;
-                        }
-                        else
-                        {
-                            callableName = scriptAttribute.ClassName + "." + m.Name;
-                        }
-                    }
-
-                    //Debug.Log(string.Format("Loaded script: {0}", callableName));
-
-                    if (CallableMethods.ContainsKey(callableName))
-                    {
-                        LogWarning(string.Format("Multiple scripts with name: {0}", callableName));
-                    }
-
-                    CallableMethods.Add(callableName, m);
+                    RegisterScript(m);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     LogError("Failed to register method " + m.Name);
                     LogException(e);
@@ -83,17 +60,44 @@ namespace CommonCore.Scripting
 
         }
 
-        private void CallScript(string name, ScriptExecutionContext context, params object[] args)
+        private void RegisterScript(MethodInfo scriptMethod)
         {
-            if (!CallableMethods.ContainsKey(name))
-                throw new ArgumentException("Script not found!", "name");
+            string className = scriptMethod.DeclaringType.Name;
+            string methodName = scriptMethod.Name;
 
-            MethodInfo m = CallableMethods[name];
+            var scriptAttribute = (CCScriptAttribute)scriptMethod.GetCustomAttributes(typeof(CCScriptAttribute), false)[0];
 
-            object obj = null;
-            if(!m.IsStatic)
+            if (scriptAttribute != null && !string.IsNullOrEmpty(scriptAttribute.Name))
             {
-                obj = Activator.CreateInstance(m.DeclaringType);
+                if (!string.IsNullOrEmpty(scriptAttribute.Name))
+                    methodName = scriptAttribute.Name;
+
+                if (!string.IsNullOrEmpty(scriptAttribute.ClassName))
+                    className = scriptAttribute.ClassName;
+            }
+
+            string callableName = className + "." + methodName;
+
+            //Debug.Log(string.Format("Loaded script: {0}", callableName));
+
+            if (CallableMethods.ContainsKey(callableName))
+            {
+                LogWarning(string.Format("Multiple scripts with name: {0}", callableName));
+            }
+
+            CallableMethods.Add(callableName, scriptMethod);
+        }
+
+        private object CallScript(string script, object instance, ScriptExecutionContext context, params object[] args)
+        {
+            if (!CallableMethods.ContainsKey(script))
+                throw new ArgumentException("Script not found!", nameof(script));
+
+            MethodInfo m = CallableMethods[script];
+
+            if(!m.IsStatic && instance == null)
+            {
+                instance = Activator.CreateInstance(m.DeclaringType);
             }
 
             List<object> allArgs = new List<object>(args.Length + 1);
@@ -102,15 +106,47 @@ namespace CommonCore.Scripting
 
             object[] trimmedArgs = allArgs.GetRange(0, m.GetParameters().Length).ToArray();
 
-            m.Invoke(obj, trimmedArgs);
+            return m.Invoke(instance, trimmedArgs);
         }
 
         /// <summary>
         /// Calls a script through the scripting system
         /// </summary>
-        public static void Call(string name, ScriptExecutionContext context, params object[] args)
+        public static void Call(string script, ScriptExecutionContext context, params object[] args)
         {
-            Instance.CallScript(name, context, args);
+            Instance.CallScript(script, null, context, args);
+        }
+
+        /// <summary>
+        /// Calls a script through the scripting system, returning a result
+        /// </summary>
+        public static object CallForResult(string script, ScriptExecutionContext context, params object[] args)
+        {
+            return Instance.CallScript(script, null, context, args);
+        }
+
+        /// <summary>
+        /// Checks if a script exists
+        /// </summary>
+        public static bool CheckScript(string script)
+        {
+            return Instance?.CallableMethods?.ContainsKey(script) ?? false;
+        }
+
+        /// <summary>
+        /// Registers a method with the scripting system to be called as a script
+        /// </summary>
+        public static void Register(MethodInfo scriptMethod)
+        {
+            Instance.RegisterScript(scriptMethod);
+        }
+
+        /// <summary>
+        /// Registers a delegate with the scripting system to be called as a script
+        /// </summary>
+        public static void Register(Delegate scriptDelegate)
+        {
+            Instance.RegisterScript(scriptDelegate.Method);
         }
 
         /// <summary>

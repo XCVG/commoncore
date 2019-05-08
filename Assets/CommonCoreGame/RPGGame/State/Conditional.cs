@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections;
+﻿using CommonCore.DelayedEvents;
+using CommonCore.Scripting;
+using CommonCore.State;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using CommonCore.DelayedEvents;
-using CommonCore.State;
 
 namespace CommonCore.RpgGame.State
 {
     public enum ConditionType
     {
-        Flag, NoFlag, Item, Variable, Affinity, Quest, ActorValue //Eval is obviously not supported, might be able to provide Emit instead
+        Flag, NoFlag, Item, Variable, Affinity, Quest, ActorValue, Exec //Eval is obviously not supported, we provide Exec instead
     }
 
     public enum ConditionOption
@@ -83,6 +83,18 @@ namespace CommonCore.RpgGame.State
                     }
                     catch (KeyNotFoundException)
                     {
+                        Debug.LogError($"Conditional.Evaluate failed: couldn't find ActorValue '{Target}'");
+                        return false;
+                    }
+                case ConditionType.Exec:
+                    try
+                    {
+                        object[] args = (OptionValue == null) ? new object[] { } : new object[] { OptionValue };
+                        return (bool)ScriptingModule.CallForResult(Target, new ScriptExecutionContext() { Caller = this }, args);
+                    }
+                    catch(Exception e)
+                    {
+                        Debug.LogError($"Conditional.Evaluate failed: Script execution failed {e}");
                         return false;
                     }
                 default:
@@ -178,7 +190,7 @@ namespace CommonCore.RpgGame.State
 
         private void ExecuteDelayed()
         {
-            MicroscriptNode dupNode = new MicroscriptNode(Type, Target, Action, Value, DelayTimeType.None, default(float), default(bool));
+            MicroscriptNode dupNode = new MicroscriptNode(Type, Target, Action, Value, DelayTimeType.None, default, default);
             DelayedEventScheduler.ScheduleEvent(dupNode, DelayType, DelayTime, DelayAbsolute);
         }
 
