@@ -1,21 +1,23 @@
 ﻿using CommonCore.UI;
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace CommonCore.State
 {
-    //TODO move this into Core or Scenes
 
-    //TODO refactor and document this, it's a disaster zone holdover
+    /// <summary>
+    /// Controller for loading scene, handles loading scenes
+    /// </summary>
     public class LoadingSceneController : MonoBehaviour
     {
-        public Canvas DefaultLoadingCanvas;
+        [SerializeField]
+        private Canvas DefaultLoadingCanvas;
 
-        AsyncOperation sceneLoadOperation;
-
-	    // Use this for initialization
-        //TODO handling of errors
+        /// <summary>
+        /// Immediately begin loading the scene
+        /// </summary>
 	    void Start ()
         {
             //the loading screen cannot be truly skipped, but it can be hidden
@@ -37,14 +39,14 @@ namespace CommonCore.State
                     MetaState.Instance.IntentsExecuteLoading();
                     //we are merely changing scenes, go straight to loading the next scene
                     GameState.Instance.CurrentScene = MetaState.Instance.NextScene;
-                    SceneManager.LoadScene(MetaState.Instance.NextScene);
+                    StartCoroutine(LoadNextSceneAsync());
                 }
                 else if (MetaState.Instance.TransitionType == SceneTransitionType.LoadGame)
                 {
                     //we are loading a game, so load the game data and then load the next scene (which is part of save data)
                     GameState.DeserializeFromFile(CoreParams.SavePath + @"\" + MetaState.Instance.LoadSave);
                     MetaState.Instance.NextScene = GameState.Instance.CurrentScene;
-                    SceneManager.LoadScene(MetaState.Instance.NextScene); //when this fails, it doesn't return a status code or throw an exception, only logs an error
+                    StartCoroutine(LoadNextSceneAsync()); //when this fails, it doesn't return a status code or throw an exception, only logs an error
                     //oh, and no, it doesn't halt execution, either, so you can't check that way (which would be dumb, but at least workable)
                     //excuse me, but WHO THE FUCK DESIGNED THIS
                     //I guess the assumption is that you know what you have, don't load anything you don't, and if you do it's a fatal error
@@ -59,7 +61,7 @@ namespace CommonCore.State
                         MetaState.Instance.NextScene = CoreParams.InitialScene;
                     GameState.Instance.CurrentScene = MetaState.Instance.NextScene;
                     GameState.LoadInitial();
-                    SceneManager.LoadScene(MetaState.Instance.NextScene);
+                    StartCoroutine(LoadNextSceneAsync());
                 }
             }
             catch(Exception e)
@@ -74,7 +76,25 @@ namespace CommonCore.State
             MetaState.Instance.SkipLoadingScreen = false;		
 	    }
 
-        void OnErrorConfirmed(ModalStatusCode status, string tag)
+        /// <summary>
+        /// Loads the next scene using LoadSceneAsync
+        /// </summary>
+        private IEnumerator LoadNextSceneAsync()
+        {
+            yield return null;
+
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(MetaState.Instance.NextScene, LoadSceneMode.Single);
+
+            while (!asyncLoad.isDone)
+            {
+                yield return null;
+            }
+        }
+
+        /// <summary>
+        /// Handler for when the user acknowledges there was an error, sends them back to the main menu
+        /// </summary>
+        private void OnErrorConfirmed(ModalStatusCode status, string tag)
         {
             GameState.Reset();
             MetaState.Reset();
@@ -82,13 +102,16 @@ namespace CommonCore.State
             SceneManager.LoadScene("MainMenuScene");
         }
 
-
-        //yes, this is really the best way to handle this
-        //we will change to keeping our own list of scenes in the future because Unity's datastructures are fucking useless        
-        //but that probably won't be until mod support is added in Citadel
-        //we will also investigate LoadSceneAsync but something tells me the design won't be much better
-        void HandleLog(string log, string stackTrace, LogType type)
+        /// <summary>
+        /// The absolutely stupid "solution" to catching scene load errors: we hook the debug log
+        /// </summary>
+        private void HandleLog(string log, string stackTrace, LogType type)
         {
+            //yes, this is really the best way to handle this
+            //we will change to keeping our own list of scenes in the future because Unity's datastructures are fucking useless        
+            //but that probably won't be until mod support is added in Citadel
+            //we will also investigate LoadSceneAsync but something tells me the design won't be much better
+
             if (type == LogType.Error)
             {
                 if (log.Contains("Cannot load scene"))
@@ -100,8 +123,6 @@ namespace CommonCore.State
         {
             Application.logMessageReceived -= HandleLog;
         }
-
-        //TODO handle all the nasty game init/game load/scene load stuff
 
     }
 
