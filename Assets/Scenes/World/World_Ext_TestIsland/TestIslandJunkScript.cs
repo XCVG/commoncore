@@ -7,6 +7,7 @@ using CommonCore.World;
 using CommonCore.Messaging;
 using CommonCore.Audio;
 using CommonCore.ObjectActions;
+using CommonCore.UI;
 
 namespace World.Ext.TestIsland
 {

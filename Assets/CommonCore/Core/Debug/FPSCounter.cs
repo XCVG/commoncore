@@ -84,7 +84,7 @@ namespace CommonCore.DebugLog
 
         private void HandleMessageReceived(QdmsMessage message)
         {
-            if(message is QdmsFlagMessage flagMessage && flagMessage.Flag == "ConfigChanged")
+            if(message is ConfigChangedMessage)
             {
                 SetStateFromConfig();
             }

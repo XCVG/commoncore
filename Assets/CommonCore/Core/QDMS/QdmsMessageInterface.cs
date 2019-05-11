@@ -102,7 +102,7 @@ namespace CommonCore.Messaging
         public void PushToBus(QdmsMessage msg)
         {
             if(msg.Sender == null)
-                msg.SetSender(this);
+                msg.Sender = this;
             QdmsMessageBus.Instance.PushBroadcast(msg);
         }
 

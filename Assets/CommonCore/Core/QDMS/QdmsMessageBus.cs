@@ -45,8 +45,15 @@ namespace CommonCore.Messaging
 
         private List<IQdmsMessageReceiver> Receivers;
 
-        public void PushBroadcast(QdmsMessage msg) //internal doesn't work the way I thought it did, gah
+        public void PushBroadcast(QdmsMessage msg)
         {
+            PushBroadcast(msg, null);
+        }
+
+        public void PushBroadcast(QdmsMessage msg, object sender)
+        {
+            msg.Sender = sender;
+
             foreach(IQdmsMessageReceiver r in Receivers)
             {
                 if (r != null && r.IsValid)

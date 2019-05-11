@@ -12,6 +12,7 @@ using CommonCore.World;
 using CommonCore.RpgGame.Dialogue;
 using CommonCore.RpgGame.Rpg;
 using CommonCore.RpgGame.State;
+using CommonCore.UI;
 
 namespace CommonCore.RpgGame.World
 {

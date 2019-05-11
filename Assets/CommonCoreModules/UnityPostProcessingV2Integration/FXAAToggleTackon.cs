@@ -51,7 +51,7 @@ public class FXAAToggleTackon : MonoBehaviour
 
     private void HandleMessage(QdmsMessage message)
     {
-        if (message is QdmsFlagMessage flagMessage && flagMessage.Flag == "ConfigChanged")
+        if (message is ConfigChangedMessage)
             ApplyFXAAState();
     }
 

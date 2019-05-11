@@ -5,19 +5,39 @@ using UnityEngine;
 
 namespace CommonCore.Messaging
 {
+    /// <summary>
+    /// When a message is to be delivered
+    /// </summary>
+    public enum QdmsMessageDelivery
+    {
+        Anytime, Immediate, EndOfFrame
+    }
 
-    //note to self: strictly typed messaging systems are a fucking stupid idea
-
+    /// <summary>
+    /// Base type for QDMS messages
+    /// </summary>
     public abstract class QdmsMessage
     {
-        public object Sender { get; private set; }
+        public QdmsMessageDelivery Delivery { get; internal set; } = QdmsMessageDelivery.Anytime;
+        public object Sender { get; internal set; }
+    }
 
-        internal void SetSender(QdmsMessageInterface sender)
+    /// <summary>
+    /// Basic message carrying a string flag; inherited types may have fixed flags
+    /// </summary>
+    public class QdmsFlagMessage : QdmsMessage
+    {
+        public readonly string Flag;
+
+        public QdmsFlagMessage(string flag)
         {
-            Sender = sender;
+            Flag = flag;
         }
     }
 
+    /// <summary>
+    /// Basic message containing data in key/value pairs, as well as a string flag
+    /// </summary>
     public class QdmsKeyValueMessage : QdmsFlagMessage
     {
         private readonly Dictionary<string, object> _Dictionary;
@@ -72,47 +92,8 @@ namespace CommonCore.Messaging
         }
     }
 
-    public class QdmsFlagMessage : QdmsMessage
-    {
-        public readonly string Flag;
 
-        public QdmsFlagMessage(string flag)
-        {
-            Flag = flag;
-        }
-    }
 
-    public class HUDPushMessage : QdmsMessage
-    {
-        public readonly string Contents;
-
-        public HUDPushMessage(string contents) : base()
-        {
-            Contents = contents;
-        }
-    }
-
-    public class SubtitleMessage : QdmsMessage
-    {
-        public readonly string Contents;
-        public readonly float HoldTime;
-        public readonly bool UseSubstitution;
-        public readonly int Priority;
-
-        public SubtitleMessage(string contents, float holdTime, bool useSubstitution, int priority) : base()
-        {
-            Contents = contents;
-            HoldTime = holdTime;
-            UseSubstitution = useSubstitution;
-            Priority = priority;
-        }
-
-        public SubtitleMessage(string contents, float holdTime) : this(contents, holdTime, true, 0)
-        {
-
-        }
-
-        
-    }
+ 
 
 }

@@ -4,6 +4,7 @@ using System.Reflection;
 using UnityEngine;
 using Newtonsoft.Json;
 using CommonCore.Messaging;
+using CommonCore.UI;
 
 namespace CommonCore.RpgGame.Rpg
 { 
@@ -392,7 +393,7 @@ namespace CommonCore.RpgGame.Rpg
         {
             if(Experience >= RpgValues.XPToNext(Level))
             {
-                QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RPG_LevelUp"));
+                QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgLevelUp"));
                 QdmsMessageBus.Instance.PushBroadcast(new HUDPushMessage("<l:IGUI_MESSAGE:LevelUp>"));
             }
         }

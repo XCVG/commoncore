@@ -1,18 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using CommonCore.Console;
 using CommonCore.Messaging;
-using CommonCore.Console;
-using System.Text;
+using System.Collections;
 using System.Reflection;
-using System;
+using System.Text;
+using UnityEngine;
 
 namespace CommonCore.Config
 {
-    /*
-     * CommonCore Config Module
-     * Provides settings save/load/apply, as well as maintaining PersistState
-     */
+    /// <summary>
+    /// Provides settings save/load/apply and handles settings/config state
+    /// </summary>
     [CCExplicitModule]
     public class ConfigModule : CCModule
     {
@@ -51,10 +48,13 @@ namespace CommonCore.Config
             //INPUT CONFIG
 
             //let other things handle it on their own
-            QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("ConfigChanged"));
+            QdmsMessageBus.Instance.PushBroadcast(new ConfigChangedMessage());
 
         }
 
+        /// <summary>
+        /// Apply the current ConfigState configuration to the game
+        /// </summary>
         public static void Apply()
         {
             Instance.ApplyConfiguration();
@@ -118,5 +118,16 @@ namespace CommonCore.Config
             }
         }
 
+    }
+
+    /// <summary>
+    /// Config Changed flag message
+    /// </summary>
+    public class ConfigChangedMessage : QdmsFlagMessage
+    {
+        public ConfigChangedMessage() : base("ConfigChanged")
+        {
+
+        }
     }
 }
