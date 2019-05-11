@@ -22,15 +22,25 @@ namespace CommonCore
             //eventually we will support preloading the table (if set in config settings) but probably not until Citadel
         }
 
+        /// <summary>
+        /// Get all resources at a resource path
+        /// </summary>
         internal T[] GetResources<T>(string path) where T : UnityEngine.Object
         {
             List<T> resources = new List<T>();
 
             //add resources from main path first
             resources.AddRange(Resources.LoadAll<T>(path));
-            
+
+            //then add resources from game module if and only if they aren't already loaded
+            foreach (var resource in Resources.LoadAll<T>("Game/" + path))
+            {
+                if (!resources.Find(x => x.name == resource.name))
+                    resources.Add(resource);
+            }
+
             //then add resources from core if and only if they aren't already loaded
-            foreach(var resource in Resources.LoadAll<T>("Core/" + path))
+            foreach (var resource in Resources.LoadAll<T>("Core/" + path))
             {
                 if (!resources.Find(x => x.name == resource.name))
                     resources.Add(resource);
@@ -38,12 +48,12 @@ namespace CommonCore
 
             //this is a slow implementation and we will optimize it later
 
-            //let's see if this will work
-            Debug.Log(resources.Select(x => x.name).ToNiceString());
-
             return resources.ToArray();
         }
 
+        /// <summary>
+        /// Get the resource at the path
+        /// </summary>
         internal T GetResource<T>(string name) where T : UnityEngine.Object
         {
             string fullname = name + "." + typeof(T).Name;
@@ -56,6 +66,9 @@ namespace CommonCore
             return TryLoadResource<T>(name);
         }
 
+        /// <summary>
+        /// Check if a resource exists
+        /// </summary>
         internal bool ContainsResource<T>(string name) where T : UnityEngine.Object
         {
             string fullname = name + "." + typeof(T).Name;
@@ -72,6 +85,14 @@ namespace CommonCore
 
             //try loading from main namespace
             T resource = Resources.Load<T>(name);
+            if (resource != null)
+            {
+                RemapTable.Add(fullname, resource);
+                return resource;
+            }
+
+            //try loading from game namespace
+            resource = Resources.Load<T>("Game/" + name);
             if (resource != null)
             {
                 RemapTable.Add(fullname, resource);
