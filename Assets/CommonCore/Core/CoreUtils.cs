@@ -35,6 +35,22 @@ namespace CommonCore
         }
 
         /// <summary>
+        /// Load a resource, returning a prioritized collection based on virtual/redirected path precedence
+        /// </summary>
+        public static T[] LoadDataResource<T>(string path) where T: UnityEngine.Object
+        {
+            return ResourceManager.GetDataResource<T>(path);
+        }
+
+        /// <summary>
+        /// Load resources from a folder, returning a prioritized collection based on virtual/redirected path precedence
+        /// </summary>
+        public static T[][] LoadDataResources<T>(string path) where T: UnityEngine.Object
+        {
+            return ResourceManager.GetDataResources<T>(path);
+        }
+
+        /// <summary>
         /// Check if a resource exists, respecting virtual/redirected paths 
         /// </summary>
         public static bool CheckResource<T>(string path) where T: UnityEngine.Object
