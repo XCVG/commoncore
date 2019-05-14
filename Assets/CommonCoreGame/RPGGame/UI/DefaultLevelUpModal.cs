@@ -196,7 +196,7 @@ namespace CommonCore.RpgGame.UI
         
         public static void PushModal(LevelUpModalCallback callback)
         {
-            if(CoreParams.UseCustomLeveling)
+            if(GameParams.UseCustomLeveling)
             {
                 var go = Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>(AltPrefab), CoreUtils.GetWorldRoot());
                 var modal = go.GetComponent<GameUI.LevelUpModal>();

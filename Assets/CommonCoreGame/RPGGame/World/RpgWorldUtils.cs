@@ -94,7 +94,7 @@ namespace CommonCore.RpgGame.World
             float d1 = Damage * ((100f - Mathf.Min(Resistance, 99f)) / 100f);
             float dt = Mathf.Max(0, Threshold - Pierce);
             float d2 = Mathf.Max(d1 - dt, Damage * 0.1f);
-            if (CoreParams.UseRandomDamage)
+            if (GameParams.UseRandomDamage)
                 d2 *= UnityEngine.Random.Range(0.75f, 1.25f);
             return d2;
         }

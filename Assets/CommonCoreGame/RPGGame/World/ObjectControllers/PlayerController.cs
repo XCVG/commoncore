@@ -190,7 +190,7 @@ namespace CommonCore.RpgGame.World
             GameObject tpCamera = CameraRoot.Find("Main Camera").gameObject;
             GameObject fpCamera = CameraRoot.Find("FP Camera").gameObject;
 
-            switch (CoreParams.DefaultPlayerView)
+            switch (GameParams.DefaultPlayerView)
             {
                 case PlayerViewType.PreferFirst:
                     tpCamera.SetActive(false);
@@ -218,7 +218,7 @@ namespace CommonCore.RpgGame.World
                     break;
             }
 
-            PushViewChangeMessage(CoreParams.DefaultPlayerView);
+            PushViewChangeMessage(GameParams.DefaultPlayerView);
         }
 
         private void SetInitialViewModels()
@@ -273,7 +273,7 @@ namespace CommonCore.RpgGame.World
 
         private void HandleView()
         {
-            if (!(CoreParams.DefaultPlayerView == PlayerViewType.PreferFirst || CoreParams.DefaultPlayerView == PlayerViewType.PreferThird))
+            if (!(GameParams.DefaultPlayerView == PlayerViewType.PreferFirst || GameParams.DefaultPlayerView == PlayerViewType.PreferThird))
                 return;
 
             if(MappedInput.GetButtonDown(DefaultControls.ChangeView)) 

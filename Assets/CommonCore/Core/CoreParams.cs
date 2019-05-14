@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using UnityEngine;
 
@@ -12,44 +11,31 @@ namespace CommonCore
     /// </summary>
     public static class CoreParams
     {
-        //TODO move some of this into GameParams et al
-        //TODO runtime overriding
 
         //*****system version info
-        public static readonly Version VersionCode = new Version(2,0,0); //2.0.0
-        public static readonly string VersionName = "Balmora"; //start with A, locations from RPGs
-        public static string UnityVersion
-        {
-            get
-            {
-                return Application.unityVersion;
-            }
-        }
+        public static Version VersionCode { get; private set; } = new Version(2, 0, 0); //2.0.0
+        public static string VersionName { get; private set; } = "Balmora"; //start with A, locations from RPGs
+        public static string UnityVersion => Application.unityVersion;
 
         //*****game version info
-        public static readonly string GameVersionName = "Test Release 4";
+        public static string GameVersionName { get; private set; } = "Test Release 4";
 
         //*****basic config settings
-        public static readonly bool AutoInit = true;
-        public static readonly bool AutoloadModules = true;
-        public static readonly string[] ExplicitModules = new string[] { "DebugModule", "QdmsMessageBus", "ConfigModule", "ConsoleModule" };
-        private static readonly DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
-        public static readonly string PreferredCommandConsole = "BasicCommandConsoleImplementation";
-        private static readonly WindowsPersistentDataPath PersistentDataPathWindows = WindowsPersistentDataPath.Roaming;
+        public static bool AutoInit { get; private set; } = true;
+        public static bool AutoloadModules { get; private set; } = true;
+        public static ImmutableArray<string> ExplicitModules { get; private set; } = new string[] { "DebugModule", "QdmsMessageBus", "ConfigModule", "ConsoleModule" }.ToImmutableArray();
+        private static DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
+        public static string PreferredCommandConsole { get; private set; } = "BasicCommandConsoleImplementation";
+        private static WindowsPersistentDataPath PersistentDataPathWindows = WindowsPersistentDataPath.Roaming;
 
         //*****additional config settings
-        public static readonly bool UseVerboseLogging = true;
-        public static readonly float DelayedEventPollInterval = 1.0f;
-        public static readonly bool UseAggressiveLookups = true;
-        public static readonly bool UseDirectSceneTransitions = false;
+        public static bool UseVerboseLogging { get; private set; } = true;
+        public static float DelayedEventPollInterval { get; private set; } = 1.0f;
+        public static bool UseAggressiveLookups { get; private set; } = true;
+        public static bool UseDirectSceneTransitions { get; private set; } = false;
 
-        //*****game config settings (TODO move some to GameParams)
-        public static readonly string InitialScene = "World_Ext_TestIsland";
-        public static readonly bool UseCustomLeveling = true;
-        public static readonly bool UseDerivedSkills = true;
-        public static readonly PlayerViewType DefaultPlayerView = PlayerViewType.PreferFirst;
-        public static readonly bool UseRandomDamage = true;
-        public static readonly bool AutoQuestNotifications = true;
+        //*****game config settings
+        public static string InitialScene { get; private set; } = "World_Ext_TestIsland";
 
         //*****path variables (some hackery to provide thread-safeish versions)
         public static string DataPath { get; private set; }

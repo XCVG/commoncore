@@ -1,30 +1,32 @@
 ﻿using System;
-using UnityEngine;
 
 namespace CommonCore
 {
 
-    /*
-     * When do modules load data?
-     * 
-     * Auto:        OnDemand in editor, OnStart in build
-     * OnDemand:    Load data as needed
-     * OnStart:     Load data on game start
-     * Cached:      Load data as needed, and keep in memory
-     * 
-     * Note that it's up to the modules to implement the policy
-     */
+    /// <summary>
+    /// When modules load their data
+    /// </summary>
+    /// <remarks>
+    /// Note that it's up to the modules to actually implement the policy
+    /// </remarks>
     public enum DataLoadPolicy
     {
-        Auto, OnDemand, OnStart, Cached
-    }
-
-    /*
-     * Player view types, pretty self explanatory
-     */
-    public enum PlayerViewType
-    {
-        PreferFirst, PreferThird, ForceFirst, ForceThird, ExplicitOther
+        /// <summary>
+        /// OnDemand in editor, OnStart in build
+        /// </summary>
+        Auto,
+        /// <summary>
+        /// Load data at the time it is needed
+        /// </summary>
+        OnDemand,
+        /// <summary>
+        /// Load data on game start
+        /// </summary>
+        OnStart,
+        /// <summary>
+        /// Load data as needed, and keep it in memory
+        /// </summary>
+        Cached
     }
 
     /// <summary>

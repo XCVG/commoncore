@@ -107,7 +107,7 @@ namespace CommonCore.RpgGame.Rpg
             }
 
             //apply derived skills
-            if(CoreParams.UseDerivedSkills)
+            if(GameParams.UseDerivedSkills)
                 RpgValues.SkillsFromStats(BaseStats, DerivedStats);
 
             //recalculate max health and energy
