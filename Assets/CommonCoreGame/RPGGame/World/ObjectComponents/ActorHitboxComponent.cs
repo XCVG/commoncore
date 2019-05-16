@@ -19,9 +19,16 @@ namespace CommonCore.RpgGame.World
             if (ParentController == null)
                 ParentController = GetComponentInParent<BaseController>();
 
-            if(!(ParentController is PlayerController || ParentController is ActorController))
+            if(ParentController == null)
             {
-                CDebug.LogEx(string.Format("{0} has ActorHitboxComponent, but is not an Actor or Player!", ParentController.gameObject.name), LogLevel.Error, this);
+                Debug.LogError($"{gameObject.name} has ActorHitboxComponent, but is not attached to any CommonCore Thing!");
+                this.enabled = false;
+                return;
+            }
+
+            if(!(ParentController is ITakeDamage))
+            {
+                Debug.LogError($"{ParentController.gameObject.name} has ActorHitboxComponent, but is not an ITakeDamage!");
                 this.enabled = false;
             }
         }

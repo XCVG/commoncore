@@ -356,8 +356,38 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114344645711853442, guid: 3f6f1049247585146b5f703e29829950,
         type: 3}
+      propertyPath: CorpseItems.Items.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114344645711853442, guid: 3f6f1049247585146b5f703e29829950,
+        type: 3}
       propertyPath: Faction
       value: Neutral
+      objectReference: {fileID: 0}
+    - target: {fileID: 114344645711853442, guid: 3f6f1049247585146b5f703e29829950,
+        type: 3}
+      propertyPath: UseDeadAction
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114344645711853442, guid: 3f6f1049247585146b5f703e29829950,
+        type: 3}
+      propertyPath: CorpseItems.Items.Array.data[0].Quantity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114344645711853442, guid: 3f6f1049247585146b5f703e29829950,
+        type: 3}
+      propertyPath: CorpseItems.Items.Array.data[0].ItemModel
+      value: m1911
+      objectReference: {fileID: 0}
+    - target: {fileID: 114344645711853442, guid: 3f6f1049247585146b5f703e29829950,
+        type: 3}
+      propertyPath: CorpseItems.Items.Array.data[1].Quantity
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 114344645711853442, guid: 3f6f1049247585146b5f703e29829950,
+        type: 3}
+      propertyPath: CorpseItems.Items.Array.data[1].ItemModel
+      value: Gold
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3f6f1049247585146b5f703e29829950, type: 3}

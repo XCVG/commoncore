@@ -13,6 +13,7 @@ using CommonCore.RpgGame.Dialogue;
 using CommonCore.RpgGame.Rpg;
 using CommonCore.RpgGame.State;
 using CommonCore.UI;
+using CommonCore.RpgGame.UI;
 
 namespace CommonCore.RpgGame.World
 {
@@ -103,8 +104,10 @@ namespace CommonCore.RpgGame.World
         public string DeadInteractionTarget;
         public ActionSpecial DeadInteractionSpecial;
 
-        public bool InteractionForceDisabled;
+        public bool InteractionDisabledByHit;
         public string TooltipOverride;
+        public SerializableContainerModel CorpseItems;
+        private ContainerModel CorpseContainer;
 
         public int GrantXpOnDeath;
 
@@ -177,6 +180,11 @@ namespace CommonCore.RpgGame.World
                 EnterState(CurrentAiState);
             }
 
+            if (CorpseContainer == null && CorpseItems?.Items != null && CorpseItems.Items.Length > 0)
+            {
+                CorpseContainer = SerializableContainerModel.MakeContainerModel(CorpseItems);
+            }
+
         }
 
         public override void Update()
@@ -220,6 +228,8 @@ namespace CommonCore.RpgGame.World
                         SetAnimation(ActorAnimState.Dead);
                     else
                         SetAnimation(ActorAnimState.Dying);
+
+                    InteractionDisabledByHit = false;
 
                     if (DestroyOnDeath)
                         this.gameObject.SetActive(false); //actually destroying the object breaks saving
@@ -762,7 +772,7 @@ namespace CommonCore.RpgGame.World
 
         public void OnInteract(ActionInvokerData data)
         {
-            if (InteractionForceDisabled)
+            if (InteractionDisabledByHit)
                 return;
 
             if(UseDeadAction && CurrentAiState == ActorAiState.Dead)
@@ -771,6 +781,10 @@ namespace CommonCore.RpgGame.World
                 {
                     ExecuteInteraction(DeadInteraction, DeadInteractionTarget, DeadInteractionSpecial, data);
                 }
+            }
+            else if(CorpseContainer != null && CurrentAiState == ActorAiState.Dead && data.Activator is PlayerController)
+            {
+                ContainerModal.PushModal(GameState.Instance.PlayerRpgState.Inventory, CorpseContainer, false, null);
             }
             else
             {
@@ -860,7 +874,7 @@ namespace CommonCore.RpgGame.World
                     BeenHit = true;
 
                     if (DisableInteractionOnHit)
-                        InteractionForceDisabled = true;
+                        InteractionDisabledByHit = true;
 
                     if (FeelPain && didTakePain)
                         EnterState(ActorAiState.Hurting);
@@ -898,9 +912,12 @@ namespace CommonCore.RpgGame.World
 
             actorData.IsRunning = IsRunning;
 
-            actorData.InteractionForceDisabled = InteractionForceDisabled;
+            actorData.InteractionForceDisabled = InteractionDisabledByHit;
 
             extraData["Actor"] = actorData;
+
+            if(CorpseContainer != null)
+                extraData["Container"] = SerializableContainerModel.MakeSerializableContainerModel(CorpseContainer);
 
             return extraData;
         }
@@ -929,7 +946,10 @@ namespace CommonCore.RpgGame.World
 
                     IsRunning = actorData.IsRunning;
 
-                    InteractionForceDisabled = actorData.InteractionForceDisabled;
+                    InteractionDisabledByHit = actorData.InteractionForceDisabled;
+
+                    if(data.ContainsKey("Container"))
+                        CorpseContainer = SerializableContainerModel.MakeContainerModel((SerializableContainerModel)data["Container"]);
 
                 }
                 else
