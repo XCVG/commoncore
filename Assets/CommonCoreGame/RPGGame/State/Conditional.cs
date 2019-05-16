@@ -130,7 +130,7 @@ namespace CommonCore.RpgGame.State
 
     public enum MicroscriptType
     {
-        Flag, Item, Variable, Affinity, Quest, ActorValue, Exec //eval is again not supported
+        Flag, Item, Variable, Affinity, Quest, ActorValue, Exec, MapMarker //eval is again not supported
     }
 
     public enum MicroscriptAction
@@ -271,6 +271,16 @@ namespace CommonCore.RpgGame.State
                     else if (Action == MicroscriptAction.Add)
                     {
                         GameState.Instance.PlayerRpgState.ModAV(Target, Value);
+                    }
+                    else
+                    {
+                        throw new NotSupportedException();
+                    }
+                    break;
+                case MicroscriptType.MapMarker:
+                    if (Action == MicroscriptAction.Set)
+                    {
+                        GameState.Instance.MapMarkers[Target] = (MapMarkerState)Enum.Parse(typeof(MapMarkerState), Value.ToString(), true);
                     }
                     else
                     {
