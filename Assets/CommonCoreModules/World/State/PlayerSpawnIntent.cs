@@ -3,7 +3,7 @@ using CommonCore.State;
 
 namespace CommonCore.World
 {
-    //TODO move this and whole intents system into Core
+
     public class PlayerSpawnIntent : Intent
     {
         public string SpawnPoint { get; private set; } //TID of spawnpoint, use point if null
