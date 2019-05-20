@@ -89,7 +89,7 @@ namespace CommonCore.RpgGame.State
                 case ConditionType.Exec:
                     try
                     {
-                        object[] args = (OptionValue == null) ? new object[] { } : new object[] { OptionValue };
+                        object[] args = (Option == null) ? new object[] { } : new object[] { OptionValue };
                         return (bool)ScriptingModule.CallForResult(Target, new ScriptExecutionContext() { Caller = this }, args);
                     }
                     catch(Exception e)

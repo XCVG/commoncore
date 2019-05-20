@@ -1,0 +1,53 @@
+{
+  "image": "Flavia",
+  "nameText": "Flavia",
+  "default": "started1",
+  "frames": {
+    "matsuda1": {
+      "type": "text",
+      "image": "matsuda",
+      "nameText": "Matsuda Toyoda",
+      "next": "this.matsuda2",
+      "text": "Hey, there you are! I made it into the academy, too!"
+    },
+    "started1": {
+      "type": "choice",
+      "text": "Were you able to vanquish the monsters, Aegustae Aurelia?",
+      "choices": [
+        {
+          "text": "(LIE) They fell swiftly by the edge of my sword",
+          "conditional": [
+			{
+				"next": "this.endlie1",
+				"conditions": []
+			},
+            {
+              "next": "this.endlie2",
+              "conditions": [
+                {
+                  "exec": "TestScripts.LogAndReturnTrue",
+				  "arg": "asdf"
+                }
+              ]
+            }			
+          ],
+          "next": "this.endlie1"
+        },
+        {
+          "text": "I'm working on it",
+          "next": "meta.return"
+        }
+      ]
+    },    
+    "endlie1": {
+      "type": "text",
+      "text": "Didn't",
+      "next": "meta.return"
+    },
+	"endlie2": {
+      "type": "text",
+      "text": "Did",
+      "next": "meta.return"
+    },
+  }
+}

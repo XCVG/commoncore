@@ -389,6 +389,16 @@ PrefabInstance:
       propertyPath: CorpseItems.Items.Array.data[1].ItemModel
       value: Gold
       objectReference: {fileID: 0}
+    - target: {fileID: 114344645711853442, guid: 3f6f1049247585146b5f703e29829950,
+        type: 3}
+      propertyPath: Interaction
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114344645711853442, guid: 3f6f1049247585146b5f703e29829950,
+        type: 3}
+      propertyPath: InteractionTarget
+      value: DemoTest
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3f6f1049247585146b5f703e29829950, type: 3}
 --- !u!4 &183910587 stripped
@@ -1942,10 +1952,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Repeatable: 1
   Microscripts:
-  - Type: 6
-    Target: Test.SingleArg
+  - Type: 7
+    Target: TestShinySphere
     Action: 0
-    Value: hihi
+    Value: Visited
     DelayType: 0
     DelayTime: 5
     DelayAbsolute: 0

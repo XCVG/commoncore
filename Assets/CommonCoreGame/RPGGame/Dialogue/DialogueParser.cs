@@ -338,6 +338,7 @@ namespace CommonCore.RpgGame.Dialogue
             {
                 if (jt["arg"] != null)
                 {
+                    option = 0; //we just need it to be non-null
                     optionValue = (IComparable)CoreUtils.StringToNumericAuto(jt["arg"].Value<string>());
                 }
             }
