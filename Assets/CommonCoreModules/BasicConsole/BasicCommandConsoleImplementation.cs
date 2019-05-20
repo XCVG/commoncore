@@ -31,8 +31,10 @@ namespace CommonCore.BasicConsole
         {
             //figure out the name, do nothing with the description
             string commandName = string.IsNullOrEmpty(alias) ? command.Name : alias;
-            if (useClassName)
+            if(!string.IsNullOrEmpty(className))
                 commandName = $"{className}.{commandName}";
+            else if (useClassName)
+                commandName = $"{command.ReflectedType.Name}.{commandName}";
 
             //dump this command into its bucket
             if (!Commands.ContainsKey(commandName))

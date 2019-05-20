@@ -29,5 +29,11 @@ namespace CommonCore.Scripting
         {
             Debug.Log(arg0);
         }
+
+        [CCScript(ClassName = "Test", Name = "ReturnValue")]
+        private static string ReturnValueTest()
+        {
+            return "ReturnValueTestResult";
+        }
     }
 }

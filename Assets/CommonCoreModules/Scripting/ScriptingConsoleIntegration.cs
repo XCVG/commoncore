@@ -62,7 +62,61 @@ namespace CommonCore.Scripting
             }
         }
 
-        //this does
+        [Command(alias = "CallForResult", className = "Scripting")]
+        private static void CallForResult(string script)
+        {
+            try
+            {
+                var result = ScriptingModule.CallForResult(script, new ScriptExecutionContext { Activator = null, Caller = null });
+                ConsoleModule.WriteLine($"Returned '{result?.ToString() ?? "null"}' [{result?.GetType().Name}]");
+            }
+            catch (Exception e)
+            {
+                ConsoleModule.WriteLine(string.Format("Error in script {0}\n{1}\n{2}", script, e.ToString(), e.StackTrace));
+            }
+        }
+
+        [Command(alias = "CallForResult", className = "Scripting")]
+        private static void CallForResult(string script, string arg0)
+        {
+            try
+            {
+                var result = ScriptingModule.CallForResult(script, new ScriptExecutionContext { Activator = null, Caller = null }, arg0);
+                ConsoleModule.WriteLine($"Returned '{result?.ToString() ?? "null"}' [{result?.GetType().Name}]");
+            }
+            catch (Exception e)
+            {
+                ConsoleModule.WriteLine(string.Format("Error in script {0}\n{1}\n{2}", script, e.ToString(), e.StackTrace));
+            }
+        }
+
+        [Command(alias = "CallForResult", className = "Scripting")]
+        private static void CallForResult(string script, string arg0, string arg1)
+        {
+            try
+            {
+                var result = ScriptingModule.CallForResult(script, new ScriptExecutionContext { Activator = null, Caller = null }, arg0, arg1);
+                ConsoleModule.WriteLine($"Returned '{result?.ToString() ?? "null"}' [{result?.GetType().Name}]");
+            }
+            catch (Exception e)
+            {
+                ConsoleModule.WriteLine(string.Format("Error in script {0}\n{1}\n{2}", script, e.ToString(), e.StackTrace));
+            }
+        }
+
+        [Command(alias = "CallForResult", className = "Scripting")]
+        private static void CallForResult(string script, string arg0, string arg1, string arg2)
+        {
+            try
+            {
+                var result = ScriptingModule.CallForResult(script, new ScriptExecutionContext { Activator = null, Caller = null }, arg0, arg1, arg2);
+                ConsoleModule.WriteLine($"Returned '{result?.ToString() ?? "null"}' [{result?.GetType().Name}]");
+            }
+            catch (Exception e)
+            {
+                ConsoleModule.WriteLine(string.Format("Error in script {0}\n{1}\n{2}", script, e.ToString(), e.StackTrace));
+            }
+        }
 
         [Command(alias = "ListAll", className = "Scripting")]
         private static void ListAll()
