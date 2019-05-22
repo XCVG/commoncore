@@ -120,10 +120,10 @@
       "Body": {
         "$ref": "1"
       },
-      "MeleeWeapon": {
+      "LeftWeapon": {
         "$ref": "2"
       },
-      "RangedWeapon": {
+      "RightWeapon": {
         "$ref": "3"
       }
     }

@@ -71,8 +71,8 @@ namespace CommonCore.RpgGame.World
         public float MeleeProbeDist = 1.5f;
         public GameObject MeleeEffect;
         public Transform ShootPoint;
-        private ViewModelScript RangedViewModel;
-        private ViewModelScript MeleeViewModel;
+        private ViewModelScript LeftViewModel;
+        private ViewModelScript RightViewModel;
         private float TimeToNext;
         private bool IsReloading;
 
@@ -223,8 +223,8 @@ namespace CommonCore.RpgGame.World
 
         private void SetInitialViewModels()
         {
-            HandleWeaponChange(EquipSlot.RangedWeapon);
-            HandleWeaponChange(EquipSlot.MeleeWeapon);
+            HandleWeaponChange(EquipSlot.LeftWeapon);
+            HandleWeaponChange(EquipSlot.RightWeapon);
         }
 
         private void SetBaseScaleVars()
@@ -402,11 +402,11 @@ namespace CommonCore.RpgGame.World
                     r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
             }
 
-            if (MeleeViewModel != null)
-                MeleeViewModel.SetVisibility(!visible);
+            if (RightViewModel != null)
+                RightViewModel.SetVisibility(!visible);
 
-            if (RangedViewModel != null)
-                RangedViewModel.SetVisibility(!visible);
+            if (LeftViewModel != null)
+                LeftViewModel.SetVisibility(!visible);
         }
 
         private void PushViewChangeMessage(PlayerViewType newView)
@@ -645,10 +645,10 @@ namespace CommonCore.RpgGame.World
                         AnimController.CrossFade("run", 0f);
                     IsAnimating = true;
                     //stepSound.Play();
-                    if (MeleeViewModel != null)
-                        MeleeViewModel.SetState(ViewModelState.Moving);
-                    if (RangedViewModel != null)
-                        RangedViewModel.SetState(ViewModelState.Moving);
+                    if (RightViewModel != null)
+                        RightViewModel.SetState(ViewModelState.Moving);
+                    if (LeftViewModel != null)
+                        LeftViewModel.SetState(ViewModelState.Moving);
                 }
             }
             else
@@ -663,10 +663,10 @@ namespace CommonCore.RpgGame.World
                         AnimController.CrossFade("idle", 0f);
                     IsAnimating = false;
                     //stepSound.Stop();
-                    if (MeleeViewModel != null)
-                        MeleeViewModel.SetState(ViewModelState.Fixed);
-                    if (RangedViewModel != null)
-                        RangedViewModel.SetState(ViewModelState.Fixed);
+                    if (RightViewModel != null)
+                        RightViewModel.SetState(ViewModelState.Fixed);
+                    if (LeftViewModel != null)
+                        LeftViewModel.SetState(ViewModelState.Fixed);
                 }
             }
 
@@ -718,10 +718,10 @@ namespace CommonCore.RpgGame.World
             {
                 QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepReady"));
 
-                if (MeleeViewModel != null)
-                    MeleeViewModel.SetState(IsMoving ? ViewModelState.Moving : ViewModelState.Fixed);
-                if (RangedViewModel != null)
-                    RangedViewModel.SetState(IsMoving ? ViewModelState.Moving : ViewModelState.Fixed);
+                if (RightViewModel != null)
+                    RightViewModel.SetState(IsMoving ? ViewModelState.Moving : ViewModelState.Fixed);
+                if (LeftViewModel != null)
+                    LeftViewModel.SetState(IsMoving ? ViewModelState.Moving : ViewModelState.Fixed);
             }
                 
 
@@ -775,9 +775,9 @@ namespace CommonCore.RpgGame.World
             ActorHitInfo hitInfo = MeleeHitInfo;
             if (AttemptToUseStats)
             {
-                if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.MeleeWeapon))
+                if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.RightWeapon))
                 {
-                    MeleeWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.MeleeWeapon].ItemModel as MeleeWeaponItemModel;
+                    MeleeWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel as MeleeWeaponItemModel;
                     if (wim != null)
                     {
                         TimeToNext = wim.Rate;
@@ -801,9 +801,9 @@ namespace CommonCore.RpgGame.World
             if (ac != null)
                 ac.TakeDamage(hitInfo);
 
-            if (MeleeViewModel != null)
+            if (RightViewModel != null)
             {
-                MeleeViewModel.SetState(ViewModelState.Firing);
+                RightViewModel.SetState(ViewModelState.Firing);
             }
             else if (MeleeEffect != null)
                 Instantiate(MeleeEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
@@ -819,11 +819,11 @@ namespace CommonCore.RpgGame.World
             if (AttemptToUseStats)
             {
 
-                if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.RangedWeapon))
+                if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.LeftWeapon))
                 {
                     
 
-                    RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RangedWeapon].ItemModel as RangedWeaponItemModel;
+                    RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.LeftWeapon].ItemModel as RangedWeaponItemModel;
                     if (wim != null)
                     {
                         bool useAmmo = !(wim.AType == AmmoType.NoAmmo);
@@ -869,9 +869,9 @@ namespace CommonCore.RpgGame.World
 
                         //TODO handle instantiate location (and variants?) in FPS/TPS mode?
                         //WIP fairly dramatic paradigm shift: effects are handled by viewmodel
-                        if(RangedViewModel != null)
+                        if(LeftViewModel != null)
                         {
-                            RangedViewModel.SetState(ViewModelState.Firing);
+                            LeftViewModel.SetState(ViewModelState.Firing);
                         }
                         else if (!string.IsNullOrEmpty(wim.FireEffect))
                         {
@@ -915,7 +915,7 @@ namespace CommonCore.RpgGame.World
 
         private void DoReload()
         {
-            RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RangedWeapon].ItemModel as RangedWeaponItemModel;
+            RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.LeftWeapon].ItemModel as RangedWeaponItemModel;
 
             if(wim == null)
             {
@@ -930,9 +930,9 @@ namespace CommonCore.RpgGame.World
                 return;
             }
 
-            if(RangedViewModel != null)
+            if(LeftViewModel != null)
             {
-                RangedViewModel.SetState(ViewModelState.Reloading);
+                LeftViewModel.SetState(ViewModelState.Reloading);
             }
             else if (!string.IsNullOrEmpty(wim.ReloadEffect))
                 AudioPlayer.Instance.PlaySound(wim.ReloadEffect, SoundType.Sound, false);
@@ -946,15 +946,15 @@ namespace CommonCore.RpgGame.World
 
         private void FinishReload()
         {
-            RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RangedWeapon].ItemModel as RangedWeaponItemModel;
+            RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.LeftWeapon].ItemModel as RangedWeaponItemModel;
 
             int qty = Math.Min(wim.MagazineSize, GameState.Instance.PlayerRpgState.Inventory.CountItem(wim.AType.ToString()));
             GameState.Instance.PlayerRpgState.AmmoInMagazine = qty;
             GameState.Instance.PlayerRpgState.Inventory.RemoveItem(wim.AType.ToString(), qty);
 
-            if (RangedViewModel != null)
+            if (LeftViewModel != null)
             {
-                RangedViewModel.SetState(IsMoving ? ViewModelState.Moving : ViewModelState.Fixed);
+                LeftViewModel.SetState(IsMoving ? ViewModelState.Moving : ViewModelState.Fixed);
             }
 
             IsReloading = false;
@@ -970,24 +970,25 @@ namespace CommonCore.RpgGame.World
             //we should probably cache this at a higher level but it's probably not safe
             var player = GameState.Instance.PlayerRpgState;
 
-            //TODO get actual prefabs
-            if (slot == EquipSlot.MeleeWeapon)
+            //TODO get actual prefabs (?!)
+            if (slot == EquipSlot.RightWeapon)
             {
                 //handle equip/unequip melee weapon
-                if (player.Equipped.ContainsKey(EquipSlot.MeleeWeapon) && player.Equipped[EquipSlot.MeleeWeapon] != null)
+                if (player.Equipped.ContainsKey(EquipSlot.RightWeapon) && player.Equipped[EquipSlot.RightWeapon] != null)
                 {
-                    Debug.Log("Equipped melee weapon!");
+                    //fixed to equip *right* weapon
+                    Debug.Log("Equipped right weapon!");
 
-                    MeleeWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.MeleeWeapon].ItemModel as MeleeWeaponItemModel;
+                    WeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel as WeaponItemModel;
                     if (wim != null && !string.IsNullOrEmpty(wim.ViewModel))
                     {
                         var prefab = CoreUtils.LoadResource<GameObject>("WeaponViewModels/" + wim.ViewModel);
                         if(prefab != null)
                         {
-                            var go = Instantiate<GameObject>(prefab, LeftViewModelPoint);
-                            MeleeViewModel = go.GetComponent<ViewModelScript>();
-                            if (MeleeViewModel != null)
-                                MeleeViewModel.SetState(IsMoving ? ViewModelState.Moving : ViewModelState.Fixed);
+                            var go = Instantiate<GameObject>(prefab, RightViewModelPoint);
+                            RightViewModel = go.GetComponent<ViewModelScript>();
+                            if (RightViewModel != null)
+                                RightViewModel.SetState(IsMoving ? ViewModelState.Moving : ViewModelState.Fixed);
                         }
                         
                     }
@@ -995,46 +996,49 @@ namespace CommonCore.RpgGame.World
                 }
                 else
                 {
-                    Debug.Log("Unequipped melee weapon!");
-                    if(LeftViewModelPoint.transform.childCount > 0)
+                    //fixed to unequip *right* model
+                    Debug.Log("Unequipped right weapon!");
+                    if(RightViewModelPoint.transform.childCount > 0)
                     {
-                        Destroy(LeftViewModelPoint.transform.GetChild(0).gameObject);                        
+                        Destroy(RightViewModelPoint.transform.GetChild(0).gameObject);                        
                     }
-                    MeleeViewModel = null;
+                    RightViewModel = null;
                 }
             }
-            else if(slot == EquipSlot.RangedWeapon)
+            else if(slot == EquipSlot.LeftWeapon)
             {
                 IsReloading = false;
                 TimeToNext = 0;
 
                 //handle equip/unequip ranged weapon
-                if(player.Equipped.ContainsKey(EquipSlot.RangedWeapon) && player.Equipped[EquipSlot.RangedWeapon] != null)
+                if(player.Equipped.ContainsKey(EquipSlot.LeftWeapon) && player.Equipped[EquipSlot.LeftWeapon] != null)
                 {
-                    Debug.Log("Equipped ranged weapon!");
+                    //fixed to equip *left* model
+                    Debug.Log("Equipped left weapon!");
 
-                    RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RangedWeapon].ItemModel as RangedWeaponItemModel;
+                    WeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.LeftWeapon].ItemModel as WeaponItemModel;
                     if (wim != null && !string.IsNullOrEmpty(wim.ViewModel))
                     {
                         var prefab = CoreUtils.LoadResource<GameObject>("WeaponViewModels/" + wim.ViewModel);
                         if (prefab != null)
                         {
-                            var go = Instantiate<GameObject>(prefab, RightViewModelPoint);
-                            RangedViewModel = go.GetComponent<ViewModelScript>();
-                            if (RangedViewModel != null)
-                                RangedViewModel.SetState(IsMoving ? ViewModelState.Moving : ViewModelState.Fixed);
+                            var go = Instantiate<GameObject>(prefab, LeftViewModelPoint);
+                            LeftViewModel = go.GetComponent<ViewModelScript>();
+                            if (LeftViewModel != null)
+                                LeftViewModel.SetState(IsMoving ? ViewModelState.Moving : ViewModelState.Fixed);
                         }
 
                     }
                 }
                 else
                 {
-                    Debug.Log("Unequipped ranged weapon!");
-                    if (RightViewModelPoint.transform.childCount > 0)
+                    //fixed to unequip *left* model
+                    Debug.Log("Unequipped left weapon!");
+                    if (LeftViewModelPoint.transform.childCount > 0)
                     {
-                        Destroy(RightViewModelPoint.transform.GetChild(0).gameObject);                        
+                        Destroy(LeftViewModelPoint.transform.GetChild(0).gameObject);                        
                     }
-                    RangedViewModel = null;
+                    LeftViewModel = null;
                 }
             }
         }

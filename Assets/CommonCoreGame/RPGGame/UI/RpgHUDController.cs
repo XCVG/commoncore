@@ -122,10 +122,14 @@ namespace CommonCore.RpgGame.UI
         {
             var player = GameState.Instance.PlayerRpgState;
 
-            if(player.IsEquipped(EquipSlot.RangedWeapon))
+            //it's all fucked
+
+            /*
+
+            if(player.IsEquipped(EquipSlot.LeftWeapon))
             {
-                RangedWeaponText.text = InventoryModel.GetNiceName(player.Equipped[EquipSlot.RangedWeapon].ItemModel);
-                AmmoType atype = ((RangedWeaponItemModel)player.Equipped[EquipSlot.RangedWeapon].ItemModel).AType;
+                RangedWeaponText.text = InventoryModel.GetNiceName(player.Equipped[EquipSlot.LeftWeapon].ItemModel);
+                AmmoType atype = ((RangedWeaponItemModel)player.Equipped[EquipSlot.LeftWeapon].ItemModel).AType;
                 if(atype != AmmoType.NoAmmo)
                 {
                     AmmoText.text = string.Format("{1}/{2} [{0}]", atype.ToString(), player.AmmoInMagazine, player.Inventory.CountItem(atype.ToString()));
@@ -143,9 +147,9 @@ namespace CommonCore.RpgGame.UI
                 AmmoText.text = "- / -";
             }
 
-            if (player.IsEquipped(EquipSlot.MeleeWeapon))
+            if (player.IsEquipped(EquipSlot.RightWeapon))
             {
-                MeleeWeaponText.text = InventoryModel.GetNiceName(player.Equipped[EquipSlot.MeleeWeapon].ItemModel);
+                MeleeWeaponText.text = InventoryModel.GetNiceName(player.Equipped[EquipSlot.RightWeapon].ItemModel);
             }
             else
             {
@@ -161,6 +165,8 @@ namespace CommonCore.RpgGame.UI
             {
                 ReadyBarImage.color = Color.red;
             }
+
+            */
         }
 
         private void AddQuestMessage(QdmsMessage message)

@@ -176,10 +176,11 @@ namespace CommonCore.RpgGame.Rpg
 
         public static EquipSlot GetItemSlot(InventoryItemModel item)
         {
+            //TODO both Ranged and Melee should default to RightWeapon
             if (item is RangedWeaponItemModel)
-                return EquipSlot.RangedWeapon;
+                return EquipSlot.LeftWeapon;
             else if (item is MeleeWeaponItemModel)
-                return EquipSlot.MeleeWeapon;
+                return EquipSlot.RightWeapon;
             else if (item is ArmorItemModel)
                 return EquipSlot.Body;
             else

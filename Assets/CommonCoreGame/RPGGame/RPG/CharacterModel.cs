@@ -58,7 +58,7 @@ namespace CommonCore.RpgGame.Rpg
 
         
         public InventoryModel Inventory { get; private set; }
-        public int AmmoInMagazine { get; set; }
+        public int AmmoInMagazine { get; set; } //TODO duplicate this so we can have two weapons with different magazines
         public Dictionary<EquipSlot, InventoryItemInstance> Equipped { get; private set; }
 
         public CharacterModel() //TODO with a model base parameter
@@ -120,16 +120,26 @@ namespace CommonCore.RpgGame.Rpg
 
         public void EquipItem(InventoryItemInstance item)
         {
+            EquipItem(item, null);
+        }
+
+        public void EquipItem(InventoryItemInstance item, EquipSlot? slotOverride)
+        {
             if (item.Equipped)
                 throw new InvalidOperationException();
 
-            EquipSlot slot = InventoryModel.GetItemSlot(item.ItemModel);
+            EquipSlot slot = slotOverride ?? InventoryModel.GetItemSlot(item.ItemModel);
 
             if (slot == EquipSlot.None)
                 throw new InvalidOperationException();
 
+            //unequip what was in the slot
             if (Equipped.ContainsKey(slot))
                 UnequipItem(Equipped[slot], false);
+
+            //if it's a two-handed weapon, also unequip the other slot
+            if (item.ItemModel is WeaponItemModel && item.ItemModel.CheckFlag("TwoHanded") && Equipped.ContainsKey(slot == EquipSlot.LeftWeapon ? EquipSlot.RightWeapon : EquipSlot.LeftWeapon))
+                UnequipItem(Equipped[slot == EquipSlot.LeftWeapon ? EquipSlot.RightWeapon : EquipSlot.LeftWeapon], false);
 
             Equipped[slot] = item;
 

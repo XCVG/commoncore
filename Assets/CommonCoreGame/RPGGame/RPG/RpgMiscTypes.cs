@@ -38,7 +38,7 @@ namespace CommonCore.RpgGame.Rpg
 
     public enum EquipSlot
     {
-        None, RangedWeapon, MeleeWeapon, Body
+        None, LeftWeapon, RightWeapon, Body
     }
 
     //character model will have two of these: base and derived

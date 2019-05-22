@@ -109,7 +109,7 @@ namespace CommonCore.RpgGame.Rpg
     //base class for invariant inventory items
     public abstract class InventoryItemModel
     {
-        public readonly string Name; //this is incredibly inelegant and we will find a way to autoset this at some point
+        public readonly string Name;
         public readonly float Weight;
         public readonly float Value;
         public readonly float MaxCondition;
@@ -231,13 +231,15 @@ namespace CommonCore.RpgGame.Rpg
     {
         public readonly Dictionary<DamageType, float> DamageResistance;
         public readonly Dictionary<DamageType, float> DamageThreshold;
+        public readonly EquipSlot Slot;
 
         public ArmorItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags, string worldModel,
-            Dictionary<DamageType, float> damageResistance, Dictionary<DamageType, float> damageThreshold)
+            Dictionary<DamageType, float> damageResistance, Dictionary<DamageType, float> damageThreshold, EquipSlot slot)
             : base(name, weight, value, maxCondition, unique, essential, flags, worldModel)
         {
             DamageResistance = new Dictionary<DamageType, float>(damageResistance);
             DamageThreshold = new Dictionary<DamageType, float>(damageThreshold);
+            Slot = slot;
         }
     }
 

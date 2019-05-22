@@ -26,7 +26,7 @@ namespace CommonCore.RpgGame.UI
             ArmorText.text = string.Format("Level: {0} ({1}/{2} XP)\n", pModel.Level, pModel.Experience, RpgValues.XPToNext(pModel.Level));
 
             string equipText = string.Format("Armor: {0}\nRanged: {1}\nMelee: {2}", 
-                GetNameForSlot(EquipSlot.Body, pModel), GetNameForSlot(EquipSlot.RangedWeapon, pModel), GetNameForSlot(EquipSlot.MeleeWeapon, pModel));
+                GetNameForSlot(EquipSlot.Body, pModel), GetNameForSlot(EquipSlot.LeftWeapon, pModel), GetNameForSlot(EquipSlot.RightWeapon, pModel));
 
             AmmoText.text = equipText;
 
