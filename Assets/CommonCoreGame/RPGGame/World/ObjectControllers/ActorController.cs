@@ -745,14 +745,16 @@ namespace CommonCore.RpgGame.World
 
         private static string GetNameForAnimation(ActorAnimState state) //TODO non-stupid standard names
         {
+            //TODO allow overrides?
+
             switch (state)
             {
                 case ActorAnimState.Idle:
                     return "idle";
                 case ActorAnimState.Dead:
-                    return "die";
-                case ActorAnimState.Dying:
                     return "dead";
+                case ActorAnimState.Dying:
+                    return "dying";
                 case ActorAnimState.Hurting:
                     return "pain";
                 case ActorAnimState.Walking:
@@ -762,9 +764,9 @@ namespace CommonCore.RpgGame.World
                 case ActorAnimState.Running:
                     return "run";
                 case ActorAnimState.Shooting:
-                    return "attack";
+                    return "shoot";
                 case ActorAnimState.Punching:
-                    return "attack";
+                    return "punch";
                 default:
                     return string.Empty;
             }
