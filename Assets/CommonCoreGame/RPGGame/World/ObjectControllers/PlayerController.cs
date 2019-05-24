@@ -730,38 +730,111 @@ namespace CommonCore.RpgGame.World
                 FinishReload();
             }
 
-            if (ShootingEnabled && MappedInput.GetButtonDown(DefaultControls.Fire))
+            //Logic: 
+            // -if there is only one weapon equipped, that weapon uses primary fire
+            // -if one weapon is ranged and the other melee, the ranged is primary fire
+            // -if both weapons are ranged or both melee, primary is the left weapon and secondary the right weapon
+            //TBH this code is PFA
+            if(ShootingEnabled)
             {
-                //shoot
+                if (MappedInput.GetButtonDown(DefaultControls.Fire))
+                {
+                    bool leftEquipped = GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.LeftWeapon);
+                    bool rightEquipped = GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.RightWeapon);
+                    if (leftEquipped && rightEquipped)
+                    {                        
+                        var leftWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.LeftWeapon].ItemModel;
+                        var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel;
 
-                DoRangedAttack();
+                        //if only one weapon is ranged, fire that one
+                        if (leftWeaponModel is RangedWeaponItemModel && !(rightWeaponModel is RangedWeaponItemModel))
+                            DoRangedAttack(EquipSlot.LeftWeapon);
+                        else if (rightWeaponModel is RangedWeaponItemModel && !(leftWeaponModel is RangedWeaponItemModel))
+                            DoRangedAttack(EquipSlot.RightWeapon);
+                        //otherwise, fire the left weapon
+                        else
+                        {
+                            if (leftWeaponModel is RangedWeaponItemModel)
+                                DoRangedAttack(EquipSlot.LeftWeapon);
+                            else
+                                DoMeleeAttack(EquipSlot.LeftWeapon);
+                        }
+                        
+                    }
+                    else if(leftEquipped)
+                    {
+                        //fire left weapon
+                        var weaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.LeftWeapon].ItemModel;
+                        if (weaponModel is RangedWeaponItemModel)
+                            DoRangedAttack(EquipSlot.LeftWeapon);
+                        else
+                            DoMeleeAttack(EquipSlot.LeftWeapon);
+                    }
+                    else if(rightEquipped)
+                    {
+                        //fire right weapon
+                        var weaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel;
+                        if (weaponModel is RangedWeaponItemModel)
+                            DoRangedAttack(EquipSlot.RightWeapon);
+                        else
+                            DoMeleeAttack(EquipSlot.RightWeapon);
+                    }                    
+                }
+                else if (MappedInput.GetButtonDown(DefaultControls.AltFire))
+                {
+                    bool leftEquipped = GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.LeftWeapon);
+                    bool rightEquipped = GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.RightWeapon);
+                    if (leftEquipped && rightEquipped)
+                    {
+                        var leftWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.LeftWeapon].ItemModel;
+                        var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel;
+
+                        //if only one weapon is ranged, fire the other one
+                        if (leftWeaponModel is RangedWeaponItemModel && !(rightWeaponModel is RangedWeaponItemModel))
+                            DoMeleeAttack(EquipSlot.RightWeapon);
+                        else if (rightWeaponModel is RangedWeaponItemModel && !(leftWeaponModel is RangedWeaponItemModel))
+                            DoMeleeAttack(EquipSlot.LeftWeapon);
+                        //otherwise, fire the right weapon
+                        else
+                        {
+                            if (rightWeaponModel is RangedWeaponItemModel)
+                                DoRangedAttack(EquipSlot.RightWeapon);
+                            else
+                                DoMeleeAttack(EquipSlot.RightWeapon);
+                        }
+                    }
+
+                    //TODO eventually altfire
+                }
+                else if (MappedInput.GetButtonDown(DefaultControls.Reload))
+                {
+                    DoReload();
+                }
+                
             }
-            else if (ShootingEnabled && MappedInput.GetButtonDown(DefaultControls.Reload))
-            {
-                DoReload();
-            }
-            else if(MeleeEnabled && MappedInput.GetButtonDown(DefaultControls.AltFire))
-            {
-                DoMeleeAttack();
-            }
+
         }
 
-        private void DoMeleeAttack()
+        private void DoMeleeAttack(EquipSlot slot)
         {
+
+            Debug.Log($"MeleeAttack {slot}");
+
             //punch
             LayerMask lm = LayerMask.GetMask("Default", "ActorHitbox");
             var rc = Physics.RaycastAll(ShootPoint.position, ShootPoint.forward, MeleeProbeDist, lm, QueryTriggerInteraction.Collide);
 
             //TODO handle 2D/3D probe distance
 
-            ActorController ac = null;
+            //totally fucked!
+            ITakeDamage ac = null;
             foreach (var r in rc)
             {
                 var go = r.collider.gameObject;
                 var ahgo = go.GetComponent<ActorHitboxComponent>();
                 if (ahgo != null)
                 {
-                    ac = (ActorController)ahgo.ParentController; //this works as long as we don't go MP or do Voodoo Dolls
+                    ac = ahgo.ParentController as ITakeDamage; //this works as long as we don't go MP or do Voodoo Dolls
                     break;
                 }
                 var acgo = go.GetComponent<ActorController>();
@@ -775,9 +848,12 @@ namespace CommonCore.RpgGame.World
             ActorHitInfo hitInfo = MeleeHitInfo;
             if (AttemptToUseStats)
             {
-                if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.RightWeapon))
+                if (slot != EquipSlot.LeftWeapon && slot != EquipSlot.RightWeapon)
+                    throw new ArgumentException("slot must refer to a weapon", nameof(slot));
+
+                if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(slot))
                 {
-                    MeleeWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel as MeleeWeaponItemModel;
+                    MeleeWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[slot].ItemModel as MeleeWeaponItemModel;
                     if (wim != null)
                     {
                         TimeToNext = wim.Rate;
@@ -794,16 +870,28 @@ namespace CommonCore.RpgGame.World
                         hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, wim.DType, ActorBodyPart.Unspecified, this);
 
                     }
+                    else
+                    {
+                        Debug.LogError($"Player can't do a melee attack because weapon in {slot.ToString()} is not a melee weapon!");
+                    }
                     //TODO fists or something
+                }
+                else
+                {
+                    Debug.LogError($"Player can't do a melee attack because no {slot.ToString()} is equipped!");
                 }
             }
 
             if (ac != null)
                 ac.TakeDamage(hitInfo);
 
-            if (RightViewModel != null)
+            if (slot == EquipSlot.RightWeapon && RightViewModel != null)
             {
                 RightViewModel.SetState(ViewModelState.Firing);
+            }
+            else if (slot == EquipSlot.LeftWeapon && LeftViewModel != null)
+            {
+                LeftViewModel.SetState(ViewModelState.Firing);
             }
             else if (MeleeEffect != null)
                 Instantiate(MeleeEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
@@ -812,18 +900,22 @@ namespace CommonCore.RpgGame.World
         }
 
         //this whole thing is a fucking mess that needs to be refactored
-        private void DoRangedAttack()
+        private void DoRangedAttack(EquipSlot slot)
         {
+            if (slot != EquipSlot.LeftWeapon && slot != EquipSlot.RightWeapon)
+                throw new ArgumentException("slot must refer to a weapon", nameof(slot));
+
+            Debug.Log($"RangedAttack {slot}");
+
             //TODO default model for fallback instead of fixed values
 
             if (AttemptToUseStats)
             {
 
-                if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.LeftWeapon))
+                if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(slot))
                 {
-                    
 
-                    RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.LeftWeapon].ItemModel as RangedWeaponItemModel;
+                    RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[slot].ItemModel as RangedWeaponItemModel;
                     if (wim != null)
                     {
                         bool useAmmo = !(wim.AType == AmmoType.NoAmmo);
@@ -832,13 +924,13 @@ namespace CommonCore.RpgGame.World
                         //ammo logic
                         if (useAmmo)
                         {
-                            if (GameState.Instance.PlayerRpgState.AmmoInMagazine == 0 && !IsReloading)
+                            if (GameState.Instance.PlayerRpgState.AmmoInMagazine[slot] == 0 && !IsReloading)
                             {
                                 DoReload();
                                 return;
                             }
 
-                            GameState.Instance.PlayerRpgState.AmmoInMagazine -= 1;
+                            GameState.Instance.PlayerRpgState.AmmoInMagazine[slot] -= 1;
                         }
 
                         //bullet logic
@@ -868,8 +960,11 @@ namespace CommonCore.RpgGame.World
                         GameObject fireEffect = null;
 
                         //TODO handle instantiate location (and variants?) in FPS/TPS mode?
-                        //WIP fairly dramatic paradigm shift: effects are handled by viewmodel
-                        if(LeftViewModel != null)
+                        if (slot == EquipSlot.RightWeapon && RightViewModel != null)
+                        {
+                            RightViewModel.SetState(ViewModelState.Firing);
+                        }
+                        else if (slot == EquipSlot.LeftWeapon && LeftViewModel != null)
                         {
                             LeftViewModel.SetState(ViewModelState.Firing);
                         }
@@ -880,7 +975,7 @@ namespace CommonCore.RpgGame.World
                                 fireEffect = Instantiate(fireEffectPrefab, ShootPoint.position, ShootPoint.rotation, ShootPoint);
                         }
 
-                        if (useAmmo && autoReload && GameState.Instance.PlayerRpgState.AmmoInMagazine <= 0)
+                        if (useAmmo && autoReload && GameState.Instance.PlayerRpgState.AmmoInMagazine[slot] <= 0)
                         {
                             DoReload();
                         }
@@ -888,7 +983,7 @@ namespace CommonCore.RpgGame.World
                     }
                     else
                     {
-                        CDebug.LogEx("Can't find item model for ranged weapon!", LogLevel.Error, this);
+                        Debug.LogError("Can't find item model for ranged weapon!");
                     }
                     
                 }
@@ -915,51 +1010,71 @@ namespace CommonCore.RpgGame.World
 
         private void DoReload()
         {
-            RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.LeftWeapon].ItemModel as RangedWeaponItemModel;
-
-            if(wim == null)
-            {
-                CDebug.LogEx("Tried to reload a null weapon", LogLevel.Error, this);
+            if (IsReloading) //I think we need this guard
                 return;
-            }
 
-            //unreloadable condition
-            if(GameState.Instance.PlayerRpgState.AmmoInMagazine == wim.MagazineSize 
-                || GameState.Instance.PlayerRpgState.Inventory.CountItem(wim.AType.ToString()) <= 0)
-            {
-                return;
-            }
+            //TODO reload both
 
-            if(LeftViewModel != null)
-            {
-                LeftViewModel.SetState(ViewModelState.Reloading);
-            }
-            else if (!string.IsNullOrEmpty(wim.ReloadEffect))
-                AudioPlayer.Instance.PlaySound(wim.ReloadEffect, SoundType.Sound, false);
+            reloadSide(EquipSlot.RightWeapon, RightViewModel);
+            reloadSide(EquipSlot.LeftWeapon, LeftViewModel);
 
-            TimeToNext = wim.ReloadTime;
             IsReloading = true;
 
             QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepReloading"));
+
+            void reloadSide(EquipSlot slot, ViewModelScript viewModel)
+            {
+                if(GameState.Instance.PlayerRpgState.Equipped.ContainsKey(slot))
+                {
+                    if(GameState.Instance.PlayerRpgState.Equipped[slot].ItemModel is RangedWeaponItemModel rwim)
+                    {
+                        //unreloadable condition
+                        if (GameState.Instance.PlayerRpgState.AmmoInMagazine[slot] == rwim.MagazineSize
+                            || GameState.Instance.PlayerRpgState.Inventory.CountItem(rwim.AType.ToString()) <= 0)
+                        {
+                            return;
+                        }
+
+                        if (viewModel != null)
+                            viewModel.SetState(ViewModelState.Reloading);
+                        else if(!string.IsNullOrEmpty(rwim.ReloadEffect))
+                            AudioPlayer.Instance.PlaySound(rwim.ReloadEffect, SoundType.Sound, false);
+
+                        TimeToNext = Math.Max(rwim.ReloadTime, TimeToNext); //we take the longest time
+                    }
+                }
+                
+            }
 
         }
 
         private void FinishReload()
         {
-            RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.LeftWeapon].ItemModel as RangedWeaponItemModel;
 
-            int qty = Math.Min(wim.MagazineSize, GameState.Instance.PlayerRpgState.Inventory.CountItem(wim.AType.ToString()));
-            GameState.Instance.PlayerRpgState.AmmoInMagazine = qty;
-            GameState.Instance.PlayerRpgState.Inventory.RemoveItem(wim.AType.ToString(), qty);
-
-            if (LeftViewModel != null)
-            {
-                LeftViewModel.SetState(IsMoving ? ViewModelState.Moving : ViewModelState.Fixed);
-            }
+            finishReloadSide(EquipSlot.RightWeapon, RightViewModel);
+            finishReloadSide(EquipSlot.LeftWeapon, LeftViewModel);
 
             IsReloading = false;
 
             QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepReloaded"));
+
+            void finishReloadSide(EquipSlot slot, ViewModelScript viewModel)
+            {
+                if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(slot))
+                {
+                    if (GameState.Instance.PlayerRpgState.Equipped[slot].ItemModel is RangedWeaponItemModel rwim)
+                    {
+                        int qty = Math.Min(rwim.MagazineSize, GameState.Instance.PlayerRpgState.Inventory.CountItem(rwim.AType.ToString()));
+                        GameState.Instance.PlayerRpgState.AmmoInMagazine[slot] = qty;
+                        GameState.Instance.PlayerRpgState.Inventory.RemoveItem(rwim.AType.ToString(), qty);
+
+                        if (viewModel != null)
+                        {
+                            viewModel.SetState(IsMoving ? ViewModelState.Moving : ViewModelState.Fixed);
+                        }
+                    }
+                }
+            }
 
         }
 
@@ -970,7 +1085,6 @@ namespace CommonCore.RpgGame.World
             //we should probably cache this at a higher level but it's probably not safe
             var player = GameState.Instance.PlayerRpgState;
 
-            //TODO get actual prefabs (?!)
             if (slot == EquipSlot.RightWeapon)
             {
                 //handle equip/unequip melee weapon

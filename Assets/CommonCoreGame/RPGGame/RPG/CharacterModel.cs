@@ -58,7 +58,7 @@ namespace CommonCore.RpgGame.Rpg
 
         
         public InventoryModel Inventory { get; private set; }
-        public int AmmoInMagazine { get; set; } //TODO duplicate this so we can have two weapons with different magazines
+        public Dictionary<EquipSlot, int> AmmoInMagazine { get; set; } //TODO duplicate this so we can have two weapons with different magazines
         public Dictionary<EquipSlot, InventoryItemInstance> Equipped { get; private set; }
 
         public CharacterModel() //TODO with a model base parameter
@@ -69,6 +69,7 @@ namespace CommonCore.RpgGame.Rpg
             Inventory = new InventoryModel();
             Conditions = new List<Condition>();
             Equipped = new Dictionary<EquipSlot, InventoryItemInstance>();
+            AmmoInMagazine = new Dictionary<EquipSlot, int>();
 
             //create blank stats and derive stats
             BaseStats = new StatsSet();
@@ -147,8 +148,8 @@ namespace CommonCore.RpgGame.Rpg
             if (item.ItemModel is RangedWeaponItemModel)
             {
                 var rwim = (RangedWeaponItemModel)item.ItemModel;
-                AmmoInMagazine = Math.Min(rwim.MagazineSize, Inventory.CountItem(rwim.AType.ToString()));
-                Inventory.RemoveItem(rwim.AType.ToString(), AmmoInMagazine);
+                AmmoInMagazine[slot] = Math.Min(rwim.MagazineSize, Inventory.CountItem(rwim.AType.ToString()));
+                Inventory.RemoveItem(rwim.AType.ToString(), AmmoInMagazine[slot]);
             }
 
             item.Equipped = true;
@@ -180,8 +181,8 @@ namespace CommonCore.RpgGame.Rpg
             if(item.ItemModel is RangedWeaponItemModel)
             {
                 var rwim = (RangedWeaponItemModel)item.ItemModel;
-                Inventory.AddItem(rwim.AType.ToString(), AmmoInMagazine);
-                AmmoInMagazine = 0;
+                Inventory.AddItem(rwim.AType.ToString(), AmmoInMagazine[slot]);
+                AmmoInMagazine[slot] = 0;
             }
 
             item.Equipped = false;

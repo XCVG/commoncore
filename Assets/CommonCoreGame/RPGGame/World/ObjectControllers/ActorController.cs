@@ -237,7 +237,7 @@ namespace CommonCore.RpgGame.World
                     if (OnDeathSpecial != null)
                         OnDeathSpecial.Execute(new ActionInvokerData { Activator = this });
 
-                    if (Target.GetComponent<PlayerController>() && GrantXpOnDeath > 0)
+                    if (Target != null && Target.GetComponent<PlayerController>() && GrantXpOnDeath > 0)
                         GameState.Instance.PlayerRpgState.Experience += GrantXpOnDeath;
                     break;
                 case ActorAiState.Wandering:

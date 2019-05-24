@@ -115,7 +115,10 @@
         }
       ]
     },
-	"AmmoInMagazine": 1,
+  "AmmoInMagazine": {
+    "LeftWeapon": 0,
+    "RightWeapon": 0
+  },
 	"Equipped": {
       "Body": {
         "$ref": "1"
