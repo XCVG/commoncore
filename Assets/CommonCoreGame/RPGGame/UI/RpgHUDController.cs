@@ -11,8 +11,10 @@ namespace CommonCore.RpgGame.UI
 {
     public class RpgHUDController : BaseHUDController
     {
+        [Header("Top Bar")]
         public Text TargetText;
-        
+
+        [Header("Left Bar")]
         public Slider HealthSlider;
         public Text HealthText;
 
@@ -22,11 +24,14 @@ namespace CommonCore.RpgGame.UI
         public Slider EnergySlider;
         public Text EnergyText;
 
-        public Text RangedWeaponText;
-        public Text AmmoText;
-        public Text MeleeWeaponText;
+        [Header("Right Bar")]
+        public Text RightWeaponText;
+        public Text RightAmmoText;
+        public Text LeftWeaponText;
+        public Text LeftAmmoText;
         public Image ReadyBarImage;
 
+        [Header("Misc")]
         public Image Crosshair;
 
         //local state is, as it turns out, unavoidable
@@ -117,56 +122,36 @@ namespace CommonCore.RpgGame.UI
             EnergySlider.value = player.EnergyFraction;
         }
 
-        //this needs to die in a fire, the degree of interdependency is insane
         private void UpdateWeaponDisplay()
         {
             var player = GameState.Instance.PlayerRpgState;
 
-            //it's all fucked
+            //right weapon
+            updateWeaponText(player, EquipSlot.RightWeapon, RightWeaponText, RightAmmoText);
+            //left weapon
+            updateWeaponText(player, EquipSlot.LeftWeapon, LeftWeaponText, LeftAmmoText);
 
-            /*
-
-            if(player.IsEquipped(EquipSlot.LeftWeapon))
+            void updateWeaponText(CharacterModel playerModel, EquipSlot slot, Text weaponText, Text ammoText)
             {
-                RangedWeaponText.text = InventoryModel.GetNiceName(player.Equipped[EquipSlot.LeftWeapon].ItemModel);
-                AmmoType atype = ((RangedWeaponItemModel)player.Equipped[EquipSlot.LeftWeapon].ItemModel).AType;
-                if(atype != AmmoType.NoAmmo)
+                if(playerModel.IsEquipped(slot))
                 {
-                    AmmoText.text = string.Format("{1}/{2} [{0}]", atype.ToString(), player.AmmoInMagazine, player.Inventory.CountItem(atype.ToString()));
-                    //TODO magazine
+                    weaponText.text = InventoryModel.GetNiceName(playerModel.Equipped[slot].ItemModel);
+                    if (playerModel.Equipped[slot].ItemModel is RangedWeaponItemModel rwim && !(rwim.AType == AmmoType.NoAmmo))
+                    {
+                        ammoText.text = string.Format("{1}/{2} [{0}]", rwim.AType.ToString(), playerModel.AmmoInMagazine[slot], playerModel.Inventory.CountItem(rwim.AType.ToString()));
+                    }
+                    else
+                    {
+                        ammoText.text = "- / -";
+                    }
                 }
                 else
                 {
-                    AmmoText.text = "- / -";
-
+                    weaponText.text = "Not Equipped";
+                    ammoText.text = "- / -";
                 }
             }
-            else
-            {
-                RangedWeaponText.text = "Not Equipped";
-                AmmoText.text = "- / -";
-            }
 
-            if (player.IsEquipped(EquipSlot.RightWeapon))
-            {
-                MeleeWeaponText.text = InventoryModel.GetNiceName(player.Equipped[EquipSlot.RightWeapon].ItemModel);
-            }
-            else
-            {
-                MeleeWeaponText.text = "Not Equipped";
-            }
-
-            //TODO tri-state (disabled)
-            if(WeaponReady)
-            {
-                ReadyBarImage.color = Color.green;
-            }
-            else
-            {
-                ReadyBarImage.color = Color.red;
-            }
-
-            */
         }
 
         private void AddQuestMessage(QdmsMessage message)
