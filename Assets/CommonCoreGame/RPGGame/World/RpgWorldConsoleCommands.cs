@@ -1,14 +1,6 @@
-﻿using System;
-using System.Text;
-using System.Collections;
-using System.Collections.Generic;
+﻿using CommonCore.World;
+using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using SickDev.CommandSystem;
-using Newtonsoft.Json;
-using CommonCore.State;
-using CommonCore.RpgGame.World;
-using CommonCore.World;
 
 namespace CommonCore.RpgGame.World
 {

@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using SickDev.CommandSystem;
 using CommonCore.LockPause;
+using CommonCore.Console;
 
 namespace CommonCore.RpgGame.Dialogue
 {
@@ -27,7 +27,7 @@ namespace CommonCore.RpgGame.Dialogue
         static void TestMonologue(string monologue)
         {
             Monologue m = DialogueModule.GetMonologue(monologue);
-            DevConsole.singleton.Log(m.GetLineRandom());
+            ConsoleModule.WriteLine(m.GetLineRandom());
         }
 
         [Command(alias="TestStandalone", className="Dialogue")]

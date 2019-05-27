@@ -60,13 +60,12 @@ namespace CommonCore.RpgGame.World
         public AudioSource DeathSound;
 
         [Header("Shooting")]
-        public bool ShootingEnabled = true;
-        public bool AttemptToUseStats = false;
+        public bool AttackEnabled = true;
+        public bool AttemptToUseStats = true;
         public GameObject BulletPrefab;
         public GameObject BulletFireEffect;
         public ActorHitInfo BulletHitInfo;
         public float BulletSpeed = 50.0f;
-        public bool MeleeEnabled = true;
         public ActorHitInfo MeleeHitInfo;
         public float MeleeProbeDist = 1.5f;
         public GameObject MeleeEffect;
@@ -735,7 +734,7 @@ namespace CommonCore.RpgGame.World
             // -if one weapon is ranged and the other melee, the ranged is primary fire
             // -if both weapons are ranged or both melee, primary is the left weapon and secondary the right weapon
             //TBH this code is PFA
-            if(ShootingEnabled)
+            if(AttackEnabled)
             {
                 if (MappedInput.GetButtonDown(DefaultControls.Fire))
                 {
