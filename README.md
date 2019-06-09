@@ -2,6 +2,10 @@
 ### Version 2.0-pre2
 ### For Unity 2018.3+
 
+## Important Update
+
+As of May 2019, CommonCore has been downgraded to an internal project. It will still be released as open-source, but the focus will be on implementing features for Ascension III and other games, commits to this repository will be fewer and releases will be less polished. This project was starting to become unmanagable and I need to focus on the game itself.
+
 ## Introduction
 
 CommonCore (formerly ARES) is a complete Role-Playing Game library for Unity... or will be someday. The intent is to provide a base that allows easy development of everything from quick adventures to epic open-world sagas, as well as being flexible enough to be adapted for mechanically similar genres such as open-world sandbox, shooters, and more.
@@ -84,20 +88,20 @@ This list is always in flux. As I implement features, I find there are even more
 * First/third person melee/ranged combat
 * Basic faction system
 * Basic stealth mechanics (weighted detection)
+* custom dev console
 
 **In-Progress Features**
 
 * Loading screen (appears but needs animation and better error handling)
 * Graphics, sound, and other configuration
+* In-game remappable inputs (ExplicitKBM and XInput backends)
+* Gamestate observer and triggered events
 
-**Planned Features **
+**Planned Features**
 
 * Levelled Lists
-* In-game remappable inputs (ExplicitKBM and XInput backends)
-* custom dev console
 * improved messaging (MSDMS)
 * object pooling (POS/Calandria)
-* Gamestate observer and triggered events
 * Extended faction/reputation system
 * magic
 * proper stealth
