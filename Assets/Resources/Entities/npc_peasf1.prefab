@@ -288,6 +288,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4607996614254812}
   - component: {fileID: 114727526427158440}
+  - component: {fileID: 6856724386536331342}
+  - component: {fileID: 2861312005051636347}
+  - component: {fileID: 2422697168764153815}
   - component: {fileID: 114704151107550388}
   - component: {fileID: 143438285039631076}
   - component: {fileID: 195232219114253180}
@@ -329,18 +332,16 @@ MonoBehaviour:
   EditorFormID: npc_peasf1
   Tags: []
   CharacterModelIdOverride: 
-  CharController: {fileID: 0}
-  AnimController: {fileID: 95660686288339154}
   InteractComponent: {fileID: 114449518957255398}
-  NavComponent: {fileID: 0}
   TargetPoint: {fileID: 0}
+  AnimationComponent: {fileID: 6387605643810513220}
+  MovementComponent: {fileID: 2422697168764153815}
+  AttackComponent: {fileID: 2861312005051636347}
+  InteractionComponent: {fileID: 6856724386536331342}
   BaseAiState: 0
   CurrentAiState: 0
   LockAiState: 0
-  CurrentAnimState: 0
-  LockAnimState: 0
   Target: {fileID: 0}
-  AltTarget: {x: 0, y: 0, z: 0}
   SavedTarget: 
   Health: 50
   Invincible: 0
@@ -375,24 +376,6 @@ MonoBehaviour:
   SearchRadius: 25
   SearchInterval: 70
   DisableInteractionOnHit: 0
-  UseMelee: 1
-  AttackRange: 1
-  AttackStateWarmup: 0
-  AttackStateDelay: 1
-  AttackInterval: 1
-  AttackSpread: 0.25
-  BulletSpeed: 100
-  AttackHit:
-    Damage: 0
-    DamagePierce: 0
-    DType: 0
-    HitLocation: 0
-    Originator: {fileID: 0}
-    HitPuff: 
-  BulletPrefab: {fileID: 0}
-  AttackEffectPrefab: {fileID: 0}
-  ShootPoint: {fileID: 0}
-  AttackAnimationOverride: 
   Interaction: 3
   InteractionTarget: DemoFlavia
   InteractionSpecial: {fileID: 0}
@@ -413,17 +396,97 @@ MonoBehaviour:
   CorpseItems:
     Items: []
   GrantXpOnDeath: 50
-  ForceNavmeshOff: 0
-  UseControllerGravity: 1
   RunOnChase: 1
   RunOnFlee: 1
+  <InitialPosition>k__BackingField: {x: 0, y: 0, z: 0}
+  WanderThreshold: 1
+  WanderTimeout: 10
+  WanderRadius: {x: 10, y: 10}
+--- !u!114 &6856724386536331342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077089761050396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 849c460839f10e245b753a0dddd96f83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ActorController: {fileID: 114727526427158440}
+  Interaction: 3
+  InteractionTarget: DemoFlavia
+  InteractionSpecial: {fileID: 0}
+  AlternateCondition:
+    Type: 5
+    Target: DemoQuest
+    Option: 7
+    OptionValue: DemoFlaviaAmbient
+  AltInteraction: 2
+  AltInteractionTarget: 
+  AltInteractionSpecial: {fileID: 0}
+  UseDeadAction: 1
+  DeadInteraction: 0
+  DeadInteractionTarget: 
+  DeadInteractionSpecial: {fileID: 0}
+  InteractionDisabledByHit: 0
+  TooltipOverride: 
+  CorpseItems:
+    Items: []
+--- !u!114 &2861312005051636347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077089761050396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70782d482630fc4489d3953044285d77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ActorController: {fileID: 114727526427158440}
+  UseMelee: 1
+  AttackRange: 1
+  AttackStateWarmup: 0
+  AttackStateDelay: 1
+  AttackInterval: 1
+  AttackSpread: 0.25
+  BulletSpeed: 100
+  AttackHit:
+    Damage: 0
+    DamagePierce: 0
+    DType: 0
+    HitLocation: 0
+    Originator: {fileID: 0}
+    HitPuff: 
+  BulletPrefab: {fileID: 0}
+  AttackEffectPrefab: {fileID: 0}
+  ShootPoint: {fileID: 0}
+  AttackAnimationOverride: 
+--- !u!114 &2422697168764153815
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077089761050396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 850801c168eb61849a860fc5655978d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CharController: {fileID: 143438285039631076}
+  NavComponent: {fileID: 195232219114253180}
+  ActorController: {fileID: 114727526427158440}
+  ForceNavmeshOff: 0
+  UseControllerGravity: 1
   WalkSpeed: 1
   RunSpeed: 2
   RotateSpeed: 90
   NavThreshold: 1
-  WanderThreshold: 1
-  WanderTimeout: 10
-  WanderRadius: {x: 10, y: 10}
+  <AltTarget>k__BackingField: {x: 0, y: 0, z: 0}
 --- !u!114 &114704151107550388
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2359,6 +2422,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4138822263115054}
   - component: {fileID: 95660686288339154}
+  - component: {fileID: 6387605643810513220}
   m_Layer: 0
   m_Name: peasantf
   m_TagString: Untagged
@@ -2406,6 +2470,23 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &6387605643810513220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1870693268615708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec63a36b837b8174783edee12a929664, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AnimController: {fileID: 95660686288339154}
+  ActorController: {fileID: 114727526427158440}
+  AttackAnimationOverride: 
+  CurrentAnimState: 0
+  LockAnimState: 0
 --- !u!1 &1897959445243360
 GameObject:
   m_ObjectHideFlags: 0

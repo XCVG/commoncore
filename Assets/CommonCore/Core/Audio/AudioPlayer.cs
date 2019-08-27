@@ -112,6 +112,8 @@ namespace CommonCore.Audio
         {
             if(message is QdmsFlagMessage)
             {
+                //TODO allow playing sounds by message
+
                 QdmsFlagMessage flagMessage = (QdmsFlagMessage)message;
                 switch (flagMessage.Flag)
                 {
@@ -169,6 +171,21 @@ namespace CommonCore.Audio
         }
 
         /// <summary>
+        /// Plays a UI sound effect (ambient, retained)
+        /// </summary>
+        public void PlayUISound(AudioClip clip)
+        {
+            try
+            {
+                PlaySoundEx(clip, true, true, false, false, 1.0f, Vector3.zero);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"Failed to play sound {e.GetType().Name}");
+            }
+        }
+
+        /// <summary>
         /// Plays a sound effect
         /// </summary>
         /// <param name="sound">The sound to play</param>
@@ -179,6 +196,23 @@ namespace CommonCore.Audio
             try
             {
                 PlaySoundEx(sound, type, retain, false, false, false, 1.0f, Vector3.zero);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"Failed to play sound {e.GetType().Name}");
+            }
+        }
+
+        /// <summary>
+        /// Plays a sound effect
+        /// </summary>
+        /// <param name="clip">The audio clip to play</param>
+        /// <param name="retain">Whether to retain the sound on scene transition</param>
+        public void PlaySound(AudioClip clip, bool retain)
+        {
+            try
+            {
+                PlaySoundEx(clip, retain, false, false, false, 1.0f, Vector3.zero);
             }
             catch (Exception e)
             {
@@ -198,6 +232,24 @@ namespace CommonCore.Audio
             try
             {
                 PlaySoundEx(sound, type, retain, false, false, true, 1.0f, position);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"Failed to play sound {e.GetType().Name}");
+            }
+        }
+
+        /// <summary>
+        /// Plays a sound effect at a certain position
+        /// </summary>
+        /// <param name="clip">The audio clip to play</param>
+        /// <param name="retain">Whether to retain the sound on scene transition</param>
+        /// <param name="position">Where in the world to play the sound effect</param>
+        public void PlaySoundPositional(AudioClip clip, bool retain, Vector3 position)
+        {
+            try
+            {
+                PlaySoundEx(clip, retain, false, false, true, 1.0f, position);
             }
             catch (Exception e)
             {
@@ -227,6 +279,22 @@ namespace CommonCore.Audio
                 throw new InvalidOperationException();
             }
 
+            return PlaySoundEx(clip, retain, ignorePause, loop, positional, volume, position);
+        }
+
+        /// <summary>
+        /// Plays an audio clip with many available options
+        /// </summary>
+        /// <param name="clip">The audio clip to play</param>
+        /// <param name="retain">Whether to retain the sound on scene transition</param>
+        /// <param name="ignorePause">Whether to ignore listener/game pause</param>
+        /// <param name="loop">Whether to loop the sound</param>
+        /// <param name="positional">Whether to play the sound positionally or ambiently</param>
+        /// <param name="volume">The volume to play the sound at</param>
+        /// <param name="position">The position to play the sound at (if it is positional)</param>
+        /// <returns>A struct that defines the playing sound</returns>
+        private SoundInfo PlaySoundEx(AudioClip clip, bool retain, bool ignorePause, bool loop, bool positional, float volume, Vector3 position)
+        {
             //generate object
             GameObject spObject = new GameObject("SoundPlayer");
             spObject.transform.parent = transform;

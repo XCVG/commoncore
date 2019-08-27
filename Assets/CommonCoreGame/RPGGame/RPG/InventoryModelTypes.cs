@@ -28,6 +28,11 @@ namespace CommonCore.RpgGame.Rpg
         Override //override replaces
     }
 
+    public enum ItemFlag
+    {
+        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold
+    }
+
     //an actual inventory item that the player has
     [JsonObject(IsReference = true)]
     public class InventoryItemInstance
@@ -113,20 +118,20 @@ namespace CommonCore.RpgGame.Rpg
         public readonly float Weight;
         public readonly float Value;
         public readonly float MaxCondition;
-        public readonly bool Unique;
+        public readonly bool Hidden;
         public readonly bool Essential;
         public readonly string WorldModel;
         public readonly string[] Flags;
 
         public bool Stackable { get; protected set; }
 
-        public InventoryItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags, string worldModel)
+        public InventoryItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags, string worldModel)
         {
             Name = name;
             Weight = weight;
             Value = value;
             MaxCondition = maxCondition;
-            Unique = unique;
+            Hidden = hidden;
             Essential = essential;
             Stackable = false;
             WorldModel = worldModel;
@@ -136,6 +141,11 @@ namespace CommonCore.RpgGame.Rpg
         public virtual string GetStatsString()
         {
             return Essential ? "Essential" : string.Empty;
+        }
+
+        public bool CheckFlag(ItemFlag flag)
+        {
+            return CheckFlag(flag.ToString());
         }
 
         public bool CheckFlag(string flag)
@@ -160,17 +170,17 @@ namespace CommonCore.RpgGame.Rpg
         public readonly float DamagePierce; //superclass
         public readonly DamageType DType; //superclass
         public readonly string ViewModel; //superclass
-        public readonly string FireEffect;
+        public readonly string HitPuff;
 
         public WeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags,
-            float damage, float damagePierce, DamageType dType, string viewModel, string worldModel, string fireEffect)
+            float damage, float damagePierce, DamageType dType, string viewModel, string worldModel, string hitPuff)
             : base(name, weight, value, maxCondition, unique, essential, flags, worldModel)
         {
             Damage = damage;
             DamagePierce = damagePierce;
             DType = dType;
             ViewModel = viewModel;
-            FireEffect = fireEffect;
+            HitPuff = hitPuff;
         }
     }
 
@@ -182,8 +192,8 @@ namespace CommonCore.RpgGame.Rpg
 
         public MeleeWeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags,
             float damage, float damagePierce, float reach, float rate, float energyCost, DamageType dType,
-            string viewModel, string worldModel, string fireEffect) 
-            : base(name, weight, value, maxCondition, unique, essential, flags, damage, damagePierce, dType, viewModel, worldModel, fireEffect)
+            string viewModel, string worldModel, string hitPuff) 
+            : base(name, weight, value, maxCondition, unique, essential, flags, damage, damagePierce, dType, viewModel, worldModel, hitPuff)
         {
             Reach = reach;
             Rate = rate;
@@ -192,30 +202,45 @@ namespace CommonCore.RpgGame.Rpg
     }
 
     public class RangedWeaponItemModel : WeaponItemModel //yeah no melee... yet
-    {        
-        public readonly float Velocity; //ranged subclass
-        public readonly float Spread; //ranged subclass
-        public readonly float FireRate; //ranged subclass
-        public readonly int MagazineSize; //ranged subclass
-        public readonly float ReloadTime; //ranged subclass
-        public readonly AmmoType AType; //ranged subclass     
-        public readonly string Projectile;
-        public readonly string ReloadEffect;
+    {
+        public readonly float ProjectileVelocity;
 
+        public readonly RangeEnvelope Recoil;
+        public readonly RangeEnvelope Spread;
+        public readonly RangeEnvelope ADSRecoil;
+        public readonly RangeEnvelope ADSSpread;
+
+        public readonly float FireInterval;
+        public readonly int NumProjectiles;
+        public readonly int MagazineSize;       
+        public readonly float ReloadTime;
+
+        public readonly AmmoType AType; 
+        public readonly string Projectile;
+
+        //it looks like JSON.net is actually using these constructors and the naming of the parameters matters, which is somewhat terrifying
         public RangedWeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags,
-            float damage, float damagePierce, float velocity, float spread, float fireRate, int magazineSize, float reloadTime,
-            AmmoType aType, DamageType dType, string viewModel, string worldModel, string fireEffect, string projectile, string reloadEffect)
-            : base(name, weight, value, maxCondition, unique, essential, flags, damage, damagePierce, dType, viewModel, worldModel, fireEffect)
+            float damage, float damagePierce, float projectileVelocity,
+            RangeEnvelope recoil, RangeEnvelope spread, RangeEnvelope adsRecoil, RangeEnvelope adsSpread,
+            float fireInterval, int numProjectiles, int magazineSize, float reloadTime,
+            AmmoType aType, DamageType dType, string viewModel, string worldModel, string hitPuff, string projectile)
+            : base(name, weight, value, maxCondition, unique, essential, flags, damage, damagePierce, dType, viewModel, worldModel, hitPuff)
         {
-            Velocity = velocity;
+            ProjectileVelocity = projectileVelocity;
+
+            Recoil = recoil;
             Spread = spread;
-            FireRate = fireRate;
+            ADSRecoil = adsRecoil;
+            ADSSpread = adsSpread;
+
+            FireInterval = fireInterval;
+            NumProjectiles = numProjectiles;
+
             MagazineSize = magazineSize;
             ReloadTime = reloadTime;
+
             AType = aType;
-            Projectile = projectile;
-            ReloadEffect = reloadEffect;
-            
+            Projectile = projectile;            
         }
 
         public override string GetStatsString()

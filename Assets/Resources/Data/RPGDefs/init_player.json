@@ -63,7 +63,7 @@
     "Inventory": {
       "Items": [
         {
-		  "$id": "1",
+          "$id": "1",
           "Quantity": 1,
           "Condition": 1.0,
           "Equipped": true,
@@ -72,21 +72,20 @@
           }
         },
         {
-		  "$id": "2",
           "Quantity": 1,
           "Condition": 1.0,
-          "Equipped": true,
+          "Equipped": false,
           "ItemModel": {
             "$ItemModel": "sword"
           }
         },
         {
-		  "$id": "3",
+          "$id": "2",
           "Quantity": 1,
           "Condition": 1.0,
           "Equipped": true,
           "ItemModel": {
-            "$ItemModel": "crossbow"
+            "$ItemModel": "demorifle"
           }
         },
         {
@@ -97,7 +96,7 @@
             "$ItemModel": "medkit"
           }
         },
-		{
+        {
           "Quantity": 50,
           "Condition": 1.0,
           "Equipped": false,
@@ -105,12 +104,20 @@
             "$ItemModel": "Gold"
           }
         },
-		{
+        {
           "Quantity": 50,
           "Condition": 1.0,
           "Equipped": false,
           "ItemModel": {
             "$ItemModel": "Bolt"
+          }
+        },
+        {
+          "Quantity": 360,
+          "Condition": 1.0,
+          "Equipped": false,
+          "ItemModel": {
+            "$ItemModel": "Nato556"
           }
         }
       ]
@@ -123,11 +130,8 @@
       "Body": {
         "$ref": "1"
       },
-      "LeftWeapon": {
-        "$ref": "2"
-      },
       "RightWeapon": {
-        "$ref": "3"
+        "$ref": "2"
       }
     }
   }

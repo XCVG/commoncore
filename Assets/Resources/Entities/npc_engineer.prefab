@@ -2408,6 +2408,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4032182571642530}
   - component: {fileID: 114886002833580368}
+  - component: {fileID: 8046596381759845665}
+  - component: {fileID: 8629407898697718035}
+  - component: {fileID: 1507877242329607482}
   - component: {fileID: 114514829715728782}
   - component: {fileID: 143865897253035218}
   - component: {fileID: 195753988229046458}
@@ -2450,18 +2453,16 @@ MonoBehaviour:
   EditorFormID: npc_engineer
   Tags: []
   CharacterModelIdOverride: 
-  CharController: {fileID: 0}
-  AnimController: {fileID: 95898923526475470}
   InteractComponent: {fileID: 114050656289375220}
-  NavComponent: {fileID: 0}
   TargetPoint: {fileID: 0}
+  AnimationComponent: {fileID: 7945359267271504913}
+  MovementComponent: {fileID: 1507877242329607482}
+  AttackComponent: {fileID: 8629407898697718035}
+  InteractionComponent: {fileID: 8046596381759845665}
   BaseAiState: 2
   CurrentAiState: 2
   LockAiState: 0
-  CurrentAnimState: 0
-  LockAnimState: 0
   Target: {fileID: 0}
-  AltTarget: {x: 0, y: 0, z: 0}
   SavedTarget: 
   Health: 100
   Invincible: 0
@@ -2496,26 +2497,6 @@ MonoBehaviour:
   SearchRadius: 25
   SearchInterval: 70
   DisableInteractionOnHit: 0
-  UseMelee: 0
-  AttackRange: 5
-  AttackStateWarmup: 1
-  AttackStateDelay: 2
-  AttackInterval: 2
-  AttackSpread: 0.25
-  BulletSpeed: 100
-  AttackHit:
-    Damage: 15
-    DamagePierce: 5
-    DType: 3
-    HitLocation: 0
-    Originator: {fileID: 0}
-    HitPuff: 
-  BulletPrefab: {fileID: 1084969536453480, guid: f80d8c4ee49627841b2db2bf6a00027c,
-    type: 3}
-  AttackEffectPrefab: {fileID: 1069681291466534, guid: 7dbc392e134c6514b9d3dd13d44ea885,
-    type: 3}
-  ShootPoint: {fileID: 4034012939267662}
-  AttackAnimationOverride: 
   Interaction: 3
   InteractionTarget: DemoMechanic
   InteractionSpecial: {fileID: 0}
@@ -2536,17 +2517,99 @@ MonoBehaviour:
   CorpseItems:
     Items: []
   GrantXpOnDeath: 100
-  ForceNavmeshOff: 0
-  UseControllerGravity: 1
   RunOnChase: 1
   RunOnFlee: 1
+  <InitialPosition>k__BackingField: {x: 0, y: 0, z: 0}
+  WanderThreshold: 1
+  WanderTimeout: 10
+  WanderRadius: {x: 10, y: 10}
+--- !u!114 &8046596381759845665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1682917864756298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 849c460839f10e245b753a0dddd96f83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ActorController: {fileID: 114886002833580368}
+  Interaction: 3
+  InteractionTarget: DemoMechanic
+  InteractionSpecial: {fileID: 0}
+  AlternateCondition:
+    Type: 0
+    Target: 
+    Option: 0
+    OptionValue: 
+  AltInteraction: 0
+  AltInteractionTarget: 
+  AltInteractionSpecial: {fileID: 0}
+  UseDeadAction: 1
+  DeadInteraction: 0
+  DeadInteractionTarget: 
+  DeadInteractionSpecial: {fileID: 0}
+  InteractionDisabledByHit: 0
+  TooltipOverride: The Mechanic
+  CorpseItems:
+    Items: []
+--- !u!114 &8629407898697718035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1682917864756298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70782d482630fc4489d3953044285d77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ActorController: {fileID: 114886002833580368}
+  UseMelee: 1
+  AttackRange: 5
+  AttackStateWarmup: 1
+  AttackStateDelay: 2
+  AttackInterval: 2
+  AttackSpread: 0.25
+  BulletSpeed: 100
+  AttackHit:
+    Damage: 15
+    DamagePierce: 5
+    DType: 3
+    HitLocation: 0
+    Originator: {fileID: 0}
+    HitPuff: 
+  BulletPrefab: {fileID: 1084969536453480, guid: f80d8c4ee49627841b2db2bf6a00027c,
+    type: 3}
+  AttackEffectPrefab: {fileID: 1069681291466534, guid: 7dbc392e134c6514b9d3dd13d44ea885,
+    type: 3}
+  ShootPoint: {fileID: 4034012939267662}
+  AttackAnimationOverride: 
+--- !u!114 &1507877242329607482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1682917864756298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 850801c168eb61849a860fc5655978d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CharController: {fileID: 143865897253035218}
+  NavComponent: {fileID: 195753988229046458}
+  ActorController: {fileID: 114886002833580368}
+  ForceNavmeshOff: 0
+  UseControllerGravity: 1
   WalkSpeed: 1
   RunSpeed: 2
   RotateSpeed: 90
   NavThreshold: 1
-  WanderThreshold: 1
-  WanderTimeout: 10
-  WanderRadius: {x: 10, y: 10}
+  <AltTarget>k__BackingField: {x: 0, y: 0, z: 0}
 --- !u!114 &114514829715728782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3151,6 +3214,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4897126986768666}
   - component: {fileID: 95898923526475470}
+  - component: {fileID: 7945359267271504913}
   m_Layer: 0
   m_Name: engineer2
   m_TagString: Untagged
@@ -3204,6 +3268,23 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &7945359267271504913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1875809960236580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec63a36b837b8174783edee12a929664, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AnimController: {fileID: 95898923526475470}
+  ActorController: {fileID: 114886002833580368}
+  AttackAnimationOverride: 
+  CurrentAnimState: 0
+  LockAnimState: 0
 --- !u!1 &1883964725162524
 GameObject:
   m_ObjectHideFlags: 0

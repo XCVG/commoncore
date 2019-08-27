@@ -4,10 +4,16 @@
       "$type": "CommonCore.RpgGame.Rpg.RangedWeaponItemModel, Assembly-CSharp",
       "Damage": 6,
       "DamagePierce": 2,
-      "Velocity": 50,
-      "Spread": 2,
-      "FireRate": 1,
+      "ProjectileVelocity": 50,
+      "Spread": {
+		"min" : 2,
+		"max" : 2,
+		"gain" : 0,
+		"decay" : 0
+	  },
+      "FireInterval": 1,
       "MagazineSize": 1,
+	  "NumProjectiles": 1,
       "ReloadTime": 1.25,
       "AType": "Bolt",
       "DType": "Normal",
@@ -21,7 +27,7 @@
       "MaxCondition": 1,
       "Unique": false,
       "Essential": false,
-	  "Flags": ["AutoReload"]
+	  "Flags": ["WeaponAutoReload"]
     },
     "def": {
     "NiceName": "Crossbow",

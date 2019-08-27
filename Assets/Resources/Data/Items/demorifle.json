@@ -1,0 +1,54 @@
+{
+  "demorifle": {
+    "model": {
+      "$type": "CommonCore.RpgGame.Rpg.RangedWeaponItemModel, Assembly-CSharp",
+      "Damage": 12,
+      "DamagePierce": 4,
+	  "DType": "Normal",
+	  "HitPuff": "DefaultHitPuff",
+	  "ProjectileVelocity": 500,
+	  "Recoil": {
+		"min" : 0,
+		"max" : 10,
+		"gain" : 2,
+		"decay" : 7
+	  },
+      "Spread": {
+		"min" : 0.1,
+		"max" : 10,
+		"gain" : 1,
+		"decay" : 4
+	  },
+	  "ADSRecoil": {
+		"min" : 0,
+		"max" : 4,
+		"gain" : 1,
+		"decay" : 2
+	  },
+      "ADSSpread": {
+		"min" : 0.05,
+		"max" : 3,
+		"gain" : 1,
+		"decay" : 2
+	  },
+      "FireInterval": 0.15,
+	  "NumProjectiles": 1,
+      "MagazineSize": 30,	  
+      "ReloadTime": 2.5,
+      "AType": "Nato556",      
+	  "Projectile": "Bullet",
+	  "ViewModel": "DemoRifle",	  
+      "Weight": 5,
+	  "Value": 500,
+      "MaxCondition": 1,
+      "Unique": false,
+      "Hidden": false,
+	  "Flags": ["WeaponHasADS", "WeaponTwoHanded", "WeaponFullAuto"]
+    },
+    "def": {
+    "NiceName": "Demo Rifle",
+    "Image": "rifle",
+    "Description": "A 20th century rifle used for demonstration purposes only."
+  }
+  }
+}

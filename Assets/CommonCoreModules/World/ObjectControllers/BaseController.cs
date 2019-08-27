@@ -43,6 +43,8 @@ namespace CommonCore.World
 
         }
 
+        //TODO rename GetExtraData and SetExtraData to Commit and Restore ?
+
         //save/restore methods
         //probably should have used properties but oh well
         public virtual Dictionary<string, System.Object> GetExtraData()

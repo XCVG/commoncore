@@ -4,7 +4,7 @@
     /// Interface representing something that can take damage
     /// </summary>
     /// <remarks>
-    /// Attach this to a BaseController derivative.
+    /// Implement this in a BaseController derivative.
     /// </remarks>
     public interface ITakeDamage
     {

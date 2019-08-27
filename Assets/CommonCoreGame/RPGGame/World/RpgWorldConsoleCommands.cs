@@ -11,14 +11,6 @@ namespace CommonCore.RpgGame.World
     {
 
         [Command]
-        static void Noclip()
-        {
-            var player = RpgWorldUtils.GetPlayerController();
-
-            player.Clipping = !(player.Clipping);
-        }
-
-        [Command]
         static void WarpEx(string scene, bool hideloading)
         {
             RpgWorldUtils.ChangeScene(scene, null, Vector3.zero, Vector3.zero, hideloading, null);
@@ -46,11 +38,11 @@ namespace CommonCore.RpgGame.World
         static void SetAnimState(string newState, bool lockState)
         {
             var ac = WorldConsoleCommands.SelectedObject.GetComponent<ActorController>();
-            bool wasLocked = ac.LockAnimState;
+            bool wasLocked = ac.AnimationComponent.LockAnimState;
             if (wasLocked)
-                ac.LockAnimState = false;
-            ac.SetAnimation((ActorAnimState)Enum.Parse(typeof(ActorAnimState), newState));
-            ac.LockAnimState = wasLocked || lockState;
+                ac.AnimationComponent.LockAnimState = false;
+            ac.AnimationComponent.SetAnimation((ActorAnimState)Enum.Parse(typeof(ActorAnimState), newState));
+            ac.AnimationComponent.LockAnimState = wasLocked || lockState;
         }
 
         [Command]

@@ -202,14 +202,14 @@ namespace CommonCore.RpgGame.UI
                     SelectedItemText.text = SelectedItemText.text + " [E]";
                 }
 
-                if(itemModel is WeaponItemModel wim && !itemModel.CheckFlag("TwoHanded"))
-                {
-                    SelectedItemUse.gameObject.SetActive(true);
-                    SelectedItemUse.transform.Find("Text").GetComponent<Text>().text = "Equip (R)";
-                    SelectedItemUse2.gameObject.SetActive(true);
-                    SelectedItemUse2.transform.Find("Text").GetComponent<Text>().text = "Equip (L)";
-                }
-                else
+                //if(itemModel is WeaponItemModel wim && !itemModel.CheckFlag("TwoHanded"))
+                //{
+                //    SelectedItemUse.gameObject.SetActive(true);
+                //    SelectedItemUse.transform.Find("Text").GetComponent<Text>().text = "Equip (R)";
+                //    SelectedItemUse2.gameObject.SetActive(true);
+                //    SelectedItemUse2.transform.Find("Text").GetComponent<Text>().text = "Equip (L)";
+                //}
+                //else
                 {
                     SelectedItemUse.gameObject.SetActive(true);
                     SelectedItemUse.transform.Find("Text").GetComponent<Text>().text = "Equip";

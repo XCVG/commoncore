@@ -32,6 +32,15 @@ namespace CommonCore.World
         }
 
         [Command]
+        static void Noclip()
+        {
+            if (MetaState.Instance.SessionFlags.Contains("NoClip"))
+                MetaState.Instance.SessionFlags.Remove("NoClip");
+            else
+                MetaState.Instance.SessionFlags.Add("NoClip");
+        }
+
+        [Command]
         static void Notarget()
         {
             if (MetaState.Instance.SessionFlags.Contains("NoTarget"))
