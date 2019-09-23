@@ -89,7 +89,7 @@ namespace CommonCore.RpgGame.UI
             TitleText.text = string.Empty;
             MarkerText.text = string.Empty;
             MapImage.texture = null;
-            CoreUtils.DestroyAllChildren(OverlayContainer);
+            SceneUtils.DestroyAllChildren(OverlayContainer);
         }
 
         private void ClearMarkerText()

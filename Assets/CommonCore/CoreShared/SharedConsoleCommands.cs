@@ -1,9 +1,12 @@
 ﻿using CommonCore;
 using CommonCore.Console;
+using CommonCore.DebugLog;
 using CommonCore.State;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -21,7 +24,7 @@ public static class SharedConsoleCommands
     }
 
     [Command]
-    static void PrintSceneList()
+    static void PrintScenePathList()
     {
         try
         {
@@ -38,6 +41,37 @@ public static class SharedConsoleCommands
             Debug.LogException(e);
         }
 
+    }
+
+    [Command]
+    static void PrintSceneList()
+    {
+        try
+        {
+            var sceneNames = CoreUtils.GetSceneList();
+            StringBuilder sb = new StringBuilder(sceneNames.Length * 16);
+            foreach (var s in sceneNames)
+            {
+                sb.AppendLine(Path.GetFileNameWithoutExtension(s));
+            }
+            ConsoleModule.WriteLine(sb.ToString());
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
+
+    }
+
+    [Command]
+    static void PrintCoreParams()
+    {
+        Dictionary<string, object> coreParams = new Dictionary<string, object>();
+        var props = typeof(CoreParams).GetProperties(BindingFlags.Public | BindingFlags.Static);
+        foreach (var prop in props)
+            coreParams.Add(prop.Name, prop.GetValue(null));
+
+        ConsoleModule.WriteLine(DebugUtils.JsonStringify(coreParams));
     }
 
     //***** LOAD/SAVE
@@ -114,5 +148,14 @@ public static class SharedConsoleCommands
     static void Warp(string scene)
     {
         SharedUtils.ChangeScene(scene);
+    }
+
+    /// <summary>
+    /// Reloads the current scene
+    /// </summary>
+    [Command]
+    static void Reload()
+    {
+        SharedUtils.ChangeScene(SceneManager.GetActiveScene().name);
     }
 }

@@ -13,6 +13,8 @@ namespace CommonCore.RpgGame.UI
     {
         [Header("Top Bar")]
         public Text TargetText;
+        public Slider TargetHealthLeft;
+        public Slider TargetHealthRight;
 
         [Header("Left Bar")]
         public Slider HealthSlider;
@@ -27,9 +29,8 @@ namespace CommonCore.RpgGame.UI
         [Header("Right Bar")]
         public Text RightWeaponText;
         public Text RightAmmoText;
-        public Text LeftWeaponText;
-        public Text LeftAmmoText;
-        public Image ReadyBarImage;
+        public Text RightAmmoReserveText;
+        public Text RightAmmoTypeText;
 
         [Header("Misc")]
         public Image Crosshair;
@@ -37,12 +38,16 @@ namespace CommonCore.RpgGame.UI
         //local state is, as it turns out, unavoidable
         private bool WeaponReady = true;
 
+        private string OverrideTarget = null;
+
         protected override void Start()
         {
             base.Start();
 
             UpdateStatusDisplays();
-            UpdateWeaponDisplay();            
+            UpdateWeaponDisplay();
+
+            ClearTarget();
         }
         
         protected override void Update()
@@ -64,10 +69,29 @@ namespace CommonCore.RpgGame.UI
                 AppendHudMessage(Sub.Macro(((HUDPushMessage)message).Contents));
                 return true;
             }
-            else if(message is QdmsFlagMessage)
+            else if(message is QdmsKeyValueMessage kvmessage)
             {
-                string flag = ((QdmsFlagMessage)message).Flag;
-                switch (flag)
+                switch (kvmessage.Flag)
+                {
+                    case "PlayerHasTarget":
+                        SetTargetMessage(kvmessage.GetValue<string>("Target"));
+                        break;
+                    case "RpgBossHealthUpdate":
+                        UpdateTargetOverrideHealth(kvmessage.GetValue<string>("Target"), kvmessage.GetValue<float>("Health"));
+                        break;
+                    case "RpgBossAwake":
+                        SetTargetOverride(kvmessage.GetValue<string>("Target"));
+                        break;
+                    case "RpgBossDead":
+                        ClearTargetOverride(kvmessage.GetValue<string>("Target"));
+                        break;
+                }
+
+                return true; //probably the wrong spot
+            }
+            else if(message is QdmsFlagMessage flagmessage)
+            {
+                switch (flagmessage.Flag)
                 {                    
                     case "RpgChangeWeapon":
                         UpdateWeaponDisplay();
@@ -84,6 +108,9 @@ namespace CommonCore.RpgGame.UI
                         break;
                     case "PlayerChangeView":
                         SetCrosshair(message);
+                        break;
+                    case "PlayerClearTarget":
+                        ClearTarget();
                         break;
                     case "RpgQuestStarted":
                     case "RpgQuestEnded":
@@ -120,12 +147,42 @@ namespace CommonCore.RpgGame.UI
 
             EnergyText.text = player.Energy.ToString("f0");
             EnergySlider.value = player.EnergyFraction;
+
+            //null out the shields for now
+            ShieldText.text = "";
+            ShieldSlider.value = 0;
         }
 
         private void UpdateWeaponDisplay()
         {
             var player = GameState.Instance.PlayerRpgState;
 
+            //ignore the left weapon even if it exists
+            if (player.IsEquipped(EquipSlot.RightWeapon))
+            {
+                RightWeaponText.text = InventoryModel.GetNiceName(player.Equipped[EquipSlot.RightWeapon].ItemModel);
+                if (player.Equipped[EquipSlot.RightWeapon].ItemModel is RangedWeaponItemModel rwim && !(rwim.AType == AmmoType.NoAmmo))
+                {
+                    RightAmmoText.text = player.AmmoInMagazine[EquipSlot.RightWeapon].ToString();
+                    RightAmmoReserveText.text = player.Inventory.CountItem(rwim.AType.ToString()).ToString();
+                    RightAmmoTypeText.text = InventoryModel.GetNiceName(InventoryModel.GetModel(rwim.AType.ToString()));
+                }
+                else
+                {
+                    RightAmmoText.text = "-";
+                    RightAmmoReserveText.text = "-";
+                    RightAmmoTypeText.text = "";
+                }
+            }
+            else
+            {
+                RightWeaponText.text = "No Weapon";
+                RightAmmoText.text = "-";
+                RightAmmoReserveText.text = "-";
+                RightAmmoTypeText.text = "";
+            }
+
+            /*
             //right weapon
             updateWeaponText(player, EquipSlot.RightWeapon, RightWeaponText, RightAmmoText);
             //left weapon
@@ -151,6 +208,7 @@ namespace CommonCore.RpgGame.UI
                     ammoText.text = "- / -";
                 }
             }
+            */
 
         }
 
@@ -177,16 +235,59 @@ namespace CommonCore.RpgGame.UI
             }
         }
 
-        //TODO move to messaging
+        //handle target text, override target text, health bar
 
-        public void ClearTarget()
+        private void ClearTarget()
         {
             TargetText.text = string.Empty;
+
+            if (!string.IsNullOrEmpty(OverrideTarget))
+                TargetText.text = OverrideTarget;
         }
 
-        public void SetTargetMessage(string message)
+        private void SetTargetMessage(string message)
         {
+            if (!string.IsNullOrEmpty(OverrideTarget))
+                return;
+
             TargetText.text = message;
+        }
+
+        private void SetTargetOverride(string overrideTarget)
+        {
+            OverrideTarget = overrideTarget;
+            TargetText.text = overrideTarget;
+
+            TargetHealthLeft.gameObject.SetActive(true);
+            TargetHealthRight.gameObject.SetActive(true);
+            TargetHealthLeft.value = 1;
+            TargetHealthRight.value = 1;
+        }
+
+        private void UpdateTargetOverrideHealth(string overrideTarget, float health)
+        {
+            if (OverrideTarget == null || OverrideTarget != overrideTarget)
+            {
+                Debug.LogWarning($"[{nameof(RpgHUDController)}] Updated override target health for a different target than expected (old: \"{OverrideTarget}\", new: \"{overrideTarget}\")");
+                SetTargetOverride(overrideTarget);                
+            }
+
+            TargetHealthLeft.value = health;
+            TargetHealthRight.value = health;
+        }
+
+        private void ClearTargetOverride(string overrideTarget)
+        {
+            if (OverrideTarget == null || OverrideTarget != overrideTarget)
+            {
+                Debug.LogWarning($"[{nameof(RpgHUDController)}] Cleared override target for a different target than expected (old: \"{OverrideTarget}\", new: \"{overrideTarget}\")");
+            }
+
+            OverrideTarget = null;
+            ClearTarget();
+
+            TargetHealthLeft.gameObject.SetActive(false);
+            TargetHealthRight.gameObject.SetActive(false);
         }
     }
 }

@@ -38,7 +38,8 @@ namespace CommonCore.RpgGame.World
         public ParticleSystem FireParticleSystem;
         public Light FireLight;
         public float FireLightDuration;
-        public Transform ShellEjectPoint;
+        [Tooltip("The rotation of this transform will be used for the shell. The direction of its first child will be used as the ejection vector.")]
+        public Transform ShellEjectPoint;        
         public GameObject ShellPrefab;
         public float ShellEjectVelocity;
 
@@ -210,7 +211,31 @@ namespace CommonCore.RpgGame.World
 
         private void EjectShell()
         {
-            //TODO eject shell
+            if(ShellEjectPoint == null || ShellPrefab == null ||ShellEjectPoint.childCount == 0)
+            {
+                //can't eject shell
+                return;
+            }
+
+            Transform shellDirTransform = ShellEjectPoint.GetChild(0);
+
+            
+
+            //WIP should we use the CommonCore path for this?
+            var shell = Instantiate(ShellPrefab, ShellEjectPoint.position, ShellEjectPoint.rotation, CoreUtils.GetWorldRoot());
+            shell.transform.localScale = Vector3.one * shellDirTransform.localScale.x;
+            var shellRB = shell.GetComponent<Rigidbody>();
+            if(shellRB != null)
+            {
+                Vector3 velocityDirection = shellDirTransform.forward;
+                float velocityScale = shellDirTransform.localScale.z;
+
+                Vector3 playerVelocity = WeaponComponent.PlayerController.MovementComponent.Velocity;
+
+                Vector3 velocity = velocityDirection * velocityScale;
+                shellRB.AddForce(velocity + playerVelocity, ForceMode.VelocityChange);
+                shellRB.AddTorque(velocity * shellDirTransform.localScale.y, ForceMode.VelocityChange);
+            }
         }
 
         private void FlashFireLight()

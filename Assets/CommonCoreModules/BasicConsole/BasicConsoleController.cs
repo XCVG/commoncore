@@ -265,7 +265,7 @@ namespace CommonCore.BasicConsole
             {
                 AutoScroll = false;
                 int totalLines = GetShownLines();
-                CurrentBottomLine = CoreUtils.Clamp((int)(totalLines * scrollValue), 0, totalLines - 1);
+                CurrentBottomLine = MathUtils.Clamp((int)(totalLines * scrollValue), 0, totalLines - 1);
             }
 
             PaintMessages();
@@ -281,7 +281,7 @@ namespace CommonCore.BasicConsole
             {
                 int totalLines = GetShownLines();
                 int scrollDelta = Mathf.RoundToInt(pev.scrollDelta.y * ScrollSpeed * -1); //not sure why we need to reverse it
-                CurrentBottomLine = CoreUtils.Clamp(CurrentBottomLine + scrollDelta, 0, totalLines - 1);
+                CurrentBottomLine = MathUtils.Clamp(CurrentBottomLine + scrollDelta, 0, totalLines - 1);
                                 
                 if(CurrentBottomLine >= totalLines - 2)
                 {

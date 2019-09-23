@@ -38,10 +38,8 @@ LightmapSnapshot.asset.meta
 LightingData.asset
 LightingData.asset.meta
 
-# Explicitly excluded
-/Assets/ThirdParty/
-/Assets/Objects/ThirdParty/
-/Assets/Standard Assets/
-/Assets/ProCore/
-/Assets/Resources/ThirdParty/
-/Assets/Plugins/DevConsole/
+# Explicitly excluded (optional)
+# /Assets/ThirdParty/
+# /Assets/Objects/ThirdParty/
+# /Assets/Standard Assets/
+# /Assets/Resources/ThirdParty/

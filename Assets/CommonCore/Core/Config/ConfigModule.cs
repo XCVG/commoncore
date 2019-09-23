@@ -1,4 +1,5 @@
 ﻿using CommonCore.Console;
+using CommonCore.DebugLog;
 using CommonCore.Messaging;
 using System.Collections;
 using System.Reflection;
@@ -28,7 +29,7 @@ namespace CommonCore.Config
         /// </summary>
         public void ApplyConfiguration()
         {
- 
+
             //AUDIO CONFIG
             AudioListener.volume = ConfigState.Instance.SoundVolume;
             var ac = AudioSettings.GetConfiguration();
@@ -36,7 +37,7 @@ namespace CommonCore.Config
             AudioSettings.Reset(ac);
 
             //VIDEO CONFIG
-            if(QualitySettings.GetQualityLevel() >= QualitySettings.names.Length - 1) //only apply quality settings if set to "custom" in the launcher
+            if (QualitySettings.GetQualityLevel() >= QualitySettings.names.Length - 1) //only apply quality settings if set to "custom" in the launcher
             {
                 //QualitySettings.SetQualityLevel(ConfigState.Instance.QualityLevel, true);
                 QualitySettings.vSyncCount = ConfigState.Instance.VsyncCount;
@@ -44,7 +45,7 @@ namespace CommonCore.Config
 
             //TODO implement full config and clean this up
             Application.targetFrameRate = ConfigState.Instance.MaxFrames;
-            
+
             //INPUT CONFIG
 
             //let other things handle it on their own
@@ -69,7 +70,7 @@ namespace CommonCore.Config
             StringBuilder sb = new StringBuilder(256);
 
             var properties = ConfigState.Instance.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
-            foreach(var property in properties)
+            foreach (var property in properties)
             {
                 string key = property.Name;
                 string value = property.GetValue(ConfigState.Instance)?.ToString();
@@ -78,6 +79,15 @@ namespace CommonCore.Config
             }
 
             ConsoleModule.WriteLine(sb.ToString());
+        }
+
+        /// <summary>
+        /// Console command. Dumps all config options to console.
+        /// </summary>
+        [Command(alias = "Print", className = "Config", useClassName = true)]
+        public static void PrintConfig()
+        {
+            ConsoleModule.WriteLine(DebugUtils.JsonStringify(ConfigState.Instance));
         }
 
         /// <summary>
@@ -110,12 +120,55 @@ namespace CommonCore.Config
             var property = ConfigState.Instance.GetType().GetProperty(configOption, BindingFlags.Instance | BindingFlags.Public);
             if (property != null)
             {
-                property.SetValue(ConfigState.Instance, CoreUtils.Parse(newValue, property.PropertyType)); //TODO handle enums
+                property.SetValue(ConfigState.Instance, TypeUtils.Parse(newValue, property.PropertyType)); //TODO handle enums
             }
             else
             {
                 ConsoleModule.WriteLine("not found");
             }
+        }
+
+        /// <summary>
+        /// Console command. Sets or unsets a custom config flag
+        /// </summary>
+        [Command(alias = "SetCustomFlag", className = "Config", useClassName = true)]
+        public static void SetCustomFlag(string customFlag, bool newState)
+        {
+            if (ConfigState.Instance.CustomConfigFlags.Contains(customFlag) && !newState)
+                ConfigState.Instance.CustomConfigFlags.Remove(customFlag);
+            else if (!ConfigState.Instance.CustomConfigFlags.Contains(customFlag) && newState)
+                ConfigState.Instance.CustomConfigFlags.Add(customFlag);
+        }
+
+        /// <summary>
+        /// Console command. Sets or unsets a custom config var
+        /// </summary>
+        [Command(alias = "SetCustomVar", className = "Config", useClassName = true)]
+        public static void SetCustomVar(string customVar, string newValue)
+        {
+            if (ConfigState.Instance.CustomConfigVars.ContainsKey(customVar))
+            {
+                //value exists: coerce the value
+                object value = ConfigState.Instance.CustomConfigVars[customVar];
+                object newValueParsed = TypeUtils.Parse(newValue, value.GetType());
+                ConfigState.Instance.CustomConfigVars[customVar] = newValueParsed;
+            }
+            else
+            {
+                //value doesn't exist: warn and exit
+                ConsoleModule.WriteLine("Value doesn't already exist; can't determine type to set. Use SetCustomVarTyped instead.");
+            }
+        }
+
+        /// <summary>
+        /// Console command. Sets or unsets a custom config var
+        /// </summary>
+        [Command(alias = "SetCustomVarTyped", className = "Config", useClassName = true)]
+        public static void SetCustomVar(string customVar, string newValue, string typeName)
+        {
+            //coerce the value
+            object value = TypeUtils.Parse(newValue, System.Type.GetType(typeName));
+            ConfigState.Instance.CustomConfigVars[customVar] = value;
         }
 
     }

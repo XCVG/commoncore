@@ -31,7 +31,7 @@ namespace CommonCore.RpgGame.State
             if (Type == ConditionType.Item || Type == ConditionType.Quest || Type == ConditionType.ActorValue)
                 opt = Option;
 
-            IComparable val = (IComparable)CoreUtils.StringToNumericAuto(OptionValue);
+            IComparable val = (IComparable)TypeUtils.StringToNumericAuto(OptionValue);
 
             return new Conditional(Type, Target, opt, val);
         }
@@ -151,7 +151,7 @@ namespace CommonCore.RpgGame.State
 
         public MicroscriptNode Parse()
         {
-            object val = CoreUtils.StringToNumericAuto(Value);
+            object val = TypeUtils.StringToNumericAuto(Value);
             return new MicroscriptNode(Type, Target, Action, val, DelayType, DelayTime, DelayAbsolute);
         }
 

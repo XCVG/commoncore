@@ -28,7 +28,7 @@ namespace CommonCore.RpgGame.World
         
         public ActorInteractableComponent InteractComponent;
         //public NavMeshAgent NavComponent;
-        public Transform TargetPoint; //TODO move to ITakeDamage
+        public Transform TargetPoint;
         public ActorAnimationComponent AnimationComponent;
         public ActorMovementComponentBase MovementComponent;
         public ActorAttackComponent AttackComponent;
@@ -218,8 +218,8 @@ namespace CommonCore.RpgGame.World
                     Target = null;
                     AnimationComponent.Ref()?.SetAnimation(ActorAnimState.Walking);
                     //set initial destination
-                    Vector2 newpos = CoreUtils.GetRandomVector(InitialPosition.ToFlatVec(), WanderRadius);
-                    MovementComponent.SetDestination(newpos.ToSpaceVec());
+                    Vector2 newpos = VectorUtils.GetRandomVector2(InitialPosition.GetFlatVector(), WanderRadius);
+                    MovementComponent.SetDestination(newpos.GetSpaceVector());
                     break;
                 case ActorAiState.Chasing:
                     if (RunOnChase)
@@ -296,7 +296,7 @@ namespace CommonCore.RpgGame.World
             //hack to retrieve swizzled target after a load
             if(!string.IsNullOrEmpty(SavedTarget))
             {
-                var goList = CoreUtils.FindAllGameObjects(SavedTarget);
+                var goList = SceneUtils.FindAllGameObjects(SavedTarget);
                 if(goList.Count == 1)
                 {
                     Target = goList[0].transform;
@@ -328,8 +328,8 @@ namespace CommonCore.RpgGame.World
                     //TODO aggression
                     if(MovementComponent.DistToTarget <= WanderThreshold || TimeInState >= WanderTimeout)
                     {
-                        Vector2 newpos = CoreUtils.GetRandomVector(InitialPosition.ToFlatVec(), WanderRadius);
-                        MovementComponent.SetDestination(newpos.ToSpaceVec());
+                        Vector2 newpos = VectorUtils.GetRandomVector2(InitialPosition.GetFlatVector(), WanderRadius);
+                        MovementComponent.SetDestination(newpos.GetSpaceVector());
                         TimeInState = 0;
                     }
                     if(Aggressive)

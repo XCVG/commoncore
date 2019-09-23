@@ -25,7 +25,7 @@ namespace CommonCore.RpgGame.UI
             HealthText.text = string.Format("Health: {0}/{1}", (int) pModel.Health, (int) pModel.DerivedStats.MaxHealth);
             ArmorText.text = string.Format("Level: {0} ({1}/{2} XP)\n", pModel.Level, pModel.Experience, RpgValues.XPToNext(pModel.Level));
 
-            string equipText = string.Format("Armor: {0}\nRanged: {1}\nMelee: {2}", 
+            string equipText = string.Format("Armor: {0}\nLH Weapon: {1}\nRH Weapon: {2}", 
                 GetNameForSlot(EquipSlot.Body, pModel), GetNameForSlot(EquipSlot.LeftWeapon, pModel), GetNameForSlot(EquipSlot.RightWeapon, pModel));
 
             AmmoText.text = equipText;

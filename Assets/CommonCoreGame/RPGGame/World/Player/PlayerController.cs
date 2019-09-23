@@ -30,26 +30,26 @@ namespace CommonCore.RpgGame.World
         [Header("Components")]
         public PlayerMovementComponent MovementComponent;
         public PlayerWeaponComponent WeaponComponent;
-        public RpgHUDController HUDScript;
+        public RpgHUDController HUDScript; //TODO should this be here?
         public Transform CameraRoot;
         public GameObject ModelRoot;        
         public Transform TargetPoint;
         private QdmsMessageInterface MessageInterface;
 
         [Header("Sounds")]
-        public AudioSource WalkSound;
-        public AudioSource RunSound;
-        public AudioSource FallSound;
         public AudioSource PainSound;
-        public AudioSource JumpSound;
         public AudioSource DeathSound;
 
         [Header("Shooting")]
         public bool AttackEnabled = true;
         public bool AttemptToUseStats = true;
 
+        [Header("Options")]
+        public bool HandleDeath = true;
+
         private Renderer[] ModelRendererCache;
 
+        private bool HadTargetLastFrame = false;
 
         // Use this for initialization
         public override void Start()
@@ -109,6 +109,14 @@ namespace CommonCore.RpgGame.World
             if (Time.timeScale == 0 || LockPauseModule.IsPaused())
                 return;
 
+            if(PlayerInControl && HandleDeath && GameState.Instance.PlayerRpgState.Health <= 0 && !MetaState.Instance.SessionFlags.Contains("BuddhaMode"))
+            {
+                Debug.Log("You died!");
+                PlayerInControl = false;
+                MessageInterface.PushToBus(new QdmsFlagMessage("PlayerDead"));
+                DeathSound.Ref()?.Play();
+            }
+
             if (PlayerInControl && !LockPauseModule.IsInputLocked())
             {
                 HandleView();
@@ -121,7 +129,7 @@ namespace CommonCore.RpgGame.World
         {
             //TODO make this not stupid
             GameObject tpCamera = CameraRoot.Find("Main Camera").gameObject;
-            GameObject fpCamera = CameraRoot.Find("ViewBobNode").Find("FP Camera").gameObject;
+            GameObject fpCamera = CameraRoot.Find("ViewBobNode").FindDeepChild("FP Camera").gameObject;
 
             switch (GameParams.DefaultPlayerView)
             {
@@ -226,15 +234,12 @@ namespace CommonCore.RpgGame.World
         private void HandleInteraction()
         {
             //get thing, probe and display tooltip, check use
-            //TODO handle tooltips
 
-            HUDScript.ClearTarget();
+            bool haveTarget = false;
 
             int layerMask = LayerMask.GetMask("Default","ActorHitbox");
 
             Debug.DrawRay(CameraRoot.position, CameraRoot.transform.forward * MaxProbeDist);
-
-            //we should actually do RaycastAll, cull based on 2D distance and separate 3D distance, and possibly handle occlusion
 
             //raycast all, go through the hits ignoring hits to self
             RaycastHit[] hits = Physics.RaycastAll(CameraRoot.transform.position, CameraRoot.transform.forward, MaxProbeDist * 2, layerMask, QueryTriggerInteraction.Collide);            
@@ -249,7 +254,7 @@ namespace CommonCore.RpgGame.World
                     if (hit.distance > nearestDist)
                         continue;
 
-                    float fDist = CoreUtils.GetFlatVectorToTarget(transform.position, hit.point).magnitude;
+                    float fDist = VectorUtils.GetFlatVectorToTarget(transform.position, hit.point).magnitude;
                     if (fDist > MaxProbeDist)
                         continue;
 
@@ -295,9 +300,12 @@ namespace CommonCore.RpgGame.World
 
                 if (nearestInteractable != null && nearestInteractable.enabled)
                 {
-                    //Debug.Log("Detected: " + ic.Tooltip);
-                    
-                    HUDScript.SetTargetMessage(nearestInteractable.Tooltip);
+                    //Debug.Log("Detected: " + nearestInteractable.Tooltip);
+
+                    //HUDScript.SetTargetMessage(nearestInteractable.Tooltip);
+                    MessageInterface.PushToBus(new QdmsKeyValueMessage("PlayerHasTarget", "Target", nearestInteractable.Tooltip));
+                    HadTargetLastFrame = true;
+                    haveTarget = true;
 
                     //actual use
                     if (MappedInput.GetButtonDown(DefaultControls.Use))
@@ -306,6 +314,13 @@ namespace CommonCore.RpgGame.World
                     }
                 }
             }
+
+            if(!haveTarget && HadTargetLastFrame)
+            {
+                MessageInterface.PushToBus(new QdmsFlagMessage("PlayerClearTarget")); //should probably not do this constantly
+            }
+
+            HadTargetLastFrame = haveTarget;
 
         }
 
@@ -325,7 +340,7 @@ namespace CommonCore.RpgGame.World
                     r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
             }
 
-            //TODO delegate to PlayerWeaponComponent
+            //WIP delegate to PlayerWeaponComponent
 
             WeaponComponent.SetVisibility(!visible); //invert because that sets the visibility of the first-person models
         }
@@ -356,7 +371,7 @@ namespace CommonCore.RpgGame.World
             else if (data.HitLocation == ActorBodyPart.LeftArm || data.HitLocation == ActorBodyPart.LeftLeg || data.HitLocation == ActorBodyPart.RightArm || data.HitLocation == ActorBodyPart.RightLeg)
                 damageTaken *= 0.75f;
 
-            if(damageTaken > 1)
+            if(damageTaken > 0)
             {
                 if (PainSound != null && !PainSound.isPlaying)
                     PainSound.Play();

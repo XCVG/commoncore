@@ -11,6 +11,7 @@ namespace CommonCore
     public abstract class BaseSceneController : MonoBehaviour
     {
         public bool AutoinitUi = true;
+        public bool AutoinitHud = false;
         public bool AutoinitState = true;
 
         public static BaseSceneController Current { get; protected set; }
@@ -24,6 +25,8 @@ namespace CommonCore
             Current = this;
             if (AutoinitUi)
                 InitUI();
+            if (AutoinitHud)
+                InitHUD();
 
             //mostly an editor hack
             if (AutoinitState && !GameState.Instance.InitialLoaded)
@@ -51,12 +54,16 @@ namespace CommonCore
 
         protected void InitUI()
         {
-            if (CoreUtils.GetUIRoot().Find("WorldHUD") == null)
-                Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/DefaultWorldHUD"), CoreUtils.GetUIRoot()).name = "WorldHUD";
             if (CoreUtils.GetUIRoot().Find("InGameMenu") == null)
                 Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/IGUI_Menu"), CoreUtils.GetUIRoot()).name = "InGameMenu";
             if (EventSystem.current == null)
                 Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/DefaultEventSystem"), CoreUtils.GetUIRoot()).name = "EventSystem";
+        }
+
+        protected void InitHUD()
+        {
+            if (CoreUtils.GetUIRoot().Find("WorldHUD") == null)
+                Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/DefaultWorldHUD"), CoreUtils.GetUIRoot()).name = "WorldHUD";
         }
 
         public virtual void Commit()

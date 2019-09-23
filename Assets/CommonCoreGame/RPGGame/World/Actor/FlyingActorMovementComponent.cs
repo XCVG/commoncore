@@ -88,7 +88,7 @@ namespace CommonCore.RpgGame.World
             //TODO slow when nearing target (arrive)
 
             //WIP horizontal movement
-            Vector2 vecToTarget = (MovementTarget - transform.position).ToFlatVec();
+            Vector2 vecToTarget = (MovementTarget - transform.position).GetFlatVector();
             float moveMagnitude = Mathf.Min(Time.deltaTime * (IsRunning ? MaxBurstSpeed : MaxSpeed), vecToTarget.magnitude);
             Vector2 moveVector = vecToTarget.normalized * moveMagnitude;
             transform.Translate(new Vector3(moveVector.x, 0, moveVector.y), Space.World);
@@ -148,8 +148,8 @@ namespace CommonCore.RpgGame.World
 
         private void FacePoint(Vector3 target)
         {
-            Vector2 vecToTarget = (target - transform.position).ToFlatVec();
-            float angleToTarget = Vector2.SignedAngle(transform.forward.ToFlatVec(), vecToTarget);
+            Vector2 vecToTarget = (target - transform.position).GetFlatVector();
+            float angleToTarget = Vector2.SignedAngle(transform.forward.GetFlatVector(), vecToTarget);
             if (Mathf.Abs(angleToTarget) > AngleThreshold) //"close enough" handling
             {
                 float angleToRotate = Mathf.Min(Mathf.Abs(angleToTarget), RotateSpeed * Time.deltaTime) * Mathf.Sign(angleToTarget);
@@ -181,6 +181,6 @@ namespace CommonCore.RpgGame.World
             MovementTarget = dest;
         }
 
-        public override float DistToTarget => (MovementTarget.ToFlatVec() - transform.position.ToFlatVec()).magnitude;
+        public override float DistToTarget => (MovementTarget.GetFlatVector() - transform.position.GetFlatVector()).magnitude;
     }
 }

@@ -301,27 +301,27 @@ namespace CommonCore.RpgGame.Dialogue
                 if (jt["greater"] != null)
                 {
                     option = ConditionOption.Greater;
-                    optionValue = (IComparable)CoreUtils.StringToNumericAuto(jt["greater"].Value<string>());
+                    optionValue = (IComparable)TypeUtils.StringToNumericAuto(jt["greater"].Value<string>());
                 }
                 else if (jt["less"] != null)
                 {
                     option = ConditionOption.Less;
-                    optionValue = (IComparable)CoreUtils.StringToNumericAuto(jt["less"].Value<string>());
+                    optionValue = (IComparable)TypeUtils.StringToNumericAuto(jt["less"].Value<string>());
                 }
                 else if (jt["equal"] != null)
                 {
                     option = ConditionOption.Equal;
-                    optionValue = (IComparable)CoreUtils.StringToNumericAuto(jt["equal"].Value<string>());
+                    optionValue = (IComparable)TypeUtils.StringToNumericAuto(jt["equal"].Value<string>());
                 }
                 else if (jt["greaterEqual"] != null)
                 {
                     option = ConditionOption.GreaterEqual;
-                    optionValue = (IComparable)CoreUtils.StringToNumericAuto(jt["greaterEqual"].Value<string>());
+                    optionValue = (IComparable)TypeUtils.StringToNumericAuto(jt["greaterEqual"].Value<string>());
                 }
                 else if (jt["lessEqual"] != null)
                 {
                     option = ConditionOption.LessEqual;
-                    optionValue = (IComparable)CoreUtils.StringToNumericAuto(jt["lessEqual"].Value<string>());
+                    optionValue = (IComparable)TypeUtils.StringToNumericAuto(jt["lessEqual"].Value<string>());
                 }
                 else if (jt["started"] != null)
                 {
@@ -339,7 +339,7 @@ namespace CommonCore.RpgGame.Dialogue
                 if (jt["arg"] != null)
                 {
                     option = 0; //we just need it to be non-null
-                    optionValue = (IComparable)CoreUtils.StringToNumericAuto(jt["arg"].Value<string>());
+                    optionValue = (IComparable)TypeUtils.StringToNumericAuto(jt["arg"].Value<string>());
                 }
             }
 
@@ -390,7 +390,7 @@ namespace CommonCore.RpgGame.Dialogue
                 target = jt["exec"].Value<string>();
                 if(jt["arg"] != null)
                 {
-                    value = CoreUtils.StringToNumericAuto(jt["arg"].Value<string>());
+                    value = TypeUtils.StringToNumericAuto(jt["arg"].Value<string>());
                 }
             }
             else
@@ -414,27 +414,27 @@ namespace CommonCore.RpgGame.Dialogue
             else if (jt["add"] != null)
             {
                 action = MicroscriptAction.Add;
-                value = CoreUtils.StringToNumericAuto(jt["add"].Value<string>());
+                value = TypeUtils.StringToNumericAuto(jt["add"].Value<string>());
             }
             else if (jt["give"] != null)
             {
                 action = MicroscriptAction.Give;
-                value = CoreUtils.StringToNumericAuto(jt["give"].Value<string>());
+                value = TypeUtils.StringToNumericAuto(jt["give"].Value<string>());
             }
             else if (jt["take"] != null)
             {
                 action = MicroscriptAction.Take;
-                value = CoreUtils.StringToNumericAuto(jt["take"].Value<string>());
+                value = TypeUtils.StringToNumericAuto(jt["take"].Value<string>());
             }
             else if (jt["start"] != null)
             {
                 action = MicroscriptAction.Start;
-                value = CoreUtils.StringToNumericAuto(jt["start"].Value<string>());
+                value = TypeUtils.StringToNumericAuto(jt["start"].Value<string>());
             }
             else if (jt["finish"] != null)
             {
                 action = MicroscriptAction.Finish;
-                value = CoreUtils.StringToNumericAuto(jt["finish"].Value<string>());
+                value = TypeUtils.StringToNumericAuto(jt["finish"].Value<string>());
             }
             else
             {

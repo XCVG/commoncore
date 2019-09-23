@@ -20,4 +20,21 @@ namespace CommonCore
             Decay = decay;
         }
     }
+
+    /// <summary>
+    /// Intensity/Time/Violence datatype mostly for defining pulses
+    /// </summary>
+    public struct PulseEnvelope
+    {
+        public float Intensity;
+        public float Time;
+        public float Violence;
+
+        public PulseEnvelope(float intensity, float time, float violence)
+        {
+            Intensity = intensity;
+            Time = time;
+            Violence = violence;
+        }
+    }
 }

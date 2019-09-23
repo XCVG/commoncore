@@ -9,27 +9,37 @@
 	  "ProjectileVelocity": 500,
 	  "Recoil": {
 		"min" : 0,
-		"max" : 10,
+		"max" : 5,
 		"gain" : 2,
-		"decay" : 7
+		"decay" : 14
 	  },
       "Spread": {
 		"min" : 0.1,
-		"max" : 10,
+		"max" : 5,
 		"gain" : 1,
-		"decay" : 4
+		"decay" : 8
 	  },
 	  "ADSRecoil": {
 		"min" : 0,
 		"max" : 4,
 		"gain" : 1,
-		"decay" : 2
+		"decay" : 8
 	  },
       "ADSSpread": {
 		"min" : 0.05,
 		"max" : 3,
 		"gain" : 1,
-		"decay" : 2
+		"decay" : 6
+	  },
+	  "RecoilImpulse": {
+		"intensity": 5,
+		"time": 0.2,
+		"violence": 0.66
+	  },
+	  "ADSRecoilImpulse": {
+		"intensity": 2.5,
+		"time": 0.15,
+		"violence": 0.66
 	  },
       "FireInterval": 0.15,
 	  "NumProjectiles": 1,
@@ -43,7 +53,7 @@
       "MaxCondition": 1,
       "Unique": false,
       "Hidden": false,
-	  "Flags": ["WeaponHasADS", "WeaponTwoHanded", "WeaponFullAuto"]
+	  "Flags": ["WeaponHasADS", "WeaponTwoHanded", "WeaponFullAuto", "WeaponShake"]
     },
     "def": {
     "NiceName": "Demo Rifle",

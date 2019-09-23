@@ -148,7 +148,7 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Time: 5
+  m_Time: 1
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 0.1
@@ -225,3 +225,4 @@ MonoBehaviour:
     Originator: {fileID: 0}
     HitPuff: 
   StayTime: 30
+  MaxDist: 10000

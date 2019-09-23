@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
-namespace CommonCore.Util
+namespace CommonCore
 {
 
     /// <summary>
-    /// Helper methods for manipulating 
+    /// Helper methods for manipulating things in Unity scenes
     /// </summary>
     public static class SceneUtils
     {
@@ -34,6 +31,50 @@ namespace CommonCore.Util
                 throw new ArgumentNullException();
 
             return closestHit.Value;
+        }
+
+        /// <summary>
+        /// Destroys all children of a transform
+        /// </summary>
+        public static void DestroyAllChildren(this Transform root)
+        {
+            foreach (Transform t in root)
+            {
+                UnityEngine.Object.Destroy(t.gameObject);
+            }
+        }
+
+        /// <summary>
+        /// Find a child by name, recursively
+        /// </summary>
+        public static Transform FindDeepChild(this Transform aParent, string aName)
+        {
+            var result = aParent.Find(aName);
+            if (result != null)
+                return result;
+            foreach (Transform child in aParent)
+            {
+                result = child.FindDeepChild(aName);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Finds all game objects with a given name. No, I don't know what it's for either.
+        /// </summary>
+        public static List<GameObject> FindAllGameObjects(string name)
+        {
+            var goList = new List<GameObject>();
+
+            foreach (GameObject go in GameObject.FindObjectsOfType(typeof(GameObject)))
+            {
+                if (go.name == name)
+                    goList.Add(go);
+            }
+
+            return goList;
         }
 
     }

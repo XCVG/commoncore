@@ -34,7 +34,7 @@ namespace CommonCore.RpgGame.World
         //transforms a world position into normalized (-1, 1) space based on world bounds
         public Vector2 NormalizeWorldPosition(Vector3 worldPos)
         {
-            Vector2 worldPos2 = worldPos.ToFlatVec();
+            Vector2 worldPos2 = worldPos.GetFlatVector();
             Vector2 centerToPos = worldPos2 - new Vector2(WorldBounds.x, WorldBounds.y);
             centerToPos = Quaternion.Euler(0, 0, WorldRotation) * centerToPos;
             float xComponent = centerToPos.x / (WorldBounds.width / 2f);

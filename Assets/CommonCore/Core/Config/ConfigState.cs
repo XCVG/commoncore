@@ -52,6 +52,11 @@ namespace CommonCore.Config
         public Dictionary<string, object> InputMapperData { get; set; } = new Dictionary<string, object>();
         public float LookSpeed { get; set; } = 1.0f;
         public KeyCode ScreenshotKey { get; set; } = KeyCode.F12;
+
+        //EXTRA/GAME-SPECIFIC CONFIG
+        public HashSet<string> CustomConfigFlags { get; private set; } = new HashSet<string>();
+        [JsonProperty(ItemTypeNameHandling = TypeNameHandling.All)]
+        public Dictionary<string, object> CustomConfigVars { get; private set; } = new Dictionary<string, object>(); //note that serialization/deserialization can explode in edge cases
         
     }
 

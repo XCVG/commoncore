@@ -39,14 +39,14 @@ namespace CommonCore.RpgGame.World
 
                 if (Elapsed >= StayTime)
                 {
-                    Debug.Log($"Destroying {name} at {Elapsed:F2}s/{StayTime:F2}");
+                    //Debug.Log($"Destroying {name} at {Elapsed:F2}s/{StayTime:F2}");
                     Destroy(this.gameObject);
                 }
             }
 
             if(transform.position.magnitude > MaxDist)
             {
-                Debug.Log($"Destroying {name} because it's really far away");
+                //Debug.Log($"Destroying {name} because it's really far away");
                 Destroy(this.gameObject);
             }
 
@@ -61,7 +61,7 @@ namespace CommonCore.RpgGame.World
 
             if(otherController != null && otherController != HitInfo.Originator)
             {
-                Debug.Log("Bullet hit " + otherController.name + " via raycast!");
+                //Debug.Log("Bullet hit " + otherController.name + " via raycast!");
 
                 HandleCollision(otherController, hitPoint);
             }
@@ -119,7 +119,7 @@ namespace CommonCore.RpgGame.World
 
         void OnCollisionEnter(Collision collision)
         {
-            Debug.Log("Bullet hit " + collision.transform.name);
+            //Debug.Log("Bullet hit " + collision.transform.name);
 
             var ahc = collision.gameObject.GetComponent<ActorHitboxComponent>();
             if (ahc != null)
@@ -138,7 +138,7 @@ namespace CommonCore.RpgGame.World
 
         public void HandleCollision(BaseController otherController, Vector3? positionOverride)
         {
-            Debug.Log($"{name} hit {otherController?.name}");
+            //Debug.Log($"{name} hit {otherController?.name}");
 
             if (gameObject == null)
                 return; //don't double it up

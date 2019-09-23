@@ -8,13 +8,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using CommonCore.World;
 
 namespace CommonCore.RpgGame.World
 {
     public class PlayerWeaponComponent : MonoBehaviour
     {
-        [SerializeField, Header("Components")]
-        private PlayerController PlayerController;
+        [Header("Components")]
+        public PlayerController PlayerController;       
         public Transform LeftViewModelPoint;
         public Transform CenterViewModelPoint;
         public Transform RightViewModelPoint;
@@ -24,14 +25,35 @@ namespace CommonCore.RpgGame.World
         [SerializeField, Header("Hands")]
         private WeaponHandModelScript Hands;
 
+        [SerializeField, Header("Recoil Shake")]
+        private WeaponViewShakeScript ViewShakeScript;
+        [SerializeField]
+        private float RecoilFireVecFactor = 0.2f;
+
+        [SerializeField, Header("Offhand Kick")] //TODO ought to move this into another component
+        private Animator OffhandKickAnimator = null;
+        [SerializeField]
+        private Transform OffhandKickPoint = null;
+        [SerializeField]
+        private float OffhandKickRange = 1.5f;
+        [SerializeField]
+        private float OffhandKickDamage = 10f; //TODO move to stats and stuff
+        [SerializeField]
+        private float OffhandKickDelay = 1f;
+        [SerializeField]
+        private float OffhandKickForce = 1000f;
+        [SerializeField]
+        private AudioSource OffhandKickSound = null;
+
         [Header("Params")]
         public float MeleeProbeDist = 1.5f;
+        
 
         public WeaponViewModelScript LeftViewModel { get; private set; }
         public WeaponViewModelScript RightViewModel { get; private set; }
         private float TimeToNext;
         private bool IsReloading;
-        private bool IsADS;
+        public bool IsADS { get; private set; }
 
         //serialized for debug only
         [SerializeField]
@@ -40,6 +62,11 @@ namespace CommonCore.RpgGame.World
         private float AccumulatedRecoil;
         [SerializeField]
         private bool DidJustFire;
+        [SerializeField]
+        private bool PendingADSExit;
+
+        //offhand kick
+        private float TimeToNextKick;
 
         //plan is to just bodge this for now, giving up on dual-wielding support, and add proper dual-wielding later
         //we need to add that offhand kick BTW
@@ -69,9 +96,11 @@ namespace CommonCore.RpgGame.World
 
             DidJustFire = false;
 
+            //TODO handle player death
             if (PlayerController.PlayerInControl && !LockPauseModule.IsInputLocked())
             {
                 HandleWeapons();
+                HandleOffhandKick();
             }
 
             
@@ -85,6 +114,19 @@ namespace CommonCore.RpgGame.World
             LeftViewModel.Ref()?.SetVisibility(visibility);
             RightViewModel.Ref()?.SetVisibility(visibility);
             Hands.Ref()?.SetVisibility(visibility);
+
+            //force offhand kick to disappear
+            if(!visibility)
+                OffhandKickAnimator.Ref()?.gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// Requests an exit from ADS mode at the next available opportunity
+        /// </summary>
+        public void RequestADSExit()
+        {
+            if(IsADS)
+                PendingADSExit = true;
         }
 
         //copied from PlayerController
@@ -94,7 +136,7 @@ namespace CommonCore.RpgGame.World
         /// </summary>
         protected void HandleAccumulators()
         {
-            if (DidJustFire)
+            if (DidJustFire || TimeToNext > 0)
                 return;
 
             var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon]?.ItemModel;
@@ -128,7 +170,23 @@ namespace CommonCore.RpgGame.World
         /// </summary>
         protected void RescaleAccumulators(bool enteringADS)
         {
-            Debug.LogWarning("RescaleAccumulators is not implemented!");
+            var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon]?.ItemModel;
+            if (rightWeaponModel != null && rightWeaponModel is RangedWeaponItemModel rwim)
+            {
+                float recoilRatio = AccumulatedRecoil / (enteringADS ? rwim.Recoil.Max : rwim.ADSRecoil.Max);
+                if (float.IsNaN(recoilRatio))
+                    recoilRatio = 0;
+                AccumulatedRecoil = recoilRatio * (enteringADS ? rwim.ADSRecoil.Max : rwim.Recoil.Max);                
+
+                float spreadRatio = AccumulatedSpread / (enteringADS ? rwim.Spread.Max : rwim.ADSSpread.Max);
+                if (float.IsNaN(spreadRatio))
+                    spreadRatio = 0;
+                AccumulatedSpread = spreadRatio * (enteringADS ? rwim.ADSSpread.Max : rwim.Spread.Max);
+            }
+            else
+            {
+                ResetAccumulators();
+            }
         }
 
         //handle weapons (very temporary)
@@ -242,9 +300,9 @@ namespace CommonCore.RpgGame.World
                                 DoMeleeAttack(EquipSlot.RightWeapon);
                         }
                     }
-                    else
+                    else if(!PendingADSExit && !PlayerController.MovementComponent.IsRunning)
                     {
-                        //TODO handle ADS
+                        //WIP handle ADS
                         if(leftEquipped)
                         {
                             Debug.LogWarning("Trying to enter ADS with only a left weapon equipped!");
@@ -266,6 +324,22 @@ namespace CommonCore.RpgGame.World
                     DoReload();
                 }
 
+            }
+
+            //sprint-ADS handling
+            if(PendingADSExit)
+            {
+                if (IsADS)
+                {
+                    bool rightEquipped = GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.RightWeapon);
+                    var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel;
+                    if (rightEquipped && rightWeaponModel.CheckFlag(ItemFlag.WeaponHasADS))
+                    {
+                        ToggleADS();
+                    }
+                }
+
+                PendingADSExit = false;
             }
 
         }
@@ -343,30 +417,7 @@ namespace CommonCore.RpgGame.World
             Debug.Log($"MeleeAttack {slot}");
 
             //punch
-            LayerMask lm = LayerMask.GetMask("Default", "ActorHitbox");
-            var rc = Physics.RaycastAll(ShootPoint.position, ShootPoint.forward, MeleeProbeDist, lm, QueryTriggerInteraction.Collide);
-
-            //TODO handle 2D/3D probe distance
-
-            //totally fucked!
-            ITakeDamage ac = null;
-            foreach (var r in rc)
-            {
-                var go = r.collider.gameObject;
-                var ahgo = go.GetComponent<ActorHitboxComponent>();
-                if (ahgo != null)
-                {
-                    ac = ahgo.ParentController as ITakeDamage; //this works as long as we don't go MP or do Voodoo Dolls
-                    break;
-                }
-                var acgo = go.GetComponent<ActorController>();
-                if (acgo != null)
-                {
-                    ac = acgo;
-                    break;
-                }
-            }
-
+            ITakeDamage ac = GetMeleeHit(ShootPoint, MeleeProbeDist);
 
             if (slot != EquipSlot.LeftWeapon && slot != EquipSlot.RightWeapon)
                 throw new ArgumentException("slot must refer to a weapon", nameof(slot));
@@ -401,7 +452,7 @@ namespace CommonCore.RpgGame.World
             {
                 Debug.LogError($"Player can't do a melee attack because no {slot.ToString()} is equipped!");
             }
-            
+
 
             if (ac != null)
                 ac.TakeDamage(hitInfo);
@@ -476,10 +527,7 @@ namespace CommonCore.RpgGame.World
 
                     //TODO factor in weapon skill, esp for bows
 
-                    //TODO recoil handling
                     bullet.GetComponent<BulletScript>().HitInfo = new ActorHitInfo(wim.Damage, wim.DamagePierce, wim.DType, ActorBodyPart.Unspecified, PlayerController, wim.HitPuff, null);
-
-
 
                     //Vector3 fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread), Vector3.right)
                     //    * (Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread), Vector3.up) * ShootPoint.forward.normalized);
@@ -491,6 +539,7 @@ namespace CommonCore.RpgGame.World
 
                     bulletRigidbody.velocity = (fireVec * wim.ProjectileVelocity);
 
+                    //recoil accumulation
                     RangeEnvelope recoilEnvelope = IsADS ? wim.ADSRecoil : wim.Recoil;
                     AccumulatedRecoil = Mathf.Min(recoilEnvelope.Max, AccumulatedRecoil + recoilEnvelope.Gain);
                     RangeEnvelope spreadEnvelope = IsADS ? wim.ADSSpread : wim.Spread;
@@ -499,12 +548,27 @@ namespace CommonCore.RpgGame.World
                     DidJustFire = true;
                     TimeToNext = wim.FireInterval;
 
-                    GameObject fireEffect = null;
+                    //GameObject fireEffect = null;
 
                     //TODO handle instantiate location (and variants?) in FPS/TPS mode?
 
-                    //TODO handle ADS (?!)
+                    //pivot the screen with the recoil
+                    if (wim.CheckFlag(ItemFlag.WeaponShake))
+                    {
+                        //factor in the actual fire vector, but only a little bit
+                        Quaternion fireRotation = Quaternion.LookRotation(ViewShakeScript.transform.parent.InverseTransformDirection(fireVec));
+                        Quaternion scaledFireRotation = Quaternion.SlerpUnclamped(Quaternion.identity, fireRotation, RecoilFireVecFactor);                        
+       
+                        Vector3 rawRecoilAngle = new Vector3(-(IsADS ? wim.ADSRecoilImpulse.Intensity : wim.RecoilImpulse.Intensity), 0, 0);
+                        Quaternion recoilRotation = Quaternion.Euler(rawRecoilAngle);
 
+                        Vector3 recoilAngle = (recoilRotation * scaledFireRotation).eulerAngles;
+
+                        ViewShakeScript.Shake(recoilAngle, wim.RecoilImpulse.Time, wim.RecoilImpulse.Violence); //try that and see how terrible it looks
+
+                    }
+                    
+                    //set viewmodel and hands state
                     if (slot == EquipSlot.RightWeapon && RightViewModel != null)
                     {
                         RightViewModel.SetState(ViewModelState.Fire, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded);
@@ -695,6 +759,84 @@ namespace CommonCore.RpgGame.World
             }
 
             Hands.SetState(ViewModelState.Idle, LeftViewModel, ViewModelHandednessState.TwoHanded); //TODO handle 1H/2H
+        }
+
+        private ITakeDamage GetMeleeHit(Transform origin, float range)
+        {
+            LayerMask lm = LayerMask.GetMask("Default", "ActorHitbox");
+            var rc = Physics.RaycastAll(origin.position, origin.forward, range, lm, QueryTriggerInteraction.Collide);
+
+            //TODO handle 2D/3D probe distance
+
+            //totally fucked!
+            ITakeDamage ac = null;
+            foreach (var r in rc)
+            {
+                var go = r.collider.gameObject;
+                var ahgo = go.GetComponent<ActorHitboxComponent>();
+                if (ahgo != null)
+                {
+                    ac = ahgo.ParentController as ITakeDamage; //this works as long as we don't go MP or do Voodoo Dolls
+                    break;
+                }
+                var acgo = go.GetComponent<ActorController>();
+                if (acgo != null)
+                {
+                    ac = acgo;
+                    break;
+                }
+            }
+
+            return ac;
+        }
+
+        private void HandleOffhandKick()
+        {
+
+            //kick timing
+            if (TimeToNextKick > 0)
+            {
+                TimeToNextKick -= Time.deltaTime;
+                if (TimeToNextKick <= 0) //disappear the model if we're not actively kicking
+                {
+                    OffhandKickAnimator.Ref()?.Play("Idle");
+                    OffhandKickAnimator.Ref()?.gameObject.SetActive(false);
+                }
+            }
+
+            if(TimeToNextKick <= 0)
+            {
+                if (MappedInput.GetButtonDown(DefaultControls.Offhand1))
+                {
+                    if (OffhandKickAnimator != null)
+                    {
+                        OffhandKickAnimator.gameObject.SetActive(true);
+                        OffhandKickAnimator.Play("Kick");
+                    }
+
+                    OffhandKickSound.Ref()?.Play();
+
+                    //deal damage
+                    var itd = GetMeleeHit(OffhandKickPoint, OffhandKickRange);
+                    if (itd != null)
+                        itd.TakeDamage(new ActorHitInfo(OffhandKickDamage, 0, DamageType.Impact, ActorBodyPart.Unspecified, PlayerController));
+
+                    //kick away kickable things
+                    //if(Physics.Raycast(OffhandKickPoint.position, OffhandKickPoint.forward, out var hit, OffhandKickRange))
+                    if(Physics.BoxCast(OffhandKickPoint.position, Vector3.one * 0.25f, OffhandKickPoint.forward, out var hit, Quaternion.identity, OffhandKickRange))
+                    {
+                        Rigidbody rb = hit.collider.attachedRigidbody;
+                        if(rb != null)
+                        {
+                            rb.AddForce(OffhandKickPoint.forward * OffhandKickForce, ForceMode.Impulse);
+                        }
+                    }
+
+                    TimeToNextKick = OffhandKickDelay;
+                }
+            }
+
+
         }
 
     }

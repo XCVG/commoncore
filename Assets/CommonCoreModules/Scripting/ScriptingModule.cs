@@ -67,7 +67,7 @@ namespace CommonCore.Scripting
 
             var scriptAttribute = (CCScriptAttribute)scriptMethod.GetCustomAttributes(typeof(CCScriptAttribute), false)[0];
 
-            if (scriptAttribute != null && !string.IsNullOrEmpty(scriptAttribute.Name))
+            if (scriptAttribute != null)
             {
                 if (!string.IsNullOrEmpty(scriptAttribute.Name))
                     methodName = scriptAttribute.Name;

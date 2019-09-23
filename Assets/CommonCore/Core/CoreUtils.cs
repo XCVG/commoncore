@@ -9,11 +9,10 @@ using UnityEngine.SceneManagement;
 
 namespace CommonCore
 {
-    /*
-     * CommonCore Core Utilities class
-     * Includes common/general utility functions that don't fit within a module
-     * Very badly needs to be split up
-     */
+
+    /// <summary>
+    /// Core Utilities class: Contains functions for loading resources, saving/loading JSON, getting root transforms and a few other miscellaneous things.
+    /// </summary>
     public static class CoreUtils
     {
         internal static CCResourceManager ResourceManager {get; set;}
@@ -117,89 +116,6 @@ namespace CommonCore
 
         }
 
-        /*
-         * Converts a string to an int or a float with correct type
-         * (limitation: literally int or float, no long or double etc)
-         */
-        public static object StringToNumericAuto(string input)
-        {
-            //check if it is integer first
-            int iResult;
-            bool isInteger = int.TryParse(input, out iResult);
-            if (isInteger)
-                return iResult;
-
-            //then check if it could be decimal
-            float fResult;
-            bool isFloat = float.TryParse(input, out fResult);
-            if (isFloat)
-                return fResult;
-
-            //else return what we started with
-            return input;
-        }
-
-        /*
-         * Converts a string to an int or a float with correct type
-         * (double precision version: long or double)
-         */
-        public static object StringToNumericAutoDouble(string input)
-        {
-            //check if it is integer first
-            long iResult;
-            bool isInteger = long.TryParse(input, out iResult);
-            if (isInteger)
-                return iResult;
-
-            //then check if it could be decimal
-            double fResult;
-            bool isFloat = double.TryParse(input, out fResult);
-            if (isFloat)
-                return fResult;
-
-            //else return what we started with
-            return input;
-        }
-
-        public static bool IsNumericType(Type type)
-        {
-            switch (Type.GetTypeCode(type))
-            {
-                case TypeCode.Byte:
-                case TypeCode.SByte:
-                case TypeCode.UInt16:
-                case TypeCode.UInt32:
-                case TypeCode.UInt64:
-                case TypeCode.Int16:
-                case TypeCode.Int32:
-                case TypeCode.Int64:
-                case TypeCode.Decimal:
-                case TypeCode.Double:
-                case TypeCode.Single:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        public static T Clamp<T>(this T val, T min, T max) where T : IComparable<T>
-        {
-            if (val.CompareTo(min) < 0) return min;
-            else if (val.CompareTo(max) > 0) return max;
-            else return val;
-        }
-
-        /// <summary>
-        /// Converts a string to a target type, handling enums and other special cases
-        /// </summary>
-        public static object Parse(string value, Type parseType)
-        {
-            if (parseType.IsEnum)
-                return Enum.Parse(parseType, value);
-
-            return Convert.ChangeType(value, parseType);
-        }
-
         private static Transform WorldRoot;
         public static Transform GetWorldRoot() //TODO really ought to move this
         {
@@ -224,118 +140,6 @@ namespace CommonCore
                 UIRoot = rootGo.transform;
             }
             return UIRoot;
-        }
-
-        public static void DestroyAllChildren(this Transform root)
-        {
-            foreach(Transform t in root)
-            {
-                GameObject.Destroy(t.gameObject);
-            }
-        }
-
-        /// <summary>
-        /// Find a child by name, recursively
-        /// </summary>
-        public static Transform FindDeepChild(this Transform aParent, string aName)
-        {
-            var result = aParent.Find(aName);
-            if (result != null)
-                return result;
-            foreach (Transform child in aParent)
-            {
-                result = child.FindDeepChild(aName);
-                if (result != null)
-                    return result;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Finds all game objects with a given name. No, I don't know what it's for either.
-        /// </summary>
-        public static List<GameObject> FindAllGameObjects(string name)
-        {
-            var goList = new List<GameObject>();
-
-            foreach (GameObject go in GameObject.FindObjectsOfType(typeof(GameObject)))
-            {
-                if (go.name == name)
-                    goList.Add(go);
-            }
-
-            return goList;
-        }
-
-        public static Vector2 ToFlatVec(this Vector3 vec3)
-        {
-            return new Vector2(vec3.x, vec3.z);
-        }
-
-        public static Vector3 ToSpaceVec(this Vector2 vec2)
-        {
-            return new Vector3(vec2.x, 0, vec2.y);
-        }
-
-        public static Vector3 GetFlatVectorToTarget(Vector3 pos, Vector3 target)
-        {
-            Vector3 dir = target - pos;
-            return new Vector3(dir.x, 0, dir.z);
-        }
-
-        public static Vector2 GetRandomVector(Vector2 center, Vector2 extents)
-        {
-            return new Vector2(
-                UnityEngine.Random.Range(-extents.x, extents.x) + center.x,
-                UnityEngine.Random.Range(-extents.y, extents.y) + center.y
-                );
-        }
-
-        public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
-        {
-            return GetOrDefault(dictionary, key, default(TValue));
-        }
-
-        public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue def)
-        {
-            TValue result;
-            if (dictionary.TryGetValue(key, out result))
-                return result;
-
-            return def;
-        }
-
-        public static object Ref(this object obj)
-        {
-            if (obj is UnityEngine.Object)
-                return (UnityEngine.Object)obj == null ? null : obj;
-            else
-                return obj;
-        }
-
-        public static T Ref<T>(this T obj) where T : UnityEngine.Object
-        {
-            return obj == null ? null : obj;
-        }
-
-        public static string ToNiceString(this IEnumerable collection)
-        {
-            StringBuilder sb = new StringBuilder(256);
-            sb.Append("[");
-
-            IEnumerator enumerator = collection.GetEnumerator();
-            bool eHasNext = enumerator.MoveNext();
-            while(eHasNext)
-            {
-                sb.Append(enumerator.Current.ToString());
-
-                eHasNext = enumerator.MoveNext();
-                if (eHasNext)
-                    sb.Append(", ");
-            }
-            sb.Append("]");
-
-            return sb.ToString();
         }
 
     }

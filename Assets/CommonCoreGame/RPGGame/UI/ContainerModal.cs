@@ -276,7 +276,7 @@ namespace CommonCore.RpgGame.UI
                 return;
             }
 
-            int quantity = CoreUtils.Clamp<int>(Convert.ToInt32(QuantityInputField.text), 1, Mathf.Abs(SelectedItem.Quantity));
+            int quantity = MathUtils.Clamp<int>(Convert.ToInt32(QuantityInputField.text), 1, Mathf.Abs(SelectedItem.Quantity));
 
             //if it's a shop and we don't have money, check and possibly fail
             //(we would also handle carry weight here if that was actually implemented ?)
@@ -377,7 +377,7 @@ namespace CommonCore.RpgGame.UI
             //clamp values
             if(itemQuantity <= 0 || itemQuantity > SelectedItem.Quantity)
             {
-                itemQuantity = CoreUtils.Clamp<int>(itemQuantity, 1, SelectedItem.Quantity);
+                itemQuantity = MathUtils.Clamp<int>(itemQuantity, 1, SelectedItem.Quantity);
                 QuantityInputField.text = itemQuantity.ToString();
             }
 

@@ -30,7 +30,7 @@ namespace CommonCore.RpgGame.Rpg
 
     public enum ItemFlag
     {
-        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold
+        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake
     }
 
     //an actual inventory item that the player has
@@ -209,6 +209,8 @@ namespace CommonCore.RpgGame.Rpg
         public readonly RangeEnvelope Spread;
         public readonly RangeEnvelope ADSRecoil;
         public readonly RangeEnvelope ADSSpread;
+        public readonly PulseEnvelope RecoilImpulse;
+        public readonly PulseEnvelope ADSRecoilImpulse;
 
         public readonly float FireInterval;
         public readonly int NumProjectiles;
@@ -222,6 +224,7 @@ namespace CommonCore.RpgGame.Rpg
         public RangedWeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags,
             float damage, float damagePierce, float projectileVelocity,
             RangeEnvelope recoil, RangeEnvelope spread, RangeEnvelope adsRecoil, RangeEnvelope adsSpread,
+            PulseEnvelope recoilImpulse, PulseEnvelope adsRecoilImpulse,
             float fireInterval, int numProjectiles, int magazineSize, float reloadTime,
             AmmoType aType, DamageType dType, string viewModel, string worldModel, string hitPuff, string projectile)
             : base(name, weight, value, maxCondition, unique, essential, flags, damage, damagePierce, dType, viewModel, worldModel, hitPuff)
@@ -232,6 +235,8 @@ namespace CommonCore.RpgGame.Rpg
             Spread = spread;
             ADSRecoil = adsRecoil;
             ADSSpread = adsSpread;
+            RecoilImpulse = recoilImpulse;
+            ADSRecoilImpulse = adsRecoilImpulse;
 
             FireInterval = fireInterval;
             NumProjectiles = numProjectiles;

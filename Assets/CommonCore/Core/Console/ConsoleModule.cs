@@ -237,7 +237,7 @@ namespace CommonCore.Console
         [Command]
         private static string GetVersion()
         {
-            return string.Format("{0} {1} (Unity {2})", CoreParams.VersionCode, CoreParams.VersionName, CoreParams.UnityVersion);
+            return string.Format("{0} {1} (Unity {2})", CoreParams.VersionCode, CoreParams.VersionName, CoreParams.UnityVersionName);
         }
 
         [Command]

@@ -145,14 +145,14 @@ namespace CommonCore.State
         public bool InitialLoaded { get; private set; }
 
         [JsonProperty]
-        private int CurrentUID;
+        private long CurrentUID;
 
         /// <summary>
         /// The next available unique ID
         /// </summary>
         /// <remarks>Accessing this will increment the backing counter (<see cref="CurrentUID"/>)</remarks>
         [JsonIgnore]
-        public int NextUID { get { return ++CurrentUID; } }
+        public long NextUID { get { return ++CurrentUID; } }
 
         /// <summary>
         /// Decorate methods with this atrribute to have them run on GameState initialization. Higher priority is sooner.

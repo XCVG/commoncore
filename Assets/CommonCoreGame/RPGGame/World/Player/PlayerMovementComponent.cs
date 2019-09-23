@@ -12,6 +12,8 @@ namespace CommonCore.RpgGame.World
     {
         //TODO fix animation
 
+        //TODO collision/fall sounds
+
         //TODO SerializeField
         [Header("Options"), SerializeField]
         private bool AllowSlopeJumping = false;
@@ -370,7 +372,7 @@ namespace CommonCore.RpgGame.World
             }
         }
 
-        //TODO handle crouching and fall damage
+        //TODO handle crouching better, handle fall damage
         protected void HandleMovement()
         {
             //really need to do something about these values
@@ -382,6 +384,12 @@ namespace CommonCore.RpgGame.World
             var playerState = GameState.Instance.PlayerRpgState;
 
             IsRunning = MappedInput.GetButton(DefaultControls.Sprint);
+
+            //request an exit from ADS
+            if(IsRunning && PlayerController.WeaponComponent != null)
+            {
+                PlayerController.WeaponComponent.RequestADSExit();
+            }
 
             //handle crouching
             if (MappedInput.GetButtonDown(DefaultControls.Crouch) && !IsRunning)

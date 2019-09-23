@@ -6,6 +6,7 @@ using CommonCore.LockPause;
 using System;
 using CommonCore.World;
 using CommonCore.Audio;
+using CommonCore.State;
 
 namespace CommonCore.RpgGame.World
 {
@@ -40,6 +41,8 @@ namespace CommonCore.RpgGame.World
         private float HoverBreakoffChance = 0.5f;
         [SerializeField]
         private float HoverHeight = 5f;
+        [SerializeField]
+        private float HoverMinDistance = 5f;
 
         [SerializeField, Header("Dive Attack Behavior")]
         private float DiveStartDistance = 10f;
@@ -167,7 +170,7 @@ namespace CommonCore.RpgGame.World
                     {
                         //set nav target
                         ActorController.MovementComponent.SetDestination(ActorController.Target.position);
-                        if(ActorController.MovementComponent.AtTarget)
+                        if(ActorController.MovementComponent.AtTarget || ActorController.MovementComponent.DistToTarget <= HoverMinDistance)
                         {
                             ChangeState(AIState.HoverAttackingTarget);
                         }
@@ -175,6 +178,12 @@ namespace CommonCore.RpgGame.World
                     break;
                 case AIState.HoverAttackingTarget:
                     {
+                        if(ActorController.Target == null)
+                        {
+                            abortHoverAttack();
+                            break;
+                        }
+
 
                         //align flames
                         Vector3 dirMouthToTarget = (ActorController.Target.position - FirePoint.position).normalized;
@@ -195,7 +204,7 @@ namespace CommonCore.RpgGame.World
                         {
                             TimeSinceLastDecision = 0;
 
-                            if ((ActorController.Target.position - transform.position).ToFlatVec().magnitude >= HoverBreakoffDistance)
+                            if ((ActorController.Target.position - transform.position).GetFlatVector().magnitude >= HoverBreakoffDistance)
                                 abortHoverAttack(); //TODO? may cascade this into a second breakoff decision
                             else if (UnityEngine.Random.Range(0f, 1f) < HoverBreakoffChance)
                                 abortHoverAttack();
@@ -209,6 +218,12 @@ namespace CommonCore.RpgGame.World
                     break;
                 case AIState.SwoopLiningUp:
                     {
+                        if(ActorController.Target == null)
+                        {
+                            ChangeState(AIState.Circling);
+                            break;
+                        }
+
                         ActorController.MovementComponent.SetDestination(ActorController.Target.position);
 
                         if (ActorController.MovementComponent.DistToTarget <= DiveStartDistance)
@@ -226,6 +241,12 @@ namespace CommonCore.RpgGame.World
                     break;
                 case AIState.SwoopDiving:
                     {
+                        if (ActorController.Target == null)
+                        {
+                            ChangeState(AIState.Circling);
+                            break;
+                        }
+
                         float trueDistToTarget = (ActorController.Target.position - transform.position).magnitude;
                         //Debug.Log($"d: {trueDistToTarget:F4}");
                         if (!SwoopHitTarget && trueDistToTarget < ClawRange)
@@ -242,6 +263,12 @@ namespace CommonCore.RpgGame.World
                     break;
                 case AIState.SwoopFollowThrough:
                     {
+                        if (ActorController.Target == null)
+                        {
+                            ChangeState(AIState.Circling);
+                            break;
+                        }
+
                         float trueDistToTarget = (ActorController.Target.position - transform.position).magnitude;
                         //Debug.Log($"f: {trueDistToTarget:F4}");
                         if (!SwoopHitTarget && trueDistToTarget < ClawRange)
@@ -318,7 +345,7 @@ namespace CommonCore.RpgGame.World
                 case AIState.SwoopFollowThrough:
                     FlySound.Play();
                     ActorController.AnimationComponent.SetAnimationForced(ActorAnimState.Walking);
-                    ActorController.MovementComponent.SetDestination((transform.position + SwoopDiveVector).ToFlatVec());
+                    ActorController.MovementComponent.SetDestination((transform.position + SwoopDiveVector).GetFlatVector());
                     break;
                 default:
                     break;
@@ -399,7 +426,11 @@ namespace CommonCore.RpgGame.World
         private void PickTarget()
         {
             //always target the player for now
-            ActorController.Target = RpgWorldUtils.GetPlayerController().transform;
+            if (GameState.Instance.PlayerRpgState.Health <= 0)
+                ActorController.Target = null;
+            else
+                ActorController.Target = RpgWorldUtils.GetPlayerController().transform;
+
         }
 
         /// <summary>
@@ -433,7 +464,7 @@ namespace CommonCore.RpgGame.World
             float closestDistance = float.MaxValue;
             for(int i = 0; i < CirclingWaypoints.Length; i++)
             {
-                float distance = (point - CirclingWaypoints[i]).ToFlatVec().magnitude;
+                float distance = (point - CirclingWaypoints[i]).GetFlatVector().magnitude;
                 if(distance < closestDistance)
                 {
                     closestWaypoint = i;

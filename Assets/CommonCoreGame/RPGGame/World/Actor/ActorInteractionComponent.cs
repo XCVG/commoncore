@@ -5,6 +5,7 @@ using CommonCore.RpgGame.Dialogue;
 using CommonCore.RpgGame.Rpg;
 using CommonCore.RpgGame.State;
 using CommonCore.RpgGame.UI;
+using CommonCore.Scripting;
 using CommonCore.State;
 using CommonCore.UI;
 using CommonCore.World;
@@ -42,7 +43,7 @@ namespace CommonCore.RpgGame.World
 
         [Header("Other")]
         public bool InteractionDisabledByHit; //not sure why this is public
-        public string TooltipOverride; //TODO move this back into ActorController
+        public string TooltipOverride; //TODO move this back into ActorController?
         public SerializableContainerModel CorpseItems;
 
 
@@ -123,13 +124,12 @@ namespace CommonCore.RpgGame.World
                     DialogueInitiator.InitiateDialogue(target, true, null);
                     break;
                 case ActorInteractionType.Script:
-                    throw new NotImplementedException(); //we will have explicit support, soon
+                    ScriptingModule.Call(target, new ScriptExecutionContext() { Caller = this, Activator = data.Activator.gameObject }, new object[] { });
                     break;
                 default:
                     throw new NotImplementedException();
             }
         }
-
 
     }
 }

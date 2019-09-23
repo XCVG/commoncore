@@ -136,7 +136,7 @@ namespace CommonCore.RpgGame.Rpg
             else
             {
                 var prop = GetType().GetProperty(stat);
-                if (CoreUtils.IsNumericType(prop.PropertyType))
+                if (TypeUtils.IsNumericType(prop.PropertyType))
                 {
                     decimal newVal = Convert.ToDecimal(prop.GetValue(this, null)) + Convert.ToDecimal(value);
                     prop.SetValue(this, Convert.ChangeType(newVal, prop.PropertyType), null);

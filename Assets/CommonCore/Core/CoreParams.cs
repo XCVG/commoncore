@@ -15,18 +15,23 @@ namespace CommonCore
         //*****system version info
         public static Version VersionCode { get; private set; } = new Version(2, 0, 0); //2.0.0
         public static string VersionName { get; private set; } = "Balmora"; //start with A, locations from RPGs
-        public static string UnityVersion => Application.unityVersion;
+        public static Version UnityVersion { get; private set; } //auto-set
+        public static string UnityVersionName { get; private set; } //auto-set
+        public static RuntimePlatform Platform { get; private set; } //auto-set
 
         //*****game version info
-        public static string GameVersionName { get; private set; } = "Test Release 4";
+        public static string GameName { get; private set; } //auto-set from Unity settings
+        public static Version GameVersion { get; private set; } //auto-set from Unity settings
+        public static string GameVersionName { get; private set; } = "Fall 2019 Core";
 
         //*****basic config settings
         public static bool AutoInit { get; private set; } = true;
         public static bool AutoloadModules { get; private set; } = true;
         public static ImmutableArray<string> ExplicitModules { get; private set; } = new string[] { "DebugModule", "QdmsMessageBus", "ConfigModule", "ConsoleModule" }.ToImmutableArray();
         private static DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
-        public static string PreferredCommandConsole { get; private set; } = "BasicCommandConsoleImplementation";
+        public static string PreferredCommandConsole { get; private set; } = "SickDevConsoleImplementation";
         private static WindowsPersistentDataPath PersistentDataPathWindows = WindowsPersistentDataPath.Roaming;
+        private static bool UseGlobalScreenshotFolder = true;
 
         //*****additional config settings
         public static bool UseVerboseLogging { get; private set; } = true;
@@ -35,12 +40,14 @@ namespace CommonCore
         public static bool UseDirectSceneTransitions { get; private set; } = false;
 
         //*****game config settings
-        public static string InitialScene { get; private set; } = "World_Ext_TestIsland";
+        public static string InitialScene { get; private set; } = "TestScene";
 
         //*****path variables (some hackery to provide thread-safeish versions)
         public static string DataPath { get; private set; }
+        public static string GameFolderPath { get; private set; }
         public static string PersistentDataPath { get; private set; }
         public static string StreamingAssetsPath { get; private set; }
+        public static string ScreenshotsPath { get; private set; }
 
         //*****automatic environment params
         public static bool IsDebug
@@ -93,11 +100,37 @@ namespace CommonCore
         }
 
         /// <summary>
-        /// A hack necessary to preset path variables so they can be safely accessed across threads
+        /// A hack necessary to preset variables so they can be safely accessed across threads
         /// </summary>
-        internal static void SetPaths()
+        internal static void SetInitial()
         {
+            //VERSION/NAME HANDLING
+            UnityVersion = TypeUtils.ParseVersion(Application.unityVersion);
+            UnityVersionName = Application.unityVersion;
+            GameName = Application.productName;
+
+            try
+            {
+                GameVersion = TypeUtils.ParseVersion(Application.version);
+            }
+            catch(Exception e)
+            {
+                Debug.LogError($"Failed to decode version string \"{Application.version}\" (please use something resembling semantic versioning)");
+                Debug.LogException(e);
+            }
+
+            Platform = Application.platform;
+
+            //PATH HANDLING
+
+            //normal handling for DataPath and StreamingAssetsPath
             DataPath = Application.dataPath;
+            StreamingAssetsPath = Application.streamingAssetsPath;
+
+            //GameFolderPath (ported from Sandstorm)
+            GameFolderPath = Directory.GetParent(Application.dataPath).ToString();
+
+            //special handling for PersistentDataPath
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
             switch (PersistentDataPathWindows)
             {
@@ -120,7 +153,24 @@ namespace CommonCore
 #else
             PersistentDataPath = Application.persistentDataPath;
 #endif
-            StreamingAssetsPath = Application.streamingAssetsPath;
+
+            //create data folder if it doesn't exist
+            if (!Directory.Exists(PersistentDataPath))
+                Directory.CreateDirectory(PersistentDataPath);
+            
+            //special handling for ScreenshotPath
+            if(UseGlobalScreenshotFolder)
+            {
+                ScreenshotsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "Screenshots");
+            }
+            else
+            {
+                ScreenshotsPath = Path.Combine(PersistentDataPath, "screenshot");
+            }
+
+            //create screenshot folder if it doesn't exist
+            if (!Directory.Exists(ScreenshotsPath))
+                Directory.CreateDirectory(ScreenshotsPath);
         }
     }
 

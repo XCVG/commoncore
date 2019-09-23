@@ -24,6 +24,8 @@ namespace CommonCore.Input
         public const string Reload = "Reload";
         public const string Use = "Use";
         public const string AltUse = "Use2";
+        public const string Offhand1 = "Offhand1";
+        public const string Offhand2 = "Offhand2";
 
         public const string OpenFastMenu = "OpenFastMenu";
         public const string ChangeView = "ChangeView";

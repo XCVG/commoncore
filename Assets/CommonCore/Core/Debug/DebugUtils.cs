@@ -14,7 +14,6 @@ namespace CommonCore.DebugLog
     public static class DebugUtils
     {
         private const string DebugPath = "debug";
-        private const string ScreenshotPath = "screenshot";
         private const string DateFormat = "yyyy-MM-dd_HHmmss";
 
         /// <summary>
@@ -111,8 +110,8 @@ namespace CommonCore.DebugLog
         {
             try
             {
-                string fileName = DateTime.Now.ToString(DateFormat) + ".png";
-                string filePath = Path.Combine(CoreParams.PersistentDataPath, ScreenshotPath, fileName);
+                string fileName = $"{Application.productName}_{DateTime.Now.ToString(DateFormat)}.png";
+                string filePath = Path.Combine(CoreParams.ScreenshotsPath, fileName);
 
                 if (!Directory.Exists(Path.GetDirectoryName(filePath)))
                     Directory.CreateDirectory(Path.GetDirectoryName(filePath));

@@ -68,7 +68,7 @@ namespace CommonCore.State
             {
                 //pokemon exception handling
 
-                Modal.PushMessageModal(string.Format("{0}\n{1}", e.ToString(), e.StackTrace), "Error loading game", null, OnErrorConfirmed);
+                Modal.PushMessageModal(string.Format("{0}\n{1}", e.ToString(), e.StackTrace), "Error loading scene", null, OnErrorConfirmed);
             }
             //TODO actually make this asynchronous, right now it just "loads" and locks up
 
@@ -84,6 +84,12 @@ namespace CommonCore.State
             yield return null;
 
             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(MetaState.Instance.NextScene, LoadSceneMode.Single);
+
+            if (asyncLoad == null)
+            {
+                Modal.PushMessageModal("Async load operation failed", "Error loading scene", null, OnErrorConfirmed);
+                yield break;
+            }
 
             while (!asyncLoad.isDone)
             {

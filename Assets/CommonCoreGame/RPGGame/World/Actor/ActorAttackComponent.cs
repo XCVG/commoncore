@@ -64,7 +64,7 @@ namespace CommonCore.RpgGame.World
         public void BeginAttack()
         {
             ActorController.AnimationComponent.Ref()?.SetAnimation(UseMelee ? ActorAnimState.Punching : ActorAnimState.Shooting);
-            ActorController.transform.forward = CoreUtils.GetFlatVectorToTarget(transform.position, ActorController.Target.position); //ugly but workable for now
+            ActorController.transform.forward = VectorUtils.GetFlatVectorToTarget(transform.position, ActorController.Target.position); //ugly but workable for now
             if (AttackStateWarmup <= 0)
             {
                 DoAttack(); //waaaaay too complicated to cram here
