@@ -18,6 +18,10 @@ CommonCore supports Unity 2018.3 and (probably) later. The plan is to continue t
 
 CommonCore supports standalone platforms using Mono and the .NET 4.x scripting runtime. The plan is to get the basic core working on mobile and WebGL (IL2CPP) platforms within the Balmora release, but not the full feature set (at least, not yet).
 
+## Extra Modules
+
+Extra modules are located in a [separate repository](https://github.com/XCVG/commoncore-modules).
+
 ## Usage
 
 With the exceptions listed below, this repository is dual-licensed under the MIT License (a copy of which is included in LICENSE.txt) and the Creative Commons Attribution 3.0 Unported license (a copy of which is included in ALTLICENSE.txt), with later versions permitted.
