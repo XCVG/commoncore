@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using CommonCore.State;
 using CommonCore.Audio;
+using CommonCore.Scripting;
 
 namespace CommonCore.World
 {
@@ -13,7 +14,9 @@ namespace CommonCore.World
         public bool AutoGameover = true;
         public bool Autoload = true;
         public string SetMusic;
-        
+
+        protected override bool DeferAfterSceneLoadToSubclass => true;
+
         public override void Awake()
         {
             base.Awake();
@@ -33,10 +36,11 @@ namespace CommonCore.World
 
             if (!string.IsNullOrEmpty(SetMusic))
             {
-                AudioPlayer.Instance.SetMusic(SetMusic, true, false);
-                AudioPlayer.Instance.StartMusic();
+                AudioPlayer.Instance.SetMusic(SetMusic, MusicSlot.Ambient, 1.0f, true, false);
+                AudioPlayer.Instance.StartMusic(MusicSlot.Ambient);
             }
-                
+
+            ScriptingModule.CallHooked(ScriptHook.AfterSceneLoad, this);
         }
 
         public override void Update()
@@ -127,6 +131,9 @@ namespace CommonCore.World
             //restore local store
             LocalStore = gs.LocalDataState.ContainsKey(name) ? gs.LocalDataState[name] : new Dictionary<string, System.Object>();
 
+            //activate entity placeholders
+            ActivateEntityPlaceholders();
+
             //restore local object state
             RestoreLocalObjects(gs, name);
 
@@ -136,6 +143,23 @@ namespace CommonCore.World
             //restore player
             RestorePlayer(gs);
 
+        }
+
+        protected void ActivateEntityPlaceholders()
+        {
+            var entityPlaceholders = CoreUtils.GetWorldRoot().GetComponentsInChildren<EntityPlaceholder>(false);
+            foreach (var ep in entityPlaceholders)
+            {
+                try
+                {
+                    ep.SpawnEntity();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("Failed to activate an entity placeholder!");
+                    Debug.LogException(e);
+                }
+            }
         }
 
         protected void RestoreLocalObjects(GameState gs, string name)
@@ -169,7 +193,7 @@ namespace CommonCore.World
 
         private void RestoreBlankObject(KeyValuePair<string, RestorableData> kvp)
         {
-            Transform t = transform.FindDeepChild(kvp.Key);
+            Transform t = transform.FindDeepChildIgnorePlaceholders(kvp.Key);
             if (t != null)
             {
                 GameObject go = t.gameObject;
@@ -195,7 +219,7 @@ namespace CommonCore.World
         {
             DynamicRestorableData rd = kvp.Value as DynamicRestorableData;
 
-            Transform t = transform.FindDeepChild(kvp.Key);
+            Transform t = transform.FindDeepChildIgnorePlaceholders(kvp.Key);
 
             if (t != null)
             {
@@ -258,10 +282,17 @@ namespace CommonCore.World
                     string objectSceneName = rd.Scene;
                     if (objectSceneName == name)
                     {
-                        //we have a match! since it's motile, we'll have to create a new object
+                        //we have a match!
                         try
                         {
-                            GameObject go = Instantiate(CoreUtils.LoadResource<GameObject>("Entities/" + rd.FormID), transform) as GameObject;
+                            Transform t = transform.FindDeepChildIgnorePlaceholders(kvp.Key);
+                            GameObject go = null;
+                            if (t == null)
+                                go = Instantiate(CoreUtils.LoadResource<GameObject>("Entities/" + rd.FormID), transform) as GameObject;
+                            else
+                                go = t.gameObject;
+                            //this *should* work but hasn't been tested
+
                             {
                                 go.name = kvp.Key;
 

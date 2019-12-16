@@ -70,7 +70,32 @@ namespace CommonCore.World
                 Debug.LogWarning("Couldn't find PlayerController!");
                 return null;
             }
-        }              
+        }
+        
+        /// <summary>
+        /// Finds a child by name, recursively, and ignores placeholders
+        /// </summary>
+        public static Transform FindDeepChildIgnorePlaceholders(this Transform aParent, string aName)
+        {
+            Transform result = null;
+            foreach (Transform child in aParent)
+            {
+                if (child.gameObject.name == aName && child.GetComponent<IPlaceholderComponent>() == null)
+                {
+                    result = child;
+                    break;
+                }
+            }
+            if (result != null)
+                return result;
+            foreach (Transform child in aParent)
+            {
+                result = child.FindDeepChildIgnorePlaceholders(aName);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
 
         /// <summary>
         /// Finds an object by thing ID (name)
@@ -174,6 +199,34 @@ namespace CommonCore.World
             go.name = string.Format("{0}_{1}", go.name.Replace("(Clone)", "").Trim(), GameState.Instance.NextUID);
 
             return go;
+        }
+
+        /// <summary>
+        /// Check if this object is considered a CommonCore Entity
+        /// </summary>
+        public static bool IsEntity(this GameObject gameObject)
+        {
+            return gameObject.Ref()?.GetComponent<BaseController>() != null;
+        }
+
+        /// <summary>
+        /// Checks if this object is considered the player object
+        /// </summary>
+        public static bool IsPlayer(this GameObject gameObject)
+        {
+            return gameObject == GetPlayerObject();
+        }
+
+        /// <summary>
+        /// Checks if this object is considered an "actor" object
+        /// </summary>
+        public static bool IsActor(this GameObject gameObject)
+        {
+            var bc = gameObject.Ref()?.GetComponent<BaseController>();
+            if (bc != null && bc.Tags.Contains("Actor"))
+                return true;
+
+            return false;
         }
 
 

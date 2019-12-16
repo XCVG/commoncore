@@ -11,7 +11,7 @@ namespace CommonCore.State
     /// </summary>
     public enum SceneTransitionType
     {
-        NewGame, LoadGame, ChangeScene
+        NewGame, LoadGame, ChangeScene, EndGame
     }
 
     /// <summary>

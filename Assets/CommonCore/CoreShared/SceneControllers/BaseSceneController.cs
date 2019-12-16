@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using CommonCore.State;
+using CommonCore.Scripting;
 
 namespace CommonCore
 {
@@ -17,6 +18,11 @@ namespace CommonCore
         public static BaseSceneController Current { get; protected set; }
 
         public Dictionary<string, System.Object> LocalStore { get; protected set; }
+
+        /// <summary>
+        /// Set this to true if you want to handle the AfterSceneLoad scripting hook in your subclass controller
+        /// </summary>
+        protected virtual bool DeferAfterSceneLoadToSubclass => false;
 
         public virtual void Awake()
         {
@@ -36,6 +42,9 @@ namespace CommonCore
         public virtual void Start()
         {
             Debug.Log("Base Scene Controller Start");
+
+            if (!DeferAfterSceneLoadToSubclass)
+                ScriptingModule.CallHooked(ScriptHook.AfterSceneLoad, this);
         }
 
         public virtual void Update()

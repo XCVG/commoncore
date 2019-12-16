@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 namespace CommonCore
 {
@@ -75,6 +77,17 @@ namespace CommonCore
             }
 
             return goList;
+        }
+
+        /// <summary>
+        /// Adds a listener to an EventTrigger
+        /// </summary>
+        public static void AddListener(this EventTrigger trigger, EventTriggerType eventType, Action<BaseEventData> action)
+        {
+            EventTrigger.Entry entry = new EventTrigger.Entry();
+            entry.eventID = eventType;
+            entry.callback.AddListener(new UnityAction<BaseEventData>(action));
+            trigger.triggers.Add(entry);
         }
 
     }

@@ -14,6 +14,8 @@ namespace CommonCore
         public static PlayerViewType DefaultPlayerView { get; private set; } = PlayerViewType.PreferFirst;
         public static bool UseRandomDamage { get; private set; } = true;
         public static bool AutoQuestNotifications { get; private set; } = true;
+        public static bool ShowImpossibleSkillChecks { get; private set; } = true;
+        public static bool AttemptImpossibleSkillChecks { get; private set; } = true;
 
     }
 }

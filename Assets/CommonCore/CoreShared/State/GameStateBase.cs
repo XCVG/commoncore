@@ -136,12 +136,17 @@ namespace CommonCore.State
         /// <summary>
         /// If we are allowed to save at this point
         /// </summary>
-        /// <remarks>May move this into a MetaState flag or something</remarks>
         public bool SaveLocked { get; set; }
+
+        /// <summary>
+        /// If we are allowed to open the menu at this point
+        /// </summary>
+        public bool MenuLocked { get; set; }
 
         /// <summary>
         /// Whether we have loaded initial data already
         /// </summary>
+        [JsonProperty]
         public bool InitialLoaded { get; private set; }
 
         [JsonProperty]

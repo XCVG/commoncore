@@ -11,7 +11,9 @@ namespace CommonCore.World
         public string EditorFormID;
         public string FormID { get; private set; }
 
-        public List<string> Tags; //these are NOT unity tags!
+        public int HitMaterial = 0;
+
+        public HashSet<string> Tags; //these are NOT unity tags!
 
         public virtual void Awake()
         {
@@ -25,7 +27,7 @@ namespace CommonCore.World
 
             if(Tags == null)
             {
-                Tags = new List<string>();
+                Tags = new HashSet<string>();
             }
         }
 

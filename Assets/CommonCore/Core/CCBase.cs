@@ -242,7 +242,8 @@ namespace CommonCore
                 }
                 catch(Exception e)
                 {
-                    Debug.Log(e);
+                    Debug.LogError($"[Core] Fatal error in module {m.GetType().Name} during {nameof(ExecuteAllModulesLoaded)}");
+                    Debug.LogException(e);
                 }
             }
         }

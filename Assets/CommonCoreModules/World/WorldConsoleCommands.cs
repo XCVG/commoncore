@@ -189,7 +189,7 @@ namespace CommonCore.World
         [Command]
         static void Enable()
         {
-            SelectedObject.SetActive(false);
+            SelectedObject.SetActive(true);
         }
 
         [Command]

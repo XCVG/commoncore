@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,15 +11,6 @@ using CommonCore.Config;
 namespace CommonCore.Audio
 {
 
-    /// <summary>
-    /// Represents a sound that is playing or enqueued to play
-    /// </summary>
-    public struct SoundInfo
-    {
-        public AudioClip Clip;
-        public AudioSource Source;
-        public bool Retain;
-    }
 
     /// <summary>
     /// Generalized audio player to handle music and oneshot sound effects
@@ -28,23 +20,56 @@ namespace CommonCore.Audio
     /// </remarks>
     public class AudioPlayer : MonoBehaviour
     {
-        private const float GCInterval = 2.5f;
+        //TODO global music enable
+
+        /// <summary>
+        /// Represents a sound that is playing or enqueued to play
+        /// </summary>
+        private struct SoundInfo
+        {
+            public AudioClip Clip;
+            public AudioSource Source;
+            public bool Retain;
+        }
+
+        /// <summary>
+        /// Represents the music that is playing in a slot
+        /// </summary>
+        private class MusicInfo //we actually want reference semantics for this (I think)
+        {
+            public AudioClip Clip;
+            public float Volume;
+            public bool Loop;
+            public bool Retain;
+            public bool Playing;
+            public float? Time;
+        }
+
+        private const float CleanupInterval = 2.5f;
 
         public static AudioPlayer Instance;
+
+        public bool MusicEnabled { get; private set; } = true; //not happy with the handling of this tbh
 
         private AudioModule Module;
         private QdmsMessageInterface MessageInterface;
         private List<SoundInfo> PlayingSounds;
 
-        private AudioSource MusicPlayer;
-        private bool MusicRetain;
+        //user audio component handling
+        private List<UserMusicComponent> UserMusicComponents = new List<UserMusicComponent>();
+        private UserMusicComponent CurrentUserMusicComponent;
+
+        //handle multiple slots
+        private MusicSlot? CurrentMusicSlot = null;
+        private Dictionary<MusicSlot, MusicInfo> CurrentMusics = new Dictionary<MusicSlot, MusicInfo>();
+        private Dictionary<MusicSlot, AudioSource> MusicPlayers = new Dictionary<MusicSlot, AudioSource>();
 
         private float TimeElapsed;
-        private bool MusicShouldBePlaying;
 
         private void Awake()
         {
             DontDestroyOnLoad(this.gameObject);
+            Instance = this;
         }
 
         internal void SetModule(AudioModule module)
@@ -54,19 +79,21 @@ namespace CommonCore.Audio
         }
 
         private void Start()
-        {
-            Instance = this;
+        {            
             MessageInterface = new QdmsMessageInterface(gameObject);
 
-            //initialize music player
-            GameObject mpObject = new GameObject("MusicPlayer");
-            mpObject.transform.parent = transform;
-            AudioSource mpSource = mpObject.AddComponent<AudioSource>();
-            mpSource.spatialBlend = 0;
-            mpSource.ignoreListenerPause = true;
-            mpSource.ignoreListenerVolume = true;
-            MusicPlayer = mpSource;
-            //mpSource.volume = Config.ConfigState.Instance.MusicVolume;
+            //initialize music players
+            foreach (MusicSlot slot in Enum.GetValues(typeof(MusicSlot)))
+            {
+                GameObject mpObject = new GameObject($"MusicPlayer_{(int)slot}");
+                mpObject.transform.parent = transform;
+                AudioSource mpSource = mpObject.AddComponent<AudioSource>();
+                mpSource.spatialBlend = 0;
+                mpSource.ignoreListenerPause = true;
+                mpSource.ignoreListenerVolume = true;
+                MusicPlayers[slot] = mpSource;
+                //mpSource.volume = Config.ConfigState.Instance.MusicVolume;
+            }
 
             //initialize sound list
             PlayingSounds = new List<SoundInfo>();
@@ -92,7 +119,7 @@ namespace CommonCore.Audio
 
             //run cleanup periodically
             TimeElapsed += Time.deltaTime;
-            if(TimeElapsed >= GCInterval)
+            if(TimeElapsed >= CleanupInterval)
             {
                 for(int i = PlayingSounds.Count-1; i >= 0; i--)
                 {
@@ -106,6 +133,17 @@ namespace CommonCore.Audio
 
                 TimeElapsed = 0;
             }
+
+            //report time if applicable
+            if (MusicEnabled && CurrentUserMusicComponent != null && CurrentMusicSlot == MusicSlot.User && MusicPlayers[MusicSlot.User].isPlaying && MusicPlayers[MusicSlot.User].clip != null)
+                CurrentUserMusicComponent.ReportTime(MusicPlayers[MusicSlot.User].time);
+
+            //handle track ended
+            if(MusicEnabled && CurrentUserMusicComponent != null && CurrentMusicSlot == MusicSlot.User && 
+                !MusicPlayers[MusicSlot.User].isPlaying && MusicPlayers[MusicSlot.User].clip != null && MusicPlayers[MusicSlot.User].timeSamples == MusicPlayers[MusicSlot.User].clip.samples)
+            {
+                CurrentUserMusicComponent.SignalTrackEnded();
+            }
         }
 
         private void HandleMessage(QdmsMessage message)
@@ -118,9 +156,30 @@ namespace CommonCore.Audio
                 switch (flagMessage.Flag)
                 {
                     case "ConfigChanged":
-                        MusicPlayer.volume = ConfigState.Instance.MusicVolume;
-                        if(MusicShouldBePlaying)
-                            MusicPlayer.Play(); //needed if audio system is reset
+                        if(CurrentMusicSlot != null)
+                        {
+                            foreach(var umc in UserMusicComponents)
+                            {
+                                umc.SignalAudioRestarted();
+                            }
+
+                            if (CurrentMusics.ContainsKey(CurrentMusicSlot.Value)) //anti-break, though we shouldn't hit this...
+                            {
+                                MusicPlayers[CurrentMusicSlot.Value].volume = Mathf.Clamp(CurrentMusics[CurrentMusicSlot.Value].Volume * ConfigState.Instance.MusicVolume, 0, 1);
+                                if (CurrentMusics[CurrentMusicSlot.Value].Playing) //needed if the audio system is totally reset
+                                    MusicPlayers[CurrentMusicSlot.Value].Play(); //this doesn't work with user music
+                            }
+                            
+
+                        }
+                        break;
+                    case "EnableMusic": //not entirely happy with this method
+                        MusicEnabled = true;
+                        HandleMusicChanged();
+                        break;
+                    case "DisableMusic":
+                        MusicEnabled = false;
+                        HandleMusicChanged();
                         break;
                     default:
                         break;
@@ -140,17 +199,208 @@ namespace CommonCore.Audio
                 }
             }
 
-            if(!MusicRetain)
+            //handle unretain for all slots
+            foreach(var slot in CurrentMusics.Keys.ToArray())
             {
-                StopMusic();
+                if (!CurrentMusics[slot].Retain)
+                    CurrentMusics.Remove(slot);
+            }
+            HandleMusicChanged();
+        }
+
+        private void HandleMusicChanged()
+        {
+            if(!MusicEnabled)
+            {
+                foreach (var slot in MusicPlayers.Keys)
+                {
+                        MusicPlayers[slot].Pause();
+                }
+
+                return;
+            }
+
+            MusicSlot? highestPlayingSlot = null;
+            //find the highest slot that should be playing, stop the other ones and play that one
+            foreach(var slot in CurrentMusics.Keys.OrderByDescending(x => x))
+            {
+                var musicInfo = CurrentMusics[slot];
+                if(musicInfo.Playing || (slot == MusicSlot.User && CurrentUserMusicComponent != null)) //hack: User slot is always considered playing if enabled
+                {
+                    highestPlayingSlot = slot;
+                    break;
+                }
+            }
+
+            //stop all other slots
+            foreach(var slot in MusicPlayers.Keys)
+            {
+                if(!highestPlayingSlot.HasValue || slot != highestPlayingSlot.Value || !CurrentMusics[highestPlayingSlot.Value].Playing)
+                    MusicPlayers[slot].Pause();
+            }
+
+            if (highestPlayingSlot.HasValue && CurrentMusics[highestPlayingSlot.Value].Playing)
+            {
+                CurrentMusicSlot = highestPlayingSlot.Value;
+
+                var musicInfo = CurrentMusics[highestPlayingSlot.Value];
+                var audioSource = MusicPlayers[highestPlayingSlot.Value];
+
+                //if it's a different song, stop and set clip
+                if (musicInfo.Clip != audioSource.clip)
+                {
+                    audioSource.Stop();
+                    audioSource.clip = musicInfo.Clip;
+                }
+
+                if (audioSource.clip != null)
+                {
+
+                    //set parameters
+                    audioSource.loop = musicInfo.Loop;
+                    audioSource.volume = Mathf.Clamp(musicInfo.Volume * ConfigState.Instance.MusicVolume, 0, 1);
+
+                    //also seek the music if requested
+                    if (musicInfo.Time.HasValue)
+                    {
+                        audioSource.time = musicInfo.Time.Value;
+                        musicInfo.Time = null;
+                    }
+
+                    //play if it is not playing
+                    if (!audioSource.isPlaying)
+                        audioSource.Play();
+
+                    
+                }
+            }
+
+        }
+
+        //USER AUDIO COMPONENT HANDLING
+        
+        public void RegisterUserMusicComponent(UserMusicComponent uac)
+        {
+            Type uacType = uac.GetType();
+
+            if(UserMusicComponents.Find(x => x.GetType() == uacType) != null)
+            {
+                Debug.LogError($"Can't register UserMusicComponent of type {uacType} because an instance is already registered!");
+                throw new InvalidOperationException();
+            }
+
+            UserMusicComponents.Add(uac);
+            Debug.Log("Registered " + uac.GetType().Name);
+        }
+
+
+        public void UnregisterUserMusicComponent(UserMusicComponent uac)
+        {
+            if (!UserMusicComponents.Remove(uac))
+                throw new IndexOutOfRangeException();
+        }
+
+        public void SelectUserMusicComponent(string component)
+        {
+            //lookup/find
+            UserMusicComponent uac = null;
+
+            if (!string.IsNullOrEmpty(component))
+            {
+                uac = UserMusicComponents.Find(x => x.GetType().Name.Equals(component, StringComparison.Ordinal));
+
+                if (uac == null)
+                {
+                    Debug.LogError($"Can't switch to UserMusicComponent of type {component} because it doesn't exist");
+                    throw new IndexOutOfRangeException();
+                }
+            }
+
+            if(CurrentUserMusicComponent != null)
+            {
+                if(CurrentMusics.ContainsKey(MusicSlot.User))
+                {
+                    AudioClip clip = CurrentMusics[MusicSlot.User].Clip;
+                    CurrentMusics.Remove(MusicSlot.User);
+
+                    //HandleMusicChanged();
+                    MusicPlayers[MusicSlot.User].Stop();
+                    MusicPlayers[MusicSlot.User].clip = null;
+
+                    if(clip != null)
+                        CurrentUserMusicComponent.ReportClipReleased(clip);
+                }
+
+                CurrentUserMusicComponent.Enabled = false;
+            }
+
+            CurrentUserMusicComponent = uac;
+
+            if(uac != null)
+            {
+                CurrentUserMusicComponent.Enabled = true;
+            }
+            else
+            {
+                HandleMusicChanged();
+            }
+           
+
+        }
+
+        public string GetCurrentUserMusicComponent()
+        {
+            return CurrentUserMusicComponent?.GetType().Name ?? null;
+        }
+
+        public IEnumerable<UserMusicComponent> GetUserMusicComponents()
+        {
+            return UserMusicComponents;
+        }
+
+        //plumbing for console commands
+
+        /// <summary>
+        /// Clears all playing sounds, regardless of completion or retention status
+        /// </summary>
+        public void ClearAllSounds()
+        {
+            for (int i = PlayingSounds.Count - 1; i >= 0; i--)
+            {
+                var s = PlayingSounds[i];
+                Destroy(s.Source.gameObject);
+                PlayingSounds.RemoveAt(i);                
             }
         }
-               
+
+        /// <summary>
+        /// Clears all playing music, regardless of completion or retention status
+        /// </summary>
+        public void ClearAllMusic()
+        {
+            //explicitly release user clip if applicable
+            if(CurrentMusics.ContainsKey(MusicSlot.User))
+            {
+                MusicPlayers[MusicSlot.User].Stop();
+                var clip = MusicPlayers[MusicSlot.User].clip;
+                MusicPlayers[MusicSlot.User].clip = null;
+                CurrentUserMusicComponent.ReportClipReleased(clip);
+            }
+
+            //clear music entries
+            CurrentMusics.Clear();
+
+            //stop and unload all musics
+            foreach(var musicSource in MusicPlayers.Values)
+            {
+                musicSource.Stop();
+                musicSource.clip = null;
+            }
+        }
 
         //TODO a lot more functionality:
         //  returning some kind of reference
         //  manipulating sounds via reference
-        //  "override" music
         //  ambients sound(s)
         //  fixed sound channels
         //(some of this is coded in but not exposed)
@@ -321,56 +571,173 @@ namespace CommonCore.Audio
         //things like fades and overrides would also be nice
 
         /// <summary>
-        /// Sets the background music to a specified track and starts it
+        /// Sets the music in a slot to the specified audio.
         /// </summary>
         /// <param name="sound">The music file to play</param>
+        /// <param name="slot">The slot to play music in</param>
+        /// <param name="volume">The volume to play the music at (will be multiplied with global music volume)</param>
         /// <param name="loop">Whether to loop the music</param>
         /// <param name="retain">Whether to retain the music across scene loads</param>
-        public void SetMusic(string sound, bool loop, bool retain)
+        /// <remarks>
+        /// <para>No longer effects playback state</para>
+        /// </remarks>
+        public void SetMusic(string sound, MusicSlot slot, float volume, bool loop, bool retain)
         {
             var clip = Module.GetSound(sound, SoundType.Music);
 
             if (clip == null)
             {
-                Debug.LogWarning("Can't play music " + sound);
+                Debug.LogError("Can't find music " + sound);
                 return;
             }
 
-            MusicPlayer.Stop();
-            MusicPlayer.clip = clip;
-            MusicPlayer.volume = ConfigState.Instance.MusicVolume;
-            MusicRetain = retain;
-            MusicPlayer.loop = loop;            
-            StartMusic();
+            SetMusic(clip, slot, volume, loop, retain);
         }
 
         /// <summary>
-        /// Stops and clears the currently set background music
+        /// Sets the music in a slot to the specified audio.
         /// </summary>
-        public void ClearMusic()
+        /// <param name="clip">The music clip to play</param>
+        /// <param name="slot">The slot to play music in</param>
+        /// <param name="volume">The volume to play the music at (will be multiplied with global music volume)</param>
+        /// <param name="loop">Whether to loop the music</param>
+        /// <param name="retain">Whether to retain the music across scene loads</param>
+        /// <remarks>
+        /// <para>No longer effects playback state</para>
+        /// </remarks>
+        public void SetMusic(AudioClip clip, MusicSlot slot, float volume, bool loop, bool retain)
         {
-            MusicPlayer.Stop();
-            MusicPlayer.clip = null;
-            MusicShouldBePlaying = false;
+            bool wasPlaying = false;
+            if (CurrentMusics.ContainsKey(slot))
+                wasPlaying = CurrentMusics[slot].Playing;
+
+            //release old clip from user music slot
+            if (slot == MusicSlot.User && CurrentMusics.ContainsKey(slot) && CurrentMusics[slot].Clip != null && CurrentMusics[slot].Clip != clip)
+            {
+                MusicPlayers[MusicSlot.User].Stop();
+                var oldClip = MusicPlayers[MusicSlot.User].clip;
+                MusicPlayers[MusicSlot.User].clip = null;
+                CurrentUserMusicComponent.ReportClipReleased(oldClip);
+            }
+
+            var musicInfo = new MusicInfo() { Clip = clip, Volume = volume, Loop = loop, Retain = retain, Playing = wasPlaying, Time = 0 };
+            CurrentMusics[slot] = musicInfo;
+
+            HandleMusicChanged();
         }
 
         /// <summary>
-        /// Plays the currently set background music
+        /// Sets the music in a slot to the specified audio, keeping everything else the same
         /// </summary>
-        public void StartMusic()
+        /// <remarks>Intended to be used with UserAudioComponent</remarks>
+        public void SetMusicClip(AudioClip clip, MusicSlot slot)
         {
-            MusicPlayer.time = 0;
-            MusicPlayer.Play();
-            MusicShouldBePlaying = true;
+            if (CurrentMusics.ContainsKey(slot))
+            {
+                //release old clip from user music slot
+                if(slot == MusicSlot.User && CurrentMusics.ContainsKey(slot) && CurrentMusics[slot].Clip != null && CurrentMusics[slot].Clip != clip)
+                {
+                    MusicPlayers[MusicSlot.User].Stop();
+                    var oldClip = MusicPlayers[MusicSlot.User].clip;
+                    MusicPlayers[MusicSlot.User].clip = null;
+                    CurrentUserMusicComponent.ReportClipReleased(oldClip);
+                }
+
+                CurrentMusics[slot].Clip = clip;
+                HandleMusicChanged();
+            }
+            else
+            {
+                SetMusic(clip, slot, 1f, true, false);
+            }
         }
 
         /// <summary>
-        /// Stops the currently set background music
+        /// Sets the looping state of a music slot
         /// </summary>
-        public void StopMusic()
+        public void SetMusicLooping(bool looping, MusicSlot slot)
         {
-            MusicPlayer.Stop();
-            MusicShouldBePlaying = false;
+            if (CurrentMusics.ContainsKey(slot))
+            {
+                CurrentMusics[slot].Loop = looping;
+                HandleMusicChanged();
+            }
+        }
+
+        /// <summary>
+        /// Sets the volume of a music slot
+        /// </summary>
+        public void SetMusicVolume(float volume, MusicSlot slot)
+        {
+            if (CurrentMusics.ContainsKey(slot))
+            {
+                CurrentMusics[slot].Volume = volume;
+                HandleMusicChanged();
+            }
+        }
+
+        /// <summary>
+        /// Stops and clears the currently set music in a slot
+        /// </summary>
+        public void ClearMusic(MusicSlot slot)
+        {
+            CurrentMusics.Remove(slot);
+            HandleMusicChanged();
+        }
+
+        /// <summary>
+        /// Plays the currently set music in a slot
+        /// </summary>
+        public void StartMusic(MusicSlot slot) => StartMusic(slot, true);
+
+        /// <summary>
+        /// Plays the currently set music in a slot
+        /// </summary>
+        public void StartMusic(MusicSlot slot, bool restart)
+        {
+            if(CurrentMusics.ContainsKey(slot))
+            {
+                CurrentMusics[slot].Playing = true;
+                if (restart)
+                    CurrentMusics[slot].Time = 0;
+                HandleMusicChanged();
+            }
+            else
+            {
+                Debug.LogWarning($"Tried to start music in slot {slot.ToString()} but none exists!");
+            }
+        }
+
+        /// <summary>
+        /// Stops the currently set music in a slot
+        /// </summary>
+        public void StopMusic(MusicSlot slot)
+        {
+            if (CurrentMusics.ContainsKey(slot))
+            {
+                CurrentMusics[slot].Playing = false;
+                HandleMusicChanged();
+            }
+            else
+            {
+                Debug.LogWarning($"Tried to stop music in slot {slot.ToString()} but none exists!");
+            }
+        }
+
+        /// <summary>
+        /// Seeks the currently set music in a slot
+        /// </summary>
+        public void SeekMusic(MusicSlot slot, float time)
+        {
+            if (CurrentMusics.ContainsKey(slot))
+            {
+                CurrentMusics[slot].Time = time;
+                HandleMusicChanged();
+            }
+            else
+            {
+                Debug.LogWarning($"Tried to seek music in slot {slot.ToString()} but none exists!");
+            }
         }
 
 

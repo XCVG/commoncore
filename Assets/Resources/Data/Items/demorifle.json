@@ -5,7 +5,7 @@
       "Damage": 12,
       "DamagePierce": 4,
 	  "DType": "Normal",
-	  "HitPuff": "DefaultHitPuff",
+	  "HitPuff": "TestHitPuff",
 	  "ProjectileVelocity": 500,
 	  "Recoil": {
 		"min" : 0,

@@ -167,7 +167,7 @@ namespace CommonCore.RpgGame.Dialogue
             MicroscriptNode[] microscripts = null;
             if (jt["microscript"] != null)
             {
-                //TODO parse microscripts
+                //parse microscripts
                 List<MicroscriptNode> nList = new List<MicroscriptNode>();
                 JArray ja = (JArray)jt["microscript"];
                 foreach (var x in ja)
@@ -216,7 +216,13 @@ namespace CommonCore.RpgGame.Dialogue
                 hideCondition = ParseSingleCondition(jt["hideCondition"]);
             }
 
-            return new ChoiceNode(next, text, showCondition, hideCondition, microscripts, conditionals);
+            SkillCheckNode skillCheck = null;
+            if(jt["skillCheck"] != null)
+            {
+                skillCheck = ParseSkillCheck(jt["skillCheck"]);
+            }
+
+            return new ChoiceNode(next, text, showCondition, hideCondition, microscripts, conditionals, skillCheck);
         }
 
         public static ConditionNode ParseConditionNode(JToken jt)
@@ -344,6 +350,84 @@ namespace CommonCore.RpgGame.Dialogue
             }
 
             return new Conditional(type, target, option, optionValue);
+        }
+
+        public static SkillCheckNode ParseSkillCheck(JToken jt)
+        {
+            //parse check type
+            string checkTypeString = jt.Value<string>("checkType");
+            SkillCheckType checkType = (SkillCheckType)Enum.Parse(typeof(SkillCheckType), checkTypeString, true);
+
+            //parse next values
+            string passNext = jt.Value<string>("passNext");
+            string failNext = jt.Value<string>("failNext");
+
+            //parse appendCheckText
+            bool appendCheckText = false;
+            if (!jt["appendCheckText"].IsNullOrEmpty())
+                appendCheckText = jt["appendCheckText"].ToObject<bool>();
+
+            //parse target type and target
+            SkillCheckTarget targetType = default;
+            string target = null;
+            if (!jt["stat"].IsNullOrEmpty())
+            {
+                targetType = SkillCheckTarget.Stat;
+                target = jt["stat"].ToString();
+            }
+            else if (!jt["skill"].IsNullOrEmpty())
+            {
+                targetType = SkillCheckTarget.Skill;
+                target = jt["skill"].ToString();
+            }
+            else if (!jt["av"].IsNullOrEmpty())
+            {
+                targetType = SkillCheckTarget.ActorValue;
+                target = jt["av"].ToString();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+
+            //parse comparison type and value
+            SkillCheckComparison comparisonType = default;
+            string comparisonFieldName = null;
+
+            if(!jt["greater"].IsNullOrEmpty())
+            {
+                comparisonType = SkillCheckComparison.Greater;
+                comparisonFieldName = "greater";
+            }
+            else if (!jt["greaterEqual"].IsNullOrEmpty())
+            {
+                comparisonType = SkillCheckComparison.GreaterEqual;
+                comparisonFieldName = "greaterEqual";
+            }
+            else if (!jt["equal"].IsNullOrEmpty())
+            {
+                comparisonType = SkillCheckComparison.Equal;
+                comparisonFieldName = "equal";
+            }
+            else if (!jt["less"].IsNullOrEmpty())
+            {
+                comparisonType = SkillCheckComparison.Less;
+                comparisonFieldName = "less";
+            }
+            else if (!jt["lessEqual"].IsNullOrEmpty())
+            {
+                comparisonType = SkillCheckComparison.LessEqual;
+                comparisonFieldName = "lessEqual";
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+
+            string valueString = jt.Value<string>(comparisonFieldName);
+            IComparable value = (IComparable)TypeUtils.StringToNumericAuto(valueString); //ouch
+
+            return new SkillCheckNode(checkType, comparisonType, targetType, target, value, passNext, failNext, appendCheckText);
         }
 
         public static MicroscriptNode ParseMicroscript(JToken jt)

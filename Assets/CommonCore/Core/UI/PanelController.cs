@@ -13,16 +13,22 @@ namespace CommonCore.UI
         [SerializeField, Tooltip("If set, Signal* will be called automatically using Unity MonoBehaviour events")]
         protected bool HookupUnityEvents = true;
 
+        private bool InitialPaintDone = false;
+
         private void Start()
         {
-            if (HookupUnityEvents)
+            if (HookupUnityEvents && !InitialPaintDone)
                 SignalInitialPaint();
         }
 
         private void OnEnable()
         {
             if (HookupUnityEvents)
+            {
+                if (!InitialPaintDone)
+                    SignalInitialPaint();
                 SignalPaint();
+            }
         }
 
         private void OnDisable()
@@ -36,7 +42,7 @@ namespace CommonCore.UI
         /// </summary>
         public virtual void SignalInitialPaint()
         {
-
+            InitialPaintDone = true;
         }
 
         /// <summary>

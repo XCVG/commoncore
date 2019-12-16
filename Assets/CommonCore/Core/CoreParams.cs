@@ -22,12 +22,12 @@ namespace CommonCore
         //*****game version info
         public static string GameName { get; private set; } //auto-set from Unity settings
         public static Version GameVersion { get; private set; } //auto-set from Unity settings
-        public static string GameVersionName { get; private set; } = "Fall 2019 Core";
+        public static string GameVersionName { get; private set; } = "Holiday 2019 Demo";
 
         //*****basic config settings
         public static bool AutoInit { get; private set; } = true;
         public static bool AutoloadModules { get; private set; } = true;
-        public static ImmutableArray<string> ExplicitModules { get; private set; } = new string[] { "DebugModule", "QdmsMessageBus", "ConfigModule", "ConsoleModule" }.ToImmutableArray();
+        public static ImmutableArray<string> ExplicitModules { get; private set; } = new string[] { "DebugModule", "QdmsMessageBus", "ConfigModule", "AsyncModule", "ScriptingModule", "ConsoleModule" }.ToImmutableArray();
         private static DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
         public static string PreferredCommandConsole { get; private set; } = "SickDevConsoleImplementation";
         private static WindowsPersistentDataPath PersistentDataPathWindows = WindowsPersistentDataPath.Roaming;

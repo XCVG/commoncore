@@ -29,17 +29,25 @@ namespace CommonCore.Input
         public static void SetMapper(string newMapper)
         {
             if (!Mappers.ContainsKey(newMapper))
+            {
+                Debug.LogWarning($"[Input] Can't find mapper \"{newMapper}\"");
                 throw new ArgumentOutOfRangeException();
+            }
+
+            Type newMapperType = Mappers[newMapper];
+
+            if (Mapper != null && Mapper.GetType() == newMapperType)
+                return;
 
             if (Mapper is IDisposable dMapper)
                 dMapper.Dispose();
 
-            Mapper = (InputMapper)Activator.CreateInstance(Mappers[newMapper]);
+            Mapper = (InputMapper)Activator.CreateInstance(newMapperType);
         }
 
         internal static void SetMapper(InputMapper newMapper)
         {
-            CDebug.LogEx(string.Format("Set mapper to {0}", newMapper.GetType().Name), LogLevel.Message, typeof(MappedInput));
+            CDebug.LogEx(string.Format("[Input] Set mapper to {0}", newMapper.GetType().Name), LogLevel.Message, typeof(MappedInput));
             Mapper = newMapper;
         }
 

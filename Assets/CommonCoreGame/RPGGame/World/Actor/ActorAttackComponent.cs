@@ -136,7 +136,7 @@ namespace CommonCore.RpgGame.World
                 foreach (var r in rc)
                 {
                     var go = r.collider.gameObject;
-                    var ahgo = go.GetComponent<ActorHitboxComponent>();
+                    var ahgo = go.GetComponent<IHitboxComponent>();
                     if (ahgo != null)
                     {
                         ac = ahgo.ParentController;
@@ -151,10 +151,8 @@ namespace CommonCore.RpgGame.World
                 }
                 if (ac != null)
                 {
-                    if (ac is ActorController)
-                        ((ActorController)ac).TakeDamage(modHit);
-                    else if (ac is PlayerController)
-                        ((PlayerController)ac).TakeDamage(modHit);
+                    if (ac is ITakeDamage itd)
+                        itd.TakeDamage(modHit);
                 }
 
 
@@ -173,6 +171,7 @@ namespace CommonCore.RpgGame.World
             }
 
             //show the effect, if applicable
+            //TODO switch this over to use Effect
             if (AttackEffectPrefab != null)
             {
                 Instantiate(AttackEffectPrefab, shootPos, Quaternion.identity, (ShootPoint == null ? transform : ShootPoint));

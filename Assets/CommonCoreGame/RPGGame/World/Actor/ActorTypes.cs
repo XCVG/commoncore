@@ -26,34 +26,6 @@ namespace CommonCore.RpgGame.World
         Unspecified, Torso, Head, LeftArm, LeftLeg, RightArm, RightLeg, Tail
     }
 
-    [System.Serializable]
-    public struct ActorHitInfo
-    {
-        public float Damage;
-        public float DamagePierce;
-        public DamageType DType;
-        public ActorBodyPart HitLocation;
-        public BaseController Originator;
-        public string HitPuff;
-        public Vector3? HitCoords;
-
-        public ActorHitInfo(float damage, float damagePierce, DamageType dtype, ActorBodyPart hitlocation, BaseController originator) 
-            : this(damage, damagePierce, dtype, hitlocation, originator, null, null)
-        {
-        }
-
-        public ActorHitInfo(float damage, float damagePierce, DamageType dtype, ActorBodyPart hitlocation, BaseController originator, string hitPuff, Vector3? hitCoords)
-        {
-            Damage = damage;
-            DamagePierce = damagePierce;
-            DType = dtype;
-            HitLocation = hitlocation;
-            Originator = originator;
-            HitPuff = hitPuff;
-            HitCoords = hitCoords;
-        }
-    }
-
     //this is in flux, we may change what data we store in the future
     public class ActorExtraData
     {

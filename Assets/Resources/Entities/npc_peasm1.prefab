@@ -709,6 +709,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EditorFormID: npc_peasm1
+  HitMaterial: 6
   Tags: []
   CharacterModelIdOverride: 
   InteractComponent: {fileID: 0}
@@ -755,25 +756,6 @@ MonoBehaviour:
   SearchRadius: 25
   SearchInterval: 70
   DisableInteractionOnHit: 1
-  Interaction: 2
-  InteractionTarget: TestAmbient
-  InteractionSpecial: {fileID: 0}
-  AlternateCondition:
-    Type: 0
-    Target: 
-    Option: 0
-    OptionValue: 
-  AltInteraction: 0
-  AltInteractionTarget: 
-  AltInteractionSpecial: {fileID: 0}
-  UseDeadAction: 1
-  DeadInteraction: 0
-  DeadInteractionTarget: 
-  DeadInteractionSpecial: {fileID: 0}
-  InteractionDisabledByHit: 0
-  TooltipOverride: 
-  CorpseItems:
-    Items: []
   GrantXpOnDeath: 50
   RunOnChase: 1
   RunOnFlee: 1
@@ -836,8 +818,9 @@ MonoBehaviour:
   AttackHit:
     Damage: 10
     DamagePierce: 0
-    DType: 0
+    DamageType: 0
     HitLocation: 0
+    HitMaterial: 0
     Originator: {fileID: 0}
     HitPuff: 
   BulletPrefab: {fileID: 0}
@@ -856,16 +839,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 850801c168eb61849a860fc5655978d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CharController: {fileID: 143614234245427524}
-  NavComponent: {fileID: 195632123723564820}
   ActorController: {fileID: 114160393828224520}
+  TargetThreshold: 1
+  <MovementTarget>k__BackingField: {x: 0, y: 0, z: 0}
+  <IsRunning>k__BackingField: 0
+  <ControlRotation>k__BackingField: 1
+  NavComponent: {fileID: 195632123723564820}
+  CharController: {fileID: 143614234245427524}
   ForceNavmeshOff: 0
   UseControllerGravity: 1
   WalkSpeed: 1
   RunSpeed: 2
   RotateSpeed: 90
-  NavThreshold: 1
-  <AltTarget>k__BackingField: {x: 0, y: 0, z: 0}
 --- !u!143 &143614234245427524
 CharacterController:
   m_ObjectHideFlags: 0

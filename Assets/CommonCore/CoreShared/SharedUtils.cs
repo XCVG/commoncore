@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using CommonCore.State;
+using System;
 using UnityEngine;
-using CommonCore.State;
 using UnityEngine.SceneManagement;
 
 namespace CommonCore
@@ -29,8 +27,8 @@ namespace CommonCore
             MetaState.Instance.Clear();
             MetaState.Instance.NextScene = sceneOverride;
             MetaState.Instance.TransitionType = SceneTransitionType.NewGame;
-            GC.Collect();
-            SceneManager.LoadScene("LoadingScene");
+            //GC.Collect();            
+            SceneManager.LoadScene("LoadingScene");            
         }
 
         /// <summary>
@@ -38,7 +36,7 @@ namespace CommonCore
         /// </summary>
         public static void EndGame()
         {
-            EndGame("MainMenuScene");
+            EndGame(null);
         }
 
         /// <summary>
@@ -46,10 +44,11 @@ namespace CommonCore
         /// </summary>
         public static void EndGame(string sceneOverride)
         {
-            GameState.Reset();
-            MetaState.Instance.Clear();
-            GC.Collect();
-            SceneManager.LoadScene(sceneOverride);
+            //MetaState.Instance.Clear();
+            MetaState.Instance.NextScene = sceneOverride;
+            MetaState.Instance.TransitionType = SceneTransitionType.EndGame;
+            //GC.Collect();
+            SceneManager.LoadScene("LoadingScene");
         }
 
         /// <summary>

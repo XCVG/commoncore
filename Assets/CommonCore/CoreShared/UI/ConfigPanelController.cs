@@ -20,6 +20,10 @@ namespace CommonCore.UI
         //labels for antialiasing quality names; these match CommonCore defaults
         private static readonly string[] AntialiasingSettingNames = new string[] { "Off", "FXAA", "SMAA", "SMAA+" };
 
+        [Header("Containers"), SerializeField]
+        private RectTransform PanelContainer = null;
+
+        [Header("Basic Config Options")]
         public Slider LookSpeedSlider;
 
         public Slider GraphicsQualitySlider;
@@ -34,6 +38,19 @@ namespace CommonCore.UI
         public Dropdown ChannelDropdown;
 
         public Dropdown InputDropdown;
+
+        public override void SignalInitialPaint()
+        {
+            base.SignalInitialPaint();
+
+            //initialize subpanels
+            var subpanels = ConfigModule.Instance.SortedConfigPanels;
+            foreach(var subpanel in subpanels)
+            {
+                var subpanelGO = Instantiate(subpanel, PanelContainer);
+                subpanelGO.SetActive(true);
+            }
+        }
 
         public override void SignalPaint()
         {
@@ -65,6 +82,10 @@ namespace CommonCore.UI
             InputDropdown.ClearOptions();
             InputDropdown.AddOptions(iList);
             InputDropdown.value = iList.IndexOf(ConfigState.Instance.InputMapper);
+
+            //handle subpanels
+            foreach (var subpanel in PanelContainer.GetComponentsInChildren<ConfigSubpanelController>())
+                subpanel.PaintValues();
         }
 
         public void OnQualitySliderChanged()
@@ -87,8 +108,8 @@ namespace CommonCore.UI
             UpdateValues();
             ConfigState.Save();
             ConfigModule.Apply();
-            MappedInput.SetMapper(ConfigState.Instance.InputMapper); //we need to do this manually unfortunately...
-            Modal.PushMessageModal("Applied settings changes!", "Changes Applied", null, OnConfirmed);
+            //MappedInput.SetMapper(ConfigState.Instance.InputMapper); //we need to do this manually unfortunately...
+            Modal.PushMessageModal("Applied settings changes!", "Changes Applied", null, OnConfirmed, true);
         }
 
         public void OnClickRevert()
@@ -103,7 +124,7 @@ namespace CommonCore.UI
                 {
 
                 }
-            });
+            }, true);
         }
 
         public void OnClickConfigureInput()
@@ -129,6 +150,10 @@ namespace CommonCore.UI
             ConfigState.Instance.SoundVolume = SoundVolumeSlider.value;
             ConfigState.Instance.MusicVolume = MusicVolumeSlider.value;
             ConfigState.Instance.SpeakerMode = (AudioSpeakerMode)Enum.Parse(typeof(AudioSpeakerMode), ChannelDropdown.options[ChannelDropdown.value].text);
+
+            //handle subpanels
+            foreach (var subpanel in PanelContainer.GetComponentsInChildren<ConfigSubpanelController>())
+                subpanel.UpdateValues();
         }
     }
 }

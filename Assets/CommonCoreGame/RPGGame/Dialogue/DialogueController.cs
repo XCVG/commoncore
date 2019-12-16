@@ -112,9 +112,12 @@ namespace CommonCore.RpgGame.Dialogue
                 ChoiceFrame cf = (ChoiceFrame)f;
                 for (int i = 0; i < cf.Choices.Length; i++)
                 {
-                    //will need to be redone to effectively deal with conditionals
                     ChoiceNode cn = cf.Choices[i];
+
+                    string prependText = string.Empty;
                     bool showChoice = true;
+                    bool lockChoice = false;
+
                     if(cn.ShowCondition != null)
                     {
                         showChoice = cn.ShowCondition.Evaluate();
@@ -124,12 +127,29 @@ namespace CommonCore.RpgGame.Dialogue
                         showChoice = !cn.HideCondition.Evaluate();
                     }
 
+                    //skill checks
+                    if(cn.SkillCheck != null)
+                    {
+                        bool isPossible = cn.SkillCheck.CheckIfPossible();
+
+                        if (!GameParams.ShowImpossibleSkillChecks && !isPossible)
+                            showChoice = false;
+
+                        if (!GameParams.AttemptImpossibleSkillChecks && !isPossible)
+                            lockChoice = true;
+
+                        string passValue = cn.SkillCheck.CheckType == SkillCheckType.Soft ? $"{(int)(cn.SkillCheck.GetApproximatePassChance() * 100)}%" : cn.SkillCheck.Value.ToString();
+
+                        prependText = $"[{Sub.Replace(cn.SkillCheck.Target, "IGUI_AV")} {passValue}] ";
+                    }
+
                     if(showChoice)
                     {
                         GameObject choiceGO = Instantiate<GameObject>(ButtonPrefab, ScrollChoiceContent);
                         Button b = choiceGO.GetComponent<Button>();
+                        b.interactable = !lockChoice;
                         b.gameObject.SetActive(true);
-                        b.transform.Find("Text").GetComponent<Text>().text = Sub.Macro(cn.Text);
+                        b.transform.Find("Text").GetComponent<Text>().text = prependText + Sub.Macro(cn.Text);
                         int idx = i;
                         b.onClick.AddListener(delegate { OnChoiceButtonClick(idx); });
                     }
@@ -155,7 +175,11 @@ namespace CommonCore.RpgGame.Dialogue
             {
                 var cf = (ChoiceFrame)CurrentFrameObject;
 
-                if(cf.Choices[idx].NextConditional != null)
+                if(cf.Choices[idx].SkillCheck != null)
+                {
+                    choice = cf.Choices[idx].SkillCheck.EvaluateSkillCheck();
+                }
+                else if(cf.Choices[idx].NextConditional != null)
                 {
                     choice = cf.Choices[idx].EvaluateConditional();
                     

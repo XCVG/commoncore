@@ -91,7 +91,13 @@ namespace CommonCore.RpgGame.World
         public float WanderThreshold = 1.0f;
         public float WanderTimeout = 10.0f;
         public Vector2 WanderRadius = new Vector2(10.0f, 10.0f);
-        
+
+        public override void Awake()
+        {
+            base.Awake();
+
+            Tags.Add("Actor");
+        }
 
         public override void Start() //TODO register into a list for AI and stuff
         {
@@ -551,13 +557,13 @@ namespace CommonCore.RpgGame.World
         public void TakeDamage(ActorHitInfo data)
         {
             //damage model is very stupid right now, we will make it better later
-            float dt = DamageThreshold[(int)data.DType];
-            float dr = DamageResistance[(int)data.DType];
+            float dt = DamageThreshold[(int)data.DamageType];
+            float dr = DamageResistance[(int)data.DamageType];
             float damageTaken = RpgWorldUtils.CalculateDamage(data.Damage, data.DamagePierce, dt, dr);
 
-            if (data.HitLocation == ActorBodyPart.Head)
+            if (data.HitLocation == (int)ActorBodyPart.Head)
                 damageTaken *= 2.0f;
-            else if (data.HitLocation == ActorBodyPart.LeftArm || data.HitLocation == ActorBodyPart.LeftLeg || data.HitLocation == ActorBodyPart.RightArm || data.HitLocation == ActorBodyPart.RightLeg)
+            else if (data.HitLocation == (int)ActorBodyPart.LeftArm || data.HitLocation == (int)ActorBodyPart.LeftLeg || data.HitLocation == (int)ActorBodyPart.RightArm || data.HitLocation == (int)ActorBodyPart.RightLeg)
                 damageTaken *= 0.75f;
 
             if(!Invincible)

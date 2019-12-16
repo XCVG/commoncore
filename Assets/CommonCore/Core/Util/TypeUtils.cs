@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,9 @@ namespace CommonCore
     /// <summary>
     /// Utilities for type conversion, coersion, introspection and a few other things
     /// </summary>
+    /// <remarks>
+    /// <para>Really kind of a dumping ground if I'm going to be honest</para>
+    /// </remarks>
     public static class TypeUtils
     {
 
@@ -33,6 +37,23 @@ namespace CommonCore
         public static T Ref<T>(this T obj) where T : UnityEngine.Object
         {
             return obj == null ? null : obj;
+        }
+
+        /// <summary>
+        /// Checks if this JToken is null or empty
+        /// </summary>
+        /// <remarks>
+        /// <para>Based on https://stackoverflow.com/questions/24066400/checking-for-empty-null-jtoken-in-a-jobject </para>
+        /// </remarks>
+        public static bool IsNullOrEmpty(this JToken token)
+        {
+            return 
+               (token == null) ||
+               (token.Type == JTokenType.Null) ||
+               (token.Type == JTokenType.Undefined) ||
+               (token.Type == JTokenType.Array && !token.HasValues) ||
+               (token.Type == JTokenType.Object && !token.HasValues) ||
+               (token.Type == JTokenType.String && string.IsNullOrEmpty(token.ToString()));
         }
 
         /// <summary>
@@ -117,6 +138,61 @@ namespace CommonCore
 
             //else return what we started with
             return input;
+        }
+
+        /// <summary>
+        /// Compares two values of arbitrary numeric type
+        /// </summary>
+        /// <returns>-1 if a less than b, 0 if a equals b, 1 if a greater than b</returns>
+        public static int CompareNumericValues(object a, object b)
+        {
+            if (a == null || b == null)
+                throw new ArgumentNullException();
+
+            //convert if possible, check if converstions worked
+
+            if (a is string)
+            {
+                a = StringToNumericAutoDouble((string)a);
+                if (a is string)
+                    throw new ArgumentException($"\"{a}\" cannot be parsed to a numeric type!", nameof(a));
+            }
+
+            if (!a.GetType().IsNumericType())
+                throw new ArgumentException($"\"{a}\" is not a numeric type!", nameof(a));
+
+            if (b is string)
+            {
+                b = StringToNumericAutoDouble((string)b);
+                if (b is string)
+                    throw new ArgumentException($"\"{b}\" cannot be parsed to a numeric type!", nameof(b));
+            }
+
+            if (!b.GetType().IsNumericType())
+                throw new ArgumentException($"\"{b}\" is not a numeric type!", nameof(b));
+
+            //compare as decimal, double or long depending on type
+            if (a is decimal || b is decimal)
+            {
+                decimal da = (decimal)Convert.ChangeType(a, typeof(decimal));
+                decimal db = (decimal)Convert.ChangeType(b, typeof(decimal));
+
+                return da.CompareTo(db);
+            }
+            else if (a is double || a is float || b is double || b is float)
+            {
+                double da = (double)Convert.ChangeType(a, typeof(double));
+                double db = (double)Convert.ChangeType(b, typeof(double));
+
+                return da.CompareTo(db);
+            }
+            else
+            {
+                long la = (long)Convert.ChangeType(a, typeof(long));
+                long lb = (long)Convert.ChangeType(b, typeof(long));
+
+                return la.CompareTo(lb);
+            }
         }
 
         /// <summary>

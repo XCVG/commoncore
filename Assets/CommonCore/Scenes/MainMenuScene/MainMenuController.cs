@@ -1,4 +1,5 @@
 ﻿using CommonCore;
+using CommonCore.Scripting;
 using CommonCore.UI;
 using System.IO;
 using System.Linq;
@@ -34,6 +35,8 @@ namespace GameUI
                 Application.version, CoreParams.GameVersionName,
                 CoreParams.VersionCode.ToString(), CoreParams.VersionName,
                 Application.unityVersion);
+
+            ScriptingModule.CallHooked(ScriptHook.OnMainMenuOpen, this);
         }
 
         public override void Update()

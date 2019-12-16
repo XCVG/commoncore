@@ -22,7 +22,7 @@ namespace CommonCore.RpgGame.UI
     public class DefaultLevelUpModal : BaseMenuController
     {
         private const string ItemPrefab = "IGUI_SkillItemTemplate";
-        private const string SubList = "IGUI_STATS";
+        private const string SubList = "IGUI_AV";
         private const string DescriptionList = "IGUI_DESCRIPTION";
 
         //Unity objects

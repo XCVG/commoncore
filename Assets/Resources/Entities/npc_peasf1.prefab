@@ -330,6 +330,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EditorFormID: npc_peasf1
+  HitMaterial: 6
   Tags: []
   CharacterModelIdOverride: 
   InteractComponent: {fileID: 114449518957255398}
@@ -376,25 +377,6 @@ MonoBehaviour:
   SearchRadius: 25
   SearchInterval: 70
   DisableInteractionOnHit: 0
-  Interaction: 3
-  InteractionTarget: DemoFlavia
-  InteractionSpecial: {fileID: 0}
-  AlternateCondition:
-    Type: 5
-    Target: DemoQuest
-    Option: 7
-    OptionValue: DemoFlaviaAmbient
-  AltInteraction: 2
-  AltInteractionTarget: 
-  AltInteractionSpecial: {fileID: 0}
-  UseDeadAction: 1
-  DeadInteraction: 0
-  DeadInteractionTarget: 
-  DeadInteractionSpecial: {fileID: 0}
-  InteractionDisabledByHit: 0
-  TooltipOverride: 
-  CorpseItems:
-    Items: []
   GrantXpOnDeath: 50
   RunOnChase: 1
   RunOnFlee: 1
@@ -457,8 +439,9 @@ MonoBehaviour:
   AttackHit:
     Damage: 0
     DamagePierce: 0
-    DType: 0
+    DamageType: 0
     HitLocation: 0
+    HitMaterial: 0
     Originator: {fileID: 0}
     HitPuff: 
   BulletPrefab: {fileID: 0}
@@ -477,16 +460,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 850801c168eb61849a860fc5655978d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CharController: {fileID: 143438285039631076}
-  NavComponent: {fileID: 195232219114253180}
   ActorController: {fileID: 114727526427158440}
+  TargetThreshold: 1
+  <MovementTarget>k__BackingField: {x: 0, y: 0, z: 0}
+  <IsRunning>k__BackingField: 0
+  <ControlRotation>k__BackingField: 1
+  NavComponent: {fileID: 195232219114253180}
+  CharController: {fileID: 143438285039631076}
   ForceNavmeshOff: 0
   UseControllerGravity: 1
   WalkSpeed: 1
   RunSpeed: 2
   RotateSpeed: 90
-  NavThreshold: 1
-  <AltTarget>k__BackingField: {x: 0, y: 0, z: 0}
 --- !u!114 &114704151107550388
 MonoBehaviour:
   m_ObjectHideFlags: 0

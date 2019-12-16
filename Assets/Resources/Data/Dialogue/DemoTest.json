@@ -33,6 +33,18 @@
           ],
           "next": "this.endlie1"
         },
+		{
+          "text": "I just want to know if these things work",
+          "next": "meta.return",
+		  "skillCheck": {
+			  "checkType": "soft",
+			  "stat": "Dexterity",
+			  "greaterEqual": 5,
+			  "passNext": "this.endlie2",
+			  "failNext": "this.endlie1",
+			  "appendCheckText": true
+			}
+        },
         {
           "text": "I'm working on it",
           "next": "meta.return"

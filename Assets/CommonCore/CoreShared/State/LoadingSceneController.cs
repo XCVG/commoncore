@@ -28,7 +28,7 @@ namespace CommonCore.State
 
             }
 
-            System.GC.Collect();
+            GC.Collect();
 
             Application.logMessageReceived += HandleLog;
 
@@ -46,12 +46,7 @@ namespace CommonCore.State
                     //we are loading a game, so load the game data and then load the next scene (which is part of save data)
                     GameState.DeserializeFromFile(CoreParams.SavePath + @"\" + MetaState.Instance.LoadSave);
                     MetaState.Instance.NextScene = GameState.Instance.CurrentScene;
-                    StartCoroutine(LoadNextSceneAsync()); //when this fails, it doesn't return a status code or throw an exception, only logs an error
-                    //oh, and no, it doesn't halt execution, either, so you can't check that way (which would be dumb, but at least workable)
-                    //excuse me, but WHO THE FUCK DESIGNED THIS
-                    //I guess the assumption is that you know what you have, don't load anything you don't, and if you do it's a fatal error
-                    //but those assumptions fail in myriad ways in a bigger game and can and should be handled gracefully
-                    //see below for the absolutely stupid "solution" courtesy of https://forum.unity.com/threads/how-to-tell-if-a-scene-was-loaded-successfully-or-exists-in-the-project.479406/
+                    StartCoroutine(LoadNextSceneAsync());
                 }
                 else if (MetaState.Instance.TransitionType == SceneTransitionType.NewGame)
                 {
@@ -61,16 +56,26 @@ namespace CommonCore.State
                         MetaState.Instance.NextScene = CoreParams.InitialScene;
                     GameState.Instance.CurrentScene = MetaState.Instance.NextScene;
                     GameState.LoadInitial();
+                    CCBase.OnGameStart();
                     StartCoroutine(LoadNextSceneAsync());
                 }
+                else if(MetaState.Instance.TransitionType == SceneTransitionType.EndGame)
+                {
+                    GameState.Reset();
+                    MetaState.Instance.Clear();
+                    if (string.IsNullOrEmpty(MetaState.Instance.NextScene))
+                        MetaState.Instance.NextScene = "MainMenuScene";
+                    CCBase.OnGameEnd();
+                    StartCoroutine(LoadNextSceneAsync());
+                }
+                //TODO move endgame into here
             }
             catch(Exception e)
             {
                 //pokemon exception handling
 
                 Modal.PushMessageModal(string.Format("{0}\n{1}", e.ToString(), e.StackTrace), "Error loading scene", null, OnErrorConfirmed);
-            }
-            //TODO actually make this asynchronous, right now it just "loads" and locks up
+            }            
 
             //clear certain metagamestate on use
             MetaState.Instance.SkipLoadingScreen = false;		
@@ -104,7 +109,7 @@ namespace CommonCore.State
         {
             GameState.Reset();
             MetaState.Reset();
-            System.GC.Collect();
+            GC.Collect();
             SceneManager.LoadScene("MainMenuScene");
         }
 

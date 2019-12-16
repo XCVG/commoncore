@@ -439,7 +439,7 @@ namespace CommonCore.RpgGame.World
                     }
                     else
                         GameState.Instance.PlayerRpgState.Energy -= wim.EnergyCost;
-                    hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, wim.DType, ActorBodyPart.Unspecified, PlayerController);
+                    hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, (int)wim.DType, (int)ActorBodyPart.Unspecified, (int)DefaultHitMaterials.Unspecified, PlayerController);
 
                 }
                 else
@@ -527,7 +527,7 @@ namespace CommonCore.RpgGame.World
 
                     //TODO factor in weapon skill, esp for bows
 
-                    bullet.GetComponent<BulletScript>().HitInfo = new ActorHitInfo(wim.Damage, wim.DamagePierce, wim.DType, ActorBodyPart.Unspecified, PlayerController, wim.HitPuff, null);
+                    bullet.GetComponent<BulletScript>().HitInfo = new ActorHitInfo(wim.Damage, wim.DamagePierce, (int)wim.DType, (int)ActorBodyPart.Unspecified, (int)DefaultHitMaterials.Unspecified, PlayerController, wim.HitPuff, null);
 
                     //Vector3 fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread), Vector3.right)
                     //    * (Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread), Vector3.up) * ShootPoint.forward.normalized);
@@ -819,7 +819,7 @@ namespace CommonCore.RpgGame.World
                     //deal damage
                     var itd = GetMeleeHit(OffhandKickPoint, OffhandKickRange);
                     if (itd != null)
-                        itd.TakeDamage(new ActorHitInfo(OffhandKickDamage, 0, DamageType.Impact, ActorBodyPart.Unspecified, PlayerController));
+                        itd.TakeDamage(new ActorHitInfo(OffhandKickDamage, 0, (int)DamageType.Impact, (int)ActorBodyPart.Unspecified, (int)DefaultHitMaterials.Unspecified, PlayerController));
 
                     //kick away kickable things
                     //if(Physics.Raycast(OffhandKickPoint.position, OffhandKickPoint.forward, out var hit, OffhandKickRange))

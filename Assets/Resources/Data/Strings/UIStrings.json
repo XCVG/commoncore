@@ -3,7 +3,7 @@
 	"Vendor": "Store",
 	"Container": "Box"
   },
-  "IGUI_STATS": {
+  "IGUI_AV": {
 	"MeleeAlacrity": "Alacrity (Melee)",
 	"MeleePrecision": "Precision (Melee)",
 	"MeleeBrawn": "Brawn (Melee)",

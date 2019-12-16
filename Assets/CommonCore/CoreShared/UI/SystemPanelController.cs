@@ -94,7 +94,7 @@ namespace CommonCore.UI
         {
             Time.timeScale = 1;
             //BaseSceneController.Current.("MainMenuScene");
-            SceneManager.LoadScene("MainMenuScene");
+            SharedUtils.EndGame();
         }
 
         private void HidePanels()

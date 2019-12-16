@@ -59,6 +59,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 9175075773112088590}
   BodyPartOverride: 5
+  HitMaterialOverride: 0
 --- !u!1 &349572858055345495
 GameObject:
   m_ObjectHideFlags: 0
@@ -118,6 +119,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 9175075773112088590}
   BodyPartOverride: 4
+  HitMaterialOverride: 0
 --- !u!1 &591792911220098348
 GameObject:
   m_ObjectHideFlags: 0
@@ -177,6 +179,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 9175075773112088590}
   BodyPartOverride: 3
+  HitMaterialOverride: 0
 --- !u!1 &717555850433397786
 GameObject:
   m_ObjectHideFlags: 0
@@ -301,6 +304,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 9175075773112088590}
   BodyPartOverride: 6
+  HitMaterialOverride: 0
 --- !u!1 &1976458201851010179
 GameObject:
   m_ObjectHideFlags: 0
@@ -487,6 +491,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 9175075773112088590}
   BodyPartOverride: 3
+  HitMaterialOverride: 0
 --- !u!1 &2300539277035516016
 GameObject:
   m_ObjectHideFlags: 0
@@ -546,6 +551,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 9175075773112088590}
   BodyPartOverride: 2
+  HitMaterialOverride: 0
 --- !u!1 &2392197861443104114
 GameObject:
   m_ObjectHideFlags: 0
@@ -605,6 +611,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 9175075773112088590}
   BodyPartOverride: 7
+  HitMaterialOverride: 0
 --- !u!1 &2799488798153742626
 GameObject:
   m_ObjectHideFlags: 0
@@ -664,6 +671,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 9175075773112088590}
   BodyPartOverride: 7
+  HitMaterialOverride: 0
 --- !u!1 &3697988319657323943
 GameObject:
   m_ObjectHideFlags: 0
@@ -723,6 +731,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 9175075773112088590}
   BodyPartOverride: 6
+  HitMaterialOverride: 0
 --- !u!1 &4050173041376854783
 GameObject:
   m_ObjectHideFlags: 0
@@ -782,6 +791,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 9175075773112088590}
   BodyPartOverride: 7
+  HitMaterialOverride: 0
 --- !u!1 &4193005609294748991
 GameObject:
   m_ObjectHideFlags: 0
@@ -961,6 +971,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EditorFormID: npc_testdragon
+  HitMaterial: 256
   Tags: []
   CharacterModelIdOverride: 
   InteractComponent: {fileID: 3402498743617404939}
@@ -1089,8 +1100,9 @@ MonoBehaviour:
   FlameHit:
     Damage: 3
     DamagePierce: 1
-    DType: 3
+    DamageType: 0
     HitLocation: 0
+    HitMaterial: 0
     Originator: {fileID: 0}
     HitPuff: 
   FlameInterval: 0.05
@@ -1098,8 +1110,9 @@ MonoBehaviour:
   ClawHit:
     Damage: 20
     DamagePierce: 0
-    DType: 0
+    DamageType: 0
     HitLocation: 0
+    HitMaterial: 0
     Originator: {fileID: 0}
     HitPuff: 
   ClawRange: 3
@@ -5227,6 +5240,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 9175075773112088590}
   BodyPartOverride: 1
+  HitMaterialOverride: 0
 --- !u!1 &4931942628279953108
 GameObject:
   m_ObjectHideFlags: 0
@@ -5286,6 +5300,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 9175075773112088590}
   BodyPartOverride: 7
+  HitMaterialOverride: 0
 --- !u!1 &5536363162234602007
 GameObject:
   m_ObjectHideFlags: 0
@@ -5345,6 +5360,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 9175075773112088590}
   BodyPartOverride: 1
+  HitMaterialOverride: 0
 --- !u!1 &6210680598973232777
 GameObject:
   m_ObjectHideFlags: 0
@@ -5404,6 +5420,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 9175075773112088590}
   BodyPartOverride: 7
+  HitMaterialOverride: 0
 --- !u!1 &6882522132520724219
 GameObject:
   m_ObjectHideFlags: 0
@@ -5463,6 +5480,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 9175075773112088590}
   BodyPartOverride: 5
+  HitMaterialOverride: 0
 --- !u!1 &6981567112657901660
 GameObject:
   m_ObjectHideFlags: 0
@@ -5522,6 +5540,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 9175075773112088590}
   BodyPartOverride: 4
+  HitMaterialOverride: 0
 --- !u!1 &7605697894801412789
 GameObject:
   m_ObjectHideFlags: 0
@@ -10406,6 +10425,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 9175075773112088590}
   BodyPartOverride: 6
+  HitMaterialOverride: 0
 --- !u!1 &8644316090310192063
 GameObject:
   m_ObjectHideFlags: 0
@@ -10528,6 +10548,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 9175075773112088590}
   BodyPartOverride: 4
+  HitMaterialOverride: 0
 --- !u!1 &9126030977518367264
 GameObject:
   m_ObjectHideFlags: 0

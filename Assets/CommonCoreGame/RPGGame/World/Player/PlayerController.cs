@@ -51,7 +51,13 @@ namespace CommonCore.RpgGame.World
 
         private bool HadTargetLastFrame = false;
 
-        // Use this for initialization
+        public override void Awake()
+        {
+            base.Awake();
+
+            Tags.Add("Player");
+        }
+
         public override void Start()
         {
             base.Start();
@@ -212,7 +218,7 @@ namespace CommonCore.RpgGame.World
                 //slow and stupid but it'll work for now
 
                 GameObject tpCamera = CameraRoot.Find("Main Camera").gameObject;
-                GameObject fpCamera = CameraRoot.Find("ViewBobNode").Find("FP Camera").gameObject;
+                GameObject fpCamera = CameraRoot.Find("ViewBobNode").FindDeepChild("FP Camera").gameObject;
 
                 if (tpCamera.activeSelf)
                 {
@@ -362,13 +368,13 @@ namespace CommonCore.RpgGame.World
             CharacterModel playerModel = GameState.Instance.PlayerRpgState;
 
             //damage model is very stupid right now, we will make it better later
-            float dt = playerModel.DerivedStats.DamageThreshold[(int)data.DType];
-            float dr = playerModel.DerivedStats.DamageResistance[(int)data.DType];
+            float dt = playerModel.DerivedStats.DamageThreshold[(int)data.DamageType];
+            float dr = playerModel.DerivedStats.DamageResistance[(int)data.DamageType];
             float damageTaken = RpgWorldUtils.CalculateDamage(data.Damage, data.DamagePierce, dt, dr);
 
-            if (data.HitLocation == ActorBodyPart.Head)
+            if (data.HitLocation == (int)ActorBodyPart.Head)
                 damageTaken *= 2.0f;
-            else if (data.HitLocation == ActorBodyPart.LeftArm || data.HitLocation == ActorBodyPart.LeftLeg || data.HitLocation == ActorBodyPart.RightArm || data.HitLocation == ActorBodyPart.RightLeg)
+            else if (data.HitLocation == (int)ActorBodyPart.LeftArm || data.HitLocation == (int)ActorBodyPart.LeftLeg || data.HitLocation == (int)ActorBodyPart.RightArm || data.HitLocation == (int)ActorBodyPart.RightLeg)
                 damageTaken *= 0.75f;
 
             if(damageTaken > 0)

@@ -25,7 +25,7 @@ namespace CommonCore.World
             if (controller)
             {
                 data.Visible = controller.GetVisibility();
-                data.Tags = controller.Tags.ToArray();
+                data.Tags = new List<string>(controller.Tags).ToArray();
                 data.FormID = controller.FormID;
             }
             else
@@ -82,7 +82,7 @@ namespace CommonCore.World
             if (controller)
             {
                 controller.SetVisibility(data.Visible);
-                controller.Tags = new List<string>(data.Tags);
+                controller.Tags = new HashSet<string>(data.Tags);
 
                 if (controller.FormID != data.FormID)
                     Debug.LogWarning(string.Format("Saved form ID does not match (saved:{0} , object: {1})", data.FormID, controller.FormID));

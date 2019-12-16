@@ -8,7 +8,7 @@ namespace CommonCore.World
     /// <summary>
     /// Placeholder that will spawn an entity by name at run time
     /// </summary>
-    public class EntityPlaceholder : MonoBehaviour
+    public class EntityPlaceholder : MonoBehaviour, IPlaceholderComponent
     {
 
         [SerializeField, Tooltip("The entity to spawn")]
@@ -21,12 +21,15 @@ namespace CommonCore.World
         [SerializeField]
         private bool DestroyPlaceholder = true;
 
+        private bool SpawnedEntity = false;
+
         private void Start()
         {
-            SpawnEntity();
+            if(!SpawnedEntity)
+                SpawnEntity();
         }
 
-        private void SpawnEntity()
+        public void SpawnEntity()
         {
             //check for warning conditions
             if(string.IsNullOrEmpty(FormID))
@@ -53,6 +56,8 @@ namespace CommonCore.World
                 if (CoreParams.UseVerboseLogging)
                     Debug.LogException(e);
             }
+
+            SpawnedEntity = true;
 
             if (DestroyPlaceholder)
                 Destroy(this.gameObject);

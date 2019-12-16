@@ -1,7 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using CommonCore.DebugLog;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
 
 namespace CommonCore.Config
 {
@@ -13,7 +15,25 @@ namespace CommonCore.Config
 
         public static void Load()
         {
-            Instance = CoreUtils.LoadExternalJson<ConfigState>(Path);
+            try
+            {
+                Instance = CoreUtils.LoadExternalJson<ConfigState>(Path);
+            }
+            catch(Exception e)
+            {                
+                Debug.LogError("[Config] Failed to load config from file, using defaults");
+                Debug.LogException(e);
+                try
+                {
+                    if(File.Exists(Path))
+                        DebugUtils.TextWrite(File.ReadAllText(Path), "brokenconfig");
+                }
+                catch(Exception)
+                {
+
+                }
+            }
+
             if (Instance == null)
                 Instance = new ConfigState();
         }
@@ -28,6 +48,24 @@ namespace CommonCore.Config
         private ConfigState()
         {
 
+        }
+
+        /// <summary>
+        /// Adds an object to the custom config vars if and only if it does not already exist
+        /// </summary>
+        public void AddCustomVarIfNotExists(string name, object customVar)
+        {
+            if(CustomConfigVars.ContainsKey(name))
+            {
+                if(CustomConfigVars[name] == null || CustomConfigVars[name].GetType() != customVar.GetType())
+                {
+                    Debug.LogWarning($"[Config] Custom config var {name} exists but contains a {CustomConfigVars[name]?.GetType()?.Name} instead of a {customVar.GetType().Name}");
+                }
+            }
+            else
+            {
+                CustomConfigVars.Add(name, customVar);
+            }
         }
 
 
@@ -46,6 +84,16 @@ namespace CommonCore.Config
         public int AntialiasingQuality { get; set; } = 1;
         public float ViewDistance { get; set; } = 1000.0f;
         public bool ShowFps { get; set; } = false;
+
+        //VIDEO CONFIG (EXTENDED)
+        public QualityLevel ShadowQuality { get; set; } = QualityLevel.Medium;
+        public float ShadowDistance { get; set; } = 40.0f;
+        public QualityLevel LightingQuality { get; set; } = QualityLevel.Medium;
+        public QualityLevel MeshQuality { get; set; } = QualityLevel.Medium;
+        public TextureScale TextureScale { get; set; } = TextureScale.Full;
+        public AnisotropicFiltering AnisotropicFiltering { get; set; } = AnisotropicFiltering.Enable;
+        public QualityLevel RenderingQuality { get; set; } = QualityLevel.Medium;
+
 
         //INPUT CONFIG
         public string InputMapper { get; set; } = "UnityInputMapper";

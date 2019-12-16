@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using CommonCore.RpgGame.Rpg;
 using CommonCore.RpgGame.State;
+using CommonCore.State;
 
 namespace CommonCore.RpgGame.Dialogue
 {
@@ -33,19 +35,22 @@ namespace CommonCore.RpgGame.Dialogue
         public readonly Conditional ShowCondition;
         public readonly Conditional HideCondition;
 
+        public readonly SkillCheckNode SkillCheck;
+
         public ChoiceNode(string next, string text)
         {
             Text = text;
             Next = next;
         }
 
-        public ChoiceNode(string next, string text, Conditional showCondition, Conditional hideCondition, MicroscriptNode[] nextMicroscript, ConditionNode[] nextConditional)
+        public ChoiceNode(string next, string text, Conditional showCondition, Conditional hideCondition, MicroscriptNode[] nextMicroscript, ConditionNode[] nextConditional, SkillCheckNode skillCheck)
             : this(next, text)
         {
             ShowCondition = showCondition;
             HideCondition = hideCondition;
             NextMicroscript = nextMicroscript;
             NextConditional = nextConditional;
+            SkillCheck = skillCheck;
         }
 
         public string EvaluateConditional()
@@ -86,6 +91,184 @@ namespace CommonCore.RpgGame.Dialogue
             }
         }
 
+    }
+
+    internal class SkillCheckNode
+    {
+        public readonly SkillCheckType CheckType;
+        public readonly SkillCheckComparison ComparisonType;
+        public readonly SkillCheckTarget TargetType;        
+        public readonly string Target;
+        public readonly IComparable Value;
+        public readonly string PassNext;
+        public readonly string FailNext;
+        public readonly bool AppendCheckText;
+
+        public SkillCheckNode(SkillCheckType checkType, SkillCheckComparison comparisonType, SkillCheckTarget targetType, string target, IComparable value, string passNext, string failNext, bool appendCheckText)
+        {
+            CheckType = checkType;
+            ComparisonType = comparisonType;
+            TargetType = targetType;
+            Target = target;
+            Value = value;
+            PassNext = passNext;
+            FailNext = failNext;
+            AppendCheckText = appendCheckText;
+        }
+
+        /// <summary>
+        /// Does the skill check and returns what the next frame should be
+        /// </summary>
+        public string EvaluateSkillCheck()
+        {
+            if (Check())
+                return PassNext;
+            else
+                return FailNext;
+        }
+
+        /// <summary>
+        /// Does the skill check and returns if it passed or failed
+        /// </summary>
+        public bool Check()
+        {
+            if(CheckType == SkillCheckType.Soft)
+            {
+                var targetValue = GetValueOfTarget();
+
+                float baseValue = Convert.ToSingle(targetValue);
+                float neededValue = Convert.ToSingle(Value);
+
+                if (GetOutcomeForCompareResult(baseValue.CompareTo(neededValue)))
+                    return true;
+
+                float passChance;
+                if (ComparisonType == SkillCheckComparison.Less || ComparisonType == SkillCheckComparison.LessEqual)
+                    passChance = neededValue / baseValue; //this might not be correct
+                else
+                    passChance = baseValue / neededValue;
+
+                float chanceValue = UnityEngine.Random.Range(0f, 1f);
+
+                return chanceValue <= passChance;
+                
+            }
+            else if(CheckType == SkillCheckType.Hard)
+            {
+                var targetValue = GetValueOfTarget();
+                int compareResult = TypeUtils.CompareNumericValues(targetValue, Value);
+                return GetOutcomeForCompareResult(compareResult);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// Checks if it is possible to pass the skill check
+        /// </summary>
+        public bool CheckIfPossible()
+        {
+            if(CheckType == SkillCheckType.Soft)
+            {
+                //check if target value > 0
+                var targetValue = GetValueOfTarget();
+                int compareResult = TypeUtils.CompareNumericValues(targetValue, 0);
+                return compareResult > 0;
+            }
+            else if(CheckType == SkillCheckType.Hard)
+            {
+                return Check(); //must pass check to be possible
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// Gets the approximate pass chance of a soft skill check
+        /// </summary>
+        public float GetApproximatePassChance()
+        {
+            if(CheckType == SkillCheckType.Soft)
+            {
+                var targetValue = GetValueOfTarget();
+                float baseValue = Convert.ToSingle(targetValue);
+                float neededValue = Convert.ToSingle(Value);
+
+                if (ComparisonType == SkillCheckComparison.Less || ComparisonType == SkillCheckComparison.LessEqual)
+                    return neededValue / baseValue; //this might not be correct
+                else
+                    return baseValue / neededValue;
+            }
+            else
+            {
+                UnityEngine.Debug.LogWarning("Tried to get the approximate pass chance of a hard skill check!");
+                return CheckIfPossible() ? 1 : 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets the value of the target of the check
+        /// </summary>
+        private IComparable GetValueOfTarget()
+        {
+            CharacterModel player = GameState.Instance.PlayerRpgState;
+
+            switch (TargetType)
+            {
+                case SkillCheckTarget.Skill:
+                    SkillType skill = (SkillType)Enum.Parse(typeof(SkillType), Target, true);
+                    return player.DerivedStats.Skills[(int)skill];
+                case SkillCheckTarget.Stat:
+                    StatType stat = (StatType)Enum.Parse(typeof(StatType), Target, true);
+                    return player.DerivedStats.Stats[(int)stat];
+                case SkillCheckTarget.ActorValue:
+                    return (IComparable)player.GetAV(Target);
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// Takes the result of a CompareTo and gets if it should be counted as pass or fail based on the comparison type
+        /// </summary>
+        private bool GetOutcomeForCompareResult(int compareResult)
+        {
+            switch (ComparisonType)
+            {
+                case SkillCheckComparison.GreaterEqual:
+                    return compareResult >= 0;
+                case SkillCheckComparison.Greater:
+                    return compareResult > 0;
+                case SkillCheckComparison.Less:
+                    return compareResult < 0;
+                case SkillCheckComparison.Equal:
+                    return compareResult == 0;
+                case SkillCheckComparison.LessEqual:
+                    return compareResult <= 0;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+        
+    }
+
+    internal enum SkillCheckComparison
+    {
+        GreaterEqual, Greater, Less, Equal, LessEqual
+    }
+
+    internal enum SkillCheckType
+    {
+        Unspecified, Hard, Soft
+    }
+
+    internal enum SkillCheckTarget
+    {
+        Skill, Stat, ActorValue
     }
 
     internal class Frame

@@ -2,6 +2,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace CommonCore.UI
@@ -16,10 +18,44 @@ namespace CommonCore.UI
     public delegate void QuantityModalCallback(ModalStatusCode status, string tag, int quantity);
     public delegate void ConfirmModalCallback(ModalStatusCode status, string tag, bool result);
 
+    public readonly struct MessageModalResult
+    {
+        public readonly ModalStatusCode Status;
+        
+        public MessageModalResult(ModalStatusCode status)
+        {
+            Status = status;
+        }
+    }
+
+    public readonly struct QuantityModalResult
+    {
+        public readonly ModalStatusCode Status;
+        public readonly int Quantity;
+
+        public QuantityModalResult(ModalStatusCode status, int quantity)
+        {
+            Status = status;
+            Quantity = quantity;
+        }
+    }
+
+    public readonly struct ConfirmModalResult
+    {
+        public readonly ModalStatusCode Status;
+        public readonly bool Result;
+
+        public ConfirmModalResult(ModalStatusCode status, bool result)
+        {
+            Status = status;
+            Result = result;
+        }
+    }
+
     /// <summary>
     /// Static class for managing modal system
     /// </summary>
-    public static class Modal //TODO modals should take out control locks
+    public static class Modal
     {
         private const string MessageModalPrefab = "UI/Modal_Message";
         private const string QuantityModalPrefab = "UI/Modal_Quantity";
@@ -43,6 +79,40 @@ namespace CommonCore.UI
         }
 
         /// <summary>
+        /// Pushes a message modal and allows it to be awaited
+        /// </summary>
+        public static async Task<MessageModalResult> PushMessageModalAsync(string text, string heading, bool ephemeral, CancellationToken? token)
+        {
+            //we could probably switch this to a TaskCompletionSource
+
+            bool finished = false;
+            ModalStatusCode status = ModalStatusCode.Undefined;
+
+            MessageModalCallback callback = (s, t) => { finished = true; status = s; };
+
+            var go = GameObject.Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>(MessageModalPrefab), ephemeral ? GetEphemeralOrUIRoot() : CoreUtils.GetUIRoot());
+            go.GetComponent<MessageModalController>().SetInitial(heading, text, null, null, callback);
+
+            while (!(finished || go == null))
+            {
+                if(token != null && token.Value.IsCancellationRequested)
+                {
+                    if (go != null)
+                        UnityEngine.Object.Destroy(go);
+
+                    break;
+                }
+
+                await Task.Yield();
+            }
+
+            if (status == ModalStatusCode.Undefined)
+                status = ModalStatusCode.Aborted;
+
+            return new MessageModalResult(status);
+        }
+
+        /// <summary>
         /// Pushes a quantity modal and invokes the callback when dismissed
         /// </summary>
         public static void PushQuantityModal(string heading, int min, int max, int initial, bool allowCancel, string tag, QuantityModalCallback callback)
@@ -57,6 +127,41 @@ namespace CommonCore.UI
         {
             var go = GameObject.Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>(QuantityModalPrefab), ephemeral ? GetEphemeralOrUIRoot() : CoreUtils.GetUIRoot());
             go.GetComponent<QuantityModalController>().SetInitial(heading, min, max, initial, allowCancel, tag, callback);
+        }
+
+        /// <summary>
+        /// Pushes a quantity modal and allows it to be awaited
+        /// </summary>
+        public static async Task<QuantityModalResult> PushQuantityModalAsync(string heading, int min, int max, int initial, bool allowCancel, bool ephemeral, CancellationToken? token)
+        {
+            bool finished = false;
+            ModalStatusCode status = ModalStatusCode.Undefined;
+            int quantity = initial;
+
+            QuantityModalCallback callback = (s, t, q) => { finished = true; status = s; quantity = q; };
+
+            var go = GameObject.Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>(QuantityModalPrefab), ephemeral ? GetEphemeralOrUIRoot() : CoreUtils.GetUIRoot());
+            go.GetComponent<QuantityModalController>().SetInitial(heading, min, max, initial, allowCancel, null, callback);
+
+            while (!(finished || go == null))
+            {
+                if (token != null && token.Value.IsCancellationRequested)
+                {
+                    if (go != null)
+                        UnityEngine.Object.Destroy(go);
+
+                    break;
+                }
+
+                await Task.Yield();
+            }
+
+            await Task.Yield(); //let the callback run, hopefully
+
+            if (status == ModalStatusCode.Undefined)
+                status = ModalStatusCode.Aborted;
+
+            return new QuantityModalResult(status, quantity);
         }
 
         /// <summary>
@@ -76,15 +181,46 @@ namespace CommonCore.UI
             go.GetComponent<ConfirmModalController>().SetInitial(heading, text, yesText, noText, tag, callback);
         }
 
+        /// <summary>
+        /// Pushes a confirm modal and allows it to be awaited
+        /// </summary>
+        public static async Task<ConfirmModalResult> PushConfirmModalAsync(string text, string heading, string yesText, string noText, bool ephemeral, CancellationToken? token)
+        {
+            bool finished = false;
+            ModalStatusCode status = ModalStatusCode.Undefined;
+            bool result = false;
+
+            ConfirmModalCallback callback = (s, t, r) => { finished = true; status = s; result = r; };
+
+            var go = GameObject.Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>(ConfirmModalPrefab), ephemeral ? GetEphemeralOrUIRoot() : CoreUtils.GetUIRoot());
+            go.GetComponent<ConfirmModalController>().SetInitial(heading, text, yesText, noText, null, callback);
+
+            while (!(finished || go == null))
+            {
+                if (token != null && token.Value.IsCancellationRequested)
+                {
+                    if (go != null)
+                        UnityEngine.Object.Destroy(go);
+
+                    break;
+                }
+
+                await Task.Yield();
+            }
+
+            await Task.Yield(); //let the callback run, hopefully
+
+            if (status == ModalStatusCode.Undefined)
+                status = ModalStatusCode.Aborted;
+
+            return new ConfirmModalResult(status, result);
+        }
+
         private static Transform GetEphemeralOrUIRoot()
         {
-            IngameMenuController imc = IngameMenuController.Current;
-            if(imc != null)
-            {
-                GameObject erObj = imc.EphemeralRoot;
-                if (erObj != null)
-                    return erObj.transform;
-            }
+            GameObject erObj = GameObject.FindGameObjectWithTag("EphemeralRoot");
+            if (erObj != null)
+                return erObj.transform;
 
             return CoreUtils.GetUIRoot();
         }

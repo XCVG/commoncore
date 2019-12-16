@@ -36,40 +36,45 @@ namespace CommonCore.StringSub
         private void LoadLists()
         {
             //load all substitution lists
-            TextAsset[] tas = CoreUtils.LoadResources<TextAsset>("Data/Strings/");
-            foreach (TextAsset ta in tas)
+
+            TextAsset[][] textAssetArrays = CoreUtils.LoadDataResources<TextAsset>("Data/Strings/");
+
+            foreach (var tas in textAssetArrays)
             {
-                try
+                foreach (TextAsset ta in tas)
                 {
-                    var lists = CoreUtils.LoadJson<Dictionary<string, Dictionary<string, string>>>(ta.text);
-                    foreach (var list in lists)
+                    try
                     {
-                        //merge new lists onto old
-                        if (Strings.ContainsKey(list.Key))
+                        var lists = CoreUtils.LoadJson<Dictionary<string, Dictionary<string, string>>>(ta.text);
+                        foreach (var list in lists)
                         {
-                            //list already exists, need to merge
-                            var oldList = Strings[list.Key];
-                            foreach (var item in list.Value)
+                            //merge new lists onto old
+                            if (Strings.ContainsKey(list.Key))
                             {
-                                oldList[item.Key] = item.Value;
+                                //list already exists, need to merge
+                                var oldList = Strings[list.Key];
+                                foreach (var item in list.Value)
+                                {
+                                    oldList[item.Key] = item.Value;
+                                }
+                            }
+                            else
+                            {
+                                //list doesn't exist, can just add
+                                Strings.Add(list.Key, list.Value);
                             }
                         }
-                        else
-                        {
-                            //list doesn't exist, can just add
-                            Strings.Add(list.Key, list.Value);
-                        }
+                    }
+                    catch (Exception e)
+                    {
+                        LogError("StringSub: Error loading string file: " + ta.name);
+                        LogException(e);
                     }
                 }
-                catch (Exception e)
-                {
-                    LogError("StringSub: Error loading string file: " + ta.name);
-                    LogException(e);
-                }
-            }
 
-            string statusString = string.Format("({0} files, {1} lists)", tas.Length, Strings.Count);
-            Log("StringSub: Loaded lists " + statusString);
+                string statusString = string.Format("({0} files, {1} lists)", tas.Length, Strings.Count);
+                Log("StringSub: Loaded lists " + statusString);
+            }            
         }
 
         private void LoadSubbers()
