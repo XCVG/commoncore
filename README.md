@@ -14,9 +14,9 @@ CommonCore handles or will handle standard RPG mechanics, game state with saving
 
 ## Platform Support
 
-CommonCore supports Unity 2018.3 and (probably) later. The plan is to continue to target the latest stable version of 2018.x for the forseeable future. Unity 2017.x is no longer supported, and Unity 2019.x will probably work but hasn't been tested yet.
+CommonCore supports Unity 2018.4 and (probably) later. The plan is to continue to target the latest stable version of 2018.x at least until the next release. Unity 2017.x is no longer supported, and Unity 2019.x should work but hasn't been tested yet.
 
-CommonCore supports standalone platforms using Mono and the .NET 4.x scripting runtime. The plan is to get the basic core working on mobile and WebGL (IL2CPP) platforms within the Balmora release, but not the full feature set (at least, not yet).
+CommonCore supports standalone platforms using Mono and the .NET 4.x scripting runtime. The basic core amost works on mobile and WebGL (IL2CPP) platforms.
 
 ## Extra Modules
 

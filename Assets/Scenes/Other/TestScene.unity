@@ -88,7 +88,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaIndirect: 2
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ShowResolutionOverlay: 1
-  m_LightingDataAsset: {fileID: 112000000, guid: dabd8488233b7fc489fbc0a507d32369,
+  m_LightingDataAsset: {fileID: 112000000, guid: c7c9ca368498201438bad0ffa8079366,
     type: 2}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -792,7 +792,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EditorFormID: debug_ball
-  Tags: []
+  HitMaterial: 0
 --- !u!54 &681029983
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1503,7 +1503,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EditorFormID: spec_container
-  Tags: []
+  HitMaterial: 0
   LocalContainer:
     Items:
     - Quantity: 1
@@ -2294,7 +2294,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EditorFormID: spec_container
-  Tags: []
+  HitMaterial: 0
   LocalContainer:
     Items: []
   SharedContainer: TestSharedContainer
