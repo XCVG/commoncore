@@ -111,9 +111,17 @@ Player Voice (Assets/Shared/Sounds/Bolt)
 	AderuMoro - Fighting Game grunts - young female.wav [CC-BY]
 	https://freesound.org/people/AderuMoro/sounds/213295/
 	
-Hits (Assets/Resources/DynamicSound/Hit*)
+Hits (Assets/Resources/DynamicSound/Hit* except as noted below)
 	Iwan 'qubodup' Gabovitch - Impact [CC0]
 	https://opengameart.org/content/impact
+
+Dirt Hit (Assets/Resources/DynamicSound/HitDirt)
+	Jordan Irwin (AntumDeluge) - Thwack Sounds [CC0]
+	https://opengameart.org/content/thwack-sounds
+
+Stone Hit (Assets/Resources/DynamicSound/HitStone)
+	rubberduck - 75 CC0 breaking/falling/hit sfx [CC0]	
+	https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx
 	
 Sword Swing (Assets/Resources/DynamicSound/SwordSwing)
 	Iwan Gabovitch - Swish - bamboo stick weapon swhoshes [CC0]
