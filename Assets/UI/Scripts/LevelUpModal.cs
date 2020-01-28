@@ -116,35 +116,35 @@ namespace GameUI
 
         private void PaintSkills()
         {
-            MeleeButton.GetComponentInChildren<Text>().text = string.Format("Melee ({0})", NewStats.Skills[(int)SkillType.Melee]);
-            AlacrityButton.GetComponentInChildren<Text>().text = string.Format("Alacrity\n({0})", NewStats.Skills[(int)SkillType.MeleeAlacrity]);
-            PrecisionButton.GetComponentInChildren<Text>().text = string.Format("Precision\n({0})", NewStats.Skills[(int)SkillType.MeleePrecision]);
-            BrawnButton.GetComponentInChildren<Text>().text = string.Format("Brawn\n({0})", NewStats.Skills[(int)SkillType.MeleeBrawn]);
+            MeleeButton.GetComponentInChildren<Text>().text = string.Format("Melee ({0})", NewStats.Skills[SkillType.Melee]);
+            AlacrityButton.GetComponentInChildren<Text>().text = string.Format("Alacrity\n({0})", NewStats.Skills[SkillType.MeleeAlacrity]);
+            PrecisionButton.GetComponentInChildren<Text>().text = string.Format("Precision\n({0})", NewStats.Skills[SkillType.MeleePrecision]);
+            BrawnButton.GetComponentInChildren<Text>().text = string.Format("Brawn\n({0})", NewStats.Skills[SkillType.MeleeBrawn]);
 
-            ArcheryButton.GetComponentInChildren<Text>().text = string.Format("Archery ({0})", NewStats.Skills[(int)SkillType.Archery]);
-            DrawButton.GetComponentInChildren<Text>().text = string.Format("Draw\n({0})", NewStats.Skills[(int)SkillType.ArcheryDraw]);
-            SteadyButton.GetComponentInChildren<Text>().text = string.Format("Steady\n({0})", NewStats.Skills[(int)SkillType.ArcherySteady]);
+            ArcheryButton.GetComponentInChildren<Text>().text = string.Format("Archery ({0})", NewStats.Skills[SkillType.Archery]);
+            DrawButton.GetComponentInChildren<Text>().text = string.Format("Draw\n({0})", NewStats.Skills[SkillType.ArcheryDraw]);
+            SteadyButton.GetComponentInChildren<Text>().text = string.Format("Steady\n({0})", NewStats.Skills[SkillType.ArcherySteady]);
 
-            GunsButton.GetComponentInChildren<Text>().text = string.Format("Guns ({0})", NewStats.Skills[(int)SkillType.Guns]);
-            AccuracyButton.GetComponentInChildren<Text>().text = string.Format("Accuracy\n({0})", NewStats.Skills[(int)SkillType.GunsAccuracy]);
-            RapidityButton.GetComponentInChildren<Text>().text = string.Format("Rapidity\n({0})", NewStats.Skills[(int)SkillType.GunsRapidity]);
+            GunsButton.GetComponentInChildren<Text>().text = string.Format("Guns ({0})", NewStats.Skills[SkillType.Guns]);
+            AccuracyButton.GetComponentInChildren<Text>().text = string.Format("Accuracy\n({0})", NewStats.Skills[SkillType.GunsAccuracy]);
+            RapidityButton.GetComponentInChildren<Text>().text = string.Format("Rapidity\n({0})", NewStats.Skills[SkillType.GunsRapidity]);
 
-            AthleticsButton.GetComponentInChildren<Text>().text = string.Format("Athletics ({0})", NewStats.Skills[(int)SkillType.Athletics]);
-            FurtiveButton.GetComponentInChildren<Text>().text = string.Format("Furtiveness\n({0})", NewStats.Skills[(int)SkillType.AthleticsFurtive]);
-            FleetButton.GetComponentInChildren<Text>().text = string.Format("Fleetness\n({0})", NewStats.Skills[(int)SkillType.AthleticsFleet]);
+            AthleticsButton.GetComponentInChildren<Text>().text = string.Format("Athletics ({0})", NewStats.Skills[SkillType.Athletics]);
+            FurtiveButton.GetComponentInChildren<Text>().text = string.Format("Furtiveness\n({0})", NewStats.Skills[SkillType.AthleticsFurtive]);
+            FleetButton.GetComponentInChildren<Text>().text = string.Format("Fleetness\n({0})", NewStats.Skills[SkillType.AthleticsFleet]);
 
-            MagicButton.GetComponentInChildren<Text>().text = string.Format("Magic ({0})", NewStats.Skills[(int)SkillType.Magic]);
-            ForceButton.GetComponentInChildren<Text>().text = string.Format("Force\n({0})", NewStats.Skills[(int)SkillType.MagicForce]);
-            ElementalButton.GetComponentInChildren<Text>().text = string.Format("Elemental\n({0})", NewStats.Skills[(int)SkillType.MagicElemental]);
-            DarkButton.GetComponentInChildren<Text>().text = string.Format("Dark\n({0})", NewStats.Skills[(int)SkillType.MagicDark]);
+            MagicButton.GetComponentInChildren<Text>().text = string.Format("Magic ({0})", NewStats.Skills[SkillType.Magic]);
+            ForceButton.GetComponentInChildren<Text>().text = string.Format("Force\n({0})", NewStats.Skills[SkillType.MagicForce]);
+            ElementalButton.GetComponentInChildren<Text>().text = string.Format("Elemental\n({0})", NewStats.Skills[SkillType.MagicElemental]);
+            DarkButton.GetComponentInChildren<Text>().text = string.Format("Dark\n({0})", NewStats.Skills[SkillType.MagicDark]);
 
-            SocialButton.GetComponentInChildren<Text>().text = string.Format("Social ({0})", NewStats.Skills[(int)SkillType.Social]);
-            ExchangeButton.GetComponentInChildren<Text>().text = string.Format("Exchange\n({0})", NewStats.Skills[(int)SkillType.SocialExchange]);
-            LeverageButton.GetComponentInChildren<Text>().text = string.Format("Leverage\n({0})", NewStats.Skills[(int)SkillType.SocialLeverage]);
+            SocialButton.GetComponentInChildren<Text>().text = string.Format("Social ({0})", NewStats.Skills[SkillType.Social]);
+            ExchangeButton.GetComponentInChildren<Text>().text = string.Format("Exchange\n({0})", NewStats.Skills[SkillType.SocialExchange]);
+            LeverageButton.GetComponentInChildren<Text>().text = string.Format("Leverage\n({0})", NewStats.Skills[SkillType.SocialLeverage]);
 
-            SecurityButton.GetComponentInChildren<Text>().text = string.Format("Security ({0})", NewStats.Skills[(int)SkillType.Security]);
-            MechanismsButton.GetComponentInChildren<Text>().text = string.Format("Mechanisms\n({0})", NewStats.Skills[(int)SkillType.SecurityMechanisms]);
-            ComputersButton.GetComponentInChildren<Text>().text = string.Format("Computers\n({0})", NewStats.Skills[(int)SkillType.SecurityComputers]);
+            SecurityButton.GetComponentInChildren<Text>().text = string.Format("Security ({0})", NewStats.Skills[SkillType.Security]);
+            MechanismsButton.GetComponentInChildren<Text>().text = string.Format("Mechanisms\n({0})", NewStats.Skills[SkillType.SecurityMechanisms]);
+            ComputersButton.GetComponentInChildren<Text>().text = string.Format("Computers\n({0})", NewStats.Skills[SkillType.SecurityComputers]);
         }
 
         private void SetButtons(bool active)
@@ -194,133 +194,133 @@ namespace GameUI
             switch (key)
             {
                 case "Melee":
-                    NewStats.Skills[(int)SkillType.Melee] += 3;
-                    NewStats.Skills[(int)SkillType.MeleeAlacrity] += 3;
-                    NewStats.Skills[(int)SkillType.MeleePrecision] += 3;
-                    NewStats.Skills[(int)SkillType.MeleeBrawn] += 3;
+                    NewStats.Skills[SkillType.Melee] += 3;
+                    NewStats.Skills[SkillType.MeleeAlacrity] += 3;
+                    NewStats.Skills[SkillType.MeleePrecision] += 3;
+                    NewStats.Skills[SkillType.MeleeBrawn] += 3;
                     break;
                 case "Alacrity":
-                    NewStats.Skills[(int)SkillType.Melee] += 3;
-                    NewStats.Skills[(int)SkillType.MeleeAlacrity] += 7;
-                    NewStats.Skills[(int)SkillType.MeleePrecision] += 1;
-                    NewStats.Skills[(int)SkillType.MeleeBrawn] += 1;
+                    NewStats.Skills[SkillType.Melee] += 3;
+                    NewStats.Skills[SkillType.MeleeAlacrity] += 7;
+                    NewStats.Skills[SkillType.MeleePrecision] += 1;
+                    NewStats.Skills[SkillType.MeleeBrawn] += 1;
                     break;
                 case "Precision":
-                    NewStats.Skills[(int)SkillType.Melee] += 3;
-                    NewStats.Skills[(int)SkillType.MeleeAlacrity] += 1;
-                    NewStats.Skills[(int)SkillType.MeleePrecision] += 7;
-                    NewStats.Skills[(int)SkillType.MeleeBrawn] += 1;
+                    NewStats.Skills[SkillType.Melee] += 3;
+                    NewStats.Skills[SkillType.MeleeAlacrity] += 1;
+                    NewStats.Skills[SkillType.MeleePrecision] += 7;
+                    NewStats.Skills[SkillType.MeleeBrawn] += 1;
                     break;
                 case "Brawn":
-                    NewStats.Skills[(int)SkillType.Melee] += 3;
-                    NewStats.Skills[(int)SkillType.MeleeAlacrity] += 1;
-                    NewStats.Skills[(int)SkillType.MeleePrecision] += 1;
-                    NewStats.Skills[(int)SkillType.MeleeBrawn] += 7;
+                    NewStats.Skills[SkillType.Melee] += 3;
+                    NewStats.Skills[SkillType.MeleeAlacrity] += 1;
+                    NewStats.Skills[SkillType.MeleePrecision] += 1;
+                    NewStats.Skills[SkillType.MeleeBrawn] += 7;
                     break;
 
                 case "Archery":
-                    NewStats.Skills[(int)SkillType.Archery] += 4;
-                    NewStats.Skills[(int)SkillType.ArcheryDraw] += 4;
-                    NewStats.Skills[(int)SkillType.ArcherySteady] += 4;
+                    NewStats.Skills[SkillType.Archery] += 4;
+                    NewStats.Skills[SkillType.ArcheryDraw] += 4;
+                    NewStats.Skills[SkillType.ArcherySteady] += 4;
                     break;
                 case "Draw":
-                    NewStats.Skills[(int)SkillType.Archery] += 4;
-                    NewStats.Skills[(int)SkillType.ArcheryDraw] += 7;
-                    NewStats.Skills[(int)SkillType.ArcherySteady] += 1;
+                    NewStats.Skills[SkillType.Archery] += 4;
+                    NewStats.Skills[SkillType.ArcheryDraw] += 7;
+                    NewStats.Skills[SkillType.ArcherySteady] += 1;
                     break;
                 case "Steady":
-                    NewStats.Skills[(int)SkillType.Archery] += 4;
-                    NewStats.Skills[(int)SkillType.ArcheryDraw] += 1;
-                    NewStats.Skills[(int)SkillType.ArcherySteady] += 7;
+                    NewStats.Skills[SkillType.Archery] += 4;
+                    NewStats.Skills[SkillType.ArcheryDraw] += 1;
+                    NewStats.Skills[SkillType.ArcherySteady] += 7;
                     break;
 
                 case "Guns":
-                    NewStats.Skills[(int)SkillType.Guns] += 4;
-                    NewStats.Skills[(int)SkillType.GunsAccuracy] += 4;
-                    NewStats.Skills[(int)SkillType.GunsRapidity] += 4;
+                    NewStats.Skills[SkillType.Guns] += 4;
+                    NewStats.Skills[SkillType.GunsAccuracy] += 4;
+                    NewStats.Skills[SkillType.GunsRapidity] += 4;
                     break;
                 case "Accuracy":
-                    NewStats.Skills[(int)SkillType.Guns] += 4;
-                    NewStats.Skills[(int)SkillType.GunsAccuracy] += 7;
-                    NewStats.Skills[(int)SkillType.GunsRapidity] += 1;
+                    NewStats.Skills[SkillType.Guns] += 4;
+                    NewStats.Skills[SkillType.GunsAccuracy] += 7;
+                    NewStats.Skills[SkillType.GunsRapidity] += 1;
                     break;
                 case "Rapidity":
-                    NewStats.Skills[(int)SkillType.Guns] += 4;
-                    NewStats.Skills[(int)SkillType.GunsAccuracy] += 1;
-                    NewStats.Skills[(int)SkillType.GunsRapidity] += 7;
+                    NewStats.Skills[SkillType.Guns] += 4;
+                    NewStats.Skills[SkillType.GunsAccuracy] += 1;
+                    NewStats.Skills[SkillType.GunsRapidity] += 7;
                     break;
 
                 case "Athletics":
-                    NewStats.Skills[(int)SkillType.Athletics] += 4;
-                    NewStats.Skills[(int)SkillType.AthleticsFurtive] += 4;
-                    NewStats.Skills[(int)SkillType.AthleticsFleet] += 4;
+                    NewStats.Skills[SkillType.Athletics] += 4;
+                    NewStats.Skills[SkillType.AthleticsFurtive] += 4;
+                    NewStats.Skills[SkillType.AthleticsFleet] += 4;
                     break;
                 case "Furtive":
-                    NewStats.Skills[(int)SkillType.Athletics] += 4;
-                    NewStats.Skills[(int)SkillType.AthleticsFurtive] += 7;
-                    NewStats.Skills[(int)SkillType.AthleticsFleet] += 1;
+                    NewStats.Skills[SkillType.Athletics] += 4;
+                    NewStats.Skills[SkillType.AthleticsFurtive] += 7;
+                    NewStats.Skills[SkillType.AthleticsFleet] += 1;
                     break;
                 case "Fleet":
-                    NewStats.Skills[(int)SkillType.Athletics] += 4;
-                    NewStats.Skills[(int)SkillType.AthleticsFurtive] += 1;
-                    NewStats.Skills[(int)SkillType.AthleticsFleet] += 7;
+                    NewStats.Skills[SkillType.Athletics] += 4;
+                    NewStats.Skills[SkillType.AthleticsFurtive] += 1;
+                    NewStats.Skills[SkillType.AthleticsFleet] += 7;
                     break;
 
                 case "Magic":
-                    NewStats.Skills[(int)SkillType.Magic] += 3;
-                    NewStats.Skills[(int)SkillType.MagicForce] += 3;
-                    NewStats.Skills[(int)SkillType.MagicElemental] += 3;
-                    NewStats.Skills[(int)SkillType.MagicDark] += 3;
+                    NewStats.Skills[SkillType.Magic] += 3;
+                    NewStats.Skills[SkillType.MagicForce] += 3;
+                    NewStats.Skills[SkillType.MagicElemental] += 3;
+                    NewStats.Skills[SkillType.MagicDark] += 3;
                     break;
                 case "Force":
-                    NewStats.Skills[(int)SkillType.Magic] += 3;
-                    NewStats.Skills[(int)SkillType.MagicForce] += 7;
-                    NewStats.Skills[(int)SkillType.MagicElemental] += 1;
-                    NewStats.Skills[(int)SkillType.MagicDark] += 1;
+                    NewStats.Skills[SkillType.Magic] += 3;
+                    NewStats.Skills[SkillType.MagicForce] += 7;
+                    NewStats.Skills[SkillType.MagicElemental] += 1;
+                    NewStats.Skills[SkillType.MagicDark] += 1;
                     break;
                 case "Elemental":
-                    NewStats.Skills[(int)SkillType.Magic] += 3;
-                    NewStats.Skills[(int)SkillType.MagicForce] += 1;
-                    NewStats.Skills[(int)SkillType.MagicElemental] += 7;
-                    NewStats.Skills[(int)SkillType.MagicDark] += 1;
+                    NewStats.Skills[SkillType.Magic] += 3;
+                    NewStats.Skills[SkillType.MagicForce] += 1;
+                    NewStats.Skills[SkillType.MagicElemental] += 7;
+                    NewStats.Skills[SkillType.MagicDark] += 1;
                     break;
                 case "Dark":
-                    NewStats.Skills[(int)SkillType.Magic] += 3;
-                    NewStats.Skills[(int)SkillType.MagicForce] += 1;
-                    NewStats.Skills[(int)SkillType.MagicElemental] += 1;
-                    NewStats.Skills[(int)SkillType.MagicDark] += 7;
+                    NewStats.Skills[SkillType.Magic] += 3;
+                    NewStats.Skills[SkillType.MagicForce] += 1;
+                    NewStats.Skills[SkillType.MagicElemental] += 1;
+                    NewStats.Skills[SkillType.MagicDark] += 7;
                     break;
 
                 case "Social":
-                    NewStats.Skills[(int)SkillType.Social] += 4;
-                    NewStats.Skills[(int)SkillType.SocialExchange] += 4;
-                    NewStats.Skills[(int)SkillType.SocialLeverage] += 4;
+                    NewStats.Skills[SkillType.Social] += 4;
+                    NewStats.Skills[SkillType.SocialExchange] += 4;
+                    NewStats.Skills[SkillType.SocialLeverage] += 4;
                     break;
                 case "Exchange":
-                    NewStats.Skills[(int)SkillType.Social] += 4;
-                    NewStats.Skills[(int)SkillType.SocialExchange] += 7;
-                    NewStats.Skills[(int)SkillType.SocialLeverage] += 1;
+                    NewStats.Skills[SkillType.Social] += 4;
+                    NewStats.Skills[SkillType.SocialExchange] += 7;
+                    NewStats.Skills[SkillType.SocialLeverage] += 1;
                     break;
                 case "Leverage":
-                    NewStats.Skills[(int)SkillType.Social] += 4;
-                    NewStats.Skills[(int)SkillType.SocialExchange] += 1;
-                    NewStats.Skills[(int)SkillType.SocialLeverage] += 7;
+                    NewStats.Skills[SkillType.Social] += 4;
+                    NewStats.Skills[SkillType.SocialExchange] += 1;
+                    NewStats.Skills[SkillType.SocialLeverage] += 7;
                     break;
 
                 case "Security":
-                    NewStats.Skills[(int)SkillType.Security] += 4;
-                    NewStats.Skills[(int)SkillType.SecurityMechanisms] += 4;
-                    NewStats.Skills[(int)SkillType.SecurityComputers] += 4;
+                    NewStats.Skills[SkillType.Security] += 4;
+                    NewStats.Skills[SkillType.SecurityMechanisms] += 4;
+                    NewStats.Skills[SkillType.SecurityComputers] += 4;
                     break;
                 case "Mechanisms":
-                    NewStats.Skills[(int)SkillType.Security] += 4;
-                    NewStats.Skills[(int)SkillType.SecurityMechanisms] += 7;
-                    NewStats.Skills[(int)SkillType.SecurityComputers] += 1;
+                    NewStats.Skills[SkillType.Security] += 4;
+                    NewStats.Skills[SkillType.SecurityMechanisms] += 7;
+                    NewStats.Skills[SkillType.SecurityComputers] += 1;
                     break;
                 case "Computers":
-                    NewStats.Skills[(int)SkillType.Security] += 4;
-                    NewStats.Skills[(int)SkillType.SecurityMechanisms] += 1;
-                    NewStats.Skills[(int)SkillType.SecurityComputers] += 7;
+                    NewStats.Skills[SkillType.Security] += 4;
+                    NewStats.Skills[SkillType.SecurityMechanisms] += 1;
+                    NewStats.Skills[SkillType.SecurityComputers] += 7;
                     break;
 
                 default:
