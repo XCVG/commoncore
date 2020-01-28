@@ -7,6 +7,7 @@ using System;
 using CommonCore.World;
 using CommonCore.Audio;
 using CommonCore.State;
+using CommonCore.Config;
 
 namespace CommonCore.RpgGame.World
 {
@@ -114,6 +115,8 @@ namespace CommonCore.RpgGame.World
             if (!(State == AIState.Dead || State == AIState.Dying) && ActorController.Health <= 0)
                 ChangeState(AIState.Dying);
 
+            var gameplayConfig = ConfigState.Instance.GetGameplayConfig();
+
             TimeInState += Time.deltaTime;
             TimeSinceLastDecision += Time.deltaTime;
 
@@ -131,7 +134,7 @@ namespace CommonCore.RpgGame.World
                         }
 
                         //if it's time to make a decision, make a decision
-                        if(TimeSinceLastDecision >= CirclingDecideInterval)
+                        if(TimeSinceLastDecision >= CirclingDecideInterval * (1 / gameplayConfig.Difficulty.ActorAggression))
                         {
                             TimeSinceLastDecision = 0;
 
@@ -200,7 +203,7 @@ namespace CommonCore.RpgGame.World
 
                         //ActorController.MovementComponent.SetDestination(ActorController.Target.position); //continue chase?
 
-                        if (TimeSinceLastDecision >= HoverDecideInterval)
+                        if (TimeSinceLastDecision >= HoverDecideInterval * (1 / gameplayConfig.Difficulty.ActorAggression))
                         {
                             TimeSinceLastDecision = 0;
 
@@ -378,7 +381,11 @@ namespace CommonCore.RpgGame.World
         {
             //basically copied from ActorAttackComponent
 
+            var gameplayConfig = ConfigState.Instance.GetGameplayConfig();
+
             var modHit = FlameHit;
+            modHit.Damage *= gameplayConfig.Difficulty.ActorStrength;
+            modHit.DamagePierce *= gameplayConfig.Difficulty.ActorStrength;
             modHit.Originator = ActorController;
             LayerMask lm = LayerMask.GetMask("Default", "ActorHitbox");
 
@@ -399,27 +406,52 @@ namespace CommonCore.RpgGame.World
                     ac = acgo;
                     break;
                 }
-            }
+            }            
+
             if (ac != null && ac is ITakeDamage dac)
             {
-                dac.TakeDamage(modHit);
+                //raycast check for cover
+                Physics.Raycast(FirePoint.position, FirePoint.forward, out var nearestRaycastHit, FlameRange, lm, QueryTriggerInteraction.Collide);
+                var nearestController = nearestRaycastHit.collider.GetComponentInParent<BaseController>();
+                if(nearestController == null || nearestController != ac)
+                {
+                    //nop
+                }
+                else
+                {
+                    dac.TakeDamage(modHit);
+                }               
             }
         }
 
         private void DoClawAttack()
         {
-            Debug.LogWarning("ClawAttack!");
+            //Debug.LogWarning("ClawAttack!");
 
             //do damage to what we know is the target
-            //TODO could be improved by a raycast or something
+            //raycast to see if we actually can hit
+            //only half works unfortunately
             var itd = ActorController.Target.GetComponent<BaseController>() as ITakeDamage;
             if(itd != null)
             {
-                var modHit = ClawHit;
-                modHit.Originator = ActorController;
-                itd.TakeDamage(modHit);
-                if(HitSoundClip != null)
-                    AudioPlayer.Instance.PlaySoundPositional(HitSoundClip, false, ActorController.Target.position);
+                LayerMask lm = LayerMask.GetMask("Default", "ActorHitbox");
+                Vector3 vecThisToTarget = ActorController.Target.position - transform.position;
+                if (Physics.Raycast(transform.position, vecThisToTarget, out var raycastHit, 100, lm, QueryTriggerInteraction.Collide))
+                {
+                    var hitController = raycastHit.collider.GetComponentInParent<BaseController>();
+                    if (hitController != null && hitController == (BaseController)itd)
+                    {
+                        var modHit = ClawHit;
+                        var gameplayConfig = ConfigState.Instance.GetGameplayConfig();
+                        modHit.Damage *= gameplayConfig.Difficulty.ActorStrength;
+                        modHit.DamagePierce *= gameplayConfig.Difficulty.ActorStrength;
+                        modHit.Originator = ActorController;
+                        itd.TakeDamage(modHit);
+                        if (HitSoundClip != null)
+                            AudioPlayer.Instance.PlaySoundPositional(HitSoundClip, false, ActorController.Target.position);
+                    }
+                }        
+
             }
         }
 

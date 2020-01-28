@@ -1,0 +1,31 @@
+{
+  "demosword": {
+    "model": {
+      "$type": "CommonCore.RpgGame.Rpg.MeleeWeaponItemModel, Assembly-CSharp",
+      "Damage": 16,
+	  "DamageSpread": 6,
+      "DamagePierce": 6,
+	  "DamageSpreadPierce": 4,
+	  "Reach": 1.5,
+	  "Rate": 0.8,
+	  "EnergyCost": 10.0,
+      "DType": "Normal",
+	  "SkillType": "Melee",
+	  "HitPuff": "MeleeHitPuff",
+      "Weight": 1.5,	  
+	  "Value": 50,
+      "MaxCondition": 1,
+	  "ViewModel": "DemoSword",
+	  "LowerTime": 1.0,
+	  "RaiseTime": 1.0,	 
+      "Unique": false,
+      "Essential": false,
+	  "Flags": ["WeaponTwoHanded"]
+    },
+    "def": {
+    "NiceName": "Demo Sword",
+    "Image": "sword",
+    "Description": "A simple sword for demonstration purposes."
+  }
+  }
+}

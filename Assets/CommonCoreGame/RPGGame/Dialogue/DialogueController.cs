@@ -6,11 +6,13 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using CommonCore.Audio;
 using CommonCore.State;
 using CommonCore.StringSub;
 using CommonCore.LockPause;
 using CommonCore.RpgGame.UI;
 using CommonCore.World;
+using CommonCore.DebugLog;
 
 namespace CommonCore.RpgGame.Dialogue
 {
@@ -23,6 +25,8 @@ namespace CommonCore.RpgGame.Dialogue
 
         public Text TextTitle;
         public Text TextMain;
+        public Image BackgroundImage;
+        public Image FaceImage;
         //public Button[] ButtonsChoice;
         public GameObject ButtonPrefab;
         public Button ButtonContinue;
@@ -30,6 +34,8 @@ namespace CommonCore.RpgGame.Dialogue
         public RectTransform ScrollChoiceContent;
 
         public AudioSource VoiceAudioSource;
+        public GameObject CameraPrefab;
+        public DialogueCameraController CameraController;
 
         private string CurrentFrameName;
         private string CurrentSceneName;
@@ -51,7 +57,7 @@ namespace CommonCore.RpgGame.Dialogue
             //if (AutoPauseGame)
             //    LockPauseModule.PauseGame(this.gameObject);
 
-            var loc = ParseLocation(CurrentDialogue); //TODO we actually need to parse it "backwards" here...
+            var loc = ParseLocation(CurrentDialogue);
 
             if(loc.Key == null)
             {
@@ -79,17 +85,119 @@ namespace CommonCore.RpgGame.Dialogue
             PresentNewFrame(CurrentSceneFrames[s]);
         }
         
-        private void PresentNewFrame(Frame f) //args?
+        private void PresentNewFrame(Frame f)
         {
+            //special handling for blank frames
+            if(f is BlankFrame)
+            {
+                CurrentFrameObject = f;
+                OnChoiceButtonClick(0);
+                return;
+            }
+
+            //present music
+            if (!string.IsNullOrEmpty(f.Music))
+            {
+                if(!(AudioPlayer.Instance.IsMusicSetToPlay(MusicSlot.Cinematic) && AudioPlayer.Instance.GetMusicName(MusicSlot.Cinematic) == f.Music))
+                {
+                    AudioPlayer.Instance.SetMusic(f.Music, MusicSlot.Cinematic, 1.0f, true, false);
+                    AudioPlayer.Instance.StartMusic(MusicSlot.Cinematic);
+                }                
+            }
+            else
+            {
+                AudioPlayer.Instance.ClearMusic(MusicSlot.Cinematic);
+            }
+
             //present audio
             if (VoiceAudioSource.isPlaying)
                 VoiceAudioSource.Stop();
-            string voicePath = string.Format("DialogueVoice/{0}/{1}", CurrentSceneName, CurrentFrameName);
-            var voiceClip = CoreUtils.LoadResource<AudioClip>(voicePath);
-            if(voiceClip != null)
+            var voiceClip = CCBase.GetModule<AudioModule>().GetSound($"{CurrentSceneName}/{CurrentFrameName}", SoundType.Voice);
+            if (voiceClip != null)
             {
                 VoiceAudioSource.clip = voiceClip;
                 VoiceAudioSource.Play();
+            }
+
+            //present background
+            BackgroundImage.sprite = null;
+            BackgroundImage.gameObject.SetActive(false);
+            if(!string.IsNullOrEmpty(f.Background))
+            {
+                var sprite = CoreUtils.LoadResource<Sprite>("Dialogue/bg/" + f.Background);
+                if(sprite != null)
+                {
+                    BackgroundImage.sprite = sprite;
+                    BackgroundImage.gameObject.SetActive(true);
+                }
+                else
+                {
+                    CDebug.LogEx($"Couldn't find face sprite Dialogue/bg/{f.Background}", LogLevel.Verbose, this);
+                }
+            }
+
+            //present image
+            FaceImage.sprite = null;
+            FaceImage.gameObject.SetActive(false);
+            if(!string.IsNullOrEmpty(f.Image))
+            {
+                //attempt to present image
+                var sprite = CoreUtils.LoadResource<Sprite>("Dialogue/char/" + f.Image);
+                if(sprite != null)
+                {
+                    //Debug.Log(sprite.name);
+
+                    float spriteX = sprite.texture.width * (100f / sprite.pixelsPerUnit);
+                    float spriteY = sprite.texture.height * (100f / sprite.pixelsPerUnit);
+
+                    switch (f.ImagePosition)
+                    {
+                        case FrameImagePosition.Fill:
+                            FaceImage.rectTransform.localPosition = Vector3.zero;
+                            FaceImage.rectTransform.sizeDelta = FaceImage.canvas.pixelRect.size;
+                            break;
+                        case FrameImagePosition.Character:
+                            FaceImage.rectTransform.localPosition = new Vector3(0, 100, 0);
+                            FaceImage.rectTransform.sizeDelta = new Vector2(spriteX, spriteY);
+                            break;
+                        default:
+                            //center, no scale
+                            FaceImage.rectTransform.localPosition = Vector3.zero;
+                            FaceImage.rectTransform.sizeDelta = new Vector2(spriteX, spriteY);
+                            break;
+                    }
+
+                    FaceImage.sprite = sprite;
+                    FaceImage.gameObject.SetActive(true);
+                }
+                else
+                {
+                    CDebug.LogEx($"Couldn't find face sprite Dialogue/char/{f.Image}", LogLevel.Verbose, this);
+                }
+            }
+
+            //present camera
+            try
+            {
+                if (!string.IsNullOrEmpty(f.CameraDirection) && !f.CameraDirection.StartsWith("Default", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (CameraController == null)
+                    {
+                        var cameraGo = Instantiate(CameraPrefab, CoreUtils.GetWorldRoot());
+                        CameraController = cameraGo.GetComponent<DialogueCameraController>();
+                    }
+
+                    CameraController.Activate(f.CameraDirection);
+                }
+                else
+                {
+                    CameraController.Ref()?.Deactivate();
+                }
+            }
+            catch(Exception e)
+            {
+                Debug.LogError($"Failed to point camera ({f.CameraDirection})");
+                Debug.LogException(e);
             }
 
             //present text
@@ -160,9 +268,11 @@ namespace CommonCore.RpgGame.Dialogue
             {
                 ScrollChoice.gameObject.SetActive(false);
 
+                string nextText = string.IsNullOrEmpty(f.NextText) ? Sub.Replace("DefaultNextText", "IGUI_DIALOGUE", false) : f.NextText;
+
                 Button b = ButtonContinue;
                 b.gameObject.SetActive(true);
-                b.transform.Find("Text").GetComponent<Text>().text = "Continue..."; //TODO nextText support
+                b.transform.Find("Text").GetComponent<Text>().text = nextText;
             }
 
             CurrentFrameObject = f;
@@ -230,17 +340,21 @@ namespace CommonCore.RpgGame.Dialogue
         {
             var nextLoc = ParseLocation(next);
 
-            if(string.IsNullOrEmpty(nextLoc.Key) || nextLoc.Key == "this" || nextLoc.Key == CurrentSceneName)
+            if (nextLoc.Value == "default")
+            {
+                PresentNewFrame(CurrentScene.Default);
+            }
+            else if(string.IsNullOrEmpty(nextLoc.Key) || nextLoc.Key == "this" || nextLoc.Key == CurrentSceneName)
             {
                 PresentNewFrame(nextLoc.Value);
             }
             else if(nextLoc.Key == "meta")
             {
                 //probably the only one carried over from Garlic Gang or Katana
-                if(nextLoc.Value == "return")
+                if (nextLoc.Value == "return")
                 {
                     CloseDialogue();
-                }
+                }                
             }
             else if (nextLoc.Key == "shop")
             {
@@ -290,6 +404,9 @@ namespace CommonCore.RpgGame.Dialogue
         {
             CurrentDialogue = null;
             LockPauseModule.UnpauseGame(this.gameObject);
+            AudioPlayer.Instance.ClearMusic(MusicSlot.Cinematic);
+            if (CameraController)
+                Destroy(CameraController.gameObject);
             Destroy(this.gameObject);
             if(CurrentCallback != null)
             {

@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using CommonCore.Console;
 using CommonCore.DebugLog;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using UnityEngine;
 
 namespace CommonCore.RpgGame.Dialogue
 {
@@ -27,6 +28,8 @@ namespace CommonCore.RpgGame.Dialogue
             if (CoreParams.LoadPolicy != DataLoadPolicy.OnStart)
                 return;
 
+            int dialoguesLoaded = 0, monologuesLoaded = 0;
+
             TextAsset[] tas = CoreUtils.LoadResources<TextAsset>("Data/Dialogue/");
             foreach(var ta in tas)
             {
@@ -34,6 +37,7 @@ namespace CommonCore.RpgGame.Dialogue
                 {
                     LoadedDialogues.Add(ta.name, DialogueParser.LoadDialogueFromString(ta.name, ta.text));
                     CDebug.LogEx("Loaded dialogue " + ta.name, LogLevel.Verbose, this);
+                    dialoguesLoaded++;
                 }
                 catch(Exception e)
                 {
@@ -48,12 +52,15 @@ namespace CommonCore.RpgGame.Dialogue
                 {
                     LoadedMonologues.Add(ta.name, MonologueParser.LoadMonologueFromString(ta.text));
                     CDebug.LogEx("Loaded monologue " + ta.name, LogLevel.Verbose, this);
+                    monologuesLoaded++;
                 }
                 catch (Exception e)
                 {
                     Debug.LogException(e);
                 }
             }
+
+            Log($"Loaded {dialoguesLoaded} dialogues, {monologuesLoaded} monologues");
         }
 
         public override void Dispose()
@@ -85,6 +92,24 @@ namespace CommonCore.RpgGame.Dialogue
                 CDebug.LogEx("Loaded new monologue " + name, LogLevel.Verbose, Instance);
             }
             return m;
+        }
+
+        [Command(alias = "ListAll", className = "Dialogue")]
+        static void ListAllDialogues()
+        {
+            StringBuilder sb = new StringBuilder(Instance.LoadedDialogues.Count * 80);
+            foreach (var dialogue in Instance.LoadedDialogues.Keys)
+                sb.AppendLine(dialogue);
+            ConsoleModule.WriteLine(sb.ToString());
+        }
+
+        [Command(alias = "ListAll", className = "Monologue")]
+        static void ListAllMonologues()
+        {
+            StringBuilder sb = new StringBuilder(Instance.LoadedMonologues.Count * 80);
+            foreach (var monologue in Instance.LoadedMonologues.Keys)
+                sb.AppendLine(monologue);
+            ConsoleModule.WriteLine(sb.ToString());
         }
     }
 }

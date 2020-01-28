@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 54763315965625148}
   - component: {fileID: 96890533346820580}
   - component: {fileID: 114341172810088532}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -220,9 +220,11 @@ MonoBehaviour:
   HitInfo:
     Damage: 0
     DamagePierce: 0
-    DType: 0
+    DamageType: 0
     HitLocation: 0
+    HitMaterial: 0
     Originator: {fileID: 0}
     HitPuff: 
   StayTime: 30
   MaxDist: 10000
+  FiredByPlayer: 0

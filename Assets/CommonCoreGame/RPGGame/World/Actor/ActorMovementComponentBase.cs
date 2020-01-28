@@ -1,4 +1,4 @@
-﻿using System;
+﻿using CommonCore.Config;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -61,6 +61,21 @@ namespace CommonCore.RpgGame.World
         /// How far away the actor is to the target
         /// </summary>
         public virtual float DistToTarget => (MovementTarget - transform.position).magnitude;
+
+        /// <summary>
+        /// Handles the actor dying
+        /// </summary>
+        public virtual void HandleDeath() { }
+
+        /// <summary>
+        /// Handles a difficulty change (if necessary)
+        /// </summary>
+        public virtual void HandleDifficultyChanged() { }
+
+        /// <summary>
+        /// The speed factor from the difficulty selection
+        /// </summary>
+        protected float DifficultySpeedFactor => ConfigState.Instance.GetGameplayConfig().Difficulty.ActorAggression;
 
     }
 }

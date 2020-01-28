@@ -34,6 +34,7 @@ namespace CommonCore.RpgGame.World
         public Transform CameraRoot;
         public GameObject ModelRoot;        
         public Transform TargetPoint;
+        public PlayerCameraZoomComponent CameraZoomComponent;
         private QdmsMessageInterface MessageInterface;
 
         [Header("Sounds")]
@@ -84,6 +85,11 @@ namespace CommonCore.RpgGame.World
                 WeaponComponent = GetComponentInChildren<PlayerWeaponComponent>();
             }
 
+            if(!CameraZoomComponent)
+            {
+                CameraZoomComponent = GetComponentInChildren<PlayerCameraZoomComponent>(true);
+            }
+
             if(!HUDScript)
             {
                 HUDScript = (RpgHUDController)BaseHUDController.Current; //I would not recommend this cast
@@ -91,7 +97,7 @@ namespace CommonCore.RpgGame.World
             
             if(!HUDScript && AutoinitHud)
             {
-                Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/DefaultWorldHUD"));
+                Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/DefaultWorldHUD"), CoreUtils.GetUIRoot());
                 if (EventSystem.current == null)
                     Instantiate(CoreUtils.LoadResource<GameObject>("UI/DefaultEventSystem"));
 
@@ -120,6 +126,7 @@ namespace CommonCore.RpgGame.World
                 Debug.Log("You died!");
                 PlayerInControl = false;
                 MessageInterface.PushToBus(new QdmsFlagMessage("PlayerDead"));
+                WeaponComponent.Ref()?.RequestHideWeapon();
                 DeathSound.Ref()?.Play();
             }
 
@@ -170,8 +177,8 @@ namespace CommonCore.RpgGame.World
 
         private void SetInitialViewModels()
         {
-            WeaponComponent.HandleWeaponChange(EquipSlot.LeftWeapon);
-            WeaponComponent.HandleWeaponChange(EquipSlot.RightWeapon);
+            WeaponComponent.HandleWeaponChange(EquipSlot.LeftWeapon, true);
+            WeaponComponent.HandleWeaponChange(EquipSlot.RightWeapon, true);
         }
 
         private void HandleMessages()
@@ -195,11 +202,11 @@ namespace CommonCore.RpgGame.World
                                 
                             if(kvm != null && kvm.HasValue<EquipSlot>("Slot"))
                             {
-                                WeaponComponent.HandleWeaponChange(kvm.GetValue<EquipSlot>("Slot"));
+                                WeaponComponent.HandleWeaponChange(kvm.GetValue<EquipSlot>("Slot"), false);
                             }
                             else
                             {
-                                WeaponComponent.HandleWeaponChange(EquipSlot.None);
+                                WeaponComponent.HandleWeaponChange(EquipSlot.None, false);
                             }
                                 
                         }                        
@@ -368,16 +375,17 @@ namespace CommonCore.RpgGame.World
             CharacterModel playerModel = GameState.Instance.PlayerRpgState;
 
             //damage model is very stupid right now, we will make it better later
-            float dt = playerModel.DerivedStats.DamageThreshold[(int)data.DamageType];
-            float dr = playerModel.DerivedStats.DamageResistance[(int)data.DamageType];
-            float damageTaken = RpgWorldUtils.CalculateDamage(data.Damage, data.DamagePierce, dt, dr);
+            var (dt, dr) = playerModel.GetDamageThresholdAndResistance(data.DamageType);
+            float damageTaken = RpgValues.DamageTaken(data.Damage, data.DamagePierce, dt, dr);
 
             if (data.HitLocation == (int)ActorBodyPart.Head)
                 damageTaken *= 2.0f;
             else if (data.HitLocation == (int)ActorBodyPart.LeftArm || data.HitLocation == (int)ActorBodyPart.LeftLeg || data.HitLocation == (int)ActorBodyPart.RightArm || data.HitLocation == (int)ActorBodyPart.RightLeg)
                 damageTaken *= 0.75f;
 
-            if(damageTaken > 0)
+            damageTaken *= (1f / ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerEndurance);
+
+            if (damageTaken > 0)
             {
                 if (PainSound != null && !PainSound.isPlaying)
                     PainSound.Play();

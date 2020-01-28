@@ -28,6 +28,8 @@ namespace CommonCore.StringSub
                     return CoreParams.GameFolderPath;
                 case "%PersistentData%":
                     return CoreParams.PersistentDataPath;
+                case "%LocalData%":
+                    return CoreParams.LocalDataPath;
                 case "%StreamingAssets%":
                     return CoreParams.StreamingAssetsPath;
                 case "%Screenshots%":

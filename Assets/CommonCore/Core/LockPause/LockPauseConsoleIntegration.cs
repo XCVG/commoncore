@@ -15,6 +15,12 @@ namespace CommonCore.LockPause
             ForceClearLocks();
         }
 
+        [Command(alias = "CleanLocks", useClassName = false)]
+        public static void ForceCleanAll()
+        {
+            ForceCleanLocks();
+        }
+
         [Command(alias = "ListLocks", useClassName = false)]
         public static void ListLocks()
         {

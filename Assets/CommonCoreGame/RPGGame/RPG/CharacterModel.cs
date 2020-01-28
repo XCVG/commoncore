@@ -5,6 +5,8 @@ using UnityEngine;
 using Newtonsoft.Json;
 using CommonCore.Messaging;
 using CommonCore.UI;
+using CommonCore.Config;
+using System.Runtime.Serialization;
 
 namespace CommonCore.RpgGame.Rpg
 { 
@@ -19,6 +21,7 @@ namespace CommonCore.RpgGame.Rpg
 
         public Sex Gender { get; set; }
 
+        [JsonIgnore]
         public float Energy
         {
             get
@@ -31,8 +34,12 @@ namespace CommonCore.RpgGame.Rpg
             }
         }
 
+        [JsonProperty(PropertyName = "Energy")] //we want to serialize this (mostly for debugging) but don't want to load it
+        private float EnergyJsonSavable => Energy;
+
         public float EnergyFraction { get; set; }
 
+        [JsonIgnore]
         public float Health
         {
             get
@@ -45,20 +52,25 @@ namespace CommonCore.RpgGame.Rpg
             }
         }
 
+        [JsonProperty(PropertyName = "Health")]
+        private float HealthJsonSavable => Health;
+
         public float HealthFraction { get; set; }
         public int Experience { get; set; }
         public int Level { get; set; }
 
 
         public StatsSet BaseStats { get; private set; }
-
+        [JsonIgnore]
         public StatsSet DerivedStats { get; private set; }
+        [JsonProperty(PropertyName = "DerivedStats")]
+        private StatsSet DerivedStatsSavable => DerivedStats;
 
         public List<Condition> Conditions { get; private set; }
 
         
         public InventoryModel Inventory { get; private set; }
-        public Dictionary<EquipSlot, int> AmmoInMagazine { get; set; } //TODO duplicate this so we can have two weapons with different magazines
+        public Dictionary<EquipSlot, int> AmmoInMagazine { get; set; } 
         public Dictionary<EquipSlot, InventoryItemInstance> Equipped { get; private set; }
 
         public CharacterModel() //TODO with a model base parameter
@@ -73,16 +85,22 @@ namespace CommonCore.RpgGame.Rpg
 
             //create blank stats and derive stats
             BaseStats = new StatsSet();
-            UpdateStats();
+            RecalculateStats();
         }
 
-        public void UpdateStats() //TODO link this into messaging at some point
+        [OnDeserialized]
+        private void HandleOnDeserialized(StreamingContext context)
+        {
+            RecalculateStats(); //recalculate derived stats on load
+        }
+
+        private void RecalculateStats()
         {
             //copy base stats
             DerivedStats = new StatsSet(BaseStats);
 
             //apply conditions
-            foreach(Condition c in Conditions)
+            foreach (Condition c in Conditions)
             {
                 c.Apply(BaseStats, DerivedStats);
             }
@@ -91,14 +109,14 @@ namespace CommonCore.RpgGame.Rpg
             if (Equipped.ContainsKey(EquipSlot.Body))
             {
                 ArmorItemModel aim = Equipped[EquipSlot.Body].ItemModel as ArmorItemModel;
-                if(aim != null)
+                if (aim != null)
                 {
-                    for(int i = 0; i < BaseStats.DamageResistance.Length; i++)
+                    foreach(var key in BaseStats.DamageResistance.Keys)
                     {
-                        if (aim.DamageResistance.ContainsKey((DamageType)i))
-                            DerivedStats.DamageResistance[i] = BaseStats.DamageResistance[i] + aim.DamageResistance[(DamageType)i];
-                        if (aim.DamageThreshold.ContainsKey((DamageType)i))
-                            DerivedStats.DamageThreshold[i] = BaseStats.DamageThreshold[i] + aim.DamageThreshold[(DamageType)i];
+                        if (aim.DamageResistance.ContainsKey((DamageType)key))
+                            DerivedStats.DamageResistance[key] = BaseStats.DamageResistance[key] + aim.DamageResistance[(DamageType)key];
+                        if (aim.DamageThreshold.ContainsKey((DamageType)key))
+                            DerivedStats.DamageThreshold[key] = BaseStats.DamageThreshold[key] + aim.DamageThreshold[(DamageType)key];
                     }
                 }
                 else
@@ -108,12 +126,17 @@ namespace CommonCore.RpgGame.Rpg
             }
 
             //apply derived skills
-            if(GameParams.UseDerivedSkills)
+            if (GameParams.UseDerivedSkills)
                 RpgValues.SkillsFromStats(BaseStats, DerivedStats);
 
             //recalculate max health and energy
             DerivedStats.MaxHealth = RpgValues.MaxHealthForLevel(Level);
             DerivedStats.MaxEnergy = RpgValues.MaxEnergy(this);
+        }
+
+        public void UpdateStats()
+        {
+            RecalculateStats();
 
             QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgStatsUpdated"));
 
@@ -135,7 +158,7 @@ namespace CommonCore.RpgGame.Rpg
                 throw new InvalidOperationException();
 
             //unequip what was in the slot
-            if (Equipped.ContainsKey(slot))
+            if (IsEquipped(slot))
                 UnequipItem(Equipped[slot], false);
 
             //if it's a two-handed weapon, also unequip the other slot
@@ -145,9 +168,9 @@ namespace CommonCore.RpgGame.Rpg
             Equipped[slot] = item;
 
             //magazine logic
-            if (item.ItemModel is RangedWeaponItemModel)
+            if (item.ItemModel is RangedWeaponItemModel rwim && rwim.UseMagazine)
             {
-                var rwim = (RangedWeaponItemModel)item.ItemModel;
+                //var rwim = (RangedWeaponItemModel)item.ItemModel;
                 AmmoInMagazine[slot] = Math.Min(rwim.MagazineSize, Inventory.CountItem(rwim.AType.ToString()));
                 Inventory.RemoveItem(rwim.AType.ToString(), AmmoInMagazine[slot]);
             }
@@ -178,9 +201,8 @@ namespace CommonCore.RpgGame.Rpg
             //allow continuing even if it's not actually equippable, for fixing bugs
 
             //magazine logic
-            if(item.ItemModel is RangedWeaponItemModel)
+            if(item.ItemModel is RangedWeaponItemModel rwim && rwim.UseMagazine)
             {
-                var rwim = (RangedWeaponItemModel)item.ItemModel;
                 Inventory.AddItem(rwim.AType.ToString(), AmmoInMagazine[slot]);
                 AmmoInMagazine[slot] = 0;
             }
@@ -189,7 +211,8 @@ namespace CommonCore.RpgGame.Rpg
 
             UpdateStats();
 
-            QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgChangeWeapon", "Slot", slot));
+            if(postMessage)
+                QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgChangeWeapon", "Slot", slot));
         }
 
         public void SetAV(string av, object value)
@@ -395,6 +418,17 @@ namespace CommonCore.RpgGame.Rpg
             throw new KeyNotFoundException();
         }
 
+        public (float damageThreshold, float damageResistance) GetDamageThresholdAndResistance(int damageType)
+        {
+            if (DerivedStats == null || !Enum.IsDefined(typeof(DamageType), damageType)) //this is the boundary where we go from CommonCore.World damagetype-is-int to game-specific damagetype
+                return (0, 0);
+
+            float dt = DerivedStats.DamageThreshold.GetOrDefault((DamageType)damageType, 0f);
+            float dr = DerivedStats.DamageResistance.GetOrDefault((DamageType)damageType, 0f);
+            
+            return (dt, dr);
+        }
+
         public bool IsEquipped(EquipSlot slot)
         {
             return (Equipped.ContainsKey(slot) && Equipped[slot] != null);
@@ -407,6 +441,15 @@ namespace CommonCore.RpgGame.Rpg
                 QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgLevelUp"));
                 QdmsMessageBus.Instance.PushBroadcast(new HUDPushMessage("<l:IGUI_MESSAGE:LevelUp>"));
             }
+        }
+
+        /// <summary>
+        /// Grants experience, scaled by difficulty parameter
+        /// </summary>
+        /// <param name="xp"></param>
+        public void GrantXPScaled(int xp)
+        {
+            Experience += Mathf.RoundToInt(xp * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerExperience);
         }
 
         

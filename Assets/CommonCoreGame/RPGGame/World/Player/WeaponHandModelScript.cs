@@ -10,6 +10,7 @@ namespace CommonCore.RpgGame.World
         [Header("Components")]
         public GameObject HandsObject;
         public Animator HandsAnimator;
+        public Transform HandBonePoint;
 
         private void Start()
         {
@@ -21,7 +22,7 @@ namespace CommonCore.RpgGame.World
             HandsObject.SetActive(visible);
         }
 
-        public void SetState(ViewModelState newState, WeaponViewModelScript weapon, ViewModelHandednessState handednessState) //TODO extend this for 2hand/1hand/ADS
+        public void SetState(ViewModelState newState, WeaponViewModelScript weapon, ViewModelHandednessState handednessState, float timeScale) //TODO extend this for 2hand/1hand/ADS
         {
             string stateName = null;
             float stateDuration = -1; //sentinel value for "use animation value"
@@ -34,14 +35,11 @@ namespace CommonCore.RpgGame.World
                 stateName = GetAnimForState(newState, handednessState);
             }
 
-            //TODO handling 1hand fully (prepending L/R, etc)
-
-            
             HandsAnimator.Play(stateName);
             if (stateDuration > 0)
-                HandsAnimator.speed = 1f / stateDuration; //we assume animations have a duration of 1 second... TODO make it actually scale considering animation length
+                HandsAnimator.speed = (1f / stateDuration) * (1f / timeScale); //we assume animations have a duration of 1 second... TODO make it actually scale considering animation length
             else
-                HandsAnimator.speed = 1;
+                HandsAnimator.speed = 1 * (1f / timeScale);
 
         }
 
@@ -54,6 +52,8 @@ namespace CommonCore.RpgGame.World
 
             return state.ToString(); //for now
         }
+
+        public (Vector3 position, Quaternion rotation) HandBoneTransform => (HandBonePoint.position, HandBonePoint.rotation);
 
     }
 }

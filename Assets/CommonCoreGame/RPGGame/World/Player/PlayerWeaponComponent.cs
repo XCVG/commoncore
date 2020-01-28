@@ -20,15 +20,25 @@ namespace CommonCore.RpgGame.World
         public Transform CenterViewModelPoint;
         public Transform RightViewModelPoint;
         public Transform WeaponBobNode;
-        public Transform ShootPoint;
+        public Transform ShootPointNear;
+        public Transform ShootPointFar;
 
         [SerializeField, Header("Hands")]
         private WeaponHandModelScript Hands;
+        public WeaponHandModelScript HandModel => Hands;
+
 
         [SerializeField, Header("Recoil Shake")]
         private WeaponViewShakeScript ViewShakeScript;
         [SerializeField]
         private float RecoilFireVecFactor = 0.2f;
+
+        [SerializeField, Header("Fallback Weapon")]
+        private WeaponViewModelScript FallbackViewModel = null;
+        [SerializeField]
+        private string FallbackItemModel = string.Empty;
+
+        private MeleeWeaponItemModel FallbackWeapon => InventoryModel.GetModel(FallbackItemModel) as MeleeWeaponItemModel;
 
         [SerializeField, Header("Offhand Kick")] //TODO ought to move this into another component
         private Animator OffhandKickAnimator = null;
@@ -44,26 +54,32 @@ namespace CommonCore.RpgGame.World
         private float OffhandKickForce = 1000f;
         [SerializeField]
         private AudioSource OffhandKickSound = null;
+        [SerializeField]
+        private string OffhandKickPuff;      
 
         [Header("Params")]
-        public float MeleeProbeDist = 1.5f;
-        
+        public float MeleeProbeDist = 3.0f;
+        public float MeleeBoxCastSize = 0.5f;
+        public float ADSZoomFadeTime = 0.2f;
+
+        [Header("Autoaim Options")]
+        public float AutoaimWeakCastSize = 0.25f;
+        public float AutoaimStrongCastSize = 1.0f;
+        public float AutoaimCastRange = 100f;
 
         public WeaponViewModelScript LeftViewModel { get; private set; }
         public WeaponViewModelScript RightViewModel { get; private set; }
+
         private float TimeToNext;
         private bool IsReloading;
         public bool IsADS { get; private set; }
 
-        //serialized for debug only
-        [SerializeField]
         private float AccumulatedSpread;
-        [SerializeField]
         private float AccumulatedRecoil;
-        [SerializeField]
         private bool DidJustFire;
-        [SerializeField]
         private bool PendingADSExit;
+        private WeaponTransitionState TransitionState;
+        private float OldWeaponLowerTime; //need to save this because we lose the item model before transition
 
         //offhand kick
         private float TimeToNextKick;
@@ -72,9 +88,10 @@ namespace CommonCore.RpgGame.World
         //we need to add that offhand kick BTW
 
         //WIP ADS state
-        //TODO movebob
+        //WIP movebob
         //TODO more
         //TODO weapon raise/lower handling
+
 
         private bool IsDualWielded => throw new NotImplementedException(); //TODO implement this
 
@@ -129,6 +146,15 @@ namespace CommonCore.RpgGame.World
                 PendingADSExit = true;
         }
 
+        /// <summary>
+        /// Requests that the weapon be hidden at the next available opportunity
+        /// </summary>
+        public void RequestHideWeapon()
+        {
+            //this thunk should just work
+            SetVisibility(false);
+        }
+
         //copied from PlayerController
 
         /// <summary>
@@ -139,19 +165,34 @@ namespace CommonCore.RpgGame.World
             if (DidJustFire || TimeToNext > 0)
                 return;
 
+            if (!GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.RightWeapon))
+                return;
+
             var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon]?.ItemModel;
             if(rightWeaponModel != null && rightWeaponModel is RangedWeaponItemModel rwim)
             {
+                float decayMoveFactor = 1.0f;
+                if(PlayerController.MovementComponent.IsMoving)
+                {
+                    decayMoveFactor = rwim.MovementRecoveryFactor;
+                    if (rwim.CheckFlag(ItemFlag.WeaponProportionalMovement) && PlayerController.MovementComponent.IsRunning)
+                        decayMoveFactor /= 2f;
+                    if (PlayerController.MovementComponent.IsCrouching)
+                        decayMoveFactor *= rwim.CrouchRecoveryFactor;
+                }
+
+                float decayRpgFactor = RpgValues.GetWeaponRecoveryFactor(GameState.Instance.PlayerRpgState, rwim);
+
                 if(AccumulatedRecoil > 0)
                 {
                     RangeEnvelope recoilEnvelope = IsADS ? rwim.ADSRecoil : rwim.Recoil;
-                    AccumulatedRecoil = Mathf.Max(recoilEnvelope.Min, AccumulatedRecoil - (recoilEnvelope.Decay * Time.deltaTime));
+                    AccumulatedRecoil = Mathf.Max(recoilEnvelope.Min, AccumulatedRecoil - (recoilEnvelope.Decay * decayMoveFactor * decayRpgFactor * Time.deltaTime));
                 }
 
                 if(AccumulatedSpread > 0)
                 {
                     RangeEnvelope spreadEnvelope = IsADS ? rwim.ADSSpread : rwim.Spread;
-                    AccumulatedSpread = Mathf.Max(spreadEnvelope.Min, AccumulatedSpread - (spreadEnvelope.Decay * Time.deltaTime));
+                    AccumulatedSpread = Mathf.Max(spreadEnvelope.Min, AccumulatedSpread - (spreadEnvelope.Decay * decayMoveFactor * decayRpgFactor * Time.deltaTime));
                 }
             }
         }
@@ -198,116 +239,169 @@ namespace CommonCore.RpgGame.World
             if (TimeToNext > 0)
                 return;
 
-            //TODO reset reload time on weapon change, probably going to need to add messaging for that
+            //handle weapon lower and raise
+            if(TransitionState != WeaponTransitionState.None)
+            {
+                //Debug.Log("hit transition state handling");
 
-            if (oldTTN > 0)
+                if(TransitionState == WeaponTransitionState.Lowering)
+                {                    
+                    if(GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.RightWeapon))
+                    {
+                        //swap the viewmodel, begin animation
+                        ClearViewModel(EquipSlot.RightWeapon);
+                        SetViewModel(EquipSlot.RightWeapon);
+
+                        var wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel as WeaponItemModel;
+                                                
+                        if (RightViewModel != null)
+                        {
+                            RightViewModel.SetState(ViewModelState.Raise, ViewModelHandednessState.TwoHanded, 1);
+                            Hands.SetState(ViewModelState.Raise, RightViewModel, ViewModelHandednessState.TwoHanded, 1);
+                        }
+                        else
+                        {
+                            Hands.SetState(ViewModelState.Idle, null, ViewModelHandednessState.TwoHanded, 1);
+                        }
+                        TransitionState = WeaponTransitionState.Raising;
+                        TimeToNext = wim.RaiseTime;
+                    }
+                    else
+                    {
+                        ClearViewModel(EquipSlot.RightWeapon);
+
+                        if (FallbackWeapon != null && FallbackViewModel != null)
+                        {
+                            TransitionState = WeaponTransitionState.Raising; //raise your fists!
+                            Hands.SetState(ViewModelState.Raise, FallbackViewModel, ViewModelHandednessState.TwoHanded, 1);
+                            TimeToNext = FallbackWeapon.RaiseTime;
+                        }
+                    }                 
+
+                    return;
+                }
+                else if(TransitionState == WeaponTransitionState.Raising)
+                {
+                    //raising done, switch to idle
+                    if (GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.RightWeapon))
+                    {
+                        if (RightViewModel != null)
+                        {
+                            RightViewModel.SetState(ViewModelState.Idle, ViewModelHandednessState.TwoHanded, 1);
+                            Hands.SetState(ViewModelState.Idle, RightViewModel, ViewModelHandednessState.TwoHanded, 1);
+                        }
+                        else
+                            Hands.SetState(ViewModelState.Idle, null, ViewModelHandednessState.TwoHanded, 1);
+
+                        OldWeaponLowerTime = ((WeaponItemModel)GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel).LowerTime;
+                    }
+                    else
+                    {
+                        if(FallbackViewModel != null)
+                            Hands.SetState(ViewModelState.Idle, FallbackViewModel, ViewModelHandednessState.TwoHanded, 1);
+
+                        OldWeaponLowerTime = FallbackWeapon?.LowerTime ?? 0;
+                    }
+                    TransitionState = WeaponTransitionState.None;
+                    return;
+                }
+                else
+                {
+                    Debug.LogWarning($"Invalid transition state \"{TransitionState.ToString()}\"");
+                    TransitionState = WeaponTransitionState.None;
+                    return;
+                }
+            }
+
+            if (IsReloading)
+            {
+                FinishReload();
+                TryRefire();
+            }
+
+            //refire and return-to-idle handling
+            if (oldTTN > 0 && TransitionState == WeaponTransitionState.None)
             {
                 QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepReady"));
 
                 //TODO handle 1H/2H(?), default
 
-                if (RightViewModel != null && TryRefire()) //it'll break on dual-wielding
+                //note that TryRefire will actually fire the weapon if it succeeds
+                if (RightViewModel != null && TryRefire())
                 {
-
+                    return;
                 }
                 else
                 {
                     if (RightViewModel != null)
-                        RightViewModel.SetState(ViewModelState.Idle, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded);
-                    else if (LeftViewModel != null)
-                        LeftViewModel.SetState(ViewModelState.Idle, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded);
+                        RightViewModel.SetState(ViewModelState.Idle, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded, 1);
+                    //else if (LeftViewModel != null)
+                    //    LeftViewModel.SetState(ViewModelState.Idle, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded, 1);
+                    else if (FallbackViewModel != null && !GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.LeftWeapon))
+                        Hands.SetState(ViewModelState.Idle, FallbackViewModel, ViewModelHandednessState.TwoHanded, 1);
                     else if (Hands != null)
-                        Hands.SetState(ViewModelState.Idle, null, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded);
+                        Hands.SetState(ViewModelState.Idle, null, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded, 1);
                 }
             }
 
 
-            if (IsReloading)
-            {
-                FinishReload();
-            }
-
-            //Logic: 
-            // -if there is only one weapon equipped, that weapon uses primary fire
-            // -if one weapon is ranged and the other melee, the ranged is primary fire
-            // -if both weapons are ranged or both melee, primary is the left weapon and secondary the right weapon
-            //TBH this code is PFA
             if (PlayerController.AttackEnabled)
             {
+                bool rightEquipped = GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.RightWeapon);
+                bool leftEquipped = GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.LeftWeapon);
+
+                WeaponItemModel weaponModel = GameState.Instance.PlayerRpgState.Equipped.GetOrDefault(EquipSlot.RightWeapon, null)?.ItemModel as WeaponItemModel;
+
                 if (MappedInput.GetButtonDown(DefaultControls.Fire))
                 {
-                    bool leftEquipped = GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.LeftWeapon);
-                    bool rightEquipped = GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.RightWeapon);
-                    if (leftEquipped && rightEquipped)
-                    {
-                        var leftWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.LeftWeapon].ItemModel;
-                        var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel;
-
-                        //if only one weapon is ranged, fire that one
-                        if (leftWeaponModel is RangedWeaponItemModel && !(rightWeaponModel is RangedWeaponItemModel))
-                            DoRangedAttack(EquipSlot.LeftWeapon);
-                        else if (rightWeaponModel is RangedWeaponItemModel && !(leftWeaponModel is RangedWeaponItemModel))
-                            DoRangedAttack(EquipSlot.RightWeapon);
-                        //otherwise, fire the left weapon
-                        else
-                        {
-                            if (leftWeaponModel is RangedWeaponItemModel)
-                                DoRangedAttack(EquipSlot.LeftWeapon);
-                            else
-                                DoMeleeAttack(EquipSlot.LeftWeapon);
-                        }
-
-                    }
-                    else if (leftEquipped)
-                    {
-                        //fire left weapon
-                        var weaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.LeftWeapon].ItemModel;
-                        if (weaponModel is RangedWeaponItemModel)
-                            DoRangedAttack(EquipSlot.LeftWeapon);
-                        else
-                            DoMeleeAttack(EquipSlot.LeftWeapon);
-                    }
-                    else if (rightEquipped)
+                    //-if left weapon equipped, fire that weapon, otherwise,
+                    //-if fallback weapon exists, fire that weapon
+                                       
+                    if (rightEquipped)
                     {
                         //fire right weapon
-                        var weaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel;
                         if (weaponModel is RangedWeaponItemModel)
                             DoRangedAttack(EquipSlot.RightWeapon);
                         else
                             DoMeleeAttack(EquipSlot.RightWeapon);
+                    }
+                    else if(!string.IsNullOrEmpty(FallbackItemModel))
+                    {
+                        if(FallbackWeapon != null)
+                        {
+                            DoMeleeAttack(EquipSlot.None);
+                        }
+                        //else nop, no fallback defined
+                    }
+                }
+                else if (MappedInput.GetButtonDown(DefaultControls.Reload))
+                {
+                    DoReload();
+                }
+                else if(ConfigState.Instance.GetGameplayConfig().HoldAds && weaponModel != null && weaponModel.CheckFlag(ItemFlag.WeaponHasADS))
+                {
+                    //handle ADS (hold variant)
+                    if(!PendingADSExit && !IsReloading)
+                    {
+                        bool adsButtonHeld = MappedInput.GetButton(DefaultControls.AltFire);
+                        if(adsButtonHeld && !IsADS && !PlayerController.MovementComponent.IsRunning)
+                        {
+                            ToggleADS(); //enter ADS
+                        }
+                        else if(!adsButtonHeld && IsADS)
+                        {
+                            ToggleADS(); //exit ADS
+                        }
                     }
                 }
                 else if (MappedInput.GetButtonDown(DefaultControls.AltFire))
                 {
-                    bool leftEquipped = GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.LeftWeapon);
-                    bool rightEquipped = GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.RightWeapon);
-                    if (leftEquipped && rightEquipped)
-                    {
-                        var leftWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.LeftWeapon].ItemModel;
-                        var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel;
-
-                        //if only one weapon is ranged, fire the other one
-                        if (leftWeaponModel is RangedWeaponItemModel && !(rightWeaponModel is RangedWeaponItemModel))
-                            DoMeleeAttack(EquipSlot.RightWeapon);
-                        else if (rightWeaponModel is RangedWeaponItemModel && !(leftWeaponModel is RangedWeaponItemModel))
-                            DoMeleeAttack(EquipSlot.LeftWeapon);
-                        //otherwise, fire the right weapon
-                        else
-                        {
-                            if (rightWeaponModel is RangedWeaponItemModel)
-                                DoRangedAttack(EquipSlot.RightWeapon);
-                            else
-                                DoMeleeAttack(EquipSlot.RightWeapon);
-                        }
-                    }
-                    else if(!PendingADSExit && !PlayerController.MovementComponent.IsRunning)
-                    {
-                        //WIP handle ADS
-                        if(leftEquipped)
-                        {
-                            Debug.LogWarning("Trying to enter ADS with only a left weapon equipped!");
-                        }
-                        else if(rightEquipped)
+                    //handle ADS
+                    //TODO eventually altfire
+                    
+                    if(!PendingADSExit && !PlayerController.MovementComponent.IsRunning)
+                    {                        
+                        if(rightEquipped)
                         {
                             var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel;
                             if (rightWeaponModel.CheckFlag(ItemFlag.WeaponHasADS))
@@ -315,14 +409,9 @@ namespace CommonCore.RpgGame.World
                                 ToggleADS();
                             }
                         }
-                    }
-
-                    //TODO eventually altfire
+                    }                    
                 }
-                else if (MappedInput.GetButtonDown(DefaultControls.Reload))
-                {
-                    DoReload();
-                }
+                
 
             }
 
@@ -346,7 +435,7 @@ namespace CommonCore.RpgGame.World
 
         private bool TryRefire()
         {
-            //I think there might be something wrong with this
+            //Debug.Log("TryRefire");
 
             var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel;
             
@@ -356,7 +445,11 @@ namespace CommonCore.RpgGame.World
                 //ammo logic
                 if (rightWeaponModel is RangedWeaponItemModel rwim && rwim.AType != AmmoType.NoAmmo)
                 {
-                    if (GameState.Instance.PlayerRpgState.AmmoInMagazine[EquipSlot.RightWeapon] <= 0)
+                    if (rwim.UseMagazine && GameState.Instance.PlayerRpgState.AmmoInMagazine[EquipSlot.RightWeapon] <= 0)
+                    {
+                        return false;
+                    }
+                    if (!rwim.UseMagazine && GameState.Instance.PlayerRpgState.Inventory.CountItem(rwim.AType.ToString()) < 1)
                     {
                         return false;
                     }
@@ -380,16 +473,18 @@ namespace CommonCore.RpgGame.World
 
                 if (RightViewModel is RangedWeaponViewModelScript rwvms && rwvms.HasADSExitAnim)
                 {
-                    RightViewModel.SetState(ViewModelState.Raise, ViewModelHandednessState.ADS);
-                    Hands.SetState(ViewModelState.Raise, RightViewModel, ViewModelHandednessState.ADS);
+                    RightViewModel.SetState(ViewModelState.Raise, ViewModelHandednessState.ADS, 1);
+                    Hands.SetState(ViewModelState.Raise, RightViewModel, ViewModelHandednessState.ADS, 1);
                 }
                 else
                 {
-                    RightViewModel.SetState(ViewModelState.Idle, ViewModelHandednessState.TwoHanded);
-                    Hands.SetState(ViewModelState.Idle, RightViewModel, ViewModelHandednessState.TwoHanded);
+                    RightViewModel.SetState(ViewModelState.Idle, ViewModelHandednessState.TwoHanded, 1);
+                    Hands.SetState(ViewModelState.Idle, RightViewModel, ViewModelHandednessState.TwoHanded, 1);
                 }
 
+                SetCameraZoom(1, ADSZoomFadeTime);
                 RescaleAccumulators(false);
+                HandleCrosshair();
             }
             else
             {
@@ -397,16 +492,22 @@ namespace CommonCore.RpgGame.World
 
                 if(RightViewModel is RangedWeaponViewModelScript rwvms && rwvms.HasADSEnterAnim)
                 {
-                    RightViewModel.SetState(ViewModelState.Raise, ViewModelHandednessState.ADS);
-                    Hands.SetState(ViewModelState.Raise, RightViewModel, ViewModelHandednessState.ADS);
+                    RightViewModel.SetState(ViewModelState.Raise, ViewModelHandednessState.ADS, 1);
+                    Hands.SetState(ViewModelState.Raise, RightViewModel, ViewModelHandednessState.ADS, 1);
                 }
                 else
                 {
-                    RightViewModel.SetState(ViewModelState.Idle, ViewModelHandednessState.ADS);
-                    Hands.SetState(ViewModelState.Idle, RightViewModel, ViewModelHandednessState.ADS);
+                    RightViewModel.SetState(ViewModelState.Idle, ViewModelHandednessState.ADS, 1);
+                    Hands.SetState(ViewModelState.Idle, RightViewModel, ViewModelHandednessState.ADS, 1);
+                }
+
+                if(GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.RightWeapon) && GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel is RangedWeaponItemModel rwim)
+                {
+                    SetCameraZoom(rwim.ADSZoomFactor, ADSZoomFadeTime);
                 }
 
                 RescaleAccumulators(true);
+                HandleCrosshair();
             }
 
         }
@@ -414,65 +515,107 @@ namespace CommonCore.RpgGame.World
         private void DoMeleeAttack(EquipSlot slot)
         {
 
-            Debug.Log($"MeleeAttack {slot}");
+            //Debug.Log($"MeleeAttack {slot}");
 
-            //punch
-            ITakeDamage ac = GetMeleeHit(ShootPoint, MeleeProbeDist);
+            MeleeWeaponItemModel wim = null;
 
-            if (slot != EquipSlot.LeftWeapon && slot != EquipSlot.RightWeapon)
-                throw new ArgumentException("slot must refer to a weapon", nameof(slot));
-
-            ActorHitInfo hitInfo = default;
-            if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(slot))
+            CharacterModel player = GameState.Instance.PlayerRpgState;
+            if (slot == EquipSlot.None)
             {
-                MeleeWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[slot].ItemModel as MeleeWeaponItemModel;
-                if (wim != null)
+                //attempt to get fallback weapon
+                wim = FallbackWeapon;
+                if(wim == null)
                 {
-                    TimeToNext = wim.Rate;
-                    float calcDamage = RpgValues.GetMeleeDamage(GameState.Instance.PlayerRpgState, wim.Damage);
-                    float calcDamagePierce = RpgValues.GetMeleeDamage(GameState.Instance.PlayerRpgState, wim.DamagePierce);
-                    if (GameState.Instance.PlayerRpgState.Energy <= 0)
-                    {
-                        calcDamage *= 0.5f;
-                        calcDamagePierce *= 0.5f;
-                        TimeToNext += wim.Rate;
-                    }
-                    else
-                        GameState.Instance.PlayerRpgState.Energy -= wim.EnergyCost;
-                    hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, (int)wim.DType, (int)ActorBodyPart.Unspecified, (int)DefaultHitMaterials.Unspecified, PlayerController);
-
+                    //we don't actually have a fallback weapon, nop out
+                    return;
                 }
-                else
-                {
-                    Debug.LogError($"Player can't do a melee attack because weapon in {slot.ToString()} is not a melee weapon!");
-                }
-                //TODO fists or something
+               
             }
             else
             {
-                Debug.LogError($"Player can't do a melee attack because no {slot.ToString()} is equipped!");
+                wim = player.Equipped.GetOrDefault(slot, null)?.ItemModel as MeleeWeaponItemModel;
             }
 
+            
 
-            if (ac != null)
-                ac.TakeDamage(hitInfo);
-
-            //TODO handle 1H/2H
-
-            if (slot == EquipSlot.RightWeapon && RightViewModel != null)
+            if (wim != null)
             {
-                RightViewModel.SetState(ViewModelState.Fire, ViewModelHandednessState.TwoHanded);
-                Hands.SetState(ViewModelState.Fire, RightViewModel, ViewModelHandednessState.TwoHanded);
-            }
-            else if (slot == EquipSlot.LeftWeapon && LeftViewModel != null)
-            {
-                LeftViewModel.SetState(ViewModelState.Fire, ViewModelHandednessState.TwoHanded);
-                Hands.SetState(ViewModelState.Fire, LeftViewModel, ViewModelHandednessState.TwoHanded);
-            }
-            //else if (MeleeEffect != null)
-            //    Instantiate(MeleeEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
+                float timeScale = 1;
+                ActorHitInfo hitInfo = default;
 
-            QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepFired"));
+                Transform shootPoint = wim.CheckFlag(ItemFlag.WeaponUseFarShootPoint) ? ShootPointFar : ShootPointNear;
+
+                //cast!
+                var (otherController, hitPoint, hitLocation, hitMaterial) = wim.CheckFlag(ItemFlag.MeleeWeaponUsePreciseCasting) ?
+                    WorldUtils.RaycastAttackHit(shootPoint.position, shootPoint.forward, MeleeProbeDist, true, true, PlayerController) :
+                    WorldUtils.SpherecastAttackHit(shootPoint.position, shootPoint.forward, MeleeBoxCastSize * 0.5f, MeleeProbeDist, true, false, PlayerController);
+                float distance = (hitPoint - shootPoint.position).magnitude;
+
+                //Debug.Log(distance);
+
+                //calculate all the RPG dice stuff
+                float energyUsed = wim.EnergyCost * RpgValues.GetWeaponEnergyCostFactor(player, wim);
+                float damageDifficultyFactor = ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerStrength;
+                float rateRpgFactor = RpgValues.GetWeaponRateFactor(player, wim);
+                if (!wim.CheckFlag(ItemFlag.WeaponUnscaledAnimations) && !wim.CheckFlag(ItemFlag.WeaponIgnoreLevelledRate))
+                    timeScale = rateRpgFactor;
+
+                TimeToNext = wim.Rate * (wim.CheckFlag(ItemFlag.WeaponIgnoreLevelledRate) ? 1f : rateRpgFactor);
+
+                //damage calculations that take into account alot of things (randomization, rpg calcs, difficulty)
+                bool useRandom = wim.DamageSpread > 0 && !wim.CheckFlag(ItemFlag.WeaponNeverRandomize);
+                float randomizedDamage = useRandom ? Mathf.Max(Mathf.Min(1, wim.Damage), wim.Damage + UnityEngine.Random.Range(-wim.DamageSpread, wim.DamageSpread)) : wim.Damage;
+                float calcDamage = RpgValues.GetWeaponDamageFactor(player, wim) * randomizedDamage * damageDifficultyFactor;
+                bool useRandomPierce = wim.DamagePierceSpread > 0 && !wim.CheckFlag(ItemFlag.WeaponNeverRandomize);
+                float randomizedPierce = useRandomPierce ? Mathf.Max(Mathf.Min(1, wim.DamagePierce), wim.DamagePierce + UnityEngine.Random.Range(-wim.DamagePierceSpread, wim.DamagePierceSpread)) : wim.DamagePierce;
+                float calcDamagePierce = RpgValues.GetWeaponDamageFactor(player, wim) * randomizedPierce * damageDifficultyFactor;
+
+                if (player.Energy <= energyUsed)
+                {
+                    player.Energy = 0;
+                    calcDamage *= 0.5f;
+                    calcDamagePierce *= 0.5f;
+                    TimeToNext += wim.Rate;
+                }
+                else
+                    player.Energy -= energyUsed;
+
+                if (distance <= wim.Reach)
+                {
+                    hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, (int)wim.DType, hitLocation, hitMaterial, PlayerController, wim.HitPuff, hitPoint);
+
+                    if (otherController is ITakeDamage itd)
+                    {
+                        HitPuffScript.SpawnHitPuff(hitInfo);
+                        itd.TakeDamage(hitInfo);
+                    }
+                }
+
+                if (slot == EquipSlot.RightWeapon && RightViewModel != null)
+                {
+                    RightViewModel.SetState(ViewModelState.Fire, ViewModelHandednessState.TwoHanded, timeScale);
+                    Hands.SetState(ViewModelState.Fire, RightViewModel, ViewModelHandednessState.TwoHanded, timeScale);
+                }
+                else if (slot == EquipSlot.LeftWeapon && LeftViewModel != null)
+                {
+                    //not supported
+                }
+                else if(slot == EquipSlot.None)
+                {
+                    //we can only reach here if we found and are using a fallback
+                    FallbackViewModel.Ref()?.SetState(ViewModelState.Fire, ViewModelHandednessState.TwoHanded, timeScale);
+                    Hands.SetState(ViewModelState.Fire, FallbackViewModel, ViewModelHandednessState.TwoHanded, timeScale);
+                }
+                //else if (MeleeEffect != null)
+                //    Instantiate(MeleeEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
+
+                QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepFired"));
+            }
+            else
+            {
+                Debug.LogError($"Player can't do a melee attack because weapon in {slot.ToString()} is not a melee weapon!");
+            }
+            
         }
 
         //this whole thing is a fucking mess that needs to be refactored
@@ -483,70 +626,116 @@ namespace CommonCore.RpgGame.World
 
             //Debug.Log($"RangedAttack {slot}");
 
-            //TODO default model for fallback instead of fixed values
+            CharacterModel player = GameState.Instance.PlayerRpgState;
 
-            if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(slot))
+            if (player.Equipped.ContainsKey(slot))
             {
 
-                RangedWeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[slot].ItemModel as RangedWeaponItemModel;
+                RangedWeaponItemModel wim = player.Equipped[slot].ItemModel as RangedWeaponItemModel;
                 if (wim != null)
                 {
                     bool useAmmo = !(wim.AType == AmmoType.NoAmmo);
-                    bool autoReload = wim.CheckFlag("AutoReload");
+                    bool autoReload = wim.CheckFlag(ItemFlag.WeaponAutoReload);
 
                     //ammo logic
+                    //TODO handle weapons that don't use magazine logic
                     if (useAmmo)
                     {
-                        if (GameState.Instance.PlayerRpgState.AmmoInMagazine[slot] == 0 && !IsReloading)
+                        if (wim.UseMagazine)
                         {
-                            //breaks anims for some reason
-                            DoReload();
-                            return;
-                        }
+                            if (player.AmmoInMagazine[slot] == 0 && !IsReloading)
+                            {
+                                //I think this one actually works okay
+                                DoReload();
+                                return;
+                            }
 
-                        GameState.Instance.PlayerRpgState.AmmoInMagazine[slot] -= 1;
+                            player.AmmoInMagazine[slot] -= 1;
+                        }
+                        else
+                        {
+                            if (player.Inventory.CountItem(wim.AType.ToString()) < 1)
+                                return;
+
+                            player.Inventory.RemoveItem(wim.AType.ToString(), 1);
+                        }
                     }
 
                     //bullet logic
                     GameObject bullet = null;
 
+                    Transform shootPoint = wim.CheckFlag(ItemFlag.WeaponUseFarShootPoint) ? ShootPointFar : ShootPointNear;
+
                     if (!string.IsNullOrEmpty(wim.Projectile))
                     {
-                        var wimBulletPrefab = CoreUtils.LoadResource<GameObject>("Effects/" + wim.Projectile);
-                        if (wimBulletPrefab != null)
-                            bullet = Instantiate<GameObject>(wimBulletPrefab, ShootPoint.position + (ShootPoint.forward.normalized * 0.25f), ShootPoint.rotation, transform.root);
-
+                        bullet = WorldUtils.SpawnEffect(wim.Projectile, shootPoint.position + (shootPoint.forward.normalized * 0.25f), shootPoint.rotation.eulerAngles, transform.root);
                     }
-
-                    /*
-                    if (bullet == null)
-                        bullet = Instantiate<GameObject>(BulletPrefab, ShootPoint.position + (ShootPoint.forward.normalized * 0.25f), ShootPoint.rotation, transform.root);
-                    */
 
                     var bulletRigidbody = bullet.GetComponent<Rigidbody>();
 
-                    //TODO factor in weapon skill, esp for bows
+                    var bulletScript = bullet.GetComponent<BulletScript>();
 
-                    bullet.GetComponent<BulletScript>().HitInfo = new ActorHitInfo(wim.Damage, wim.DamagePierce, (int)wim.DType, (int)ActorBodyPart.Unspecified, (int)DefaultHitMaterials.Unspecified, PlayerController, wim.HitPuff, null);
+                    float damageRpgFactor = RpgValues.GetWeaponDamageFactor(player, wim);
+                    float damageDifficultyFactor = ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerStrength;
+                    bool useRandomDamage = wim.DamageSpread > 0 && !wim.CheckFlag(ItemFlag.WeaponNeverRandomize);
+                    bool useRandomPierce = wim.DamagePierceSpread > 0 && !wim.CheckFlag(ItemFlag.WeaponNeverRandomize);
+                    float randomizedDamage = useRandomDamage ? Mathf.Max(Mathf.Min(1, wim.Damage), wim.Damage + UnityEngine.Random.Range(-wim.DamageSpread, wim.DamageSpread)) : wim.Damage;
+                    float randomizedPierce = useRandomPierce ? Mathf.Max(Mathf.Min(1, wim.DamagePierce), wim.DamagePierce + UnityEngine.Random.Range(-wim.DamagePierceSpread, wim.DamagePierceSpread)) : wim.DamagePierce;
+                    bulletScript.HitInfo = new ActorHitInfo(randomizedDamage * damageRpgFactor * damageDifficultyFactor, randomizedPierce * damageRpgFactor * damageDifficultyFactor, (int)wim.DType, (int)ActorBodyPart.Unspecified, (int)DefaultHitMaterials.Unspecified, PlayerController, wim.HitPuff, null);
+                    //Debug.Log($"damage: {bulletScript.HitInfo.Damage:F2} | pierce: {bulletScript.HitInfo.DamagePierce:F2}");
+                    bulletScript.FiredByPlayer = true;
 
                     //Vector3 fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread), Vector3.right)
                     //    * (Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread), Vector3.up) * ShootPoint.forward.normalized);
 
-                    Vector3 fireVec = ShootPoint.forward.normalized;
-                    fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread), Vector3.up) * fireVec;
-                    fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread), Vector3.right) * fireVec;
-                    fireVec = Quaternion.AngleAxis(AccumulatedRecoil, -transform.right) * fireVec; //iffy
+                    float spreadRpgFactor = RpgValues.GetWeaponSpreadFactor(player, wim);
+
+                    float spreadMoveFactor = 1f;
+                    if(PlayerController.MovementComponent.IsMoving)
+                    {
+                        spreadMoveFactor = wim.MovementSpreadFactor;
+                        if (wim.CheckFlag(ItemFlag.WeaponProportionalMovement) && PlayerController.MovementComponent.IsRunning)
+                            spreadMoveFactor *= 2f;
+                        if (PlayerController.MovementComponent.IsCrouching)
+                            spreadMoveFactor *= wim.CrouchSpreadFactor;
+                    }
+
+                    Vector3 fireVec = shootPoint.forward.normalized;
+
+                    //bend bullets if autoaim is enabled
+                    var autoaim = ConfigState.Instance.GetGameplayConfig().AimAssist;
+                    if(autoaim != AimAssistState.Off)
+                    {
+                        //we "probe" to see if we would have hit anyway, and don't correct if we did
+                        var probeHit = WorldUtils.RaycastAttackHit(shootPoint.position, shootPoint.forward, AutoaimCastRange * 1.25f, true, false, PlayerController);
+                        if (probeHit.Controller == null)
+                        {
+                            float castSize = autoaim == AimAssistState.Strong ? AutoaimStrongCastSize : AutoaimWeakCastSize;
+                            var autoaimHit = WorldUtils.SpherecastAttackHit(shootPoint.position, shootPoint.forward, castSize * 0.5f, AutoaimCastRange, true, false, PlayerController);
+                            if (autoaimHit.Controller != null)
+                            {
+                                fireVec = (autoaimHit.HitPoint - shootPoint.position).normalized;
+                            }
+                        }
+                    }
+
+                    //apply spread
+                    fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread) * spreadMoveFactor * spreadRpgFactor, Vector3.up) * fireVec;
+                    fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread) * spreadMoveFactor * spreadRpgFactor, Vector3.right) * fireVec;
+                    fireVec = Quaternion.AngleAxis(AccumulatedRecoil * spreadMoveFactor * spreadRpgFactor, -transform.right) * fireVec; //iffy
 
                     bulletRigidbody.velocity = (fireVec * wim.ProjectileVelocity);
 
                     //recoil accumulation
+                    float accumulatorRpgFactor = RpgValues.GetWeaponInstabilityFactor(player, wim);
                     RangeEnvelope recoilEnvelope = IsADS ? wim.ADSRecoil : wim.Recoil;
-                    AccumulatedRecoil = Mathf.Min(recoilEnvelope.Max, AccumulatedRecoil + recoilEnvelope.Gain);
+                    AccumulatedRecoil = Mathf.Min(recoilEnvelope.Max, AccumulatedRecoil + (recoilEnvelope.Gain * accumulatorRpgFactor));
                     RangeEnvelope spreadEnvelope = IsADS ? wim.ADSSpread : wim.Spread;
-                    AccumulatedSpread = Mathf.Min(spreadEnvelope.Max, AccumulatedSpread + spreadEnvelope.Gain);
+                    AccumulatedSpread = Mathf.Min(spreadEnvelope.Max, AccumulatedSpread + (spreadEnvelope.Gain * accumulatorRpgFactor));
 
                     DidJustFire = true;
-                    TimeToNext = wim.FireInterval;
+                    float rateRpgFactor = RpgValues.GetWeaponRateFactor(player, wim);
+                    TimeToNext = (wim.CheckFlag(ItemFlag.WeaponIgnoreLevelledRate)) ? wim.FireInterval : (wim.FireInterval * rateRpgFactor);
 
                     //GameObject fireEffect = null;
 
@@ -571,16 +760,16 @@ namespace CommonCore.RpgGame.World
                     //set viewmodel and hands state
                     if (slot == EquipSlot.RightWeapon && RightViewModel != null)
                     {
-                        RightViewModel.SetState(ViewModelState.Fire, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded);
-                        Hands.SetState(ViewModelState.Fire, RightViewModel, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded);
+                        float timeScale = (wim.CheckFlag(ItemFlag.WeaponIgnoreLevelledRate) || wim.CheckFlag(ItemFlag.WeaponUnscaledAnimations)) ? 1 : rateRpgFactor;
+                        RightViewModel.SetState(ViewModelState.Fire, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded, timeScale);
+                        Hands.SetState(ViewModelState.Fire, RightViewModel, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded, timeScale);
                     }
                     else if (slot == EquipSlot.LeftWeapon && LeftViewModel != null)
                     {
-                        LeftViewModel.SetState(ViewModelState.Fire, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded);
-                        Hands.SetState(ViewModelState.Fire, LeftViewModel, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded);
+                        Debug.LogWarning("Left weapon slot not supported!");
                     }
 
-                    if (useAmmo && autoReload && GameState.Instance.PlayerRpgState.AmmoInMagazine[slot] <= 0)
+                    if (useAmmo && autoReload && wim.UseMagazine && player.AmmoInMagazine[slot] <= 0)
                     {
                         DoReload();
                     }
@@ -602,40 +791,46 @@ namespace CommonCore.RpgGame.World
             if (IsReloading) //I think we need this guard
                 return;
 
-            //TODO reload both
-
             reloadSide(EquipSlot.RightWeapon, RightViewModel);
             reloadSide(EquipSlot.LeftWeapon, LeftViewModel);
 
             IsADS = false;
+            SetCameraZoom(1, ADSZoomFadeTime);
             IsReloading = true;
 
             QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepReloading"));
 
+            HandleCrosshair(); //needed I think
+
             void reloadSide(EquipSlot slot, WeaponViewModelScript viewModel)
             {
-                if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(slot))
+                CharacterModel player = GameState.Instance.PlayerRpgState;
+                if (player.Equipped.ContainsKey(slot))
                 {
-                    if (GameState.Instance.PlayerRpgState.Equipped[slot].ItemModel is RangedWeaponItemModel rwim)
+                    if (player.Equipped[slot].ItemModel is RangedWeaponItemModel rwim)
                     {
                         //unreloadable condition
-                        if (GameState.Instance.PlayerRpgState.AmmoInMagazine[slot] == rwim.MagazineSize
-                            || GameState.Instance.PlayerRpgState.Inventory.CountItem(rwim.AType.ToString()) <= 0)
+                        if (!rwim.UseMagazine || player.AmmoInMagazine[slot] == rwim.MagazineSize
+                            || player.Inventory.CountItem(rwim.AType.ToString()) <= 0)
                         {
                             return;
                         }
 
+                        float reloadRpgFactor = RpgValues.GetWeaponReloadFactor(player, rwim);
+
                         if (viewModel != null)
                         {
-                            //TODO handle 1H/2H
+                            //TODO handle 1H/2H (or not)
 
-                            viewModel.SetState(ViewModelState.Reload, ViewModelHandednessState.TwoHanded);
-                            Hands.SetState(ViewModelState.Reload, viewModel, ViewModelHandednessState.TwoHanded);
+                            float timeScale = rwim.CheckFlag(ItemFlag.WeaponUnscaledAnimations) ? 1 : reloadRpgFactor;
+
+                            viewModel.SetState(ViewModelState.Reload, ViewModelHandednessState.TwoHanded, timeScale);
+                            Hands.SetState(ViewModelState.Reload, viewModel, ViewModelHandednessState.TwoHanded, timeScale);
                         }
                         //else if(!string.IsNullOrEmpty(rwim.ReloadEffect))
                         //    AudioPlayer.Instance.PlaySound(rwim.ReloadEffect, SoundType.Sound, false);
 
-                        TimeToNext = Math.Max(rwim.ReloadTime, TimeToNext); //we take the longest time
+                        TimeToNext = Math.Max(rwim.ReloadTime * reloadRpgFactor, TimeToNext); //we take the longest time
                     }
                 }
 
@@ -667,8 +862,8 @@ namespace CommonCore.RpgGame.World
                         if (viewModel != null)
                         {
                             //TODO handle 1H/2H
-                            viewModel.SetState(ViewModelState.Idle, ViewModelHandednessState.TwoHanded);
-                            Hands.SetState(ViewModelState.Idle, viewModel, ViewModelHandednessState.TwoHanded);
+                            viewModel.SetState(ViewModelState.Idle, ViewModelHandednessState.TwoHanded, 1);
+                            Hands.SetState(ViewModelState.Idle, viewModel, ViewModelHandednessState.TwoHanded, 1);
                         }
                     }
                 }
@@ -676,9 +871,7 @@ namespace CommonCore.RpgGame.World
 
         }
 
-        //this is confusing and bloated because everything is pretty much designed around equipping/unequipping weapons being the same scenario
-        //but they're actually quite different
-        public void HandleWeaponChange(EquipSlot slot) //temporarily public because we're still running the message loop in PlayerController
+        public void HandleWeaponChange(EquipSlot slot, bool skipAnimations)
         {
             //we should probably cache this at a higher level but it's probably not safe
             var player = GameState.Instance.PlayerRpgState;
@@ -686,108 +879,222 @@ namespace CommonCore.RpgGame.World
             //reset ADS and accumulators
             IsADS = false;
             ResetAccumulators(); //probably exploitable
+            SetCameraZoom(1);
 
             if (slot == EquipSlot.RightWeapon)
             {
+                //needed?
+                IsReloading = false;
+                TimeToNext = 0;
+
                 //handle equip/unequip melee weapon
-                if (player.Equipped.ContainsKey(EquipSlot.RightWeapon) && player.Equipped[EquipSlot.RightWeapon] != null)
+                if (player.Equipped.ContainsKey(EquipSlot.RightWeapon) && player.Equipped[EquipSlot.RightWeapon] != null && player.Equipped[EquipSlot.RightWeapon].ItemModel is WeaponItemModel wim)
                 {
                     //fixed to equip *right* weapon
                     Debug.Log("Equipped right weapon!");
 
-                    WeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel as WeaponItemModel;
-                    if (wim != null && !string.IsNullOrEmpty(wim.ViewModel))
+                    if (TransitionState == WeaponTransitionState.Lowering) //guard. Do we need one for Raising as well?
                     {
-                        var prefab = CoreUtils.LoadResource<GameObject>("WeaponViewModels/" + wim.ViewModel);
-                        if (prefab != null)
-                        {
-                            var go = Instantiate<GameObject>(prefab, RightViewModelPoint);
-                            RightViewModel = go.GetComponent<WeaponViewModelScript>();
-                            if (RightViewModel != null)
-                                RightViewModel.SetState(ViewModelState.Idle, ViewModelHandednessState.TwoHanded); //TODO handle 1H/2H
-                        }
+                        //Debug.Log("lowering hack guard");
+                        OldWeaponLowerTime = 0; //this forces it to clear the viewmodel also
+                    }
 
+                    //Debug.Log(OldWeaponLowerTime);
+
+                    //handle lower and raise
+                    if (OldWeaponLowerTime > 0 && !skipAnimations) //old lower time: need to lower the weapon
+                    {
+                        lowerWeapon();
+                        TimeToNext = OldWeaponLowerTime;
+                        TransitionState = WeaponTransitionState.Lowering;
+                    }
+                    else if(wim.RaiseTime > 0 && !skipAnimations) //no old lower time, but new raise time: raise the weapon
+                    {
+                        ClearViewModel(EquipSlot.RightWeapon);
+                        SetViewModel(EquipSlot.RightWeapon);
+
+                        if (RightViewModel != null)
+                        {
+                            RightViewModel.SetState(ViewModelState.Raise, ViewModelHandednessState.TwoHanded, 1);
+                            Hands.SetState(ViewModelState.Raise, RightViewModel, ViewModelHandednessState.TwoHanded, 1);
+                        }
+                        else
+                            Hands.SetState(ViewModelState.Idle, null, ViewModelHandednessState.TwoHanded, 1);
+
+                        TimeToNext = wim.RaiseTime;
+                        TransitionState = WeaponTransitionState.Raising;
+                    }
+                    else //no old lower, no new raise: immediately swap
+                    {                        
+                        ClearViewModel(EquipSlot.RightWeapon);
+                        SetViewModel(EquipSlot.RightWeapon);
+                        OldWeaponLowerTime = wim.LowerTime;
+
+                        if (RightViewModel != null)
+                            RightViewModel.SetState(ViewModelState.Idle, ViewModelHandednessState.TwoHanded, 1);
+
+                        TransitionState = WeaponTransitionState.None;
                     }
 
                 }
                 else
                 {
-                    //fixed to unequip *right* model
+
                     Debug.Log("Unequipped right weapon!");
-                    if (RightViewModelPoint.transform.childCount > 0)
+
+                    if (TransitionState == WeaponTransitionState.Lowering)
+                        TransitionState = WeaponTransitionState.None;
+
+                    if (OldWeaponLowerTime > 0 && !skipAnimations) //need to lower the weapon
                     {
-                        Destroy(RightViewModelPoint.transform.GetChild(0).gameObject);
+                        lowerWeapon();
+                        TimeToNext = OldWeaponLowerTime;
+                        TransitionState = WeaponTransitionState.Lowering;
                     }
-                    RightViewModel = null;
+                    else if (FallbackWeapon != null && FallbackWeapon.RaiseTime > 0 && !skipAnimations) //don't need to lower the weapon, do need to raise the new one
+                    {
+                        ClearViewModel(EquipSlot.RightWeapon);
+                        Hands.SetState(ViewModelState.Raise, FallbackViewModel, ViewModelHandednessState.TwoHanded, 1);
+                        TimeToNext = FallbackWeapon.RaiseTime;
+                        TransitionState = WeaponTransitionState.Raising;
+                    }
+                    else
+                    {
+                        ClearViewModel(EquipSlot.RightWeapon);
+                        TransitionState = WeaponTransitionState.None;
+                    }
                 }
             }
             else if (slot == EquipSlot.LeftWeapon)
             {
+                //only half works, natch
+
                 IsReloading = false;
                 TimeToNext = 0;
 
                 //handle equip/unequip ranged weapon
                 if (player.Equipped.ContainsKey(EquipSlot.LeftWeapon) && player.Equipped[EquipSlot.LeftWeapon] != null)
                 {
-                    //fixed to equip *left* model
-                    Debug.Log("Equipped left weapon!");
-
-                    WeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.LeftWeapon].ItemModel as WeaponItemModel;
-                    if (wim != null && !string.IsNullOrEmpty(wim.ViewModel))
-                    {
-                        var prefab = CoreUtils.LoadResource<GameObject>("WeaponViewModels/" + wim.ViewModel);
-                        if (prefab != null)
-                        {
-                            var go = Instantiate<GameObject>(prefab, LeftViewModelPoint);
-                            LeftViewModel = go.GetComponent<WeaponViewModelScript>();
-                            if (LeftViewModel != null)
-                                LeftViewModel.SetState(ViewModelState.Idle, ViewModelHandednessState.TwoHanded); //TODO handle 1H/2H
-                        }
-
-                    }
+                    Debug.LogError("Left weapons are not actually supported!");
                 }
                 else
                 {
                     //fixed to unequip *left* model
                     Debug.Log("Unequipped left weapon!");
+                    ClearViewModel(EquipSlot.LeftWeapon);
+                }
+            }
+
+            HandleCrosshair();
+
+            if (TransitionState == WeaponTransitionState.None)
+            {
+                if (RightViewModel != null)
+                    Hands.SetState(ViewModelState.Idle, RightViewModel, ViewModelHandednessState.TwoHanded, 1);
+                else if (player.IsEquipped(EquipSlot.RightWeapon))
+                    Hands.SetState(ViewModelState.Idle, null, ViewModelHandednessState.TwoHanded, 1);
+                else
+                    Hands.SetState(ViewModelState.Idle, FallbackViewModel, ViewModelHandednessState.TwoHanded, 1);
+            }
+
+            void lowerWeapon()
+            {
+                if(RightViewModel != null)
+                {
+                    RightViewModel.SetState(ViewModelState.Lower, ViewModelHandednessState.TwoHanded, 1);
+                    Hands.SetState(ViewModelState.Lower, RightViewModel, ViewModelHandednessState.TwoHanded, 1);
+                }
+                else if(FallbackViewModel != null)
+                {
+                    Hands.SetState(ViewModelState.Lower, FallbackViewModel, ViewModelHandednessState.TwoHanded, 1);
+                }
+            }
+        }
+
+        private void SetViewModel(EquipSlot slot)
+        {
+            if (slot != EquipSlot.RightWeapon)
+                throw new NotImplementedException();
+
+            WeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel as WeaponItemModel;
+            if (wim != null && !string.IsNullOrEmpty(wim.ViewModel))
+            {
+
+                var prefab = CoreUtils.LoadResource<GameObject>("WeaponViewModels/" + wim.ViewModel);
+                if (prefab != null)
+                {
+                    var go = Instantiate<GameObject>(prefab, RightViewModelPoint);
+                    RightViewModel = go.GetComponent<WeaponViewModelScript>();
+                }
+                else
+                {
+                    Debug.LogError($"Could not find weapon view model \"{wim.ViewModel}\"");
+                }
+
+            }
+        }
+
+        private void ClearViewModel(EquipSlot slot)
+        {
+
+            switch (slot)
+            {
+                case EquipSlot.LeftWeapon:
                     if (LeftViewModelPoint.transform.childCount > 0)
                     {
                         Destroy(LeftViewModelPoint.transform.GetChild(0).gameObject);
                     }
                     LeftViewModel = null;
-                }
+                    break;
+                case EquipSlot.RightWeapon:
+                    if (RightViewModelPoint.transform.childCount > 0)
+                    {
+                        Destroy(RightViewModelPoint.transform.GetChild(0).gameObject);
+                    }
+                    RightViewModel = null;
+                    break;
             }
 
-            Hands.SetState(ViewModelState.Idle, LeftViewModel, ViewModelHandednessState.TwoHanded); //TODO handle 1H/2H
         }
 
-        private ITakeDamage GetMeleeHit(Transform origin, float range)
+        private void SetCameraZoom(float zoomFactor, float fadeTime = 0)
         {
-            LayerMask lm = LayerMask.GetMask("Default", "ActorHitbox");
-            var rc = Physics.RaycastAll(origin.position, origin.forward, range, lm, QueryTriggerInteraction.Collide);
+            if (zoomFactor <= 0)
+                zoomFactor = 1;
 
-            //TODO handle 2D/3D probe distance
-
-            //totally fucked!
-            ITakeDamage ac = null;
-            foreach (var r in rc)
+            //because alot of shit can go wrong
+            try
             {
-                var go = r.collider.gameObject;
-                var ahgo = go.GetComponent<ActorHitboxComponent>();
-                if (ahgo != null)
+                PlayerController.CameraZoomComponent.SetADSZoomFactor(zoomFactor, fadeTime);
+            }
+            catch(Exception e)
+            {
+                Debug.LogError($"Failed to set camera zoom ({e.GetType().Name})");
+                Debug.LogException(e);
+            }
+        }
+
+        private void HandleCrosshair()
+        {
+            if (GameState.Instance.PlayerRpgState.Equipped.TryGetValue(EquipSlot.RightWeapon, out var weaponItem))
+            {
+                WeaponItemModel rwim = weaponItem.ItemModel as WeaponItemModel;
+                var gameplayConfig = ConfigState.Instance.GetGameplayConfig();
+                if (rwim == null || (!(rwim.CheckFlag(ItemFlag.WeaponCrosshairInADS) || gameplayConfig.Crosshair == CrosshairState.Always) && IsADS) || (!rwim.CheckFlag(ItemFlag.WeaponUseCrosshair) && gameplayConfig.Crosshair == CrosshairState.Auto) || gameplayConfig.Crosshair == CrosshairState.Never) //probably fuxxored
                 {
-                    ac = ahgo.ParentController as ITakeDamage; //this works as long as we don't go MP or do Voodoo Dolls
-                    break;
+                    //DisableCrosshair();
+                    QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("HudDisableCrosshair"));
                 }
-                var acgo = go.GetComponent<ActorController>();
-                if (acgo != null)
+                else
                 {
-                    ac = acgo;
-                    break;
+                    //EnableCrosshair();
+                    QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("HudEnableCrosshair"));
                 }
             }
-
-            return ac;
+            else
+            {
+                QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("HudDisableCrosshair"));
+            }
         }
 
         private void HandleOffhandKick()
@@ -816,10 +1123,21 @@ namespace CommonCore.RpgGame.World
 
                     OffhandKickSound.Ref()?.Play();
 
+                    var player = GameState.Instance.PlayerRpgState;
+
                     //deal damage
-                    var itd = GetMeleeHit(OffhandKickPoint, OffhandKickRange);
+                    //var (otherController, hitPoint, hitLocation, hitMaterial) = GetMeleeHitEx(OffhandKickPoint, OffhandKickRange);
+                    var (otherController, hitPoint, hitLocation, hitMaterial) = WorldUtils.SpherecastAttackHit(OffhandKickPoint.position, OffhandKickPoint.forward, 0.25f, OffhandKickRange, true, false, PlayerController);
+
+                    var itd = otherController as ITakeDamage;
                     if (itd != null)
-                        itd.TakeDamage(new ActorHitInfo(OffhandKickDamage, 0, (int)DamageType.Impact, (int)ActorBodyPart.Unspecified, (int)DefaultHitMaterials.Unspecified, PlayerController));
+                    {
+                        float damageMultiplier = RpgValues.GetKickDamageFactor(player) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerStrength; //from stats and difficulty
+                        var hitInfo = new ActorHitInfo(OffhandKickDamage * damageMultiplier, 0, (int)DamageType.Impact, (int)hitLocation, (int)hitMaterial, PlayerController, OffhandKickPuff, hitPoint);
+                        itd.TakeDamage(hitInfo);
+                        if(!string.IsNullOrEmpty(OffhandKickPuff))
+                            HitPuffScript.SpawnHitPuff(hitInfo);
+                    }
 
                     //kick away kickable things
                     //if(Physics.Raycast(OffhandKickPoint.position, OffhandKickPoint.forward, out var hit, OffhandKickRange))
@@ -828,15 +1146,19 @@ namespace CommonCore.RpgGame.World
                         Rigidbody rb = hit.collider.attachedRigidbody;
                         if(rb != null)
                         {
-                            rb.AddForce(OffhandKickPoint.forward * OffhandKickForce, ForceMode.Impulse);
+                            rb.AddForce(OffhandKickPoint.forward * OffhandKickForce * RpgValues.GetKickForceFactor(player), ForceMode.Impulse);
                         }
                     }
 
-                    TimeToNextKick = OffhandKickDelay;
+                    TimeToNextKick = OffhandKickDelay * RpgValues.GetKickRateFactor(player);
                 }
             }
 
+        }
 
+        private enum WeaponTransitionState
+        {
+            None, Lowering, Raising
         }
 
     }

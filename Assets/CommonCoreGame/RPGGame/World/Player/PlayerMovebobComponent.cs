@@ -1,4 +1,5 @@
-﻿using CommonCore.LockPause;
+﻿using CommonCore.Config;
+using CommonCore.LockPause;
 using UnityEngine;
 
 namespace CommonCore.RpgGame.World
@@ -24,6 +25,8 @@ namespace CommonCore.RpgGame.World
         private float BaseVelocity = 0.5f;
         [SerializeField]
         private float VelocityFactor = 0.1f;
+        [SerializeField]
+        private float VelocityDisplacementFactor = 0.1f;
 
         private Vector3 TargetPosition = Vector3.zero;
 
@@ -56,6 +59,13 @@ namespace CommonCore.RpgGame.World
             if (LockPauseModule.IsPaused())
                 return;
 
+            if(!ConfigState.Instance.GetGameplayConfig().BobEffects) //cancel viewbob if disabled
+            {
+                TargetPosition = Vector3.zero;
+                transform.localPosition = TargetPosition;
+                return;
+            }
+
             //set new target
 
             if (!(MovementComponent.IsMoving || (MovementComponent.IsOnSlope && MovementComponent.Velocity.sqrMagnitude > 0)) ||
@@ -67,7 +77,8 @@ namespace CommonCore.RpgGame.World
             else if ((transform.localPosition - TargetPosition).magnitude < Threshold)
             {                
                 float yDirection = -Mathf.Sign(TargetPosition.y); //bob up and down
-                TargetPosition = new Vector3(0, yDirection * (YDisplacement + Random.Range(-YJitter, YJitter)), 0);
+                float extraDisplacement = VelocityDisplacementFactor * MovementComponent.Velocity.GetFlatVector().magnitude;
+                TargetPosition = new Vector3(0, yDirection * (YDisplacement + Random.Range(-YJitter + extraDisplacement, YJitter + extraDisplacement)), 0);
             }
 
             //animate toward target

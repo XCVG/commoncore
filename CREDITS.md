@@ -72,6 +72,7 @@ Aurelia character model (Assets/OpenSource/makehuman/aurelia, Assets/OpenSource/
 FPS arms model (Assets/TestObjects/arms)
 	Built with MakeHuman (CC0 export exemption)
 	Crude long gloves by Joel Palmius (CC0)
+	Low poly stylized Rifle (AK-47) by Fernando Ferreira (CC0)
 	
 FPS legs model (Assets/TestObjects/legs)
 	Built with MakeHuman (CC0 export exemption)
@@ -148,4 +149,11 @@ Pistol fire sound (DemoFire)
 	Small pistol gunshot indoors
 	https://freesound.org/people/acidsnowflake/sounds/402789/
 	by acidsnowflake, licensed CC0/Public Domain
+	
+Hit Indicator (Assets/Resources/DynamicSound/HitIndicator)
+	SFX: The Ultimate 2017 16 bit Mini pack
+	https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack
+	SwissArcadeGameEntertainment, licensed CC0/Public Domain
+	
+
 	

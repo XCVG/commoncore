@@ -86,14 +86,7 @@ namespace CommonCore.RpgGame.UI
                     }
                     else
                     {
-                        if(!itemModel.CheckFlag("TwoHanded"))
-                        {
-                            GameState.Instance.PlayerRpgState.EquipItem(itemInstance, button == 1 ? EquipSlot.LeftWeapon : EquipSlot.RightWeapon);
-                        }
-                        else
-                        {
-                            GameState.Instance.PlayerRpgState.EquipItem(itemInstance);
-                        }
+                        GameState.Instance.PlayerRpgState.EquipItem(itemInstance);
 
                         SelectedItemText.text = SelectedItemText.text + " [E]"; //needed?
                     }
@@ -200,16 +193,10 @@ namespace CommonCore.RpgGame.UI
                 if (ItemLookupTable[SelectedItem].Equipped)
                 {
                     SelectedItemText.text = SelectedItemText.text + " [E]";
+                    SelectedItemUse.gameObject.SetActive(true);
+                    SelectedItemUse.transform.Find("Text").GetComponent<Text>().text = "Unequip";
                 }
-
-                //if(itemModel is WeaponItemModel wim && !itemModel.CheckFlag("TwoHanded"))
-                //{
-                //    SelectedItemUse.gameObject.SetActive(true);
-                //    SelectedItemUse.transform.Find("Text").GetComponent<Text>().text = "Equip (R)";
-                //    SelectedItemUse2.gameObject.SetActive(true);
-                //    SelectedItemUse2.transform.Find("Text").GetComponent<Text>().text = "Equip (L)";
-                //}
-                //else
+                else
                 {
                     SelectedItemUse.gameObject.SetActive(true);
                     SelectedItemUse.transform.Find("Text").GetComponent<Text>().text = "Equip";

@@ -8,6 +8,7 @@ using CommonCore.RpgGame.Rpg;
 using CommonCore.State;
 using CommonCore.StringSub;
 using CommonCore.UI;
+using System.Linq;
 
 namespace CommonCore.RpgGame.UI
 {
@@ -39,9 +40,11 @@ namespace CommonCore.RpgGame.UI
             statsSB.AppendFormat("Level {0} ({1}/{2})\n\n", player.Level, player.Experience, RpgValues.XPToNext(player.Level));
 
             //base statistics
-            foreach (int value in Enum.GetValues(typeof(StatType)))
+            foreach (StatType value in Enum.GetValues(typeof(StatType)))
             {
                 string name = Enum.GetName(typeof(StatType), value);
+                if (GameParams.HideStats.Contains(name))
+                    continue;
                 int baseValue = baseStats.Stats[value];
                 int derivedValue = derivedStats.Stats[value];
                 statsSB.AppendFormat("{0}: {1} [{2}]\n", Sub.Replace(name, SubList), baseValue, derivedValue);
@@ -53,11 +56,11 @@ namespace CommonCore.RpgGame.UI
             foreach(int value in Enum.GetValues(typeof(DamageType)))
             {
                 string name = Enum.GetName(typeof(DamageType), value);
-                float baseDR = baseStats.DamageResistance[value];
-                float baseDT = baseStats.DamageThreshold[value];
-                float derivedDR = derivedStats.DamageResistance[value];
-                float derivedDT = derivedStats.DamageThreshold[value];
-                statsSB.AppendFormat("{0}: R({1:f1} [{2:f1}]) | T({3:f1} [{4:f1}])\n", name.Substring(0,Math.Min(4, name.Length)), baseDR, derivedDR, baseDT, derivedDT);
+                float baseDR = baseStats.DamageResistance[(DamageType)value];
+                float baseDT = baseStats.DamageThreshold[(DamageType)value];
+                float derivedDR = derivedStats.DamageResistance[(DamageType)value];
+                float derivedDT = derivedStats.DamageThreshold[(DamageType)value];
+                statsSB.AppendFormat("{0}: DR({1:f1} [{2:f1}]) | DT({3:f1} [{4:f1}])\n", name.Substring(0,Math.Min(4, name.Length)), baseDR, derivedDR, baseDT, derivedDT);
             }
 
             statsSB.AppendLine();
@@ -86,11 +89,14 @@ namespace CommonCore.RpgGame.UI
             StatsSet baseStats = player.BaseStats;
             StatsSet derivedStats = player.DerivedStats;
 
-            StringBuilder skillsSB = new StringBuilder(baseStats.Skills.Length * 16);
+            StringBuilder skillsSB = new StringBuilder(baseStats.Skills.Keys.Count * 16);
 
-            foreach(int value in Enum.GetValues(typeof(SkillType)))
+            foreach(SkillType value in Enum.GetValues(typeof(SkillType)))
             {
                 string name = Enum.GetName(typeof(SkillType), value);
+                if (GameParams.HideSkills.Contains(name))
+                    continue;
+
                 int baseSkill = baseStats.Skills[value];
                 int derivedSkill = derivedStats.Skills[value];
                 skillsSB.AppendFormat("{0}: {1} [{2}]\n", Sub.Replace(name, SubList), baseSkill, derivedSkill);

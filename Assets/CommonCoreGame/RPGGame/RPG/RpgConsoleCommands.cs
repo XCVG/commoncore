@@ -8,6 +8,7 @@ using CommonCore.RpgGame.UI;
 using CommonCore.RpgGame.State;
 using CommonCore.Console;
 using Newtonsoft.Json;
+using CommonCore.DebugLog;
 
 namespace CommonCore.RpgGame.Rpg
 {
@@ -19,7 +20,7 @@ namespace CommonCore.RpgGame.Rpg
         [Command]
         static void PrintPlayerInfo()
         {
-            ConsoleModule.WriteLine(JsonConvert.SerializeObject(GameState.Instance.PlayerRpgState));
+            ConsoleModule.WriteLine(DebugUtils.JsonStringify(GameState.Instance.PlayerRpgState));
         }
 
         [Command(className = "Player")]
@@ -120,6 +121,12 @@ namespace CommonCore.RpgGame.Rpg
         static void ListInventoryModels()
         {
             ConsoleModule.WriteLine(InventoryModel.GetModelsList());
+        }
+
+        [Command]
+        static void PrintInventoryModel(string model)
+        {
+            ConsoleModule.WriteLine(DebugUtils.JsonStringify(InventoryModel.GetModel(model)));
         }
 
         [Command]

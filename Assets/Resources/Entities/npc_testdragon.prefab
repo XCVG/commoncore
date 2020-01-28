@@ -972,7 +972,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EditorFormID: npc_testdragon
   HitMaterial: 256
-  Tags: []
   CharacterModelIdOverride: 
   InteractComponent: {fileID: 3402498743617404939}
   TargetPoint: {fileID: 0}
@@ -1062,15 +1061,15 @@ MonoBehaviour:
   <ControlRotation>k__BackingField: 1
   PreferredHeight: 10
   VerticalWander: 3
-  MaxSpeed: 8
-  MaxBurstSpeed: 16
-  MaxVerticalSpeed: 12
-  RotateSpeed: 90
+  MaxSpeed: 10
+  MaxBurstSpeed: 18
+  MaxVerticalSpeed: 16
+  RotateSpeed: 120
   UseRealAltitude: 1
   FaceActorTarget: 1
   DropWhenDead: 1
-  DropAccleration: 5
-  MaxDropSpeed: 15
+  DropAccleration: 6
+  MaxDropSpeed: 18
 --- !u!114 &6574105466673641160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1088,10 +1087,10 @@ MonoBehaviour:
   FirePoint: {fileID: 3859658197775795496}
   CirclingCenter: {x: 0, y: 0, z: 0}
   CirclingRadius: 25
-  CirclingDecideInterval: 2
-  CirclingAttackChance: 0.5
+  CirclingDecideInterval: 1.75
+  CirclingAttackChance: 0.66
   HoverBreakoffDistance: 10
-  HoverDecideInterval: 2
+  HoverDecideInterval: 1.75
   HoverBreakoffChance: 0.1
   HoverHeight: 3
   HoverMinDistance: 5

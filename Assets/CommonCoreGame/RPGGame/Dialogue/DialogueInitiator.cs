@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using CommonCore.Audio;
+using CommonCore.Console;
+using CommonCore.LockPause;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using CommonCore.LockPause;
-using CommonCore.Console;
 
 namespace CommonCore.RpgGame.Dialogue
 {
@@ -49,7 +48,21 @@ namespace CommonCore.RpgGame.Dialogue
         {
             DialogueController.CurrentDialogue = null;
             DialogueController.CurrentCallback = null;
-            GameObject.Destroy(GameObject.Find("DialogueSystem"));
+
+            var ds = GameObject.Find("DialogueSystem");
+            if (ds != null)
+            {
+                LockPauseModule.UnpauseGame(ds);
+                GameObject.Destroy(ds);
+            }
+
+            var dc = GameObject.Find("DialogueCamera");
+            if(dc != null)
+                GameObject.Destroy(dc);
+
+            AudioPlayer.Instance.ClearMusic(MusicSlot.Cinematic);            
+            LockPauseModule.ForceCleanLocks(); //useless since objects aren't *yet* destroyed
+
         }
     }
 }

@@ -23,6 +23,9 @@ namespace CommonCore.RpgGame.World
         public float CrouchYScale = 0.66f;
         public float CrouchMoveScale = 0.5f;
 
+        [SerializeField]
+        private float LookYLimit = 90f;
+
         [SerializeField, Header("Dynamics Values")]
         private float GroundFriction = 0f;
         [SerializeField]
@@ -292,7 +295,7 @@ namespace CommonCore.RpgGame.World
 
                 if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveY)) > InputDeadzone)
                 {
-                    moveVector += (transform.forward * MappedInput.GetAxis(DefaultControls.MoveY) * velocity.z * Time.deltaTime);
+                    moveVector += (PlayerController.CameraRoot.transform.forward * MappedInput.GetAxis(DefaultControls.MoveY) * velocity.z * Time.deltaTime);
                 }
 
                 if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveX)) > InputDeadzone)
@@ -368,8 +371,29 @@ namespace CommonCore.RpgGame.World
 
             if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookY)) != 0)
             {
-                PlayerController.CameraRoot.transform.Rotate(Vector3.left, lmul * ConfigState.Instance.LookSpeed * MappedInput.GetAxis(DefaultControls.LookY) * Time.deltaTime);
+                //this is probably the worst clamp code ever written
+
+                Vector3 localForward = PlayerController.CameraRoot.parent.transform.InverseTransformDirection(PlayerController.CameraRoot.transform.forward);
+                float originalAngle = Vector2.SignedAngle(Vector2.right, localForward.GetSideVector());
+                float deltaAngle = lmul * ConfigState.Instance.LookSpeed * MappedInput.GetAxis(DefaultControls.LookY) * Time.deltaTime; //this is okay if weird
+
+                if(deltaAngle > 0 && originalAngle + deltaAngle >= LookYLimit)
+                {
+                    //clamp high
+                    deltaAngle = LookYLimit - originalAngle;
+                }
+                else if(deltaAngle < 0 && originalAngle + deltaAngle <= -LookYLimit)
+                {
+                    //clamp low
+                    deltaAngle = -LookYLimit - originalAngle;
+                }
+
+                PlayerController.CameraRoot.transform.Rotate(Vector3.left, deltaAngle);
+
+                //Debug.Log($"{originalAngle} + {deltaAngle}");
+                
             }
+
         }
 
         //TODO handle crouching better, handle fall damage

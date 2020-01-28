@@ -5,7 +5,9 @@ using UnityEngine;
 namespace CommonCore.RpgGame.World
 {
 
-    //attached to Weapon ViewModels
+    /// <summary>
+    /// Weapon view model script for legacy animation sets (ie from before we separated out weapon components)
+    /// </summary>
     public class LegacyViewModelScript : WeaponViewModelScript
     {
         
@@ -28,8 +30,6 @@ namespace CommonCore.RpgGame.World
         public string MovingState = "moving";
         public string FiringState = "firing";
         public string ReloadingState = "reloading";
-
-        //TODO hack this down and rework it entirely
 
         protected override void Start()
         {
@@ -76,7 +76,7 @@ namespace CommonCore.RpgGame.World
             ModelRoot.gameObject.SetActive(visible);
         }
 
-        public override void SetState(ViewModelState newState, ViewModelHandednessState handednessState)
+        public override void SetState(ViewModelState newState, ViewModelHandednessState handednessState, float timeScale)
         {
             if (State == newState)
                 return;
@@ -146,6 +146,7 @@ namespace CommonCore.RpgGame.World
 
         public override (string, float) GetHandAnimation(ViewModelState newState, ViewModelHandednessState handednessState)
         {
+            /*
             switch (newState)
             {
                 case ViewModelState.Reload:
@@ -155,6 +156,9 @@ namespace CommonCore.RpgGame.World
                 default:
                     return ("LegacyIdle", -1);
             }
+            */
+
+            return ("Hidden", -1);
         }
     }
 }

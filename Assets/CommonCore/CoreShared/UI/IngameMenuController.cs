@@ -80,7 +80,7 @@ namespace CommonCore.UI
             }
 
             //call scripts
-            ScriptingModule.CallHooked(ScriptHook.OnIGUIMenuOpen, this); //we may move this to call *every time* instead of *the first time*
+            ScriptingModule.CallHooked(ScriptHook.AfterIGUIMenuCreate, this);
         }
 
         public override void Update()
@@ -143,6 +143,12 @@ namespace CommonCore.UI
                         }
 
                         ClearEphemeral();
+                    }
+
+                    if(newState)
+                    {
+                        //run scripts
+                        ScriptingModule.CallHooked(ScriptHook.OnIGUIMenuOpen, this);
                     }
                     
                 }

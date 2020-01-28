@@ -1,4 +1,5 @@
-﻿using CommonCore.UI;
+﻿using CommonCore.Scripting;
+using CommonCore.UI;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -13,7 +14,7 @@ namespace CommonCore.State
     public class LoadingSceneController : MonoBehaviour
     {
         [SerializeField]
-        private Canvas DefaultLoadingCanvas;
+        private Canvas DefaultLoadingCanvas = null;
 
         /// <summary>
         /// Immediately begin loading the scene
@@ -39,6 +40,7 @@ namespace CommonCore.State
                     MetaState.Instance.IntentsExecuteLoading();
                     //we are merely changing scenes, go straight to loading the next scene
                     GameState.Instance.CurrentScene = MetaState.Instance.NextScene;
+                    ScriptingModule.CallHooked(ScriptHook.OnSceneTransition, this);
                     StartCoroutine(LoadNextSceneAsync());
                 }
                 else if (MetaState.Instance.TransitionType == SceneTransitionType.LoadGame)
@@ -46,6 +48,7 @@ namespace CommonCore.State
                     //we are loading a game, so load the game data and then load the next scene (which is part of save data)
                     GameState.DeserializeFromFile(CoreParams.SavePath + @"\" + MetaState.Instance.LoadSave);
                     MetaState.Instance.NextScene = GameState.Instance.CurrentScene;
+                    ScriptingModule.CallHooked(ScriptHook.OnGameLoad, this);
                     StartCoroutine(LoadNextSceneAsync());
                 }
                 else if (MetaState.Instance.TransitionType == SceneTransitionType.NewGame)

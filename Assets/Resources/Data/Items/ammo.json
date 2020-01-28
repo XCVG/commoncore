@@ -5,5 +5,12 @@
     "Image": "riflebullet",
     "Description": "Intermediate-caliber rifle ammunition"
 	}
+  },
+  "Para9": {
+    "def": {
+    "NiceName": "9mm",
+    "Image": "pistolbullet",
+    "Description": "Cheap metallic-cased pistol ammunition"
+	}
   }
 }

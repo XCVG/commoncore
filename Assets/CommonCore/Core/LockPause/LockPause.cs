@@ -78,6 +78,11 @@ namespace CommonCore.LockPause
             ClearAll();
         }
 
+        public override void Dispose()
+        {
+            Instance = null;
+        }
+
         private void ClearAll()
         {
             EnableMouseCapture = false;
@@ -237,6 +242,9 @@ namespace CommonCore.LockPause
 
         private bool IsOwnerAlive(object owner)
         {
+            if (owner is UnityEngine.Object && (UnityEngine.Object)owner == null) //fuck you, Unity
+                return false;
+
             if (owner == null)
                 return false;
 
@@ -355,6 +363,12 @@ namespace CommonCore.LockPause
         {
             CDebug.LogEx("Forced unlock and unpause!", LogLevel.Warning, Instance);
             Instance.ClearAll();
+        }
+
+        public static void ForceCleanLocks()
+        {
+            Instance.CleanInputLocks();
+            Instance.CleanPauseLocks();
         }
 
     }

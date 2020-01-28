@@ -1,14 +1,18 @@
-﻿using CommonCore.DebugLog;
+﻿using CommonCore.Config;
+using CommonCore.DebugLog;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace CommonCore.RpgGame.Rpg
 {
-    /*
-     * CommonCore RPG Module
-     * Initializes character and inventory models
-     */
+
+    /// <summary>
+    /// CommonCore RPG Module
+    /// </summary>
+    /// <remarks>
+    /// <para>Initializes character and inventory models, installs gameplay config panel</para>
+    /// </remarks>
     public class RpgModule : CCModule
     {
         public RpgModule()
@@ -17,7 +21,9 @@ namespace CommonCore.RpgGame.Rpg
             LoadCharacterModels();
             LoadInventoryModels();
             LoadQuestModels();
-            
+
+            //install gameplay config panel
+            ConfigModule.Instance.RegisterConfigPanel("GameplayOptionsPanel", 500, CoreUtils.LoadResource<GameObject>("UI/GameplayOptionsPanel"));
         }
 
         private void LoadFactionModels()

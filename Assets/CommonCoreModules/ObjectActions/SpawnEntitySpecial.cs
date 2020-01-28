@@ -10,21 +10,23 @@ namespace CommonCore.ObjectActions
     public class SpawnEntitySpecial : ActionSpecial
     {
         [SerializeField, Tooltip("The formal ID of the entity to spawn")]
-        private string FormId;
+        private string FormId = null;
         [SerializeField]
-        private Transform SpawnParent;
+        private Transform SpawnParent = null;
         [SerializeField]
-        private bool OverrideTransform;
+        private bool OverrideTransform = false;
         [SerializeField]
-        private Vector3 OverridePosition;
+        private Vector3 OverridePosition = Vector3.zero;
         [SerializeField]
-        private Vector3 OverrideRotation;
+        private Vector3 OverrideRotation = Vector3.zero;
         [SerializeField]
         private bool ActivateObject = true;
+#pragma warning disable CS0649
         [SerializeField]
         private ObjectSpawnEvent OnSpawnEvent;
+#pragma warning restore CS0649
         [SerializeField, Tooltip("If set, will also spawn this effect at the spawn position")]
-        private string EffectId;
+        private string EffectId = null;
 
         private bool Locked;
 

@@ -109,9 +109,11 @@ namespace CommonCore.RpgGame.UI
             foreach (int value in Enum.GetValues(typeof(SkillType)))
             {
                 string name = Enum.GetName(typeof(SkillType), value);
+                if (GameParams.HideSkills.Contains(name))
+                    continue;
 
                 GameObject skillGO = Instantiate<GameObject>(LevelItemPrefab, ScrollContent);
-                skillGO.GetComponentInChildren<Text>().text = string.Format("{0} [{1}]", Sub.Replace(name, SubList), NewStats.Skills[value]);
+                skillGO.GetComponentInChildren<Text>().text = string.Format("{0} [{1}]", Sub.Replace(name, SubList), NewStats.Skills[(SkillType)value]);
                 Button b = skillGO.GetComponent<Button>();
                 int lexI = value;
                 b.onClick.AddListener(delegate { OnSkillSelected(lexI, b); }); //scoping is weird here
@@ -128,11 +130,11 @@ namespace CommonCore.RpgGame.UI
                 string name = Enum.GetName(typeof(SkillType), i);
 
                 Button b = SkillButtons[i];
-                b.GetComponentInChildren<Text>().text = string.Format("{0} [{1}]", Sub.Replace(name, SubList), NewStats.Skills[i]);
+                b.GetComponentInChildren<Text>().text = string.Format("{0} [{1}]", Sub.Replace(name, SubList), NewStats.Skills[(SkillType)i]);
             }
 
             //update details
-            DetailLevel.text = string.Format("{0}->{1}", NewStats.Skills[SelectedSkill], NewStats.Skills[SelectedSkill] + RpgValues.SkillGainForPoints(1));
+            DetailLevel.text = string.Format("{0}->{1}", NewStats.Skills[(SkillType)SelectedSkill], NewStats.Skills[(SkillType)SelectedSkill] + RpgValues.SkillGainForPoints(1));
 
             //if we're out of PP, set buttons
             LevelUpButton.interactable = (PotentialPoints > 0);
@@ -145,20 +147,20 @@ namespace CommonCore.RpgGame.UI
         {
             //Debug.Log(Enum.GetName(typeof(SkillType), i));
 
-            //TODO set selected index, paint detail, enable buttons if valid
+            //set selected index, paint detail, enable buttons if valid
             var skillName = Enum.GetName(typeof(SkillType), i);
             SelectedSkill = i;
             DetailPanel.SetActive(true);
             DetailTitle.text = Sub.Replace(skillName, SubList);
             DetailDescription.text = Sub.Exists(skillName, DescriptionList) ? Sub.Replace(skillName, DescriptionList) : string.Empty;
-            DetailLevel.text = string.Format("{0}->{1}", NewStats.Skills[i], NewStats.Skills[i]+RpgValues.SkillGainForPoints(1));
+            DetailLevel.text = string.Format("{0}->{1}", NewStats.Skills[(SkillType)i], NewStats.Skills[(SkillType)i]+RpgValues.SkillGainForPoints(1));
             LevelUpButton.interactable = (PotentialPoints > 0);
         }
 
         //on actual level handler
         public void OnClickLevelUp()
         {
-            NewStats.Skills[SelectedSkill] = NewStats.Skills[SelectedSkill] + RpgValues.SkillGainForPoints(1);
+            NewStats.Skills[(SkillType)SelectedSkill] = NewStats.Skills[(SkillType)SelectedSkill] + RpgValues.SkillGainForPoints(1);
             PotentialPoints--;
 
             UpdateValues();

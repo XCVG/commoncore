@@ -1,0 +1,69 @@
+{
+  "demopistol": {
+    "model": {
+      "$type": "CommonCore.RpgGame.Rpg.RangedWeaponItemModel, Assembly-CSharp",
+      "Damage": 12,
+      "DamagePierce": 4,
+	  "DType": "Normal",
+	  "SkillType": "Guns",
+	  "HitPuff": "TestHitPuff",
+	  "ProjectileVelocity": 500,
+	  "Recoil": {
+		"min" : 0,
+		"max" : 5,
+		"gain" : 2,
+		"decay" : 14
+	  },
+      "Spread": {
+		"min" : 0.1,
+		"max" : 5,
+		"gain" : 1,
+		"decay" : 8
+	  },
+	  "ADSRecoil": {
+		"min" : 0,
+		"max" : 4,
+		"gain" : 1,
+		"decay" : 8
+	  },
+      "ADSSpread": {
+		"min" : 0.05,
+		"max" : 3,
+		"gain" : 1,
+		"decay" : 6
+	  },
+	  "RecoilImpulse": {
+		"intensity": 5,
+		"time": 0.2,
+		"violence": 0.66
+	  },
+	  "ADSRecoilImpulse": {
+		"intensity": 2.5,
+		"time": 0.15,
+		"violence": 0.66
+	  },
+	  "MovementSpreadFactor": 2.0,
+	  "CrouchSpreadFactor": 0.75,
+	  "MovementRecoveryFactor": 0.5,
+	  "CrouchRecoveryFactor": 0.75,
+      "FireInterval": 0.35,
+	  "NumProjectiles": 1,
+      "MagazineSize": 15,	  
+      "ReloadTime": 2.5,
+      "AType": "Para9",      
+	  "Projectile": "Bullet",
+	  "ViewModel": "DemoPistol",	  
+      "Weight": 2,
+	  "Value": 300,
+      "MaxCondition": 1,
+      "Unique": false,
+      "Hidden": false,
+	  "Flags": ["WeaponHasADS", "WeaponTwoHanded", "WeaponShake", "WeaponUseCrosshair", "WeaponProportionalMovement"]
+    },
+    "def": {
+    "NiceName": "Demo Pistol",
+    "Image": "pistol",
+    "Description": "A very blocky and fake looking pistol used for demonstration purposes only."
+  }
+  }
+}

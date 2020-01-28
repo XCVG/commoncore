@@ -30,6 +30,11 @@ namespace CommonCore
         /// Loaded modules
         /// </summary>
         private static List<CCModule> Modules;
+
+        /// <summary>
+        /// Lookup table for modules by type
+        /// </summary>
+        private static Dictionary<Type, CCModule> ModulesByType;
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void OnApplicationStart()
@@ -51,13 +56,10 @@ namespace CommonCore
             CreateFolders();
 
             Modules = new List<CCModule>();
-
-            if (CoreParams.AutoloadModules)
-            {
-                PrintSystemData(); //we wait until the console is loaded so we can see it in the console
-                InitializeModules();
-                ExecuteAllModulesLoaded();
-            }
+             
+            InitializeModules();
+            SetupModuleLookupTable();
+            ExecuteAllModulesLoaded();
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -77,10 +79,39 @@ namespace CommonCore
             if (Modules == null || Modules.Count < 1)
                 return null;
 
-            foreach(CCModule module in Modules)
+            if (ModulesByType != null && ModulesByType.Count > 0)
+            {
+                if (ModulesByType.TryGetValue(typeof(T), out var module))
+                    return (T)module;
+            }
+
+            foreach (CCModule module in Modules)
             {
                 if (module is T)
                     return (T)module;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Retrieves a loaded module specified by type
+        /// </summary>
+        public static CCModule GetModule(Type moduleType)
+        {
+            if (Modules == null || Modules.Count < 1)
+                return null;
+
+            if (ModulesByType != null && ModulesByType.Count > 0)
+            {
+                if(ModulesByType.TryGetValue(moduleType, out var module))
+                    return module;
+            }
+
+            foreach (CCModule module in Modules)
+            {
+                if (module.GetType() == moduleType)
+                    return module;
             }
 
             return null;
@@ -129,9 +160,12 @@ namespace CommonCore
             sb.AppendFormat("{1} v{3} {4} by {0} (appversion: {2})\n", Application.companyName, Application.productName, Application.version, Application.version, CoreParams.GameVersionName);
             sb.AppendFormat("CommonCore {0} {1}\n", CoreParams.VersionCode.ToString(), CoreParams.VersionName);
             sb.AppendFormat("Unity {0} [{3} | {1} on {2}]\n", Application.unityVersion, Application.platform, SystemInfo.operatingSystem, SystemInfo.graphicsDeviceType);
-            sb.AppendLine("persistentDataPath: " + CoreParams.PersistentDataPath);
-            sb.AppendLine("dataPath: " + CoreParams.DataPath);
+            if (CoreParams.IsDebug)
+                sb.AppendLine("[DEBUG MODE]");
             sb.AppendLine(Environment.CommandLine);
+            sb.AppendFormat("DataPath: {0} | StreamingAssetsPath: {1} | GameFolderPath: {2}\n", CoreParams.DataPath, CoreParams.StreamingAssetsPath, CoreParams.GameFolderPath);
+            sb.AppendFormat("PersistentDataPath: {0} | LocalDataPath: {1}\n", CoreParams.PersistentDataPath, CoreParams.LocalDataPath);
+            sb.AppendFormat("SavePath: {0} | ScreenshotsPath: {1}\n", CoreParams.SavePath, CoreParams.ScreenshotsPath);            
             sb.AppendLine("----------------------------------------");
 
             Debug.Log(sb.ToString());
@@ -160,6 +194,9 @@ namespace CommonCore
                 else
                     Debug.LogError("[Core] Can't find explicit module " + moduleName);
             }
+
+            //print system data
+            PrintSystemData(); //we wait until the console is loaded so we can see it in the console
 
             //sort out our modules
             var earlyModules = new List<Type>();
@@ -229,6 +266,20 @@ namespace CommonCore
             {
                 Debug.LogError("[Core] Failed to load module " + moduleType.Name);
                 Debug.LogException(e);
+            }
+        }
+
+        private static void SetupModuleLookupTable()
+        {
+            ModulesByType = new Dictionary<Type, CCModule>();
+
+            foreach(var module in Modules)
+            {
+                var mType = module.GetType();
+                if (!ModulesByType.ContainsKey(mType))
+                    ModulesByType.Add(mType, module);
+                else
+                    Debug.LogError($"Tried to add module of type {mType.Name} to module lookup table but it already exists! (you have a duplicate module, which is bad)");
             }
         }
 

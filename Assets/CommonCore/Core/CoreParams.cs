@@ -22,15 +22,15 @@ namespace CommonCore
         //*****game version info
         public static string GameName { get; private set; } //auto-set from Unity settings
         public static Version GameVersion { get; private set; } //auto-set from Unity settings
-        public static string GameVersionName { get; private set; } = "Holiday 2019 Demo";
+        public static string GameVersionName { get; private set; } = "Frangis Demo Development";
 
         //*****basic config settings
         public static bool AutoInit { get; private set; } = true;
-        public static bool AutoloadModules { get; private set; } = true;
         public static ImmutableArray<string> ExplicitModules { get; private set; } = new string[] { "DebugModule", "QdmsMessageBus", "ConfigModule", "AsyncModule", "ScriptingModule", "ConsoleModule" }.ToImmutableArray();
         private static DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
         public static string PreferredCommandConsole { get; private set; } = "SickDevConsoleImplementation";
         private static WindowsPersistentDataPath PersistentDataPathWindows = WindowsPersistentDataPath.Roaming;
+        private static bool CorrectWindowsLocalDataPath = false; //if set, use AppData/Local/* instead of AppData/LocalLow/* for LocalDataPath
         private static bool UseGlobalScreenshotFolder = true;
 
         //*****additional config settings
@@ -40,12 +40,13 @@ namespace CommonCore
         public static bool UseDirectSceneTransitions { get; private set; } = false;
 
         //*****game config settings
-        public static string InitialScene { get; private set; } = "TestScene";
+        public static string InitialScene { get; private set; } = "World_Ext_Frangis_Arena";
 
         //*****path variables (some hackery to provide thread-safeish versions)
         public static string DataPath { get; private set; }
         public static string GameFolderPath { get; private set; }
         public static string PersistentDataPath { get; private set; }
+        public static string LocalDataPath { get; private set; }
         public static string StreamingAssetsPath { get; private set; }
         public static string ScreenshotsPath { get; private set; }
 
@@ -130,7 +131,7 @@ namespace CommonCore
             //GameFolderPath (ported from Sandstorm)
             GameFolderPath = Directory.GetParent(Application.dataPath).ToString();
 
-            //special handling for PersistentDataPath
+            //special handling for PersistentDataPath and LocalDataPath
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
             switch (PersistentDataPathWindows)
             {
@@ -150,8 +151,13 @@ namespace CommonCore
                     PersistentDataPath = Application.persistentDataPath;
                     break;
             }
+            if (CorrectWindowsLocalDataPath)
+                LocalDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Application.companyName, Application.productName, "local");
+            else
+                LocalDataPath = Path.Combine(Application.persistentDataPath, "local");
 #else
             PersistentDataPath = Application.persistentDataPath;
+            LocalDataPath = Path.Combine(Application.persistentDataPath, "local");
 #endif
 
             //create data folder if it doesn't exist

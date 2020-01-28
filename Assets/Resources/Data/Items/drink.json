@@ -11,7 +11,10 @@
 		"Weight": 0.5,
 		"MaxCondition": 1.0,
 		"Unique": false,
-		"Essential": false
+		"Essential": false,
+		"ExtraData": {
+			"FakeModItemData": "You could add some extra data for a mod to use without trying to redefine the model classes!"
+		}
     },
     "def": {
     "NiceName": "drink.",

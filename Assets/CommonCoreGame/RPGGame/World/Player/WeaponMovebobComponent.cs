@@ -1,4 +1,7 @@
-﻿using CommonCore.LockPause;
+﻿using CommonCore.Config;
+using CommonCore.LockPause;
+using CommonCore.RpgGame.Rpg;
+using CommonCore.State;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -71,6 +74,13 @@ namespace CommonCore.RpgGame.World
             if (LockPauseModule.IsPaused())
                 return;
 
+            if (!ConfigState.Instance.GetGameplayConfig().BobEffects || !WeaponUseMovebob) //cancel viewbob if disabled
+            {
+                TargetPosition = Vector3.zero;
+                transform.localPosition = TargetPosition;
+                return;
+            }
+
             bool isADS = WeaponComponent.IsADS;
             if (isADS && !WasInADS) //ADS hack
             {
@@ -127,5 +137,8 @@ namespace CommonCore.RpgGame.World
                 transform.Translate(moveDist * dirToTarget, Space.Self);
             }
         }
+
+        //wtf
+        private bool WeaponUseMovebob => !GameState.Instance.PlayerRpgState.Equipped.GetOrDefault(EquipSlot.RightWeapon, null)?.ItemModel.CheckFlag(ItemFlag.WeaponNoMovebob) ?? true;
     }
 }

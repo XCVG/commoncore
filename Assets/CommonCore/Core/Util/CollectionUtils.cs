@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace CommonCore
 {
@@ -28,11 +25,50 @@ namespace CommonCore
             return def;
         }
 
+        /// <summary>
+        /// Gets the first value for a key from a dictionary, ignoring the case of the key
+        /// </summary>
+        public static T GetIgnoreCase<T>(this IDictionary<string, T> dictionary, string key)
+        {
+            if (dictionary.TryGetValue(key, out var val)) //try to just get it as a shortcut
+                return val;
+
+            foreach(var kvp in dictionary)
+            {
+                if (kvp.Key.Equals(key, StringComparison.OrdinalIgnoreCase))
+                    return kvp.Value;
+            }
+
+            return default;
+        }
+
         public static void Swap<T>(this IList<T> list, int index0, int index1)
         {
             T temp = list[index0];
             list[index0] = list[index1];
             list[index1] = temp;
+        }
+
+        /// <summary>
+        /// Fills up a dictionary with all enum values as keys
+        /// </summary>
+        public static void SetupFromEnum<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TValue defaultValue) where TKey : Enum
+        {
+            foreach(TKey key in Enum.GetValues(typeof(TKey)))
+            {
+                dictionary[key] = defaultValue;
+            }
+        }
+
+        /// <summary>
+        /// Fills up a dictionary with all enum values as keys (int-indexed version)
+        /// </summary>
+        public static void SetupFromEnum<TValue>(this Dictionary<int, TValue> dictionary, Type enumType, TValue defaultValue)
+        {
+            foreach(int key in Enum.GetValues(enumType))
+            {
+                dictionary[key] = defaultValue;
+            }
         }
 
         /// <summary>

@@ -1,0 +1,25 @@
+{
+  "fists": {
+    "model": {
+      "$type": "CommonCore.RpgGame.Rpg.MeleeWeaponItemModel, Assembly-CSharp",
+      "Damage": 10,
+	  "DamageSpread": 6,
+      "DamagePierce": 0,
+	  "Reach": 1.2,
+	  "Rate": 0.8,
+	  "EnergyCost": 10.0,
+      "DType": "Normal",
+	  "SkillType": "Unspecified",
+	  "HitPuff": "MeleeHitPuff",
+      "Weight": 0,	  
+	  "Value": 0,
+      "MaxCondition": 1,
+	  "ViewModel": "",
+      "Unique": false,
+      "Essential": false,
+	  "Flags": ["WeaponTwoHanded"],
+	  "LowerTime": 1.0,
+	  "RaiseTime": 1.0
+    }
+  }
+}

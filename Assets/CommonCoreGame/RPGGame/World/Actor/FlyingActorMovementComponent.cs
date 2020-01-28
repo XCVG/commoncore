@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonCore.Config;
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -89,13 +90,13 @@ namespace CommonCore.RpgGame.World
 
             //WIP horizontal movement
             Vector2 vecToTarget = (MovementTarget - transform.position).GetFlatVector();
-            float moveMagnitude = Mathf.Min(Time.deltaTime * (IsRunning ? MaxBurstSpeed : MaxSpeed), vecToTarget.magnitude);
+            float moveMagnitude = Mathf.Min(Time.deltaTime * (IsRunning ? MaxBurstSpeed : MaxSpeed) * DifficultySpeedFactor, vecToTarget.magnitude);
             Vector2 moveVector = vecToTarget.normalized * moveMagnitude;
             transform.Translate(new Vector3(moveVector.x, 0, moveVector.y), Space.World);
 
             //WIP vertical movement
             float verticalMove = (YPositionOverride ?? PreferredHeight) - HeightAboveGround;
-            float verticalMoveMagnitude = Mathf.Min(Time.deltaTime * MaxVerticalSpeed, Mathf.Abs(verticalMove));
+            float verticalMoveMagnitude = Mathf.Min(Time.deltaTime * MaxVerticalSpeed * DifficultySpeedFactor, Mathf.Abs(verticalMove));
             transform.Translate(verticalMoveMagnitude * Mathf.Sign(verticalMove) * Vector3.up);
             
         }
@@ -135,7 +136,7 @@ namespace CommonCore.RpgGame.World
             {
                 //move toward that target height
                 float verticalMove = (YPositionOverride ?? HoverTargetHeight.Value) - HeightAboveGround;
-                float verticalMoveMagnitude = Mathf.Min(Time.deltaTime * MaxVerticalSpeed, Mathf.Abs(verticalMove));
+                float verticalMoveMagnitude = Mathf.Min(Time.deltaTime * MaxVerticalSpeed * DifficultySpeedFactor, Mathf.Abs(verticalMove));
                 transform.Translate(verticalMoveMagnitude * Mathf.Sign(verticalMove) * Vector3.up);
             }
 
@@ -152,7 +153,7 @@ namespace CommonCore.RpgGame.World
             float angleToTarget = Vector2.SignedAngle(transform.forward.GetFlatVector(), vecToTarget);
             if (Mathf.Abs(angleToTarget) > AngleThreshold) //"close enough" handling
             {
-                float angleToRotate = Mathf.Min(Mathf.Abs(angleToTarget), RotateSpeed * Time.deltaTime) * Mathf.Sign(angleToTarget);
+                float angleToRotate = Mathf.Min(Mathf.Abs(angleToTarget), RotateSpeed * DifficultySpeedFactor * Time.deltaTime) * Mathf.Sign(angleToTarget);
                 transform.Rotate(Vector3.down, angleToRotate);
             }
         }
@@ -182,5 +183,6 @@ namespace CommonCore.RpgGame.World
         }
 
         public override float DistToTarget => (MovementTarget.GetFlatVector() - transform.position.GetFlatVector()).magnitude;
+
     }
 }

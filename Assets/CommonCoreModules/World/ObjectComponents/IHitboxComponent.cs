@@ -5,7 +5,7 @@
     /// Interface for components that handle hitboxes
     /// </summary>
     /// <remarks>90% of the time you should just use HitboxComponent</remarks>
-    interface IHitboxComponent
+    public interface IHitboxComponent
     {
         BaseController ParentController { get; }
         int HitLocationOverride { get; }

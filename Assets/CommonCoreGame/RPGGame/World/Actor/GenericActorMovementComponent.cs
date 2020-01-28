@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.AI;
 
 namespace CommonCore.RpgGame.World
@@ -14,7 +13,6 @@ namespace CommonCore.RpgGame.World
     [RequireComponent(typeof(ActorController))]
     public class GenericActorMovementComponent : ActorMovementComponentBase
     {
-        //TODO make this abstract, we will need to do that soon to support dragons
 
         [Header("Components"), SerializeField]
         private NavMeshAgent NavComponent;
@@ -31,9 +29,14 @@ namespace CommonCore.RpgGame.World
         private float RunSpeed = 2.0f;
         [SerializeField]
         private float RotateSpeed = 90.0f;
+        [SerializeField]
+        private bool ShrinkColliderOnDeath = false;
+        [SerializeField]
+        private bool DisableColliderOnDeath = false;
 
         //fields
-        private bool NavmeshEnabled;        
+        private bool NavmeshEnabled;
+        private bool DeathHandled = false;
 
         protected override void Start()
         {
@@ -107,11 +110,12 @@ namespace CommonCore.RpgGame.World
 
         private void EmulateNav()
         {
-            if (NavmeshEnabled)
+            if (NavmeshEnabled || !CharController.enabled)
                 return;
 
             //apply gravity
-            CharController.Move(Physics.gravity * Time.deltaTime);
+            if(UseControllerGravity)
+                CharController.Move(Physics.gravity * Time.deltaTime);
 
             //get vector to target
             Vector3 dirVec = (MovementTarget - transform.position);
@@ -122,16 +126,15 @@ namespace CommonCore.RpgGame.World
                 return;
 
             //move
-            CharController.Move(Time.deltaTime * (IsRunning ? RunSpeed : WalkSpeed) * pathForward);
+            CharController.Move(Time.deltaTime * (IsRunning ? RunSpeed : WalkSpeed) * DifficultySpeedFactor * pathForward);
 
             //rotate me
             if (ControlRotation)
             {
                 float maxangle = Vector3.SignedAngle(transform.forward, pathForward, Vector3.up);
-                float rotangle = Mathf.Min(Time.deltaTime * RotateSpeed, Mathf.Abs(maxangle)) * Mathf.Sign(maxangle);
+                float rotangle = Mathf.Min(Time.deltaTime * RotateSpeed * DifficultySpeedFactor, Mathf.Abs(maxangle)) * Mathf.Sign(maxangle);
                 transform.Rotate(Vector3.up, rotangle);
             }
-            //transform.forward = pathForward; //TODO make this actual motion instead of a snap.
         }
 
         private void SetInitialNavState()
@@ -139,8 +142,8 @@ namespace CommonCore.RpgGame.World
             if (NavComponent != null && !ForceNavmeshOff)
             {
                 NavComponent.enabled = false;
-                NavComponent.speed = WalkSpeed;
-                NavComponent.angularSpeed = RotateSpeed;
+                NavComponent.speed = WalkSpeed * DifficultySpeedFactor;
+                NavComponent.angularSpeed = RotateSpeed * DifficultySpeedFactor;
                 NavComponent.stoppingDistance = TargetThreshold;
 
                 if (NavComponent.isOnNavMesh)
@@ -149,5 +152,34 @@ namespace CommonCore.RpgGame.World
 
             MovementTarget = transform.position;
         }
+
+        public override void HandleDeath()
+        {
+            if (DeathHandled)
+                return;
+
+            if(DisableColliderOnDeath)
+            {
+                CharController.detectCollisions = false;
+                CharController.enabled = false;
+            }
+            else if(ShrinkColliderOnDeath)
+            {
+                CharController.center = Vector3.zero;
+                CharController.height = CharController.height / 2f;
+            }
+
+            DeathHandled = true;
+        }
+
+        public override void HandleDifficultyChanged()
+        {
+            if (NavComponent != null && !ForceNavmeshOff)
+            {
+                NavComponent.speed = WalkSpeed * DifficultySpeedFactor; //TODO should probably set this on config changed
+                NavComponent.angularSpeed = RotateSpeed * DifficultySpeedFactor;
+            }
+        }
+
     }
 }

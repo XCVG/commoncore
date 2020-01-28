@@ -19,7 +19,7 @@ namespace CommonCore.RpgGame.Rpg
 
     public enum AidType //are there even any other stats?
     {
-        None, Health
+        None, Health //TODO energy
     }
 
     public enum RestoreType
@@ -30,7 +30,7 @@ namespace CommonCore.RpgGame.Rpg
 
     public enum ItemFlag
     {
-        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake
+        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponNeverRandomize, MeleeWeaponUsePreciseCasting
     }
 
     //an actual inventory item that the player has
@@ -44,6 +44,8 @@ namespace CommonCore.RpgGame.Rpg
         public bool Equipped { get; set; }
         [JsonProperty, JsonConverter(typeof(InstanceItemConverter))]
         public InventoryItemModel ItemModel { get; private set; }
+        [JsonProperty]
+        public Dictionary<string, object> ExtraData { get; private set; } = new Dictionary<string, object>();
 
         [JsonConstructor]
         internal InventoryItemInstance(InventoryItemModel model, float condition, int quantity, bool equipped)
@@ -123,6 +125,9 @@ namespace CommonCore.RpgGame.Rpg
         public readonly string WorldModel;
         public readonly string[] Flags;
 
+        [JsonProperty]
+        public Dictionary<string, object> ExtraData { get; private set; } = new Dictionary<string, object>();
+
         public bool Stackable { get; protected set; }
 
         public InventoryItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags, string worldModel)
@@ -166,21 +171,32 @@ namespace CommonCore.RpgGame.Rpg
 
     public abstract class WeaponItemModel : InventoryItemModel
     {
-        public readonly float Damage; //superclass
-        public readonly float DamagePierce; //superclass
-        public readonly DamageType DType; //superclass
-        public readonly string ViewModel; //superclass
+        public readonly float Damage;
+        public readonly float DamagePierce;
+        public readonly float DamageSpread;        
+        public readonly float DamagePierceSpread;
+        public readonly DamageType DType;
+        public readonly WeaponSkillType SkillType;
+        public readonly string ViewModel;
         public readonly string HitPuff;
+        public readonly float LowerTime;
+        public readonly float RaiseTime;
 
         public WeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags,
-            float damage, float damagePierce, DamageType dType, string viewModel, string worldModel, string hitPuff)
+            float damage, float damagePierce, float damageSpread, float damagePierceSpread,
+            DamageType dType, WeaponSkillType skillType, string viewModel, string worldModel, string hitPuff, float lowerTime, float raiseTime)
             : base(name, weight, value, maxCondition, unique, essential, flags, worldModel)
         {
             Damage = damage;
             DamagePierce = damagePierce;
+            DamageSpread = damageSpread;
+            DamagePierceSpread = damagePierceSpread;
             DType = dType;
             ViewModel = viewModel;
             HitPuff = hitPuff;
+            SkillType = skillType;
+            LowerTime = lowerTime;
+            RaiseTime = raiseTime;
         }
     }
 
@@ -191,9 +207,10 @@ namespace CommonCore.RpgGame.Rpg
         public readonly float EnergyCost;
 
         public MeleeWeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags,
-            float damage, float damagePierce, float reach, float rate, float energyCost, DamageType dType,
-            string viewModel, string worldModel, string hitPuff) 
-            : base(name, weight, value, maxCondition, unique, essential, flags, damage, damagePierce, dType, viewModel, worldModel, hitPuff)
+            float damage, float damagePierce, float damageSpread, float damagePierceSpread,
+            float reach, float rate, float energyCost, DamageType dType, WeaponSkillType skillType,
+            string viewModel, string worldModel, string hitPuff, float lowerTime, float raiseTime) 
+            : base(name, weight, value, maxCondition, unique, essential, flags, damage, damagePierce, damageSpread, damagePierceSpread, dType, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
         {
             Reach = reach;
             Rate = rate;
@@ -201,7 +218,7 @@ namespace CommonCore.RpgGame.Rpg
         }
     }
 
-    public class RangedWeaponItemModel : WeaponItemModel //yeah no melee... yet
+    public class RangedWeaponItemModel : WeaponItemModel
     {
         public readonly float ProjectileVelocity;
 
@@ -212,22 +229,30 @@ namespace CommonCore.RpgGame.Rpg
         public readonly PulseEnvelope RecoilImpulse;
         public readonly PulseEnvelope ADSRecoilImpulse;
 
+        public readonly float MovementSpreadFactor;
+        public readonly float MovementRecoveryFactor;
+        public readonly float CrouchSpreadFactor;
+        public readonly float CrouchRecoveryFactor;
+
         public readonly float FireInterval;
         public readonly int NumProjectiles;
         public readonly int MagazineSize;       
         public readonly float ReloadTime;
+
+        public readonly float ADSZoomFactor;
 
         public readonly AmmoType AType; 
         public readonly string Projectile;
 
         //it looks like JSON.net is actually using these constructors and the naming of the parameters matters, which is somewhat terrifying
         public RangedWeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags,
-            float damage, float damagePierce, float projectileVelocity,
+            float damage, float damagePierce, float damageSpread, float damagePierceSpread, float projectileVelocity,
             RangeEnvelope recoil, RangeEnvelope spread, RangeEnvelope adsRecoil, RangeEnvelope adsSpread,
             PulseEnvelope recoilImpulse, PulseEnvelope adsRecoilImpulse,
+            float movementSpreadFactor, float movementRecoveryFactor, float crouchSpreadFactor, float crouchRecoveryFactor,
             float fireInterval, int numProjectiles, int magazineSize, float reloadTime,
-            AmmoType aType, DamageType dType, string viewModel, string worldModel, string hitPuff, string projectile)
-            : base(name, weight, value, maxCondition, unique, essential, flags, damage, damagePierce, dType, viewModel, worldModel, hitPuff)
+            AmmoType aType, DamageType dType, WeaponSkillType skillType, string viewModel, string worldModel, string hitPuff, string projectile, float adsZoomFactor, float lowerTime, float raiseTime)
+            : base(name, weight, value, maxCondition, unique, essential, flags, damage, damagePierce, damageSpread, damagePierceSpread, dType, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
         {
             ProjectileVelocity = projectileVelocity;
 
@@ -238,15 +263,24 @@ namespace CommonCore.RpgGame.Rpg
             RecoilImpulse = recoilImpulse;
             ADSRecoilImpulse = adsRecoilImpulse;
 
+            MovementSpreadFactor = movementSpreadFactor;
+            MovementRecoveryFactor = movementRecoveryFactor;
+            CrouchSpreadFactor = crouchSpreadFactor;
+            CrouchRecoveryFactor = crouchRecoveryFactor;
+
             FireInterval = fireInterval;
             NumProjectiles = numProjectiles;
 
             MagazineSize = magazineSize;
             ReloadTime = reloadTime;
 
+            ADSZoomFactor = adsZoomFactor;
+
             AType = aType;
             Projectile = projectile;            
         }
+
+        public bool UseMagazine => MagazineSize > 0;
 
         public override string GetStatsString()
         {

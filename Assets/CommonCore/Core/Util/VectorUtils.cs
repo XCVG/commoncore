@@ -18,11 +18,27 @@ namespace CommonCore
         }
 
         /// <summary>
-        /// Gets a space 3D (x->x, 0->y, y->z) vector from a 2D vector
+        /// Gets a flat sideways 2D (z->x, y->y) vector from a 3D vector
+        /// </summary>
+        public static Vector2 GetSideVector(this Vector3 vec3)
+        {
+            return new Vector2(vec3.z, vec3.y);
+        }
+
+        /// <summary>
+        /// Gets a space 3D (x->x, 0->y, y->z) vector from a flat 2D vector
         /// </summary>
         public static Vector3 GetSpaceVector(this Vector2 vec2)
         {
             return new Vector3(vec2.x, 0, vec2.y);
+        }
+
+        /// <summary>
+        /// Gets a 3D vector (x->x, y->y) from a 2D vector, manually specifying the Z component
+        /// </summary>
+        public static Vector3 GetAtZ(this Vector2 vec2, float z)
+        {
+            return new Vector3(vec2.x, vec2.y, z);
         }
 
         /// <summary>

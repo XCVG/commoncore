@@ -86,18 +86,7 @@ namespace CommonCore.RpgGame.World
             ic.ItemQuantity = quantity;
         }
 
-        /// <summary>
-        /// Calculates applied damage given input damage and resistance
-        /// </summary>
-        public static float CalculateDamage(float Damage, float Pierce, float Threshold, float Resistance) //this is a dumb spot and we will move it later
-        {
-            float d1 = Damage * ((100f - Mathf.Min(Resistance, 99f)) / 100f);
-            float dt = Mathf.Max(0, Threshold - Pierce);
-            float d2 = Mathf.Max(d1 - dt, Damage * 0.1f);
-            if (GameParams.UseRandomDamage)
-                d2 *= UnityEngine.Random.Range(0.75f, 1.25f);
-            return d2;
-        }
+        
 
     }
 }

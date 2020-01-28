@@ -8,13 +8,26 @@
       "image": "matsuda",
       "nameText": "Matsuda Toyoda",
       "next": "this.matsuda2",
-      "text": "Hey, there you are! I made it into the academy, too!"
+      "text": "Hey, there you are! I made it into the academy, too!",
+	  "nextText": "Next!"
     },
     "started1": {
       "type": "choice",
       "text": "Were you able to vanquish the monsters, Aegustae Aurelia?",
       "choices": [
         {
+          "text": "I want to test the new features",
+          "next": "this.newtest1"
+        },
+		{
+          "text": "I want to test the camera",
+          "next": "this.camtest1"
+        },
+		{
+          "text": "I want to see if the headmaster is in",
+          "next": "this.headmaster"
+        },
+		{
           "text": "(LIE) They fell swiftly by the edge of my sword",
           "conditional": [
 			{
@@ -34,7 +47,7 @@
           "next": "this.endlie1"
         },
 		{
-          "text": "I just want to know if these things work",
+          "text": "I just want to know if skill checks work",
           "next": "meta.return",
 		  "skillCheck": {
 			  "checkType": "soft",
@@ -44,7 +57,7 @@
 			  "failNext": "this.endlie1",
 			  "appendCheckText": true
 			}
-        },
+        },		
         {
           "text": "I'm working on it",
           "next": "meta.return"
@@ -61,5 +74,93 @@
       "text": "Did",
       "next": "meta.return"
     },
+	"newtest1": {
+      "type": "text",
+      "image": "jen",
+	  "music": "overworld",
+	  "position": "character",
+      "nameText": "New Test",
+      "next": "newtest2",
+      "text": "<player:name|keepcase> has <av:Health> health and <av:BaseStats.Stats.Dexterity> dexterity (<av:DerivedStats.Stats.Dexterity> dexterity with items)!\n<player:name> <player:Name> <player:NAme> <player:NAME> <PLAYER:NAME>\n<player:pronoun> <player:pronounObj> <player:pronounPosObj> <player:pronounRef> <player:pronounInt>\nFace image in character position.",
+	  "nextText": "Next!"
+    },
+	"newtest2": {
+      "type": "text",
+	  "background": "map_library",
+      "image": "jen",
+	  "music": "overworld",
+	  "position": "center",
+      "nameText": "Center Test",
+      "next": "newtest3",
+      "text": "Face image in center/default position.\n\nBackground image exists"
+    },
+	"newtest3": {
+      "type": "text",
+      "image": "jen",
+	  "music": "overworld",
+	  "position": "fill",
+      "nameText": "Fill Test",
+      "next": "default",
+      "text": "Face image in fill position."
+    },
+	"camtest1": {
+      "type": "text",
+	  "cameraDir": "Default",
+      "next": "this.camtest2",
+      "text": "Default/no camera position"
+    },
+	"camtest2": {
+      "type": "text",
+	  "cameraDir": "Player",
+      "next": "this.camtest3",
+      "text": "Point to Player"
+    },
+	"camtest3": {
+      "type": "text",
+	  "cameraDir": "FaceTarget:npc_peasm1",
+      "next": "this.camtest4",
+      "text": "Pointing at npc_peasm1"
+    },
+	"camtest4": {
+      "type": "text",
+	  "cameraDir": "CopyTransform:PushableBox",
+      "next": "default",
+      "text": "Copied transform of PushableBox"
+    },
+	"headmaster": {
+      "type": "blank",
+      "conditional": [
+        {
+          "next": "this.headmaster_not_in",
+          "conditions": []
+        },
+        {
+          "next": "this.headmaster_in",
+          "conditions": [
+            {
+              "flag": "headmaster_in"
+            }
+          ]
+        }
+      ]
+    },
+	"headmaster_in": {
+      "title": "Zero Hayabusa Academy Offices",
+      "type": "text",
+      "background": "map_offices",
+      "music": "overworld",
+	  "nameText": "Headmaster IS in",
+      "text": "The Headmaster is in his office",
+      "next": "meta.return"
+    },
+    "headmaster_not_in": {
+      "title": "Zero Hayabusa Academy Offices",
+      "type": "text",
+      "background": "map_offices",
+      "music": "overworld",
+	  "nameText": "Headmaster NOT in",
+      "text": "The Headmaster is not in his office",
+      "next": "meta.return"
+    }
   }
 }

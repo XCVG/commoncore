@@ -36,7 +36,7 @@ namespace GameUI
                 CoreParams.VersionCode.ToString(), CoreParams.VersionName,
                 Application.unityVersion);
 
-            ScriptingModule.CallHooked(ScriptHook.OnMainMenuOpen, this);
+            ScriptingModule.CallHooked(ScriptHook.AfterMainMenuCreate, this);
         }
 
         public override void Update()

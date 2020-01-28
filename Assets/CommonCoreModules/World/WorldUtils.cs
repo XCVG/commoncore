@@ -186,7 +186,12 @@ namespace CommonCore.World
         /// <summary>
         /// Spawn an effect into the world (Effects/*)
         /// </summary>
-        public static GameObject SpawnEffect(string effectID, Vector3 position, Vector3 rotation, Transform parent)
+        public static GameObject SpawnEffect(string effectID, Vector3 position, Vector3 rotation, Transform parent) => SpawnEffect(effectID, position, rotation, parent, false);
+
+        /// <summary>
+        /// Spawn an effect into the world (Effects/*)
+        /// </summary>
+        public static GameObject SpawnEffect(string effectID, Vector3 position, Vector3 rotation, Transform parent, bool useUniqueId)
         {
             if (parent == null)
                 parent = CoreUtils.GetWorldRoot();
@@ -196,7 +201,7 @@ namespace CommonCore.World
                 return null;
 
             var go = UnityEngine.Object.Instantiate(prefab, position, Quaternion.Euler(rotation), parent) as GameObject;
-            go.name = string.Format("{0}_{1}", go.name.Replace("(Clone)", "").Trim(), GameState.Instance.NextUID);
+            go.name = string.Format("{0}_{1}", go.name.Replace("(Clone)", "").Trim(), useUniqueId ? GameState.Instance.NextUID.ToString() : "fx");
 
             return go;
         }
@@ -227,6 +232,121 @@ namespace CommonCore.World
                 return true;
 
             return false;
+        }
+
+        public static LayerMask GetAttackLayerMask()
+        {
+            return LayerMask.GetMask("Default", "ActorHitbox");
+        }
+
+        /// <summary>
+        /// Raycasts and gets the closest/best hit on an IHitboxComponent or ITakeDamage
+        /// </summary>
+        /// <remarks>
+        /// <para>Hits on originator will always be ignored. If you don't want to, leave originator blank</para>
+        /// </remarks>
+        public static HitInfo RaycastAttackHit(Vector3 origin, Vector3 direction, float range, bool rejectBullets, bool useSubHitboxes, BaseController originator)
+        {
+            var hits = Physics.RaycastAll(origin, direction, range, GetAttackLayerMask(), QueryTriggerInteraction.Collide);
+
+            //no hits, return default
+            if(hits.Length == 0)
+                return new HitInfo(null, null, default, default, default);
+
+            return GetAttackHit(hits, rejectBullets, useSubHitboxes, originator);
+        }
+
+        /// <summary>
+        /// Raycasts and gets the closest/best hit on an IHitboxComponent or ITakeDamage (loose variant)
+        /// </summary>
+        /// <remarks>
+        /// <para>Hits on originator will always be ignored. If you don't want to, leave originator blank</para>
+        /// </remarks>
+        public static HitInfo SpherecastAttackHit(Vector3 origin, Vector3 direction, float radius, float range, bool rejectBullets, bool useSubHitboxes, BaseController originator)
+        {
+            var hits = Physics.SphereCastAll(origin, radius, direction, range, GetAttackLayerMask(), QueryTriggerInteraction.Collide);
+
+            //no hits, return default
+            if (hits.Length == 0)
+                return new HitInfo(null, null, default, default, default);
+
+            return GetAttackHit(hits, rejectBullets, useSubHitboxes, originator);
+        }
+
+        /// <summary>
+        /// Gets the closest/best hit on an IHitboxComponent or ITakeDamage
+        /// </summary>
+        /// <remarks>
+        /// <para>Hits on originator will always be ignored. If you don't want to, leave originator blank</para>
+        /// <para>This variant doesn't raycast and expects you to do it yourself.</para>
+        /// </remarks>
+        public static HitInfo GetAttackHit(IEnumerable<RaycastHit> hits, bool rejectBullets, bool useSubHitboxes, BaseController originator)
+        {
+            RaycastHit closestHit = default;
+            closestHit.distance = float.MaxValue;
+
+            foreach (var hit in hits)
+            {
+                if (hit.distance < closestHit.distance)
+                {
+                    //reject bullets
+                    if (rejectBullets && hit.collider.GetComponent<BulletScript>())
+                        continue;
+
+                    if (hit.collider.isTrigger) //if it's non-solid, it only counts if it's a hitbox
+                    {
+                        var ihc = hit.collider.GetComponent<IHitboxComponent>();
+                        if (ihc != null && (originator == null || ihc.ParentController != originator)) //handle originator
+                            closestHit = hit;
+                    }
+                    else //if it's solid, closer always counts
+                    {
+                        if (originator != null)
+                        {
+                            var ihc = hit.collider.GetComponent<IHitboxComponent>();
+                            if (ihc != null && ihc.ParentController == originator)
+                                continue;
+                            var bc = hit.collider.GetComponent<BaseController>();
+                            if (bc != null && bc == originator)
+                                continue;
+
+                            closestHit = hit;
+                        }
+                        else
+                            closestHit = hit;
+                    }
+
+                }
+            }
+
+            //Debug.Log($"{closestHit.collider.Ref()?.name}");
+
+            //sentinel: we didn't hit anything
+            if (closestHit.distance == float.MaxValue)
+                return new HitInfo(null, null, default, default, default);
+
+            //try to find an actor hitbox
+            var actorHitbox = closestHit.collider.GetComponent<IHitboxComponent>();
+            if (actorHitbox != null)
+                return new HitInfo(actorHitbox.ParentController, actorHitbox, closestHit.point, actorHitbox.HitLocationOverride, actorHitbox.HitMaterial);
+
+            //try to find a basecontroller
+            var otherController = closestHit.collider.GetComponent<BaseController>();
+            if (otherController == null)
+                otherController = closestHit.collider.GetComponentInParent<BaseController>();
+
+            //special case: see if we have a more specific hitbox we can use (headshots mostly)
+            if (otherController != null && useSubHitboxes)
+            {
+                foreach (var hit in hits)
+                {
+                    var specificActorHitbox = hit.collider.GetComponent<IHitboxComponent>();
+                    if (specificActorHitbox != null && specificActorHitbox.ParentController == otherController)
+                        return new HitInfo(otherController, specificActorHitbox, hit.point, specificActorHitbox.HitLocationOverride, specificActorHitbox.HitMaterial);
+                }
+            }
+
+            return new HitInfo(otherController, null, closestHit.point, 0, otherController?.HitMaterial ?? 0);
         }
 
 

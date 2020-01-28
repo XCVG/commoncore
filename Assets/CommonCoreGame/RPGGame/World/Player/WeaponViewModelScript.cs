@@ -18,7 +18,7 @@ namespace CommonCore.RpgGame.World
 
         public abstract void SetVisibility(bool visible);
 
-        public abstract void SetState(ViewModelState newState, ViewModelHandednessState handedness);
+        public abstract void SetState(ViewModelState newState, ViewModelHandednessState handedness, float timeScale);
 
         public abstract (string, float) GetHandAnimation(ViewModelState newState, ViewModelHandednessState handedness);
 

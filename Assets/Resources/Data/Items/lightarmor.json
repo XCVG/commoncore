@@ -6,13 +6,15 @@
 			"Normal": 5.0,
 			"Impact": 6.0,
 			"Explosive": 4.0,
-			"Energy": 3.0
+			"Energy": 3.0,
+			"Thermal": 3.0
 		},
 		"DamageThreshold": {
 			"Normal": 5.0,
 			"Impact": 5.0,
 			"Explosive": 5.0,
-			"Energy": 5.0
+			"Energy": 4.0,
+			"Thermal": 4.0
 		},
 		"Name": "lightarmor",
 		"Weight": 5.0,
@@ -22,7 +24,7 @@
 		"WorldModel": "item_lightarmor"
     },
     "def": {
-    "NiceName": "Light Armor",
+    "NiceName": "Explorer Armor",
     "Image": "lightarmor",
     "Description": "Simple armor made of boiled and strapped leather"
 	}

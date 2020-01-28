@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CommonCore.LockPause;
+using CommonCore.Config;
 
 namespace CommonCore.RpgGame.World
 {
@@ -66,6 +67,11 @@ namespace CommonCore.RpgGame.World
             //Debug.Log($"{targetEulerAngles.ToString()}, {time}s, {violence}");
 
             //violence is pretty much the ratio of time-to-target versus time-back-to-zero
+
+            if(!ConfigState.Instance.GetGameplayConfig().ShakeEffects)
+            {
+                return;
+            }
 
             TimeToZero = time * violence;
             TimeToNext = time - TimeToZero;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CommonCore.Config;
 using CommonCore.RpgGame.Rpg;
 using CommonCore.RpgGame.State;
 using CommonCore.State;
@@ -221,10 +222,10 @@ namespace CommonCore.RpgGame.Dialogue
             {
                 case SkillCheckTarget.Skill:
                     SkillType skill = (SkillType)Enum.Parse(typeof(SkillType), Target, true);
-                    return player.DerivedStats.Skills[(int)skill];
+                    return player.DerivedStats.Skills[skill] * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerSkill;
                 case SkillCheckTarget.Stat:
                     StatType stat = (StatType)Enum.Parse(typeof(StatType), Target, true);
-                    return player.DerivedStats.Stats[(int)stat];
+                    return player.DerivedStats.Stats[stat] * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerSkill;
                 case SkillCheckTarget.ActorValue:
                     return (IComparable)player.GetAV(Target);
                 default:
@@ -271,18 +272,26 @@ namespace CommonCore.RpgGame.Dialogue
         Skill, Stat, ActorValue
     }
 
+    internal enum FrameImagePosition
+    {
+        Center, Fill, Character, Battler
+    }
+
     internal class Frame
     {
         public readonly string Background;
-        public readonly string Image;
+        public readonly string Image;        
         public readonly string Next;
         public readonly string Music;
         public readonly string NameText;
         public readonly string Text;
+        public readonly string NextText;
+        public readonly string CameraDirection;
+        public readonly FrameImagePosition ImagePosition;
         public readonly ConditionNode[] NextConditional;
         public readonly MicroscriptNode[] NextMicroscript;
 
-        public Frame(string background, string image, string next, string music, string nameText, string text, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript)
+        public Frame(string background, string image, string next, string music, string nameText, string text, string nextText, string cameraDirection, FrameImagePosition imagePosition, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript)
         {
             Background = background;
             Image = image;
@@ -290,6 +299,9 @@ namespace CommonCore.RpgGame.Dialogue
             Music = music;
             NameText = nameText;
             Text = text;
+            NextText = nextText;
+            CameraDirection = cameraDirection;
+            ImagePosition = imagePosition;
 
             if (nextConditional != null && nextConditional.Length > 0)
                 NextConditional = (ConditionNode[])nextConditional.Clone();
@@ -321,10 +333,19 @@ namespace CommonCore.RpgGame.Dialogue
         }
     }
 
+    internal class BlankFrame : Frame
+    {
+        public BlankFrame(string background, string image, string next, string music, string nameText, string text, string nextText, string cameraDir, FrameImagePosition imagePosition, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript)
+            : base(background, image, next, music, nameText, text, nextText, cameraDir, imagePosition, nextConditional, nextMicroscript)
+        {
+
+        }
+    }
+
     internal class TextFrame : Frame
     {
-        public TextFrame(string background, string image, string next, string music, string nameText, string text, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript)
-            : base(background, image, next, music, nameText, text, nextConditional, nextMicroscript)
+        public TextFrame(string background, string image, string next, string music, string nameText, string text, string nextText, string cameraDir, FrameImagePosition imagePosition, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript)
+            : base(background, image, next, music, nameText, text, nextText, cameraDir, imagePosition, nextConditional, nextMicroscript)
         {
             
         }
@@ -334,12 +355,14 @@ namespace CommonCore.RpgGame.Dialogue
     {
         public readonly ChoiceNode[] Choices;
 
-        public ChoiceFrame(string background, string image, string next, string music, string nameText, string text, ChoiceNode[] choices, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript)
-            : base(background, image, next, music, nameText, text, nextConditional, nextMicroscript)
+        public ChoiceFrame(string background, string image, string next, string music, string nameText, string text, string nextText, string cameraDir, FrameImagePosition imagePosition, ChoiceNode[] choices, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript)
+            : base(background, image, next, music, nameText, text, nextText, cameraDir, imagePosition, nextConditional, nextMicroscript)
         {
             Choices = (ChoiceNode[])choices.Clone();
         }
     }
+
+
 
     internal class ConditionNode
     {

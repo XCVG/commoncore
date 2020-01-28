@@ -10,19 +10,21 @@ namespace CommonCore.ObjectActions
     public class SpawnEffectSpecial : ActionSpecial
     {
         [SerializeField, Tooltip("The formal ID of the effect to spawn")]
-        private string EffectId;
+        private string EffectId = null;
         [SerializeField]
-        private Transform SpawnParent;
+        private Transform SpawnParent = null;
         [SerializeField]
-        private bool OverrideTransform;
+        private bool OverrideTransform = false;
         [SerializeField]
-        private Vector3 OverridePosition;
+        private Vector3 OverridePosition = Vector3.zero;
         [SerializeField]
-        private Vector3 OverrideRotation;
+        private Vector3 OverrideRotation = Vector3.zero;
         [SerializeField]
         private bool ActivateObject = true;
+#pragma warning disable CS0649 //I kinda don't want to default assign this
         [SerializeField]
         private ObjectSpawnEvent OnSpawnEvent;
+#pragma warning restore CS0649
 
         private bool Locked;
 

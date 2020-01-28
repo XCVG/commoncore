@@ -35,6 +35,9 @@ namespace CommonCore.RpgGame.Dialogue
             string sNext = string.Empty;
             string sText = string.Empty;
             string sName = string.Empty;
+            string sNextText = string.Empty;
+            string sCameraDir = string.Empty;
+            FrameImagePosition sPosition = FrameImagePosition.Center;
             if (jo["background"] != null)
                 sBackground = jo["background"].Value<string>();
             if (jo["image"] != null)
@@ -47,7 +50,14 @@ namespace CommonCore.RpgGame.Dialogue
                 sText = jo["text"].Value<string>();
             if (jo["nameText"] != null)
                 sName = jo["nameText"].Value<string>();
-            Frame baseFrame = new Frame(sBackground, sImage, sNext, sMusic, sName, sText, null, null);
+            if (jo["nextText"] != null)
+                sNextText = jo["nextText"].Value<string>();
+            if (jo["position"] != null)
+            {
+                if (Enum.TryParse(jo["position"].Value<string>(), true, out FrameImagePosition pos))
+                    sPosition = pos;
+            }
+            Frame baseFrame = new Frame(sBackground, sImage, sNext, sMusic, sName, sText, sNextText, sCameraDir, sPosition, null, null);
 
             //parse frames
             Dictionary<string, Frame> frames = new Dictionary<string, Frame>();
@@ -64,7 +74,7 @@ namespace CommonCore.RpgGame.Dialogue
                 }
                 catch (Exception e)
                 {
-                    Debug.Log("Failed to parse frame!");
+                    Debug.Log($"Failed to parse frame \"{x.Key}\" in scene \"{dialogueName}\"!");
                     Debug.LogException(e);
                 }
             }
@@ -80,7 +90,10 @@ namespace CommonCore.RpgGame.Dialogue
             string music = baseFrame.Music;
             string nameText = baseFrame.NameText;
             string text = baseFrame.Text;
+            string nextText = baseFrame.NextText;
             string type = null;
+            string cameraDir = baseFrame.CameraDirection;
+            FrameImagePosition position = FrameImagePosition.Center;
 
             if (jt["background"] != null)
                 background = jt["background"].Value<string>();
@@ -94,8 +107,19 @@ namespace CommonCore.RpgGame.Dialogue
                 nameText = jt["nameText"].Value<string>();
             if (jt["text"] != null)
                 text = jt["text"].Value<string>();
+            if (jt["nextText"] != null)
+                nextText = jt["nextText"].Value<string>();
             if (jt["type"] != null)
                 type = jt["type"].Value<string>();
+            if (jt["cameraDir"] != null)
+                cameraDir = jt["cameraDir"].Value<string>();
+
+            if (jt["position"] != null)
+            {
+                if (Enum.TryParse(jt["position"].Value<string>(), true, out FrameImagePosition pos))
+                    position = pos;
+            }
+                
 
             //load/parse conditionals and microscripts
             ConditionNode[] conditional = null;
@@ -147,11 +171,15 @@ namespace CommonCore.RpgGame.Dialogue
                 {
                     choices.Add(ParseChoiceNode(x));
                 }
-                return new ChoiceFrame(background, image, next, music, nameText, text, choices.ToArray(), conditional, microscript);
+                return new ChoiceFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, choices.ToArray(), conditional, microscript);
             }
             else if (type == "text")
             {
-                return new TextFrame(background, image, next, music, nameText, text, conditional, microscript);
+                return new TextFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, conditional, microscript);
+            }
+            else if (type == "blank")
+            {
+                return new BlankFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, conditional, microscript);
             }
             else
             {

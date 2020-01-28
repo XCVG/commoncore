@@ -59,6 +59,7 @@ ModelImporter:
     100106: Trigger
     100108: upperarm_l
     100110: upperarm_r
+    100112: rifle
     400000: //RootNode
     400002: aurelia_test3
     400004: aurelia_test3-base
@@ -115,21 +116,26 @@ ModelImporter:
     400106: Trigger
     400108: upperarm_l
     400110: upperarm_r
+    400112: rifle
     2000000: Camera
     2100000: RIfle.001
     2100002: materialMaterial
     2100004: young_caucasian_female
+    2100006: AK_Material
     2300000: Body
     2300002: Bolt
     2300004: Trigger
+    2300006: rifle
     3300000: Body
     3300002: Bolt
     3300004: Trigger
+    3300006: rifle
     4300000: Body
     4300002: Bolt
     4300004: Trigger
     4300006: aurelia_test3-crudelonggloves
     4300008: aurelia_test3-base
+    4300010: rifle
     7400000: aurelia_test3|_Idle
     7400002: aurelia_test3|ADSInvisible
     7400004: aurelia_test3|RifleFire
@@ -138,11 +144,38 @@ ModelImporter:
     7400010: aurelia_test3|RifleRaise
     7400012: aurelia_test3|RifleReload
     7400014: Camera|RifleIdle
+    7400016: aurelia_test3|PistolFire
+    7400018: aurelia_test3|PistolIdle
+    7400020: aurelia_test3|PistolLower
+    7400022: aurelia_test3|PistolRaise
+    7400024: aurelia_test3|PistolReload
+    7400026: aurelia_test3|SwordBlockEnter
+    7400028: aurelia_test3|SwordBlockExit
+    7400030: aurelia_test3|SwordBlockHold
+    7400032: aurelia_test3|SwordFire
+    7400034: aurelia_test3|SwordFireAlt
+    7400036: aurelia_test3|SwordIdle
+    7400038: aurelia_test3|SwordLower
+    7400040: aurelia_test3|SwordRaise
+    7400042: aurelia_test3|PunchIdle
+    7400044: aurelia_test3|PunchFire
+    7400046: aurelia_test3|PunchLower
+    7400048: aurelia_test3|PunchRaise
     9500000: //RootNode
     10800000: Lamp
     13700000: aurelia_test3-base
     13700002: aurelia_test3-crudelonggloves
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: materialMaterial
+    second: {fileID: 2100000, guid: 05a8f7e674d27b34b8153d80c6172b6c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: young_caucasian_female
+    second: {fileID: 2100000, guid: 13c1983f5c8de1441a7842838cdbd87c, type: 2}
   materials:
     importMaterials: 1
     materialName: 0

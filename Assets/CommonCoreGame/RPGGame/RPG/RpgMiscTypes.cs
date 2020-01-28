@@ -11,16 +11,20 @@ namespace CommonCore.RpgGame.Rpg
         Undefined, Female, Male, Other
     }
 
-    //TODO move into world (?)
     public enum DamageType
     {
-        Normal, Impact, Explosive, Energy, Poison, Radiation
+        Normal, Impact, Explosive, Energy, Poison, Thermal, Radiation
     }
 
     //kinda game dependent
     public enum StatType
     {
         Resilience, Dexterity, Erudition, Intuition, Dialectic, Subterfuge, Serendipity
+    }
+
+    public enum WeaponSkillType
+    {
+        Unspecified, Melee, Archery, Guns
     }
 
     //mostly game dependent
@@ -46,28 +50,33 @@ namespace CommonCore.RpgGame.Rpg
     {
         public float MaxHealth { get; set; }
         public float MaxEnergy { get; set; }
-        public float[] DamageResistance { get; set; } //this is stupid, TODO change to dictionary with enum keys
-        public float[] DamageThreshold { get; set; }
+        public Dictionary<DamageType, float> DamageResistance { get; set; }
+        public Dictionary<DamageType, float> DamageThreshold { get; set; }
         
-        public int[] Stats { get; set; }
-        public int[] Skills { get; set; }
+        public Dictionary<StatType, int> Stats { get; set; }
+        public Dictionary<SkillType, int> Skills { get; set; }
 
         public StatsSet()
         {
-            DamageResistance = new float[Enum.GetNames(typeof(DamageType)).Length];
-            DamageThreshold = new float[Enum.GetNames(typeof(DamageType)).Length];
+            DamageResistance = new Dictionary<DamageType, float>();
+            DamageResistance.SetupFromEnum(default); //we still do this because there's probably old code that relies on it
+            DamageThreshold = new Dictionary<DamageType, float>();
+            DamageThreshold.SetupFromEnum(default);
 
-            Stats = new int[Enum.GetNames(typeof(StatType)).Length];
-            Skills = new int[Enum.GetNames(typeof(SkillType)).Length];
+            Stats = new Dictionary<StatType, int>();
+            Stats.SetupFromEnum(default);
+            Skills = new Dictionary<SkillType, int>();
+            Skills.SetupFromEnum(default);
         }
 
         public StatsSet(StatsSet original) : this()
         {
             MaxHealth = original.MaxHealth;
-            original.DamageResistance.CopyTo(DamageResistance, 0);
-            original.DamageThreshold.CopyTo(DamageThreshold, 0);
-            original.Stats.CopyTo(Stats, 0);
-            original.Skills.CopyTo(Skills, 0);            
+            MaxEnergy = original.MaxEnergy;
+            DamageResistance = new Dictionary<DamageType, float>(original.DamageResistance);
+            DamageThreshold = new Dictionary<DamageType, float>(original.DamageThreshold);
+            Stats = new Dictionary<StatType, int>(original.Stats);
+            Skills = new Dictionary<SkillType, int>(original.Skills);      
         }
         
         public void SetStat(string stat, object value)
@@ -83,19 +92,19 @@ namespace CommonCore.RpgGame.Rpg
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(DamageType), propertyAlias);
                     if (propertyName == "DamageResistance")
-                        DamageResistance[propertyIndex] = Convert.ToSingle(value);
+                        DamageResistance[(DamageType)propertyIndex] = Convert.ToSingle(value);
                     else if (propertyName == "DamageThreshold")
-                        DamageThreshold[propertyIndex] = Convert.ToSingle(value);
+                        DamageThreshold[(DamageType)propertyIndex] = Convert.ToSingle(value);
                 }
                 else if (propertyName == "Stats")
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(StatType), propertyAlias);
-                    Stats[propertyIndex] = Convert.ToInt32(value);
+                    Stats[(StatType)propertyIndex] = Convert.ToInt32(value);
                 }
                 else if (propertyName == "Skills")
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(SkillType), propertyAlias);
-                    Skills[propertyIndex] = Convert.ToInt32(value);
+                    Skills[(SkillType)propertyIndex] = Convert.ToInt32(value);
                 }
             }
             else
@@ -118,19 +127,19 @@ namespace CommonCore.RpgGame.Rpg
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(DamageType), propertyAlias);
                     if (propertyName == "DamageResistance")
-                        DamageResistance[propertyIndex] += Convert.ToSingle(value);
+                        DamageResistance[(DamageType)propertyIndex] += Convert.ToSingle(value);
                     else if (propertyName == "DamageThreshold")
-                        DamageThreshold[propertyIndex] += Convert.ToSingle(value);
+                        DamageThreshold[(DamageType)propertyIndex] += Convert.ToSingle(value);
                 }
                 else if (propertyName == "Stats")
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(StatType), propertyAlias);
-                    Stats[propertyIndex] += Convert.ToInt32(value);
+                    Stats[(StatType)propertyIndex] += Convert.ToInt32(value);
                 }
                 else if (propertyName == "Skills")
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(SkillType), propertyAlias);
-                    Skills[propertyIndex] += Convert.ToInt32(value);
+                    Skills[(SkillType)propertyIndex] += Convert.ToInt32(value);
                 }
             }
             else
@@ -173,19 +182,19 @@ namespace CommonCore.RpgGame.Rpg
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(DamageType), propertyAlias);
                     if (propertyName == "DamageResistance")
-                        result = DamageResistance[propertyIndex];
+                        result = DamageResistance[(DamageType)propertyIndex];
                     else if (propertyName == "DamageThreshold")
-                        result = DamageThreshold[propertyIndex];
+                        result = DamageThreshold[(DamageType)propertyIndex];
                 }
                 else if (propertyName == "Stats")
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(StatType), propertyAlias);
-                    result = Stats[propertyIndex];
+                    result = Stats[(StatType)propertyIndex];
                 }
                 else if (propertyName == "Skills")
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(SkillType), propertyAlias);
-                    result = Skills[propertyIndex];
+                    result = Skills[(SkillType)propertyIndex];
                 }
             }
             else

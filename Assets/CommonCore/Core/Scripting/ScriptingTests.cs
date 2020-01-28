@@ -67,8 +67,6 @@ namespace CommonCore.Scripting
 
     internal static class ScriptingHookTest
     {
-        //None, AfterModulesLoaded, BeforeApplicationExit, OnGameStart, OnGameEnd, OnSceneLoad, AfterSceneLoad, OnSceneUnload, OnMainMenuOpen, OnIGUIMenuOpen, OnFrameUpdate
-
         [CCScript, CCScriptHook(Hook = ScriptHook.AfterModulesLoaded)]
         private static void AfterModulesLoaded(ScriptExecutionContext context)
         {
@@ -93,6 +91,18 @@ namespace CommonCore.Scripting
             Debug.Log($"OnGameEnd\n{context}");
         }
 
+        [CCScript, CCScriptHook(Hook = ScriptHook.OnGameLoad)]
+        private static void OnGameLoad(ScriptExecutionContext context)
+        {
+            Debug.Log($"OnGameLoad\n{context}");
+        }
+
+        [CCScript, CCScriptHook(Hook = ScriptHook.OnSceneTransition)]
+        private static void OnSceneTransition(ScriptExecutionContext context)
+        {
+            Debug.Log($"OnSceneTransition\n{context}");
+        }
+
         [CCScript, CCScriptHook(Hook = ScriptHook.OnSceneLoad)]
         private static void OnSceneLoad(ScriptExecutionContext context)
         {
@@ -111,10 +121,16 @@ namespace CommonCore.Scripting
             Debug.Log($"OnSceneUnload\n{context}");
         }
 
-        [CCScript, CCScriptHook(Hook = ScriptHook.OnMainMenuOpen)]
-        private static void OnMainMenuOpen(ScriptExecutionContext context)
+        [CCScript, CCScriptHook(Hook = ScriptHook.AfterMainMenuCreate)]
+        private static void AfterMainMenuCreate(ScriptExecutionContext context)
         {
-            Debug.Log($"OnMainMenuOpen\n{context}");
+            Debug.Log($"AfterMainMenuCreate\n{context}");
+        }
+
+        [CCScript, CCScriptHook(Hook = ScriptHook.AfterIGUIMenuCreate)]
+        private static void AfterIGUIMenuCreate(ScriptExecutionContext context)
+        {
+            Debug.Log($"AfterIGUIMenuCreate\n{context}");
         }
 
         [CCScript, CCScriptHook(Hook = ScriptHook.OnIGUIMenuOpen)]

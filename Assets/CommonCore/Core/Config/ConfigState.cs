@@ -1,8 +1,10 @@
 ﻿using CommonCore.DebugLog;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using UnityEngine;
 
 namespace CommonCore.Config
@@ -17,6 +19,17 @@ namespace CommonCore.Config
         {
             try
             {
+                //backup the config file first
+                try
+                {
+                    if (File.Exists(Path))
+                        File.Copy(Path, System.IO.Path.Combine(CoreParams.PersistentDataPath, "config.backup.json"), true);
+                }
+                catch(Exception)
+                {
+                    
+                }
+
                 Instance = CoreUtils.LoadExternalJson<ConfigState>(Path);
             }
             catch(Exception e)
@@ -68,6 +81,51 @@ namespace CommonCore.Config
             }
         }
 
+        /// <summary>
+        /// Adds an object to the custom config vars if and only if it does not already exist (function version)
+        /// </summary>
+        public void AddCustomVarIfNotExists<T>(string name, Func<T> customVarBuilder)
+        {
+            if (CustomConfigVars.ContainsKey(name))
+            {
+                if (CustomConfigVars[name] == null || CustomConfigVars[name].GetType() != typeof(T))
+                {
+                    Debug.LogWarning($"[Config] Custom config var {name} exists but contains a {CustomConfigVars[name]?.GetType()?.Name} instead of a {typeof(T).Name}");
+                }
+            }
+            else
+            {
+                CustomConfigVars.Add(name, customVarBuilder());
+            }
+        }
+
+        /// <summary>
+        /// Handle (some) config file errors
+        /// </summary>
+        /// <remarks>
+        /// This is mostly to deal with custom variables where the types may no longer exist if a module or addon was added and then removed.
+        /// </remarks>
+        [OnError]
+        internal void OnError(StreamingContext context, ErrorContext errorContext)
+        {
+
+            if (errorContext.Path.StartsWith(nameof(CustomConfigVars)))
+            {
+                Debug.LogWarning($"Failed to load a custom config var (path: {errorContext.Path}). Please check your config file.");
+                errorContext.Handled = true;
+            }
+            else if (errorContext.Path.StartsWith(nameof(InputMapperData)))
+            {
+                Debug.LogWarning($"Failed to load input mapper data (path: {errorContext.Path}). Please check your config file.");
+                errorContext.Handled = true;
+            }
+            else
+            {
+                Debug.LogError($"A fatal error occurred during config file loading. Please check your config file. \n{errorContext.Error.Message}");
+                //errorContext.Handled = true;
+            }
+
+        }
 
         //actual config data here (WIP)
 
@@ -84,6 +142,7 @@ namespace CommonCore.Config
         public int AntialiasingQuality { get; set; } = 1;
         public float ViewDistance { get; set; } = 1000.0f;
         public bool ShowFps { get; set; } = false;
+        public SubtitlesLevel Subtitles { get; set; } = SubtitlesLevel.Always;
 
         //VIDEO CONFIG (EXTENDED)
         public QualityLevel ShadowQuality { get; set; } = QualityLevel.Medium;
@@ -105,7 +164,7 @@ namespace CommonCore.Config
         public HashSet<string> CustomConfigFlags { get; private set; } = new HashSet<string>();
         [JsonProperty(ItemTypeNameHandling = TypeNameHandling.All)]
         public Dictionary<string, object> CustomConfigVars { get; private set; } = new Dictionary<string, object>(); //note that serialization/deserialization can explode in edge cases
-        
+
     }
 
 

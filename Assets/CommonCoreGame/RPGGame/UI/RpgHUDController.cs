@@ -1,9 +1,12 @@
-﻿using CommonCore.Messaging;
+﻿using CommonCore.Audio;
+using CommonCore.Config;
+using CommonCore.Messaging;
 using CommonCore.RpgGame.Rpg;
 using CommonCore.State;
 using CommonCore.StringSub;
 using CommonCore.UI;
 using CommonCore.World;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +22,7 @@ namespace CommonCore.RpgGame.UI
         [Header("Left Bar")]
         public Slider HealthSlider;
         public Text HealthText;
+        public Image HealthFillArea;
 
         public Slider ShieldSlider;
         public Text ShieldText;
@@ -34,16 +38,30 @@ namespace CommonCore.RpgGame.UI
 
         [Header("Misc")]
         public Image Crosshair;
+        public Image HitIndicator;
+
+        [Header("Options")]
+        public float HealthbarFlashTime;
+        public Color HealthbarFlashColor;
+        public float HitIndicatorHoldTime;
+        public float HitIndicatorFadeTime;
 
         //local state is, as it turns out, unavoidable
-        private bool WeaponReady = true;
-
         private string OverrideTarget = null;
+
+
+        private float TimeSinceLastHealthSample = 0;
+        private float? LastHealthSampleValue = null;
+        private Color? HealthOriginalColor = null;
+        private Coroutine HealthFlashCoroutine = null;
+
+        private Coroutine HitIndicatorFlashCoroutine = null;
 
         protected override void Start()
         {
             base.Start();
 
+            LastHealthSampleValue = GameState.Instance.PlayerRpgState.HealthFraction; //okayish
             UpdateStatusDisplays();
             UpdateWeaponDisplay();
 
@@ -73,6 +91,9 @@ namespace CommonCore.RpgGame.UI
             {
                 switch (kvmessage.Flag)
                 {
+                    case "RpgChangeWeapon":
+                        UpdateWeaponDisplay();
+                        break;
                     case "PlayerHasTarget":
                         SetTargetMessage(kvmessage.GetValue<string>("Target"));
                         break;
@@ -93,17 +114,14 @@ namespace CommonCore.RpgGame.UI
             {
                 switch (flagmessage.Flag)
                 {                    
-                    case "RpgChangeWeapon":
-                        UpdateWeaponDisplay();
-                        break;
                     case "WepReloading":
                     case "WepFired":
-                        WeaponReady = false;
+                        //WeaponReady = false;
                         UpdateWeaponDisplay();
                         break;
                     case "WepReady":
                     case "WepReloaded":
-                        WeaponReady = true;
+                        //WeaponReady = true;
                         UpdateWeaponDisplay();
                         break;
                     case "PlayerChangeView":
@@ -112,9 +130,18 @@ namespace CommonCore.RpgGame.UI
                     case "PlayerClearTarget":
                         ClearTarget();
                         break;
+                    case "PlayerHitTarget":
+                        FlashHitIndicator();
+                        break;
                     case "RpgQuestStarted":
                     case "RpgQuestEnded":
                         AddQuestMessage(message);
+                        break;
+                    case "HudEnableCrosshair":
+                        Crosshair.enabled = true;
+                        break;
+                    case "HudDisableCrosshair":
+                        Crosshair.enabled = false;
                         break;
                 }
 
@@ -130,6 +157,8 @@ namespace CommonCore.RpgGame.UI
             //we actually don't care much if this fails
             //it'll throw an ugly exception but won't break anything
 
+            //I think this is redundant now (?)
+
             var newView = ((QdmsKeyValueMessage)(message)).GetValue<PlayerViewType>("ViewType");
             if (newView == PlayerViewType.ForceFirst || newView == PlayerViewType.PreferFirst)
                 Crosshair.gameObject.SetActive(true);
@@ -143,6 +172,8 @@ namespace CommonCore.RpgGame.UI
         {
             var player = GameState.Instance.PlayerRpgState;
             HealthText.text = player.Health.ToString("f0");
+            if ((LastHealthSampleValue ?? HealthSlider.value) - player.HealthFraction > GameParams.DamageFlashThreshold)
+                FlashHealthBar();
             HealthSlider.value = player.HealthFraction;
 
             EnergyText.text = player.Energy.ToString("f0");
@@ -151,6 +182,115 @@ namespace CommonCore.RpgGame.UI
             //null out the shields for now
             ShieldText.text = "";
             ShieldSlider.value = 0;
+
+            //handle health flashing
+            /*
+            if(TimeSinceLastHealthSample > GameParams.DamageFlashSamplePeriod)
+            {
+                TimeSinceLastHealthSample = 0;
+                if(LastHealthSampleValue.HasValue)
+                {
+                    if (LastHealthSampleValue.Value - player.HealthFraction > GameParams.DamageFlashThreshold)
+                        FlashHealthBar();
+                }
+                LastHealthSampleValue = player.HealthFraction;
+            }
+            TimeSinceLastHealthSample += Time.deltaTime;
+            */
+        }
+
+        private void FlashHitIndicator()
+        {
+            var gameplayConfig = ConfigState.Instance.GetGameplayConfig();
+
+            if (gameplayConfig.HitIndicatorsAudio)
+            {
+                AudioPlayer.Instance.PlayUISound("HitIndicator");
+            }
+
+            if (gameplayConfig.HitIndicatorsVisual)
+            {
+                if (HitIndicatorFlashCoroutine != null)
+                    StopCoroutine(HitIndicatorFlashCoroutine);
+
+                HitIndicator.color = new Color(HitIndicator.color.r, HitIndicator.color.g, HitIndicator.color.b, 1f);
+
+                HitIndicatorFlashCoroutine = StartCoroutine(FlashHitIndicatorCoroutine());
+            }
+        }
+
+        private IEnumerator FlashHitIndicatorCoroutine()
+        {
+            yield return new WaitForSeconds(HitIndicatorHoldTime);
+
+            for(float elapsed = 0; elapsed < HitIndicatorFadeTime; elapsed += Time.deltaTime)
+            {
+                float ratio = elapsed / HitIndicatorFadeTime;
+
+                HitIndicator.color = new Color(HitIndicator.color.r, HitIndicator.color.g, HitIndicator.color.b, 1f - ratio);
+
+                yield return null;
+            }
+
+            HitIndicator.color = new Color(HitIndicator.color.r, HitIndicator.color.g, HitIndicator.color.b, 0);
+
+            HitIndicatorFlashCoroutine = null;
+        }
+
+        private void FlashHealthBar()
+        {
+            if (!HealthOriginalColor.HasValue)
+                HealthOriginalColor = HealthFillArea.color;
+
+            //Debug.Log("FlashHealthBar");
+
+            if (HealthFlashCoroutine != null)
+                return;
+                //StopCoroutine(HealthFlashCoroutine);
+
+            HealthFlashCoroutine = StartCoroutine(FlashHealthBarCoroutine());
+        }
+
+        private IEnumerator FlashHealthBarCoroutine()
+        {
+            float healthOriginalValue = HealthSlider.value;
+
+            yield return null;
+
+            float fadeHalfTime = HealthbarFlashTime / 2f;
+
+            HealthFillArea.color = HealthOriginalColor.Value;
+
+            //fade to final color
+            for(float elapsed = 0; elapsed < fadeHalfTime; elapsed += Time.deltaTime)
+            {
+                float ratio = elapsed / fadeHalfTime;
+
+                Color c = Vector4.Lerp(HealthOriginalColor.Value, HealthbarFlashColor, ratio);
+                HealthFillArea.color = c;
+
+                yield return null;
+            }
+
+            HealthFillArea.color = HealthbarFlashColor;
+            yield return null;
+
+            //fade back to original color
+
+            for (float elapsed = 0; elapsed < fadeHalfTime; elapsed += Time.deltaTime)
+            {
+                float ratio = elapsed / fadeHalfTime;
+
+                Color c = Vector4.Lerp(HealthbarFlashColor, HealthOriginalColor.Value, ratio);
+                HealthFillArea.color = c;
+
+                yield return null;
+            }
+
+            HealthFillArea.color = HealthOriginalColor.Value;
+            LastHealthSampleValue = healthOriginalValue;
+            HealthFlashCoroutine = null;
+
         }
 
         private void UpdateWeaponDisplay()
@@ -163,8 +303,18 @@ namespace CommonCore.RpgGame.UI
                 RightWeaponText.text = InventoryModel.GetNiceName(player.Equipped[EquipSlot.RightWeapon].ItemModel);
                 if (player.Equipped[EquipSlot.RightWeapon].ItemModel is RangedWeaponItemModel rwim && !(rwim.AType == AmmoType.NoAmmo))
                 {
-                    RightAmmoText.text = player.AmmoInMagazine[EquipSlot.RightWeapon].ToString();
-                    RightAmmoReserveText.text = player.Inventory.CountItem(rwim.AType.ToString()).ToString();
+                    if (rwim.UseMagazine)
+                    {
+                        RightAmmoText.text = player.AmmoInMagazine[EquipSlot.RightWeapon].ToString();
+                        RightAmmoReserveText.text = player.Inventory.CountItem(rwim.AType.ToString()).ToString();
+                    }
+                    else
+                    {
+                        RightAmmoText.text = player.Inventory.CountItem(rwim.AType.ToString()).ToString();
+                        RightAmmoReserveText.text = "";
+                    }
+
+
                     RightAmmoTypeText.text = InventoryModel.GetNiceName(InventoryModel.GetModel(rwim.AType.ToString()));
                 }
                 else
@@ -181,34 +331,6 @@ namespace CommonCore.RpgGame.UI
                 RightAmmoReserveText.text = "-";
                 RightAmmoTypeText.text = "";
             }
-
-            /*
-            //right weapon
-            updateWeaponText(player, EquipSlot.RightWeapon, RightWeaponText, RightAmmoText);
-            //left weapon
-            updateWeaponText(player, EquipSlot.LeftWeapon, LeftWeaponText, LeftAmmoText);
-
-            void updateWeaponText(CharacterModel playerModel, EquipSlot slot, Text weaponText, Text ammoText)
-            {
-                if(playerModel.IsEquipped(slot))
-                {
-                    weaponText.text = InventoryModel.GetNiceName(playerModel.Equipped[slot].ItemModel);
-                    if (playerModel.Equipped[slot].ItemModel is RangedWeaponItemModel rwim && !(rwim.AType == AmmoType.NoAmmo))
-                    {
-                        ammoText.text = string.Format("{1}/{2} [{0}]", rwim.AType.ToString(), playerModel.AmmoInMagazine[slot], playerModel.Inventory.CountItem(rwim.AType.ToString()));
-                    }
-                    else
-                    {
-                        ammoText.text = "- / -";
-                    }
-                }
-                else
-                {
-                    weaponText.text = "Not Equipped";
-                    ammoText.text = "- / -";
-                }
-            }
-            */
 
         }
 

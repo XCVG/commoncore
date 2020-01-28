@@ -108,15 +108,24 @@ namespace CommonCore.StringSub
 
         }
 
-        internal string GetString(string baseString, string listName, bool suppressWarnings)
+        internal string GetString(string baseString, string listName, bool suppressWarnings, bool ignoreKeyCase)
         {
             Dictionary<string, string> list = null;
             if (Strings.TryGetValue(listName, out list))
             {
                 string newString = null;
-                if (list.TryGetValue(baseString, out newString))
+                if (ignoreKeyCase)
                 {
-                    return newString;
+                    newString = list.GetIgnoreCase(baseString);
+                    if(newString != null)
+                        return newString;
+                }
+                else
+                {
+                    if (list.TryGetValue(baseString, out newString))
+                    {
+                        return newString;
+                    }
                 }
             }
 
@@ -177,9 +186,7 @@ namespace CommonCore.StringSub
             // cpv:* : Campaign Variable 
             // cqs:* : Quest Stage 
             // general format is *:* where the first part is where to search
-            // might eventually add parameters with | (deferred until at least Balmora)
-            // TODO figure out inventory, etc
-            // TODO (but this is for like... Balmora) switch to messaging or dynamic modules so we're not dependent on other modules
+            // can add parameters with | but parsing this is deferred to the subbers
 
             string[] sequenceParts = sequence.Split(':');
 
@@ -193,7 +200,7 @@ namespace CommonCore.StringSub
                     result = ">";
                     break;
                 case "l":
-                    result = GetString(sequenceParts[2], sequenceParts[1], false);
+                    result = GetString(sequenceParts[2], sequenceParts[1], false, false);
                     break;
                 case "strong":
                     result = "<b>"; //handling dialogue written for proper html
@@ -243,14 +250,45 @@ namespace CommonCore.StringSub
             }
 
             return false;
-        }       
+        }
+
+        [Command(alias = "ListMacros", className = "StringSub")]
+        public static void CommandListMacros()
+        {
+            StringBuilder sb = new StringBuilder(80 * Instance.SubMap.Count);
+
+            foreach(var key in Instance.SubMap.Keys)
+            {
+                sb.AppendLine($"<{key}>");
+            }
+
+            ConsoleModule.WriteLine(sb.ToString());
+        }
+
+        [Command(alias = "ListSubstitutions", className = "StringSub")]
+        public static void CommandListSubstitutions()
+        {
+            StringBuilder sb = new StringBuilder(80 * Instance.Strings.Count);
+
+            foreach(var list in Instance.Strings)
+            {
+                sb.AppendLine(list.Key);
+                foreach(var item in list.Value)
+                {
+                    sb.AppendFormat("\t{0} : \"{1}\"\n", item.Key, item.Value);
+                }
+                sb.AppendLine();
+            }
+
+            ConsoleModule.WriteLine(sb.ToString());
+        }
 
         [Command(alias = "Replace", className = "StringSub")]
         public static void CommandReplace(string baseString, string listName)
         {
             try
             {
-                ConsoleModule.WriteLine(Instance.GetString(baseString, listName, false));
+                ConsoleModule.WriteLine(Instance.GetString(baseString, listName, false, false));
             }
             catch(Exception e)
             {
@@ -276,9 +314,14 @@ namespace CommonCore.StringSub
     //basically just shorthand for accessing functionality a different way
     public static class Sub
     {
+        public static string Replace(string baseString, string listName, bool ignoreCase)
+        {
+            return StringSubModule.Instance.GetString(baseString, listName, true, ignoreCase);
+        }
+
         public static string Replace(string baseString, string listName)
         {
-            return StringSubModule.Instance.GetString(baseString, listName, true);
+            return StringSubModule.Instance.GetString(baseString, listName, true, false);
         }
 
         public static bool Exists(string baseString, string listName)

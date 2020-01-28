@@ -1,0 +1,30 @@
+{
+  "ALIAS_NOGENDER": {
+    "Pronoun": "it",
+    "PronounObj": "its",
+    "PronounPosObj": "its",
+    "PronounRef": "itself",
+    "PronounInt": "itself"
+  },
+  "ALIAS_FEMALE": {
+    "Pronoun": "she",
+    "PronounObj": "hers",
+    "PronounPosObj": "her",
+    "PronounRef": "herself",
+    "PronounInt": "herself"
+  },
+  "ALIAS_MALE": {
+    "Pronoun": "he",
+    "PronounObj": "his",
+    "PronounPosObj": "his",
+    "PronounRef": "himself",
+    "PronounInt": "himself"
+  },
+  "ALIAS_NEUTRAL": {
+    "Pronoun": "they",
+    "PronounObj": "theirs",
+    "PronounPosObj": "their",
+    "PronounRef": "themselves",
+    "PronounInt": "themselves"
+  }
+}

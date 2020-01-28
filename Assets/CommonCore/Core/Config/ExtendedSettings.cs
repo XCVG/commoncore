@@ -101,4 +101,13 @@ namespace CommonCore.Config
     {
         VeryLow, Low, Medium, High, Ultra
     }
+
+    /// <summary>
+    /// Subtitle levels
+    /// </summary>
+    public enum SubtitlesLevel 
+    {
+        Always, ForcedOnly, Never
+    }
+
 }

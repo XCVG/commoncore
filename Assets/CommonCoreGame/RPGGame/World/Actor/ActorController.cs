@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections;
+﻿using CommonCore.Config;
+using CommonCore.DebugLog;
+using CommonCore.LockPause;
+using CommonCore.Messaging;
+using CommonCore.ObjectActions;
+using CommonCore.RpgGame.Rpg;
+using CommonCore.State;
+using CommonCore.World;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
-using CommonCore.ObjectActions;
-using CommonCore.State;
-using CommonCore.DebugLog;
-using CommonCore.Messaging;
-using CommonCore.LockPause;
-using CommonCore.World;
-using CommonCore.RpgGame.Dialogue;
-using CommonCore.RpgGame.Rpg;
-using CommonCore.RpgGame.State;
-using CommonCore.UI;
-using CommonCore.RpgGame.UI;
 
 namespace CommonCore.RpgGame.World
 {
@@ -54,9 +48,9 @@ namespace CommonCore.RpgGame.World
         public bool Invincible = false;
         public bool DieImmediately = false;
         public bool DestroyOnDeath = false;
-        [Tooltip("Normal, Impact, Explosive, Energy, Poison, Radiation")]
+        [Tooltip("Normal, Impact, Explosive, Energy, Poison, Thermnal")] //these might be absolutely fucked now
         public float[] DamageResistance = { 0, 0, 0, 0, 0, 0};
-        [Tooltip("Normal, Impact, Explosive, Energy, Poison, Radiation")]
+        [Tooltip("Normal, Impact, Explosive, Energy, Poison, Thermnal")]
         public float[] DamageThreshold = { 0, 0, 0, 0, 0, 0 };
         public ActionSpecial OnDeathSpecial;
         public bool FeelPain = true;
@@ -92,11 +86,16 @@ namespace CommonCore.RpgGame.World
         public float WanderTimeout = 10.0f;
         public Vector2 WanderRadius = new Vector2(10.0f, 10.0f);
 
+        private QdmsMessageInterface MessageInterface;
+
         public override void Awake()
         {
             base.Awake();
 
             Tags.Add("Actor");
+
+            MessageInterface = new QdmsMessageInterface(this.gameObject);
+            MessageInterface.SubscribeReceiver(HandleMessage);            
         }
 
         public override void Start() //TODO register into a list for AI and stuff
@@ -171,6 +170,14 @@ namespace CommonCore.RpgGame.World
             
         }
 
+        private void HandleMessage(QdmsMessage message)
+        {
+            if(message is ConfigChangedMessage)
+            {
+                MovementComponent.HandleDifficultyChanged();  
+            }
+        }
+
         public void ForceEnterState(ActorAiState newState)
         {
             //disgusting hack, need to rework how this is handled
@@ -203,6 +210,7 @@ namespace CommonCore.RpgGame.World
                         break;
 
                     MovementComponent.AbortMove();
+                    MovementComponent.HandleDeath();
                     if (DieImmediately)
                         AnimationComponent.Ref()?.SetAnimation(ActorAnimState.Dead);
                     else
@@ -218,7 +226,7 @@ namespace CommonCore.RpgGame.World
                         OnDeathSpecial.Execute(new ActionInvokerData { Activator = this });
 
                     if (Target != null && Target.GetComponent<PlayerController>() && GrantXpOnDeath > 0)
-                        GameState.Instance.PlayerRpgState.Experience += GrantXpOnDeath;
+                        GameState.Instance.PlayerRpgState.GrantXPScaled(GrantXpOnDeath);
                     break;
                 case ActorAiState.Wandering:
                     Target = null;
@@ -237,6 +245,10 @@ namespace CommonCore.RpgGame.World
                         AnimationComponent.Ref()?.SetAnimation(ActorAnimState.Walking);                    
                     {
                         //set target
+
+                        if (Target == null)
+                            GetSwizzledTarget(); //fix for loading saves
+
                         var d = Target.position; //FIXME what if Target is null?
                         MovementComponent.SetDestination(d);
                     }
@@ -291,7 +303,7 @@ namespace CommonCore.RpgGame.World
         private void UpdateState()
         {
             //forced death check
-            if(CurrentAiState != ActorAiState.Dead)
+            if (CurrentAiState != ActorAiState.Dead)
             {
                 if (Health <= 0)
                 {
@@ -300,24 +312,7 @@ namespace CommonCore.RpgGame.World
             }
 
             //hack to retrieve swizzled target after a load
-            if(!string.IsNullOrEmpty(SavedTarget))
-            {
-                var goList = SceneUtils.FindAllGameObjects(SavedTarget);
-                if(goList.Count == 1)
-                {
-                    Target = goList[0].transform;
-                }
-                else if(goList.Count == 0)
-                {
-                    CDebug.LogEx(string.Format("Couldn't find target '{0}' when restoring {1}", SavedTarget, this.name), LogLevel.Error, this);
-                }
-                else
-                {
-                    CDebug.LogEx(string.Format("Found multiple target '{0}' when restoring {1}", SavedTarget, this.name), LogLevel.Error, this);
-                }
-
-                SavedTarget = null;
-            }
+            GetSwizzledTarget();
 
             switch (CurrentAiState)
             {
@@ -332,13 +327,13 @@ namespace CommonCore.RpgGame.World
                     break;
                 case ActorAiState.Wandering:
                     //TODO aggression
-                    if(MovementComponent.DistToTarget <= WanderThreshold || TimeInState >= WanderTimeout)
+                    if (MovementComponent.DistToTarget <= WanderThreshold || TimeInState >= WanderTimeout)
                     {
                         Vector2 newpos = VectorUtils.GetRandomVector2(InitialPosition.GetFlatVector(), WanderRadius);
                         MovementComponent.SetDestination(newpos.GetSpaceVector());
                         TimeInState = 0;
                     }
-                    if(Aggressive)
+                    if (Aggressive)
                     {
                         //search for targets, select target
                         SelectTarget();
@@ -347,7 +342,7 @@ namespace CommonCore.RpgGame.World
                     }
                     break;
                 case ActorAiState.Chasing:
-                    if(!RpgWorldUtils.TargetIsAlive(Target))
+                    if (!RpgWorldUtils.TargetIsAlive(Target))
                     {
                         EnterState(BaseAiState);
                         break;
@@ -370,22 +365,22 @@ namespace CommonCore.RpgGame.World
                         var d = Target.position;
                         MovementComponent.SetDestination(d);
                     }
-                    if(!Relentless)
+                    if (!Relentless)
                     {
                         //break off if we are too far away or too badly hurt
-                        if(Health <= (MaxHealth * 0.2f))
+                        if (Health <= (MaxHealth * 0.2f))
                         {
-                            EnterState(ActorAiState.Fleeing);                            
+                            EnterState(ActorAiState.Fleeing);
                         }
-                        else if((Target.position - transform.position).magnitude > SearchRadius)
+                        else if ((Target.position - transform.position).magnitude > SearchRadius)
                         {
                             EnterState(BaseAiState);
                             Target = null;
-                        }                        
+                        }
                     }
                     break;
                 case ActorAiState.ScriptedMoveTo:
-                    if(MovementComponent.AtTarget) //we made it!
+                    if (MovementComponent.AtTarget) //we made it!
                     {
                         EnterState(ActorAiState.Idle); //don't wander off if you were sent there!
                     }
@@ -410,7 +405,7 @@ namespace CommonCore.RpgGame.World
                     }
                     break;
                 case ActorAiState.Hurting:
-                    if(TimeInState >= PainWaitTime)
+                    if (TimeInState >= PainWaitTime)
                     {
                         if (BeenHit && Target != null)
                             EnterState(ActorAiState.Chasing);
@@ -420,7 +415,7 @@ namespace CommonCore.RpgGame.World
                     break;
                 case ActorAiState.Fleeing:
                     //stop running if far enough away, or target is gone
-                    if(!RpgWorldUtils.TargetIsAlive(Target) || (Target.position - transform.position).magnitude > SearchRadius)
+                    if (!RpgWorldUtils.TargetIsAlive(Target) || (Target.position - transform.position).magnitude > SearchRadius)
                     {
                         EnterState(BaseAiState);
                         Target = null;
@@ -433,6 +428,28 @@ namespace CommonCore.RpgGame.World
                     }
                     break;
 
+            }
+        }
+
+        private void GetSwizzledTarget()
+        {
+            if (!string.IsNullOrEmpty(SavedTarget))
+            {
+                var goList = SceneUtils.FindAllGameObjects(SavedTarget);
+                if (goList.Count == 1)
+                {
+                    Target = goList[0].transform;
+                }
+                else if (goList.Count == 0)
+                {
+                    CDebug.LogEx(string.Format("Couldn't find target '{0}' when restoring {1}", SavedTarget, this.name), LogLevel.Error, this);
+                }
+                else
+                {
+                    CDebug.LogEx(string.Format("Found multiple target '{0}' when restoring {1}", SavedTarget, this.name), LogLevel.Error, this);
+                }
+
+                SavedTarget = null;
             }
         }
 
@@ -471,11 +488,15 @@ namespace CommonCore.RpgGame.World
 
         private void SelectTarget()
         {
-            if (TotalTickCount % SearchInterval != 0)
+            var gameplayConfig = ConfigState.Instance.GetGameplayConfig();
+
+            if (TotalTickCount % SearchInterval * (1f / gameplayConfig.Difficulty.ActorAggression) != 0)
                 return;
 
+            var detectionDifficultyFactor = 1f / gameplayConfig.Difficulty.ActorPerception;
+
             //check player first since it's (relatively) cheap
-            if(FactionModel.GetRelation(Faction, "Player") == FactionRelationStatus.Hostile && !MetaState.Instance.SessionFlags.Contains("NoTarget"))
+            if (FactionModel.GetRelation(Faction, "Player") == FactionRelationStatus.Hostile && !MetaState.Instance.SessionFlags.Contains("NoTarget"))
             {
                 var playerObj = WorldUtils.GetPlayerObject();
                 if(playerObj != null && RpgWorldUtils.TargetIsAlive(playerObj.transform))
@@ -483,7 +504,7 @@ namespace CommonCore.RpgGame.World
                     PlayerController pc = playerObj.GetComponent<PlayerController>();
 
                     if((playerObj.transform.position - transform.position).magnitude <= SearchRadius
-                        && UnityEngine.Random.Range(0f, 1f) <= RpgValues.DetectionChance(GameState.Instance.PlayerRpgState, pc.MovementComponent.IsCrouching, pc.MovementComponent.IsRunning))
+                        && UnityEngine.Random.Range(0f, 1f * detectionDifficultyFactor) <= RpgValues.DetectionChance(GameState.Instance.PlayerRpgState, pc.MovementComponent.IsCrouching, pc.MovementComponent.IsRunning))
                     {
                         if(UseLineOfSight)
                         {
@@ -508,20 +529,45 @@ namespace CommonCore.RpgGame.World
                 }
             }            
 
-            //stupid and inefficient; we'll fix it later
-            //should work well enough as long as n is small and your computer is fast enough
             //if(TargetNpc)
             {
-                var potentialTargets = transform.root.GetComponentsInChildren<ActorController>();
+                //var sw = System.Diagnostics.Stopwatch.StartNew();
+
+                //new code should be faster if n is large but it may not bear out in practice, and it probably allocs more dedotated wam
+                
+                var colliders = Physics.OverlapSphere(transform.position, SearchRadius, LayerMask.GetMask("Default", "ActorHitbox"));
+                HashSet<ActorController> potentialTargets = new HashSet<ActorController>();
+
+                foreach(var collider in colliders)
+                {
+                    var actorController = collider.GetComponent<ActorController>();
+                    if(actorController != null)
+                    {
+                        potentialTargets.Add(actorController);
+                        break;
+                    }
+
+                    var hitboxComponent = collider.GetComponent<IHitboxComponent>();
+                    if (hitboxComponent != null && hitboxComponent.ParentController is ActorController hitboxAC)
+                    {
+                        potentialTargets.Add(hitboxAC);
+                        break;
+                    }
+                }
+                
+
+                //old stupid code: should work well enough as long as n is small and your computer is fast enough
+                //IEnumerable<ActorController> potentialTargets = transform.root.GetComponentsInChildren<ActorController>();
+
                 foreach (var potentialTarget in potentialTargets)
                 {
                     if(RpgWorldUtils.TargetIsAlive(potentialTarget.transform) 
                         && (potentialTarget.transform.position - transform.position).magnitude <= SearchRadius
                         && FactionModel.GetRelation(Faction, potentialTarget.Faction) == FactionRelationStatus.Hostile
                         && !(potentialTarget == this))
-                    {
+                    {                       
                         //roll some dice
-                        if (potentialTarget.Detectability < 1 && UnityEngine.Random.Range(0f, 1f) > potentialTarget.Detectability)
+                        if (potentialTarget.Detectability < 1 && UnityEngine.Random.Range(0f, 1f * detectionDifficultyFactor) > potentialTarget.Detectability) //probably correct
                             continue;
 
                         if (UseLineOfSight)
@@ -533,7 +579,7 @@ namespace CommonCore.RpgGame.World
                                 if (hitinfo.collider.gameObject == potentialTarget.gameObject)
                                 {
                                     Target = potentialTarget.transform;
-                                    return;
+                                    break;
                                 }
                             }
                         }
@@ -541,10 +587,13 @@ namespace CommonCore.RpgGame.World
                         {
                             //otherwise, close enough
                             Target = potentialTarget.transform;
-                            return;
+                            break;
                         }
                     }
                 }
+
+                //sw.Stop();
+                //Debug.Log($"Target lookup: {sw.Elapsed.TotalMilliseconds:F4} ms");
             }
 
             if (!RpgWorldUtils.TargetIsAlive(Target))
@@ -557,28 +606,34 @@ namespace CommonCore.RpgGame.World
         public void TakeDamage(ActorHitInfo data)
         {
             //damage model is very stupid right now, we will make it better later
-            float dt = DamageThreshold[(int)data.DamageType];
-            float dr = DamageResistance[(int)data.DamageType];
-            float damageTaken = RpgWorldUtils.CalculateDamage(data.Damage, data.DamagePierce, dt, dr);
+            float dt = data.DamageType < DamageThreshold.Length ? DamageThreshold[(int)data.DamageType] : 0f;
+            float dr = data.DamageType < DamageThreshold.Length ? DamageResistance[(int)data.DamageType] : 0f;
+            float damageTaken = RpgValues.DamageTaken(data.Damage, data.DamagePierce, dt, dr);
 
             if (data.HitLocation == (int)ActorBodyPart.Head)
                 damageTaken *= 2.0f;
             else if (data.HitLocation == (int)ActorBodyPart.LeftArm || data.HitLocation == (int)ActorBodyPart.LeftLeg || data.HitLocation == (int)ActorBodyPart.RightArm || data.HitLocation == (int)ActorBodyPart.RightLeg)
                 damageTaken *= 0.75f;
 
+            damageTaken *= (1f / ConfigState.Instance.GetGameplayConfig().Difficulty.ActorStrength);
+
             if(!Invincible)
                 Health -= damageTaken;
 
+            /*
             if(!string.IsNullOrEmpty(data.HitPuff))
             {
+                Debug.Log($"Spawning hitpuff \"{data.HitPuff}\" at {data.HitCoords}");
                 Vector3 hitCoords = data.HitCoords.HasValue ? data.HitCoords.Value : transform.position;
                 WorldUtils.SpawnEffect(data.HitPuff, hitCoords, transform.eulerAngles, null);
             }
             else if(!string.IsNullOrEmpty(DefaultHitPuff))
-            {
+            {                
                 Vector3 hitCoords = data.HitCoords.HasValue ? data.HitCoords.Value : transform.position;
                 WorldUtils.SpawnEffect(DefaultHitPuff, hitCoords, transform.eulerAngles, null);
             }
+            */
+            //we no longer spawn hitpuffs here
 
             if (CurrentAiState == ActorAiState.Dead) //abort if we're already dead
                 return;
@@ -680,6 +735,8 @@ namespace CommonCore.RpgGame.World
 
                     MovementComponent.MovementTarget = actorData.AltTarget;
                     MovementComponent.IsRunning = actorData.IsRunning;
+                    if (CurrentAiState == ActorAiState.Dead)
+                        MovementComponent.HandleDeath();
 
                     if (InteractionComponent != null)
                     {

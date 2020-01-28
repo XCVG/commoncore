@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonCore.World;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,39 +10,38 @@ namespace CommonCore.RpgGame.World
     public class RangedWeaponViewModelScript : WeaponViewModelScript
     {
         [Header("Ranged View Model Options"), SerializeField, Tooltip("In ADS, will copy the relative position and rotation of this transform")]
-        private Transform ADSOffsetPoint;
+        private Transform ADSOffsetPoint = null;
         [SerializeField]
-        private Transform ModelTransform;
+        private Transform ModelTransform = null;
         [SerializeField]
-        private Animator ModelAnimator;
+        private Animator ModelAnimator = null;
         [SerializeField, Tooltip("If set, will reposition model to center point in ADS")]
-        private bool CenterModelInAds;
+        private bool CenterModelInAds = true;
         [SerializeField, Tooltip("Will have no effect if ADS enter/leave animations work")]
-        private float ADSTransitionTime;
+        private float ADSTransitionTime = 0.1f;
 
         //separate into another component?
         [Header("Hand Animations")]
-        public RangedWeaponViewModelAnimations TwoHandAnimations;
-        public RangedWeaponViewModelAnimations OneHandAnimations;
-        public RangedWeaponViewModelAnimations ADSAnimations;
+        public RangedWeaponViewModelAnimations TwoHandAnimations = default;
+        public RangedWeaponViewModelAnimations OneHandAnimations = default;
+        public RangedWeaponViewModelAnimations ADSAnimations = default;
 
         //TODO 1hand, ADS, etc
 
         //TODO sounds, effects, etc
         [Header("Sounds")]
-        public AudioSource FireSound;
-        public AudioSource ReloadSound;
-        public AudioSource RaiseSound;
-        public AudioSource LowerSound;
+        public AudioSource FireSound = null;
+        public AudioSource ReloadSound = null;
+        public AudioSource RaiseSound = null;
+        public AudioSource LowerSound = null;
 
         [Header("Effects")]
-        public ParticleSystem FireParticleSystem;
-        public Light FireLight;
-        public float FireLightDuration;
+        public ParticleSystem FireParticleSystem = null;
+        public Light FireLight = null;
+        public float FireLightDuration = 0;
         [Tooltip("The rotation of this transform will be used for the shell. The direction of its first child will be used as the ejection vector.")]
-        public Transform ShellEjectPoint;        
-        public GameObject ShellPrefab;
-        public float ShellEjectVelocity;
+        public Transform ShellEjectPoint = null;        
+        public string ShellPrefab = default;
 
         private PlayerWeaponComponent WeaponComponent { get { if (_weaponComponent == null) _weaponComponent = GetComponentInParent<PlayerWeaponComponent>(); return _weaponComponent; } }
         private PlayerWeaponComponent _weaponComponent; //cached
@@ -64,7 +64,7 @@ namespace CommonCore.RpgGame.World
             
         }
 
-        public override void SetState(ViewModelState newState, ViewModelHandednessState handednessState)
+        public override void SetState(ViewModelState newState, ViewModelHandednessState handednessState, float timeScale)
         {
             if(ModelAnimator == null)
             {
@@ -125,6 +125,8 @@ namespace CommonCore.RpgGame.World
                 }
             }
 
+            ModelAnimator.speed = 1f / timeScale;
+
             switch (newState)
             {
                 case ViewModelState.Idle:
@@ -140,13 +142,17 @@ namespace CommonCore.RpgGame.World
                     break;
                 case ViewModelState.Reload:
                     ModelAnimator.Play(prefix + "Reload");
-                    ReloadSound.Ref()?.Play();
+                    if(ReloadSound != null)
+                    {
+                        ReloadSound.pitch = 1f / timeScale;
+                        ReloadSound.Play();
+                    }                    
                     break;
                 case ViewModelState.Charge:
                     ModelAnimator.Play(prefix + "Charge");
                     break;
                 case ViewModelState.Fire:
-                    ModelAnimator.Play(prefix + "Fire");
+                    ModelAnimator.Play(prefix + "Fire");                    
                     FireSound.Ref()?.Play();
                     FireParticleSystem.Ref()?.Play();
                     FlashFireLight();
@@ -218,23 +224,57 @@ namespace CommonCore.RpgGame.World
             }
 
             Transform shellDirTransform = ShellEjectPoint.GetChild(0);
+            ShellEjectionComponent shellEjectionComponent = ShellEjectPoint.GetComponent<ShellEjectionComponent>();
 
-            
+            //var shell = Instantiate(ShellPrefab, ShellEjectPoint.position, ShellEjectPoint.rotation, CoreUtils.GetWorldRoot());
+            var shell = WorldUtils.SpawnEffect(ShellPrefab, ShellEjectPoint.position, ShellEjectPoint.rotation.eulerAngles, CoreUtils.GetWorldRoot());
 
-            //WIP should we use the CommonCore path for this?
-            var shell = Instantiate(ShellPrefab, ShellEjectPoint.position, ShellEjectPoint.rotation, CoreUtils.GetWorldRoot());
-            shell.transform.localScale = Vector3.one * shellDirTransform.localScale.x;
+            if (shell == null)
+                return;
+
+            //shell parameters (use ShellEjectionComponent if available)
+            float shellScale;
+            float shellVelocity;
+            float shellTorque;
+            float shellRandomVelocity;
+            float shellRandomTorque;
+
+            if(shellEjectionComponent)
+            {
+                shellScale = shellEjectionComponent.ShellScale;
+                shellVelocity = shellEjectionComponent.ShellVelocity;
+                shellTorque = shellEjectionComponent.ShellTorque;
+                shellRandomVelocity = shellEjectionComponent.ShellRandomVelocity;
+                shellRandomTorque = shellEjectionComponent.ShellRandomTorque;
+            }
+            else
+            {
+                //legacy stupid hacky shit
+
+                shellScale = shellDirTransform.localScale.x;
+                shellVelocity = shellDirTransform.localScale.z;
+                shellTorque = shellDirTransform.localScale.y;
+
+                shellRandomVelocity = 0;
+                shellRandomTorque = 0;
+            }
+
+            //scale the shell, make it move
+            shell.transform.localScale = Vector3.one * shellScale;
             var shellRB = shell.GetComponent<Rigidbody>();
             if(shellRB != null)
             {
                 Vector3 velocityDirection = shellDirTransform.forward;
-                float velocityScale = shellDirTransform.localScale.z;
 
                 Vector3 playerVelocity = WeaponComponent.PlayerController.MovementComponent.Velocity;
+                Vector3 randomVelocity = new Vector3(UnityEngine.Random.Range(-1f, 1f) * shellRandomVelocity, UnityEngine.Random.Range(-1f, 1f) * shellRandomVelocity, UnityEngine.Random.Range(-1f, 1f) * shellRandomVelocity);
 
-                Vector3 velocity = velocityDirection * velocityScale;
-                shellRB.AddForce(velocity + playerVelocity, ForceMode.VelocityChange);
-                shellRB.AddTorque(velocity * shellDirTransform.localScale.y, ForceMode.VelocityChange);
+                Vector3 velocity = velocityDirection * shellVelocity;
+                shellRB.AddForce(velocity + playerVelocity + randomVelocity, ForceMode.VelocityChange);
+
+                Vector3 randomTorque = new Vector3(UnityEngine.Random.Range(-1f, 1f) * shellRandomTorque, UnityEngine.Random.Range(-1f, 1f) * shellRandomTorque, UnityEngine.Random.Range(-1f, 1f) * shellRandomTorque);
+
+                shellRB.AddTorque(velocity * shellTorque, ForceMode.VelocityChange);
             }
         }
 

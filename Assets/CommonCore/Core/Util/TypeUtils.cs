@@ -2,8 +2,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -229,6 +231,41 @@ namespace CommonCore
 
                 return int.Parse(segment);
             }
+        }
+
+        /// <summary>
+        /// Converts a string to Title Case
+        /// </summary>
+        /// <remarks>Some limitations may apply</remarks>
+        public static string ToTitleCase(this string src)
+        {
+            if(!src.Contains(" "))
+            {
+                //simpler single-word handling
+                string lcString = src.Substring(1, src.Length-1).ToLower(CultureInfo.InvariantCulture);
+                string firstCharString = char.ToUpper(src[0], CultureInfo.InvariantCulture).ToString();
+                return firstCharString + lcString;
+            }
+            else
+            {
+                //just call the library for now
+                return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(src);
+            }
+        }
+
+        /// <summary>
+        /// Converts a string to Sentence case
+        /// </summary>
+        /// <remarks>
+        /// <para>Some limitations may apply</para>
+        /// <para>Based on https://stackoverflow.com/a/3141467</para>
+        /// </remarks>
+        public static string ToSentenceCase(this string src)
+        {
+            string lowerCase = src.ToLower();
+            Regex regex = new Regex(@"(^[a-z])|\.\s+(.)", RegexOptions.ExplicitCapture);
+            string result = regex.Replace(lowerCase, s => s.Value.ToUpper());
+            return result;
         }
     }
 }

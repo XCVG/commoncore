@@ -38,6 +38,7 @@ namespace CommonCore.Audio
         private class MusicInfo //we actually want reference semantics for this (I think)
         {
             public AudioClip Clip;
+            public string Name;
             public float Volume;
             public bool Loop;
             public bool Retain;
@@ -210,32 +211,24 @@ namespace CommonCore.Audio
 
         private void HandleMusicChanged()
         {
-            if(!MusicEnabled)
+            if (!MusicEnabled)
             {
                 foreach (var slot in MusicPlayers.Keys)
                 {
-                        MusicPlayers[slot].Pause();
+                    MusicPlayers[slot].Pause();
                 }
 
                 return;
             }
 
-            MusicSlot? highestPlayingSlot = null;
             //find the highest slot that should be playing, stop the other ones and play that one
-            foreach(var slot in CurrentMusics.Keys.OrderByDescending(x => x))
-            {
-                var musicInfo = CurrentMusics[slot];
-                if(musicInfo.Playing || (slot == MusicSlot.User && CurrentUserMusicComponent != null)) //hack: User slot is always considered playing if enabled
-                {
-                    highestPlayingSlot = slot;
-                    break;
-                }
-            }
+
+            MusicSlot? highestPlayingSlot = GetHighestPlayingMusicSlot();
 
             //stop all other slots
-            foreach(var slot in MusicPlayers.Keys)
+            foreach (var slot in MusicPlayers.Keys)
             {
-                if(!highestPlayingSlot.HasValue || slot != highestPlayingSlot.Value || !CurrentMusics[highestPlayingSlot.Value].Playing)
+                if (!highestPlayingSlot.HasValue || slot != highestPlayingSlot.Value || !CurrentMusics[highestPlayingSlot.Value].Playing)
                     MusicPlayers[slot].Pause();
             }
 
@@ -271,14 +264,31 @@ namespace CommonCore.Audio
                     if (!audioSource.isPlaying)
                         audioSource.Play();
 
-                    
+
                 }
             }
 
         }
 
+        private MusicSlot? GetHighestPlayingMusicSlot()
+        {
+            MusicSlot? highestPlayingSlot = null;
+
+            foreach (var slot in CurrentMusics.Keys.OrderByDescending(x => x))
+            {
+                var musicInfo = CurrentMusics[slot];
+                if (musicInfo.Playing || (slot == MusicSlot.User && CurrentUserMusicComponent != null)) //hack: User slot is always considered playing if enabled
+                {
+                    highestPlayingSlot = slot;
+                    break;
+                }
+            }
+
+            return highestPlayingSlot;
+        }
+
         //USER AUDIO COMPONENT HANDLING
-        
+
         public void RegisterUserMusicComponent(UserMusicComponent uac)
         {
             Type uacType = uac.GetType();
@@ -591,7 +601,7 @@ namespace CommonCore.Audio
                 return;
             }
 
-            SetMusic(clip, slot, volume, loop, retain);
+            SetMusic(clip, sound, slot, volume, loop, retain);
         }
 
         /// <summary>
@@ -605,7 +615,21 @@ namespace CommonCore.Audio
         /// <remarks>
         /// <para>No longer effects playback state</para>
         /// </remarks>
-        public void SetMusic(AudioClip clip, MusicSlot slot, float volume, bool loop, bool retain)
+        public void SetMusic(AudioClip clip, MusicSlot slot, float volume, bool loop, bool retain) => SetMusic(clip, null, slot, volume, loop, retain);
+
+        /// <summary>
+        /// Sets the music in a slot to the specified audio.
+        /// </summary>
+        /// <param name="clip">The music clip to play</param>
+        /// <param name="name">The name of the music clip</param>
+        /// <param name="slot">The slot to play music in</param>
+        /// <param name="volume">The volume to play the music at (will be multiplied with global music volume)</param>
+        /// <param name="loop">Whether to loop the music</param>
+        /// <param name="retain">Whether to retain the music across scene loads</param>
+        /// <remarks>
+        /// <para>No longer effects playback state</para>
+        /// </remarks>
+        public void SetMusic(AudioClip clip, string name, MusicSlot slot, float volume, bool loop, bool retain)
         {
             bool wasPlaying = false;
             if (CurrentMusics.ContainsKey(slot))
@@ -620,7 +644,7 @@ namespace CommonCore.Audio
                 CurrentUserMusicComponent.ReportClipReleased(oldClip);
             }
 
-            var musicInfo = new MusicInfo() { Clip = clip, Volume = volume, Loop = loop, Retain = retain, Playing = wasPlaying, Time = 0 };
+            var musicInfo = new MusicInfo() { Clip = clip, Name = name, Volume = volume, Loop = loop, Retain = retain, Playing = wasPlaying, Time = 0 };
             CurrentMusics[slot] = musicInfo;
 
             HandleMusicChanged();
@@ -738,6 +762,51 @@ namespace CommonCore.Audio
             {
                 Debug.LogWarning($"Tried to seek music in slot {slot.ToString()} but none exists!");
             }
+        }
+
+        /// <summary>
+        /// Gets the name of the current music in the slot, if it exists
+        /// </summary>
+        public string GetMusicName(MusicSlot slot)
+        {
+            if(CurrentMusics.ContainsKey(slot))
+            {
+                return CurrentMusics[slot].Name;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Checks if a slot is currently playing
+        /// </summary>
+        public bool IsMusicPlaying(MusicSlot slot)
+        {
+            var highestPlayingMusic = GetHighestPlayingMusicSlot();
+            return highestPlayingMusic != null && highestPlayingMusic.Value == slot;
+        }
+
+        /// <summary>
+        /// Checks if a slot has music and is set to play
+        /// </summary>
+        public bool IsMusicSetToPlay(MusicSlot slot)
+        {
+            return MusicHasClip(slot) && CurrentMusics[slot].Playing;
+
+        }
+
+        /// <summary>
+        /// Checks if a music slot has something in it
+        /// </summary>
+        public bool MusicHasClip(MusicSlot slot)
+        {
+            if(CurrentMusics.ContainsKey(slot))
+            {
+                if (slot == MusicSlot.User || CurrentMusics[slot].Playing)
+                    return true;
+            }
+
+            return false;
         }
 
 

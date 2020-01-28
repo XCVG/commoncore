@@ -2435,6 +2435,7 @@ Transform:
   - {fileID: 4897126986768666}
   - {fileID: 4534719684698570}
   - {fileID: 4034012939267662}
+  - {fileID: 1239808655883476802}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2451,7 +2452,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EditorFormID: npc_engineer
-  Tags: []
+  HitMaterial: 0
   CharacterModelIdOverride: 
   InteractComponent: {fileID: 114050656289375220}
   TargetPoint: {fileID: 0}
@@ -2497,25 +2498,6 @@ MonoBehaviour:
   SearchRadius: 25
   SearchInterval: 70
   DisableInteractionOnHit: 0
-  Interaction: 3
-  InteractionTarget: DemoMechanic
-  InteractionSpecial: {fileID: 0}
-  AlternateCondition:
-    Type: 0
-    Target: 
-    Option: 7
-    OptionValue: 
-  AltInteraction: 0
-  AltInteractionTarget: 
-  AltInteractionSpecial: {fileID: 0}
-  UseDeadAction: 1
-  DeadInteraction: 0
-  DeadInteractionTarget: 
-  DeadInteractionSpecial: {fileID: 0}
-  InteractionDisabledByHit: 0
-  TooltipOverride: The Mechanic
-  CorpseItems:
-    Items: []
   GrantXpOnDeath: 100
   RunOnChase: 1
   RunOnFlee: 1
@@ -2578,14 +2560,14 @@ MonoBehaviour:
   AttackHit:
     Damage: 15
     DamagePierce: 5
-    DType: 3
+    DamageType: 0
     HitLocation: 0
+    HitMaterial: 0
     Originator: {fileID: 0}
     HitPuff: 
-  BulletPrefab: {fileID: 1084969536453480, guid: f80d8c4ee49627841b2db2bf6a00027c,
-    type: 3}
-  AttackEffectPrefab: {fileID: 1069681291466534, guid: 7dbc392e134c6514b9d3dd13d44ea885,
-    type: 3}
+  BulletPrefab: TestBullet
+  AttackEffectPrefab: TestGunEffect
+  AttackSound: {fileID: 0}
   ShootPoint: {fileID: 4034012939267662}
   AttackAnimationOverride: 
 --- !u!114 &1507877242329607482
@@ -2600,16 +2582,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 850801c168eb61849a860fc5655978d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CharController: {fileID: 143865897253035218}
-  NavComponent: {fileID: 195753988229046458}
   ActorController: {fileID: 114886002833580368}
+  TargetThreshold: 1
+  <MovementTarget>k__BackingField: {x: 0, y: 0, z: 0}
+  <IsRunning>k__BackingField: 0
+  <ControlRotation>k__BackingField: 1
+  NavComponent: {fileID: 195753988229046458}
+  CharController: {fileID: 143865897253035218}
   ForceNavmeshOff: 0
   UseControllerGravity: 1
   WalkSpeed: 1
   RunSpeed: 2
   RotateSpeed: 90
-  NavThreshold: 1
-  <AltTarget>k__BackingField: {x: 0, y: 0, z: 0}
+  ShrinkColliderOnDeath: 0
+  DisableColliderOnDeath: 1
 --- !u!114 &114514829715728782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3708,3 +3694,63 @@ Transform:
   m_Father: {fileID: 4869808328199734}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &912248235645457233
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1239808655883476802}
+  - component: {fileID: 7801081100583733873}
+  - component: {fileID: 6772488858813284627}
+  m_Layer: 8
+  m_Name: HeadshotHitbox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1239808655883476802
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 912248235645457233}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.544, z: 0.063}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4032182571642530}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &7801081100583733873
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 912248235645457233}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.25, y: 0.25, z: 0.25}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6772488858813284627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 912248235645457233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac2b01d531ccb5c49836aff0835b87f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ParentController: {fileID: 0}
+  HitLocationOverride: 2
+  HitMaterialOverride: 0

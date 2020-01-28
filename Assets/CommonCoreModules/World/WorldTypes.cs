@@ -43,6 +43,35 @@ namespace CommonCore.World
     }
 
     /// <summary>
+    /// Data passed from GetClosestHit indicating what has been hit
+    /// </summary>
+    public readonly struct HitInfo
+    {
+        public readonly BaseController Controller;
+        public readonly IHitboxComponent Hitbox;
+        public readonly Vector3 HitPoint;
+        public readonly int HitLocation;
+        public readonly int HitMaterial;
+
+        public HitInfo(BaseController controller, IHitboxComponent hitbox, Vector3 hitPoint, int hitLocation, int hitMaterial)
+        {
+            Controller = controller;
+            Hitbox = hitbox;
+            HitPoint = hitPoint;
+            HitLocation = hitLocation;
+            HitMaterial = hitMaterial;
+        }
+
+        public void Deconstruct(out BaseController controller, out Vector3 hitPoint, out int hitLocation, out int hitMaterial) //no Hitbox because it's meant to work with old code
+        {
+            controller = Controller;
+            hitPoint = HitPoint;
+            hitLocation = HitLocation;
+            hitMaterial = HitMaterial;
+        }
+    }
+
+    /// <summary>
     /// Data passed to an ITakeDamage when it is hit
     /// </summary>
     /// <remarks>The name is kind of an artifact now, from a time before ITakeDamage when only Actors could take damage</remarks>

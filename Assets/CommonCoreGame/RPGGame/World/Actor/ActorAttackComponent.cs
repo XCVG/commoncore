@@ -1,6 +1,6 @@
-﻿using CommonCore.DebugLog;
+﻿using CommonCore.Config;
+using CommonCore.DebugLog;
 using CommonCore.World;
-using System;
 using UnityEngine;
 
 namespace CommonCore.RpgGame.World
@@ -26,8 +26,9 @@ namespace CommonCore.RpgGame.World
         public float AttackSpread = 0.25f;
         public float BulletSpeed = 100;
         public ActorHitInfo AttackHit;
-        public GameObject BulletPrefab;
-        public GameObject AttackEffectPrefab;
+        public string BulletPrefab;
+        public string AttackEffectPrefab;
+        public AudioSource AttackSound;
         public Transform ShootPoint;
         public string AttackAnimationOverride;
 
@@ -83,7 +84,7 @@ namespace CommonCore.RpgGame.World
         /// <summary>
         /// If we are ready to attack again (attack interval)
         /// </summary>
-        public bool ReadyToAttack => (Time.time - LastAttackTime >= AttackInterval);
+        public bool ReadyToAttack => (Time.time - LastAttackTime >= AttackInterval * (1f / ConfigState.Instance.GetGameplayConfig().Difficulty.ActorAggression));
 
         /// <summary>
         /// If our actor's target is within range of us
@@ -122,6 +123,9 @@ namespace CommonCore.RpgGame.World
             Vector3 shootVec = (aimPoint - shootPos).normalized; //I screwed this up the first time
 
             var modHit = AttackHit;
+            var gameplayConfig = ConfigState.Instance.GetGameplayConfig();
+            modHit.Damage *= gameplayConfig.Difficulty.ActorStrength;
+            modHit.DamagePierce *= gameplayConfig.Difficulty.ActorStrength;
             modHit.Originator = ActorController;
 
             if (UseMelee)
@@ -160,7 +164,8 @@ namespace CommonCore.RpgGame.World
             else if (BulletPrefab != null)
             {
                 //bullet path (shoot)
-                var bullet = Instantiate<GameObject>(BulletPrefab, shootPos + (shootVec * 0.25f), Quaternion.identity, transform.root);
+                //var bullet = Instantiate<GameObject>(BulletPrefab, shootPos + (shootVec * 0.25f), Quaternion.identity, transform.root);
+                var bullet = WorldUtils.SpawnEffect(BulletPrefab, shootPos + (shootVec * 0.25f), Vector3.zero, transform.root);
                 var bulletRigidbody = bullet.GetComponent<Rigidbody>();
                 bulletRigidbody.velocity = (shootVec * BulletSpeed);
                 bullet.GetComponent<BulletScript>().HitInfo = modHit;
@@ -170,11 +175,15 @@ namespace CommonCore.RpgGame.World
                 CDebug.LogEx(string.Format("{0} tried to shoot a bullet, but has no prefab defined!", name), LogLevel.Error, this);
             }
 
-            //show the effect, if applicable
-            //TODO switch this over to use Effect
+            //show the effect, if applicable            
             if (AttackEffectPrefab != null)
             {
-                Instantiate(AttackEffectPrefab, shootPos, Quaternion.identity, (ShootPoint == null ? transform : ShootPoint));
+                WorldUtils.SpawnEffect(AttackEffectPrefab, shootPos, Vector3.zero, (ShootPoint == null ? transform : ShootPoint));
+                //Instantiate(AttackEffectPrefab, shootPos, Quaternion.identity, (ShootPoint == null ? transform : ShootPoint));
+            }
+            if(AttackSound != null)
+            {
+                AttackSound.Play();
             }
 
             DidAttack = true;

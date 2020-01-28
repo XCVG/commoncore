@@ -1,4 +1,5 @@
-﻿using CommonCore.World;
+﻿using CommonCore.Messaging;
+using CommonCore.World;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,6 +19,8 @@ namespace CommonCore.World
         public ActorHitInfo HitInfo;
         public float StayTime = 0;
         public float MaxDist = 10000f;
+
+        public bool FiredByPlayer = false;
 
         private LayerMask RaycastLayerMask;
         private Rigidbody Rigidbody;
@@ -56,67 +59,18 @@ namespace CommonCore.World
             bool hasRigidbody = Rigidbody != null;
             Vector3 forward = hasRigidbody ? Rigidbody.velocity.normalized : transform.forward;
             float maxDistance = hasRigidbody ? Rigidbody.velocity.magnitude / 30f : DefaultProbeDist;
-            var hits = Physics.RaycastAll(transform.position, forward, maxDistance, RaycastLayerMask, QueryTriggerInteraction.Collide);
+            //var hits = Physics.RaycastAll(transform.position, forward, maxDistance, RaycastLayerMask, QueryTriggerInteraction.Collide);
 
             //find closest hit
-            var (otherController, hitPoint, hitLocation, hitMaterial) = GetClosestHit(hits);
+            //var (otherController, hitPoint, hitLocation, hitMaterial) = GetClosestHit(hits);
+            var (otherController, hitPoint, hitLocation, hitMaterial) = WorldUtils.RaycastAttackHit(transform.position, forward, maxDistance, true, true, null);
 
-            if(otherController != null && otherController != HitInfo.Originator)
+            if (otherController != null && otherController != HitInfo.Originator)
             {
                 //Debug.Log("Bullet hit " + otherController.name + " via raycast!");
 
                 HandleCollision(otherController, hitLocation, hitMaterial, hitPoint);
             }
-        }
-
-        /// <summary>
-        /// Gets the closest eligible hit
-        /// </summary>
-        private (BaseController otherController, Vector3 hitPoint, int hitLocation, int hitMaterial) GetClosestHit(IReadOnlyList<RaycastHit> hits)
-        {
-            //reject the easiest case
-            if (hits.Count == 0)
-                return (null, default, 0, 0);
-
-            //we get the closest hit that is either:
-            //-a trigger attached to an ActorHitboxComponent
-            //-a non-trigger collider, regardless of what it is attached to
-
-            RaycastHit closestHit = default;
-            closestHit.distance = float.MaxValue;
-
-            foreach(var hit in hits)
-            {
-                if(hit.distance < closestHit.distance)
-                {
-                    //reject other bullets
-                    if (hit.collider.GetComponent<BulletScript>())
-                        continue;
-
-                    if(hit.collider.isTrigger) //if it's non-solid, it only counts if it's a hitbox
-                    {
-                        if (hit.collider.GetComponent<IHitboxComponent>() != null)
-                            closestHit = hit;
-                    }
-                    else //if it's solid, closer always counts
-                        closestHit = hit;
-                }
-            }
-
-            //sentinel; we didn't find anything
-            if (closestHit.distance == float.MaxValue)
-                return (null, default, 0, 0);
-
-            //try to find an actor hitbox
-            var actorHitbox = closestHit.collider.GetComponent<IHitboxComponent>();
-            if (actorHitbox != null)
-                return (actorHitbox.ParentController, closestHit.point, actorHitbox.HitLocationOverride, actorHitbox.HitMaterial);
-
-            //try to find a basecontroller
-            var otherController = closestHit.collider.GetComponent<BaseController>();
-            if (otherController == null)
-                otherController = closestHit.collider.GetComponentInParent<BaseController>();
-            return (otherController, closestHit.point, 0, otherController?.HitMaterial ?? 0);
         }
 
         void OnCollisionEnter(Collision collision)
@@ -167,7 +121,12 @@ namespace CommonCore.World
                     HitInfo.HitLocation = hitLocation;
 
                 if (otherController is ITakeDamage itd)
+                {
                     itd.TakeDamage(HitInfo);
+
+                    if (FiredByPlayer)
+                        QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("PlayerHitTarget"));
+                }
             }
 
             if(HitInfo.HitCoords == null)

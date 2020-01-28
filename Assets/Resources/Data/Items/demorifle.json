@@ -2,9 +2,12 @@
   "demorifle": {
     "model": {
       "$type": "CommonCore.RpgGame.Rpg.RangedWeaponItemModel, Assembly-CSharp",
-      "Damage": 12,
-      "DamagePierce": 4,
+      "Damage": 15,
+	  "DamageSpread": 4,
+      "DamagePierce": 8,
+	  "DamagePierceSpread": 3,
 	  "DType": "Normal",
+	  "SkillType": "Guns",
 	  "HitPuff": "TestHitPuff",
 	  "ProjectileVelocity": 500,
 	  "Recoil": {
@@ -41,19 +44,26 @@
 		"time": 0.15,
 		"violence": 0.66
 	  },
+	  "MovementSpreadFactor": 2.0,
+	  "CrouchSpreadFactor": 0.75,
+	  "MovementRecoveryFactor": 0.5,
+	  "CrouchRecoveryFactor": 0.75,
       "FireInterval": 0.15,
 	  "NumProjectiles": 1,
       "MagazineSize": 30,	  
       "ReloadTime": 2.5,
       "AType": "Nato556",      
 	  "Projectile": "Bullet",
-	  "ViewModel": "DemoRifle",	  
+	  "ViewModel": "DemoRifle",
+	  "ADSZoomFactor": 1.2,
+	  "LowerTime": 1.0,
+	  "RaiseTime": 1.0,	  
       "Weight": 5,
 	  "Value": 500,
       "MaxCondition": 1,
       "Unique": false,
       "Hidden": false,
-	  "Flags": ["WeaponHasADS", "WeaponTwoHanded", "WeaponFullAuto", "WeaponShake"]
+	  "Flags": ["WeaponHasADS", "WeaponTwoHanded", "WeaponFullAuto", "WeaponShake", "WeaponUseCrosshair", "WeaponProportionalMovement", "WeaponIgnoreLevelledRate"]
     },
     "def": {
     "NiceName": "Demo Rifle",
