@@ -41,7 +41,7 @@ Modest Tree Media - Unity3dAsyncAwaitUtil
 
 ## Fonts
 
-Croscore Fonts - Arimo, Cousine, Tinos (Assets/CommonCore/Fonts)
+Croscore Fonts - Arimo, Cousine, Tinos (Assets/CommonCore/Fonts, Assets/UI/Fonts)
 	Steve Matteson 
 	Apache License (https://www.apache.org/licenses/LICENSE-2.0)
 	
