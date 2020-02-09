@@ -23,20 +23,19 @@ namespace CommonCore.RpgGame.World
         [SerializeField]
         private float FadeoutTime = 5f;
         [SerializeField]
-        private float HoldTime = 3f;                
+        private float HoldTime = 3f;
+
+        public float TotalWaitTime => FadeoutTime + HoldTime;
 
         private bool IsDying = false;
 
-        private void Update()
+        public void Die()
         {
-            if (IsDying || LockPauseModule.IsPaused())
+            if (IsDying)
                 return;
 
-            if(GameState.Instance.PlayerRpgState.Health <= 0)
-            {
-                IsDying = true;
-                StartCoroutine(DeathSequenceCoroutine());
-            }
+            IsDying = true;
+            StartCoroutine(DeathSequenceCoroutine());
         }
 
         private IEnumerator DeathSequenceCoroutine()
@@ -62,14 +61,7 @@ namespace CommonCore.RpgGame.World
 
             yield return new WaitForSeconds(HoldTime);
 
-            EndGame();
         }
 
-
-        private void EndGame()
-        {
-            MetaState.Instance.NextScene = SceneManager.GetActiveScene().name; //in case we need it...
-            SceneManager.LoadScene("GameOverScene");
-        }
     }
 }

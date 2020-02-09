@@ -8,6 +8,7 @@ using CommonCore.World;
 using CommonCore.Audio;
 using CommonCore.State;
 using CommonCore.Config;
+using CommonCore.RpgGame.Rpg;
 
 namespace CommonCore.RpgGame.World
 {
@@ -387,7 +388,7 @@ namespace CommonCore.RpgGame.World
             modHit.Damage *= gameplayConfig.Difficulty.ActorStrength;
             modHit.DamagePierce *= gameplayConfig.Difficulty.ActorStrength;
             modHit.Originator = ActorController;
-            LayerMask lm = LayerMask.GetMask("Default", "ActorHitbox");
+            LayerMask lm = WorldUtils.GetAttackLayerMask();
 
             var rc = Physics.RaycastAll(FirePoint.position, FirePoint.forward, FlameRange, lm, QueryTriggerInteraction.Collide);
             BaseController ac = null;
@@ -434,7 +435,7 @@ namespace CommonCore.RpgGame.World
             var itd = ActorController.Target.GetComponent<BaseController>() as ITakeDamage;
             if(itd != null)
             {
-                LayerMask lm = LayerMask.GetMask("Default", "ActorHitbox");
+                LayerMask lm = WorldUtils.GetAttackLayerMask();
                 Vector3 vecThisToTarget = ActorController.Target.position - transform.position;
                 if (Physics.Raycast(transform.position, vecThisToTarget, out var raycastHit, 100, lm, QueryTriggerInteraction.Collide))
                 {
@@ -458,7 +459,7 @@ namespace CommonCore.RpgGame.World
         private void PickTarget()
         {
             //always target the player for now
-            if (GameState.Instance.PlayerRpgState.Health <= 0)
+            if (GameState.Instance.PlayerRpgState.Health <= 0 || MetaState.Instance.SessionFlags.Contains("NoTarget") || GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoTarget))
                 ActorController.Target = null;
             else
                 ActorController.Target = RpgWorldUtils.GetPlayerController().transform;

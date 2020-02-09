@@ -2414,9 +2414,9 @@ GameObject:
   - component: {fileID: 114514829715728782}
   - component: {fileID: 143865897253035218}
   - component: {fileID: 195753988229046458}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: npc_engineer
-  m_TagString: CCObject
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -1,4 +1,5 @@
-﻿using CommonCore.State;
+﻿using CommonCore.Config;
+using CommonCore.State;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -92,7 +93,7 @@ namespace CommonCore.UI
 
         public void OnClickExit()
         {
-            Time.timeScale = 1;
+            Time.timeScale = ConfigState.Instance.DefaultTimescale; //needed?
             //BaseSceneController.Current.("MainMenuScene");
             SharedUtils.EndGame();
         }

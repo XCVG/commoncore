@@ -4,6 +4,7 @@
     "Gender": "Female",
     "Health": 110.0,
     "HealthFraction": 1.0,
+	"EnergyFraction": 1.0,
     "Experience": 0,
     "Level": 1,
     "BaseStats": {

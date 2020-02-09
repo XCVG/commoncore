@@ -41,6 +41,8 @@ namespace CommonCore.RpgGame.UI
         private Toggle ShakeEffectToggle;
         [SerializeField]
         private Toggle BobEffectToggle;
+        [SerializeField]
+        private Toggle FlashEffectToggle;
         
         [SerializeField]
         private Toggle AdsToggleToggle;
@@ -51,6 +53,8 @@ namespace CommonCore.RpgGame.UI
         private Toggle HitIndicatorsVisualToggle;
         [SerializeField]
         private Toggle HitIndicatorsAudioToggle;
+        [SerializeField]
+        private Toggle DamageIndicatorToggle;
 #pragma warning restore CS0649
 
         //IGUI_GAMEPLAYOPTIONS
@@ -62,16 +66,18 @@ namespace CommonCore.RpgGame.UI
 
             //paint 
             SetSubtitlesValue(ConfigState.Instance.Subtitles);
+            ShakeEffectToggle.isOn = ConfigState.Instance.ShakeEffects;
+            FlashEffectToggle.isOn = ConfigState.Instance.FlashEffects;
 
             DifficultySlider.value = (int)gameplayConfig.DifficultySetting;
 
             SetCrosshairValue(gameplayConfig.Crosshair);
-            AutoaimSlider.value = (int)gameplayConfig.AimAssist;
-            ShakeEffectToggle.isOn = gameplayConfig.ShakeEffects;
+            AutoaimSlider.value = (int)gameplayConfig.AimAssist;            
             BobEffectToggle.isOn = gameplayConfig.BobEffects;
             SetAdsValue(gameplayConfig.HoldAds);
             HitIndicatorsVisualToggle.isOn = gameplayConfig.HitIndicatorsVisual;
             HitIndicatorsAudioToggle.isOn = gameplayConfig.HitIndicatorsAudio;
+            DamageIndicatorToggle.isOn = gameplayConfig.FullscreenDamageIndicator;
 
             //setup sub-difficulty sliders
             SetupDifficultyParameterSliders();
@@ -83,16 +89,18 @@ namespace CommonCore.RpgGame.UI
             var gameplayConfig = ConfigState.Instance.CustomConfigVars["GameplayConfig"] as GameplayConfig;
 
             ConfigState.Instance.Subtitles = GetSubtitlesValue();
+            ConfigState.Instance.ShakeEffects = ShakeEffectToggle.isOn;
+            ConfigState.Instance.FlashEffects = FlashEffectToggle.isOn;
 
             gameplayConfig.DifficultySetting = (DifficultyLevel)(int)DifficultySlider.value;
             
             gameplayConfig.Crosshair = GetCrosshairValue();
-            gameplayConfig.AimAssist = (AimAssistState)(int)AutoaimSlider.value;
-            gameplayConfig.ShakeEffects = ShakeEffectToggle.isOn;
+            gameplayConfig.AimAssist = (AimAssistState)(int)AutoaimSlider.value;            
             gameplayConfig.BobEffects = BobEffectToggle.isOn;
             gameplayConfig.HoldAds = AdsHoldToggle.isOn;
             gameplayConfig.HitIndicatorsVisual = HitIndicatorsVisualToggle.isOn;
             gameplayConfig.HitIndicatorsAudio = HitIndicatorsAudioToggle.isOn;
+            gameplayConfig.FullscreenDamageIndicator = DamageIndicatorToggle.isOn;
 
             QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("DifficultyChanged"));
         }

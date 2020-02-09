@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 33719116878064500}
   - component: {fileID: 23907186441631318}
   - component: {fileID: 95805431795338902}
-  m_Layer: 15
+  m_Layer: 23
   m_Name: arming_sword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -110,7 +110,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4340844972125212}
   - component: {fileID: 876445149180428995}
-  m_Layer: 15
+  m_Layer: 23
   m_Name: DemoSword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -173,7 +173,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4502005239806292}
   - component: {fileID: 82014674553818382}
-  m_Layer: 15
+  m_Layer: 23
   m_Name: FireSound
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -301,7 +301,7 @@ GameObject:
   - component: {fileID: 4422054168397854252}
   - component: {fileID: 6350481667310573658}
   - component: {fileID: 6010803447289952116}
-  m_Layer: 15
+  m_Layer: 23
   m_Name: Front
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -376,7 +376,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 290755430533376948}
-  m_Layer: 15
+  m_Layer: 23
   m_Name: OffsetPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}

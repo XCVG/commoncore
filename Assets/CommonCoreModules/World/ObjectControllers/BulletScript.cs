@@ -22,14 +22,12 @@ namespace CommonCore.World
 
         public bool FiredByPlayer = false;
 
-        private LayerMask RaycastLayerMask;
         private Rigidbody Rigidbody;
         private float Elapsed;
 
         void Start()
         {
             gameObject.layer = BulletLayer;
-            RaycastLayerMask = LayerMask.GetMask("Default", "ActorHitbox");
             Rigidbody = GetComponent<Rigidbody>();
 
             Update(); //seems legit

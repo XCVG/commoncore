@@ -112,7 +112,7 @@ namespace CommonCore.RpgGame.Dialogue
             //present audio
             if (VoiceAudioSource.isPlaying)
                 VoiceAudioSource.Stop();
-            var voiceClip = CCBase.GetModule<AudioModule>().GetSound($"{CurrentSceneName}/{CurrentFrameName}", SoundType.Voice);
+            var voiceClip = CCBase.GetModule<AudioModule>().GetSound($"{CurrentSceneName}/{CurrentFrameName}", SoundType.Voice); //GetModule<T> is now preferred
             if (voiceClip != null)
             {
                 VoiceAudioSource.clip = voiceClip;

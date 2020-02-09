@@ -121,6 +121,12 @@ namespace CommonCore.Scripting
             Debug.Log($"OnSceneUnload\n{context}");
         }
 
+        [CCScript, CCScriptHook(Hook = ScriptHook.OnPlayerSpawn)]
+        private static void OnPlayerSpawn(ScriptExecutionContext context)
+        {
+            Debug.Log($"OnPlayerSpawn\n{context}");
+        }
+
         [CCScript, CCScriptHook(Hook = ScriptHook.AfterMainMenuCreate)]
         private static void AfterMainMenuCreate(ScriptExecutionContext context)
         {

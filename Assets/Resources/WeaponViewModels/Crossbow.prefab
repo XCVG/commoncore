@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4264730169344880}
   - component: {fileID: 114118315404263840}
-  m_Layer: 15
+  m_Layer: 23
   m_Name: Crossbow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -69,7 +69,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4354979614485654}
   - component: {fileID: 82777383879253856}
-  m_Layer: 15
+  m_Layer: 23
   m_Name: ReloadSound
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -196,7 +196,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4163779229685216}
   - component: {fileID: 82219708522388582}
-  m_Layer: 15
+  m_Layer: 23
   m_Name: FireSound
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -325,7 +325,7 @@ GameObject:
   - component: {fileID: 33703111352831324}
   - component: {fileID: 23041261982233396}
   - component: {fileID: 95633011003816298}
-  m_Layer: 15
+  m_Layer: 23
   m_Name: lowpoly_crossbow_2_a
   m_TagString: Untagged
   m_Icon: {fileID: 0}

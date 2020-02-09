@@ -68,7 +68,7 @@ namespace CommonCore.RpgGame.World
 
             //violence is pretty much the ratio of time-to-target versus time-back-to-zero
 
-            if(!ConfigState.Instance.GetGameplayConfig().ShakeEffects)
+            if(!ConfigState.Instance.ShakeEffects)
             {
                 return;
             }

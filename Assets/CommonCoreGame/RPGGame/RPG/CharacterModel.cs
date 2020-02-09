@@ -7,14 +7,16 @@ using CommonCore.Messaging;
 using CommonCore.UI;
 using CommonCore.Config;
 using System.Runtime.Serialization;
+using CommonCore.World;
+using CommonCore.State;
 
 namespace CommonCore.RpgGame.Rpg
-{ 
+{
     /*
      * This is a complete character model, right now used only for players
      * Members can be smartly accessed by name via reflection
      */
-    public class CharacterModel
+    public class CharacterModel : IPlayerFlagsSource
     {
         public string FormID { get; set; }
         public string DisplayName { get; set; }
@@ -68,10 +70,14 @@ namespace CommonCore.RpgGame.Rpg
 
         public List<Condition> Conditions { get; private set; }
 
-        
+
         public InventoryModel Inventory { get; private set; }
-        public Dictionary<EquipSlot, int> AmmoInMagazine { get; set; } 
+        public Dictionary<EquipSlot, int> AmmoInMagazine { get; set; }
         public Dictionary<EquipSlot, InventoryItemInstance> Equipped { get; private set; }
+
+        //mostly for addons/game-specific stuff
+        [JsonProperty(ItemTypeNameHandling = TypeNameHandling.All)]
+        public Dictionary<string, object> ExtraData { get; private set; }
 
         public CharacterModel() //TODO with a model base parameter
         {
@@ -82,6 +88,7 @@ namespace CommonCore.RpgGame.Rpg
             Conditions = new List<Condition>();
             Equipped = new Dictionary<EquipSlot, InventoryItemInstance>();
             AmmoInMagazine = new Dictionary<EquipSlot, int>();
+            ExtraData = new Dictionary<string, object>();
 
             //create blank stats and derive stats
             BaseStats = new StatsSet();
@@ -111,7 +118,7 @@ namespace CommonCore.RpgGame.Rpg
                 ArmorItemModel aim = Equipped[EquipSlot.Body].ItemModel as ArmorItemModel;
                 if (aim != null)
                 {
-                    foreach(var key in BaseStats.DamageResistance.Keys)
+                    foreach (var key in BaseStats.DamageResistance.Keys)
                     {
                         if (aim.DamageResistance.ContainsKey((DamageType)key))
                             DerivedStats.DamageResistance[key] = BaseStats.DamageResistance[key] + aim.DamageResistance[(DamageType)key];
@@ -130,8 +137,13 @@ namespace CommonCore.RpgGame.Rpg
                 RpgValues.SkillsFromStats(BaseStats, DerivedStats);
 
             //recalculate max health and energy
-            DerivedStats.MaxHealth = RpgValues.MaxHealthForLevel(Level);
+            DerivedStats.MaxHealth = RpgValues.MaxHealth(this);
             DerivedStats.MaxEnergy = RpgValues.MaxEnergy(this);
+
+            //apply endurance from difficulty
+            float endurance = ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerEndurance;
+            DerivedStats.MaxHealth *= endurance;
+            DerivedStats.MaxEnergy *= endurance;
         }
 
         public void UpdateStats()
@@ -196,12 +208,12 @@ namespace CommonCore.RpgGame.Rpg
 
             if (slot != EquipSlot.None)
             {
-                Equipped.Remove(slot);            
-            }           
+                Equipped.Remove(slot);
+            }
             //allow continuing even if it's not actually equippable, for fixing bugs
 
             //magazine logic
-            if(item.ItemModel is RangedWeaponItemModel rwim && rwim.UseMagazine)
+            if (item.ItemModel is RangedWeaponItemModel rwim && rwim.UseMagazine)
             {
                 Inventory.AddItem(rwim.AType.ToString(), AmmoInMagazine[slot]);
                 AmmoInMagazine[slot] = 0;
@@ -211,7 +223,7 @@ namespace CommonCore.RpgGame.Rpg
 
             UpdateStats();
 
-            if(postMessage)
+            if (postMessage)
                 QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgChangeWeapon", "Slot", slot));
         }
 
@@ -222,21 +234,21 @@ namespace CommonCore.RpgGame.Rpg
 
         public void SetAV(string av, object value, bool? propagate)
         {
-            if(av.Contains("."))
+            if (av.Contains("."))
             {
                 string firstPart = av.Substring(0, av.IndexOf('.'));
                 string secondPart = av.Substring(av.IndexOf('.') + 1);
-                if(firstPart == "BaseStats")
+                if (firstPart == "BaseStats")
                 {
                     BaseStats.SetStat(secondPart, value);
                     if (!propagate.HasValue)
                         UpdateStats();
                 }
-                else if(firstPart == "DerivedStats")
+                else if (firstPart == "DerivedStats")
                 {
                     DerivedStats.SetStat(secondPart, value);
                 }
-                else if(firstPart == "Conditions")
+                else if (firstPart == "Conditions")
                 {
                     string fqConditionName = GetType().Namespace + "." + value.ToString();
                     Condition c = (Condition)Activator.CreateInstance(Type.GetType(fqConditionName));
@@ -253,7 +265,7 @@ namespace CommonCore.RpgGame.Rpg
                 prop.SetValue(this, Convert.ChangeType(value, prop.PropertyType), null);
             }
 
-            if(propagate.HasValue && propagate.Value)
+            if (propagate.HasValue && propagate.Value)
                 UpdateStats();
         }
 
@@ -288,14 +300,14 @@ namespace CommonCore.RpgGame.Rpg
                     Condition oldCondition = null;
                     foreach (Condition c in Conditions)
                     {
-                        if(c.GetType() == newCondition.GetType())
+                        if (c.GetType() == newCondition.GetType())
                         {
                             oldCondition = c;
                             break;
                         }
                     }
 
-                    if(oldCondition != null)
+                    if (oldCondition != null)
                     {
                         Conditions.Remove(oldCondition);
                     }
@@ -303,7 +315,7 @@ namespace CommonCore.RpgGame.Rpg
                     {
                         Conditions.Add(newCondition);
                     }
-                    
+
 
                     if (!propagate.HasValue)
                         UpdateStats();
@@ -313,12 +325,12 @@ namespace CommonCore.RpgGame.Rpg
             {
                 //search and modify property
                 var prop = GetType().GetProperty(av);
-                if(TypeUtils.IsNumericType(prop.PropertyType))
+                if (TypeUtils.IsNumericType(prop.PropertyType))
                 {
                     decimal newVal = Convert.ToDecimal(prop.GetValue(this, null)) + Convert.ToDecimal(value);
                     prop.SetValue(this, Convert.ChangeType(newVal, prop.PropertyType), null);
                 }
-                else if(prop.PropertyType == typeof(string))
+                else if (prop.PropertyType == typeof(string))
                 {
                     string newVal = ((string)prop.GetValue(this, null)) + (string)(object)value;
                     prop.SetValue(this, newVal, null);
@@ -327,7 +339,7 @@ namespace CommonCore.RpgGame.Rpg
                 {
                     prop.SetValue(this, Convert.ChangeType(value, prop.PropertyType), null);
                 }
-                
+
             }
 
             if (propagate.HasValue && propagate.Value)
@@ -384,7 +396,7 @@ namespace CommonCore.RpgGame.Rpg
                 string secondPart = av.Substring(av.IndexOf('.') + 1);
                 if (firstPart == "BaseStats")
                 {
-                    return BaseStats.GetStat<T>(secondPart);                    
+                    return BaseStats.GetStat<T>(secondPart);
                 }
                 else if (firstPart == "DerivedStats")
                 {
@@ -396,16 +408,16 @@ namespace CommonCore.RpgGame.Rpg
                     Condition newC = (Condition)Activator.CreateInstance(Type.GetType(fqConditionName));
                     bool found = false;
 
-                    foreach(Condition c in Conditions)
+                    foreach (Condition c in Conditions)
                     {
-                        if(c.GetType() == newC.GetType())
+                        if (c.GetType() == newC.GetType())
                         {
                             found = true;
                             break;
                         }
                     }
 
-                    return (T)(object)found;                    
+                    return (T)(object)found;
                 }
             }
             else
@@ -425,7 +437,7 @@ namespace CommonCore.RpgGame.Rpg
 
             float dt = DerivedStats.DamageThreshold.GetOrDefault((DamageType)damageType, 0f);
             float dr = DerivedStats.DamageResistance.GetOrDefault((DamageType)damageType, 0f);
-            
+
             return (dt, dr);
         }
 
@@ -436,7 +448,7 @@ namespace CommonCore.RpgGame.Rpg
 
         public void CheckLevelUp()
         {
-            if(Experience >= RpgValues.XPToNext(Level))
+            if (Experience >= RpgValues.XPToNext(Level))
             {
                 QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgLevelUp"));
                 QdmsMessageBus.Instance.PushBroadcast(new HUDPushMessage("<l:IGUI_MESSAGE:LevelUp>"));
@@ -452,6 +464,18 @@ namespace CommonCore.RpgGame.Rpg
             Experience += Mathf.RoundToInt(xp * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerExperience);
         }
 
-        
+
+        //player flags handling
+
+        IEnumerable<string> IPlayerFlagsSource.Flags =>  new string[] {}; //nop for now
+
+        int IPlayerFlagsSource.Count => 0; //nop for now
+
+        bool IPlayerFlagsSource.Contains(string flag)
+        {
+            return false; //nop for now
+        }
+
+
     }
 }

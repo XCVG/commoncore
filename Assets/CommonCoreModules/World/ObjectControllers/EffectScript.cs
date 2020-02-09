@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using CommonCore.Config;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,6 +14,7 @@ namespace CommonCore.World
         public bool Persist;
         public bool AutoUnparent = true;
         public float DestroyAfter;
+        public bool UseGlobalDwellTime = false;
 
         void Awake()
         {
@@ -29,7 +31,7 @@ namespace CommonCore.World
         {
             if(DestroyAfter > 0)
             {
-                Destroy(this.gameObject, DestroyAfter);
+                Destroy(this.gameObject, UseGlobalDwellTime ? Mathf.Min(DestroyAfter, ConfigState.Instance.EffectDwellTime) : DestroyAfter);
             }
         }
 

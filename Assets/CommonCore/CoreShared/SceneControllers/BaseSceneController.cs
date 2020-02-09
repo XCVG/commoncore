@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using CommonCore.State;
 using CommonCore.Scripting;
+using CommonCore.Messaging;
 
 namespace CommonCore
 {
@@ -19,6 +20,8 @@ namespace CommonCore
 
         public Dictionary<string, System.Object> LocalStore { get; protected set; }
 
+        protected QdmsMessageInterface MessageInterface;
+
         /// <summary>
         /// Set this to true if you want to handle the AfterSceneLoad scripting hook in your subclass controller
         /// </summary>
@@ -27,6 +30,9 @@ namespace CommonCore
         public virtual void Awake()
         {
             Debug.Log("Base Scene Controller Awake");
+
+            MessageInterface = new QdmsMessageInterface(this.gameObject);
+            MessageInterface.SubscribeReceiver((m) => HandleMessage(m));
 
             Current = this;
             if (AutoinitUi)
@@ -50,6 +56,21 @@ namespace CommonCore
         public virtual void Update()
         {
 
+        }
+
+        public virtual void OnDestroy()
+        {
+            
+        }
+
+        /// <summary>
+        /// Handles a received message
+        /// </summary>
+        /// <param name="message">The message to handle</param>
+        /// <returns>If the message was handled</returns>
+        protected virtual bool HandleMessage(QdmsMessage message)
+        {
+            return false;
         }
 
         /// <summary>

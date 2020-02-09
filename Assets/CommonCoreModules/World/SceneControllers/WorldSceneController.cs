@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using CommonCore.State;
 using CommonCore.Audio;
 using CommonCore.Scripting;
+using CommonCore.Messaging;
 
 namespace CommonCore.World
 {
@@ -14,12 +15,18 @@ namespace CommonCore.World
         public bool AutoGameover = true;
         public bool Autoload = true;
         public string SetMusic;
+        public Bounds WorldBounds = new Bounds(Vector3.zero, new Vector3(2000f, 2000f, 1000f));
+
+        public SetPlayerFlagsSource TempPlayerFlags { get; private set; } = new SetPlayerFlagsSource();
 
         protected override bool DeferAfterSceneLoadToSubclass => true;
 
         public override void Awake()
         {
             base.Awake();
+
+            GameState.Instance.PlayerFlags.RegisterSource(TempPlayerFlags);
+
             Debug.Log("World Scene Controller Awake");
         }
 
@@ -47,11 +54,43 @@ namespace CommonCore.World
         {
             base.Update();
 
-            if(AutoGameover && GameState.Instance.PlayerRpgState.Health <= 0) //TODO move this, this is dumb, we'll set a flag in MetaState but handle the actual check in PlayerController or explicitly
+        }
+
+        public override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            GameState.Instance.PlayerFlags.UnregisterSource(TempPlayerFlags);
+        }
+
+        protected override bool HandleMessage(QdmsMessage message)
+        {
+            if (base.HandleMessage(message))
             {
-                MetaState.Instance.NextScene = SceneManager.GetActiveScene().name; //in case we need it...
-                SceneManager.LoadScene("GameOverScene");
+                return true;
             }
+            else if(message is QdmsFlagMessage flagMessage)
+            {
+                switch (flagMessage.Flag)
+                {
+                    case "PlayerDead":
+                    case "EndGame":
+                        HandleGameOver();
+                        return true;
+                }
+            }
+
+            return false;
+            
+        }
+
+        private void HandleGameOver()
+        {
+            if (!AutoGameover)
+                return;
+
+            MetaState.Instance.NextScene = SceneManager.GetActiveScene().name; //in case we need it...
+            SceneManager.LoadScene("GameOverScene");
         }
 
         public override void Commit()
@@ -377,6 +416,8 @@ namespace CommonCore.World
                 //warn that no player data exists
                 Debug.LogWarning("No player world data exists!");
             }
+
+            ScriptingModule.CallHooked(ScriptHook.OnPlayerSpawn, this, player);
         }
 
         private void RestorePlayerToIntent(MetaState mgs, GameObject player)

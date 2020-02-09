@@ -1,7 +1,10 @@
 ﻿using CommonCore.Config;
 using CommonCore.Input;
 using CommonCore.LockPause;
+using CommonCore.Messaging;
+using CommonCore.RpgGame.Rpg;
 using CommonCore.State;
+using CommonCore.World;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,9 +22,12 @@ namespace CommonCore.RpgGame.World
         private bool AllowSlopeJumping = false;
         [SerializeField]
         private float InputDeadzone = 0.1f;
-
-        public float CrouchYScale = 0.66f;
-        public float CrouchMoveScale = 0.5f;
+        [SerializeField]
+        private bool TeleportIfOutOfBounds = true;
+        [SerializeField]
+        private float CrouchYScale = 0.66f;
+        [SerializeField]
+        private float CrouchAnimateRate = 0.5f;
 
         [SerializeField]
         private float LookYLimit = 90f;
@@ -32,8 +38,6 @@ namespace CommonCore.RpgGame.World
         private float AirResistance = 1f;
         [SerializeField]
         private float GravityMultiplier = 2f;
-        [SerializeField]
-        private float GroundedDamping = 1000f;
         [SerializeField]
         private float SlopeSlideAccleration = 100f;
         [SerializeField]
@@ -78,9 +82,17 @@ namespace CommonCore.RpgGame.World
         [SerializeField]
         private Vector3 NoclipFastVelocity = new Vector3(20f, 20f, 20f);
 
+        [SerializeField, Header("Fall Damage")]
+        private float FallMinDetectVelocity = 5f;
+        [SerializeField]
+        private float FallMinDetectTime = 0.25f;
+        [SerializeField]
+        private float FallMinGruntVelocity = 12f;
+
         [Header("Visual Options")]
         public bool UseCrouchHack;
-        
+        public bool CountRotateAsMovement = false;
+
 
         [SerializeField, Header("Components")]
         private PlayerController PlayerController;
@@ -94,13 +106,13 @@ namespace CommonCore.RpgGame.World
         public Animator AnimController;
 
 
-        [Header("Sounds")] //TODO separate audio controller
-        public AudioSource WalkSound;
-        public AudioSource RunSound;
-        public AudioSource FallSound;
-        public AudioSource PainSound;
+        [Header("Sounds")] //TODO clean up audio handling
+        public AudioSource WalkSound; //may move this one
+        public AudioSource RunSound; //and also this one
+        public AudioSource FallImpactSound; //"event" sounds will remain handled here
+        public AudioSource FallPainSound;
         public AudioSource JumpSound;
-        public AudioSource DeathSound;
+        public AudioSource CrouchSound;
 
         public bool IsMoving { get; private set; }
         public bool IsRunning { get; private set; }
@@ -112,6 +124,10 @@ namespace CommonCore.RpgGame.World
         private Vector3 LastGroundNormal;
         private bool DidJump;
         private bool DidChangeCrouch;
+        private bool RunWasBlocked;
+        private float TimeInAir;
+
+        private float? CrouchTargetHeight = null;
 
         //all this crap is necessary for crouching to work correctly (TODO STRUCTIFY)
         private float? CharControllerOriginalHeight;
@@ -166,19 +182,30 @@ namespace CommonCore.RpgGame.World
 
             //HandleDynamicMovement();
 
+            //reset these
+            IsMoving = false;
+            IsRunning = false;
+            DidJump = false;
+            DidChangeCrouch = false;
+
             if (PlayerController.PlayerInControl && !LockPauseModule.IsInputLocked())
             {
                 HandleLook();
                 if (Clipping)
                     HandleMovement();                    
-                HandleAnimation(); //TODO move these?
-                HandleSounds(); //TODO move these?
             }
 
             if (Clipping)
+            {
                 HandleDynamicMovement();
+                HandleOutOfBounds();
+            }
 
             HandleNoclip();
+            HandleCrouchAnimation();
+
+            HandleAnimation();
+            HandleSounds();
         }
 
         //handle collider hits (will probably have to rewrite this later)
@@ -192,7 +219,9 @@ namespace CommonCore.RpgGame.World
                 LastGroundNormal = hit.normal;
                 return; //ignore terrain hits
             }
-                
+
+            if (!EnableCollisions || GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoPhysics))
+                return;
 
             //Debug.Log($"Player hit {hit.collider.gameObject.name} ({hit.collider.GetType()})");
 
@@ -249,12 +278,12 @@ namespace CommonCore.RpgGame.World
         /// </summary>
         protected void HandleNoclip()
         {
-            if(!Clipping && !MetaState.Instance.SessionFlags.Contains("NoClip"))
+            if(!Clipping && !(MetaState.Instance.SessionFlags.Contains("NoClip") || GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoClip)))
             {
                 exitNoclipMode();
                 return;
             }
-            else if(Clipping && MetaState.Instance.SessionFlags.Contains("NoClip"))
+            else if(Clipping && (MetaState.Instance.SessionFlags.Contains("NoClip") || GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoClip)))
             {
                 enterNoclipMode();
                 return;
@@ -289,6 +318,8 @@ namespace CommonCore.RpgGame.World
 
             void doNoclipMovement()
             {
+                if (!PlayerController.PlayerInControl || LockPauseModule.IsInputLocked() || GameState.Instance.PlayerFlags.Contains(PlayerFlags.Frozen) || GameState.Instance.PlayerFlags.Contains(PlayerFlags.TotallyFrozen))
+                    return;
 
                 Vector3 moveVector = Vector3.zero;
                 Vector3 velocity = MappedInput.GetButton(DefaultControls.Sprint) ? NoclipFastVelocity : NoclipVelocity;
@@ -318,6 +349,10 @@ namespace CommonCore.RpgGame.World
 
         protected void HandleDynamicMovement()
         {
+            if (GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoPhysics)) //probably buggy
+                return;
+
+            float lastYVelocity = Velocity.y; //last y-velocity, ignoring gravity
             Velocity += Physics.gravity * GravityMultiplier * Time.deltaTime;
 
             CharController.Move(Velocity * Time.deltaTime);
@@ -331,7 +366,24 @@ namespace CommonCore.RpgGame.World
                 //yDamp = Mathf.Min(yDamp, Mathf.Abs(Velocity.y));
                 //yDamp = yDamp * -Mathf.Sign(Velocity.y);
                 //Velocity += new Vector3(0, yDamp, 0);
+
+                if (lastYVelocity < -FallMinDetectVelocity && TimeInAir > FallMinDetectTime)
+                {
+                    FallImpactSound.Ref()?.Play();
+
+                    if (lastYVelocity < -FallMinGruntVelocity)
+                        FallPainSound.Ref()?.Play();
+
+                    if(GameParams.UseFallDamage && !MetaState.Instance.SessionFlags.Contains("GodMode") && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoFallDamage) && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.Invulnerable)) 
+                    {
+                        GameState.Instance.PlayerRpgState.Health -= RpgValues.FallDamage(GameState.Instance.PlayerRpgState, new Vector3(Velocity.x, lastYVelocity, Velocity.z));
+                    }
+
+                    //Debug.Log($"Player fell (y-velocity = {lastYVelocity:F4} m/s, time in air = {TimeInAir:F2} s)");
+                }
+
                 Velocity = new Vector3(Velocity.x, 0, Velocity.z);
+                TimeInAir = 0;
             }
 
             if(IsGrounded && IsOnSlope)
@@ -353,29 +405,38 @@ namespace CommonCore.RpgGame.World
             {
                 //air resistance
                 Velocity += (-Velocity).normalized * Mathf.Min(AirResistance * Time.deltaTime, Velocity.magnitude);
+                TimeInAir += Time.deltaTime;
             }
         }
 
         protected void HandleLook()
         {
-            float deadzone = 0.1f; //this really shouldn't be here
-            float lmul = 180f; //mostly logical look multiplier
+            const float deadzone = 0.1f; //this really shouldn't be here
+            const float lmul = 180f; //mostly logical look multiplier   
+
+            if (GameState.Instance.PlayerFlags.Contains(PlayerFlags.TotallyFrozen))
+                return;
 
             //looking is the same as long as we're in control
             if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookX)) != 0)
             {
                 transform.Rotate(Vector3.up, lmul * ConfigState.Instance.LookSpeed * MappedInput.GetAxis(DefaultControls.LookX) * Time.deltaTime);
-                if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookX)) > deadzone)
+                if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookX)) > deadzone && CountRotateAsMovement)
+                {
                     IsMoving = true;
+                }
+                
             }
 
             if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.LookY)) != 0)
             {
+                int lookYInvert = ConfigState.Instance.LookInvert ? -1 : 1;
+
                 //this is probably the worst clamp code ever written
 
                 Vector3 localForward = PlayerController.CameraRoot.parent.transform.InverseTransformDirection(PlayerController.CameraRoot.transform.forward);
                 float originalAngle = Vector2.SignedAngle(Vector2.right, localForward.GetSideVector());
-                float deltaAngle = lmul * ConfigState.Instance.LookSpeed * MappedInput.GetAxis(DefaultControls.LookY) * Time.deltaTime; //this is okay if weird
+                float deltaAngle = lmul * ConfigState.Instance.LookSpeed * lookYInvert * MappedInput.GetAxis(DefaultControls.LookY) * Time.deltaTime; //this is okay if weird
 
                 if(deltaAngle > 0 && originalAngle + deltaAngle >= LookYLimit)
                 {
@@ -396,123 +457,190 @@ namespace CommonCore.RpgGame.World
 
         }
 
-        //TODO handle crouching better, handle fall damage
         protected void HandleMovement()
         {
-            //really need to do something about these values
-            IsMoving = false;
-            IsRunning = false;           
-            DidJump = false;
-            DidChangeCrouch = false;
 
-            var playerState = GameState.Instance.PlayerRpgState;
-
-            IsRunning = MappedInput.GetButton(DefaultControls.Sprint);
-
-            //request an exit from ADS
-            if(IsRunning && PlayerController.WeaponComponent != null)
+            var playerModel = GameState.Instance.PlayerRpgState;
+                        
+            if (!GameState.Instance.PlayerFlags.Contains(PlayerFlags.Frozen) && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.TotallyFrozen))
             {
-                PlayerController.WeaponComponent.RequestADSExit();
-            }
 
-            //handle crouching
-            if (MappedInput.GetButtonDown(DefaultControls.Crouch) && !IsRunning)
-            {
-                IsCrouching = !IsCrouching;
-                DidChangeCrouch = true;
-                SetCrouchState();
-            }
+                //handle running
+                float energyToRun = RpgValues.GetRunEnergyRate(playerModel);
 
-            //uncrouch if we try to sprint
-            if(IsRunning && IsCrouching)
-            {
-                IsCrouching = false;
-                DidChangeCrouch = true;
-                SetCrouchState();
-            }
+                IsRunning = MappedInput.GetButton(DefaultControls.Sprint);
 
-            if(IsGrounded)
-            {
-                //normal x/y movement
+                if (RunWasBlocked && IsRunning)
+                    IsRunning = false;
+                else if (RunWasBlocked && !IsRunning)
+                    RunWasBlocked = false;
 
-                var flatVelocity = new Vector3(Velocity.x, 0, Velocity.z);
-
-                Vector3 moveVector = Vector3.zero;
-
-                float maxAcceleration = IsCrouching ? MaxCrouchAcceleration : (IsRunning ? MaxSprintAcceleration : MaxWalkAcceleration);
-                if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveY)) > InputDeadzone)
+                if (IsRunning && playerModel.Energy < energyToRun)
                 {
-                    moveVector += (transform.forward * MappedInput.GetAxis(DefaultControls.MoveY) * maxAcceleration * Time.deltaTime);
-                    IsMoving = true;
+                    IsRunning = false;
+                    RunWasBlocked = true;
+                    QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgInsufficientEnergy"));
                 }
 
-                if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveX)) > InputDeadzone)
+
+                //TODO check against energy requirements
+
+                //request an exit from ADS
+                if (IsRunning && PlayerController.WeaponComponent != null)
                 {
-                    moveVector += (transform.right * MappedInput.GetAxis(DefaultControls.MoveX) * maxAcceleration * Time.deltaTime);
-                    IsMoving = true;
+                    PlayerController.WeaponComponent.RequestADSExit();
                 }
 
-                if (Mathf.Approximately(moveVector.magnitude, 0) && !IsOnSlope)
+                //handle crouching
+                if (MappedInput.GetButtonDown(DefaultControls.Crouch) && !IsRunning)
                 {
-                    moveVector = -flatVelocity.normalized * Mathf.Min(MaxBrakeAcceleration * Time.deltaTime, flatVelocity.magnitude);
+                    IsCrouching = !IsCrouching;
+                    DidChangeCrouch = true;
+                    SetCrouchState();
                 }
 
-                //clamp velocity to maxwalk/maxrun/etc
-                float maxSpeed = IsCrouching ? MaxCrouchSpeed : (IsRunning ? MaxSprintSpeed : MaxWalkSpeed);
-                var newFlatVelocity = new Vector3(Velocity.x, 0, Velocity.z) + new Vector3(moveVector.x, 0, moveVector.z);
-                if (newFlatVelocity.magnitude > maxSpeed)
+                //uncrouch if we try to sprint
+                if (IsRunning && IsCrouching)
                 {
-                    newFlatVelocity = newFlatVelocity.normalized * maxSpeed; //this actually doesn't make a ton of physical sense but it does seem to work
+                    IsCrouching = false;
+                    DidChangeCrouch = true;
+                    SetCrouchState();
                 }
 
-                Velocity = new Vector3(newFlatVelocity.x, Velocity.y, newFlatVelocity.z);
-            }
-            else
-            {
-                //air move: component wise, clamped
-
-                //awkward bullshit to go from world to player space
-                Vector3 refVelocity = Quaternion.AngleAxis(-transform.eulerAngles.y, Vector3.up) * Velocity;
-                Vector3 newAddVelocity = Vector3.zero;
-
-                float moveZ = MappedInput.GetAxis(DefaultControls.MoveY) * MaxAirAcceleration * Time.deltaTime;
-                if (Mathf.Abs(refVelocity.z) < MaxAirSpeed || Mathf.Sign(moveZ) != Mathf.Sign(refVelocity.z))
-                    newAddVelocity += new Vector3(0, 0, moveZ);
-
-                float moveX = MappedInput.GetAxis(DefaultControls.MoveX) * MaxAirAcceleration * Time.deltaTime;
-                if (Mathf.Abs(refVelocity.x) < MaxAirSpeed || Mathf.Sign(moveX) != Mathf.Sign(refVelocity.x))
-                    newAddVelocity += new Vector3(moveX, 0, 0);
-
-                Velocity += Quaternion.AngleAxis(transform.eulerAngles.y, Vector3.up) * newAddVelocity;
-            }
-
-            if(IsGrounded && (AllowSlopeJumping || !IsOnSlope))
-            {
-                //jumping
-                if (MappedInput.GetButtonDown(DefaultControls.Jump))
+                if (IsGrounded)
                 {
+                    //normal x/y movement
 
-                    var jumpVelocity = JumpInstantaneousVelocity;
-                    bool wasCrouched = IsCrouching;
+                    var flatVelocity = new Vector3(Velocity.x, 0, Velocity.z);
 
-                    //uncrouch if we were crouched
-                    if(wasCrouched)
+                    Vector3 moveVector = Vector3.zero;
+
+                    float maxAcceleration = IsCrouching ? MaxCrouchAcceleration : (IsRunning ? MaxSprintAcceleration : MaxWalkAcceleration);
+                    if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveY)) > InputDeadzone)
                     {
-                        IsCrouching = false;
-                        DidChangeCrouch = true;
-                        SetCrouchState();
-                        jumpVelocity += JumpCrouchBoostVelocity;
+                        moveVector += (transform.forward * MappedInput.GetAxis(DefaultControls.MoveY) * maxAcceleration * Time.deltaTime);
+                        IsMoving = true;
                     }
-                    
-                    Velocity += Quaternion.AngleAxis(transform.eulerAngles.y, Vector3.up) * jumpVelocity;
-                    CharController.Move(Quaternion.AngleAxis(transform.eulerAngles.y, Vector3.up) * JumpInstantaneousDisplacement);
-                    DidJump = true;
+
+                    if (Mathf.Abs(MappedInput.GetAxis(DefaultControls.MoveX)) > InputDeadzone)
+                    {
+                        moveVector += (transform.right * MappedInput.GetAxis(DefaultControls.MoveX) * maxAcceleration * Time.deltaTime);
+                        IsMoving = true;
+                    }
+
+                    if (Mathf.Approximately(moveVector.magnitude, 0) && !IsOnSlope)
+                    {
+                        moveVector = -flatVelocity.normalized * Mathf.Min(MaxBrakeAcceleration * Time.deltaTime, flatVelocity.magnitude);
+                    }
+
+                    //clamp velocity to maxwalk/maxrun/etc
+                    float maxSpeed = IsCrouching ? MaxCrouchSpeed * RpgValues.GetMoveSpeedMultiplier(playerModel) : (IsRunning ? MaxSprintSpeed * RpgValues.GetRunSpeedMultiplier(playerModel) : MaxWalkSpeed * RpgValues.GetMoveSpeedMultiplier(playerModel));
+                    maxSpeed *= ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerAgility;
+                    var newFlatVelocity = new Vector3(Velocity.x, 0, Velocity.z) + new Vector3(moveVector.x, 0, moveVector.z);
+                    if (newFlatVelocity.magnitude > maxSpeed)
+                    {
+                        newFlatVelocity = newFlatVelocity.normalized * maxSpeed; //this actually doesn't make a ton of physical sense but it does seem to work
+                    }
+
+                    Velocity = new Vector3(newFlatVelocity.x, Velocity.y, newFlatVelocity.z);
+
+                    if (IsRunning)
+                        playerModel.Energy -= energyToRun;
+                }
+                else
+                {
+                    //air move: component wise, clamped
+
+                    //awkward bullshit to go from world to player space
+                    Vector3 refVelocity = Quaternion.AngleAxis(-transform.eulerAngles.y, Vector3.up) * Velocity;
+                    Vector3 newAddVelocity = Vector3.zero;
+
+                    float multiplier = ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerAgility;
+                    multiplier *= RpgValues.GetAirMoveMultiplier(playerModel);
+
+                    float maxSpeedScaled = MaxAirSpeed * multiplier;
+
+                    float moveZ = MappedInput.GetAxis(DefaultControls.MoveY) * MaxAirAcceleration * multiplier * Time.deltaTime;
+                    if (Mathf.Abs(refVelocity.z) < maxSpeedScaled || Mathf.Sign(moveZ) != Mathf.Sign(refVelocity.z))
+                        newAddVelocity += new Vector3(0, 0, moveZ);
+
+                    float moveX = MappedInput.GetAxis(DefaultControls.MoveX) * MaxAirAcceleration * multiplier * Time.deltaTime;
+                    if (Mathf.Abs(refVelocity.x) < maxSpeedScaled || Mathf.Sign(moveX) != Mathf.Sign(refVelocity.x))
+                        newAddVelocity += new Vector3(moveX, 0, 0);
+
+                    Velocity += Quaternion.AngleAxis(transform.eulerAngles.y, Vector3.up) * newAddVelocity;
                 }
 
+                if (IsGrounded && (AllowSlopeJumping || !IsOnSlope))
+                {
+                    //jumping
+                    if (MappedInput.GetButtonDown(DefaultControls.Jump))
+                    {
+
+                        var jumpVelocity = JumpInstantaneousVelocity * RpgValues.GetJumpVelocityMultiplier(playerModel) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerAgility;
+                        float jumpEnergyUse = RpgValues.GetJumpEnergyUse(playerModel);
+
+                        if (playerModel.Energy >= jumpEnergyUse)
+                        {
+                            playerModel.Energy -= jumpEnergyUse;
+                            bool wasCrouched = IsCrouching;
+
+                            //uncrouch if we were crouched
+                            if (wasCrouched)
+                            {
+                                IsCrouching = false;
+                                DidChangeCrouch = true;
+                                SetCrouchState();
+                                jumpVelocity += JumpCrouchBoostVelocity;
+                            }
+
+                            Velocity += Quaternion.AngleAxis(transform.eulerAngles.y, Vector3.up) * jumpVelocity;
+                            CharController.Move(Quaternion.AngleAxis(transform.eulerAngles.y, Vector3.up) * JumpInstantaneousDisplacement);
+                            JumpSound.Ref()?.Play();
+                            DidJump = true;
+                        }
+                        else
+                        {
+                            //failed to jump
+                            QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgInsufficientEnergy"));
+                        }
+                    }
+
+                }
+            }
+
+            //energy recovery
+            if(!IsRunning && IsGrounded && !DidJump)
+            {
+                float energyGain = (IsMoving ? RpgValues.GetMovingEnergyRecoveryRate(playerModel) : RpgValues.GetIdleEnergyRecoveryRate(playerModel)) * Time.deltaTime;
+                playerModel.Energy = Mathf.Min(playerModel.DerivedStats.MaxEnergy, playerModel.Energy + energyGain);
             }
 
 
-        }               
+        }  
+        
+        private void HandleOutOfBounds()
+        {
+            if (!TeleportIfOutOfBounds)
+                return;
+
+            var sceneController = SharedUtils.TryGetSceneController() as WorldSceneController;
+            if(sceneController != null)
+            {
+                if(!sceneController.WorldBounds.Contains(transform.position))
+                {
+                    Debug.LogWarning("Player out of bounds, teleporting!");
+
+                    Vector3 teleportPoint = sceneController.WorldBounds.center + new Vector3(0, 2f, 0);
+                    GameObject spawnPoint = WorldUtils.FindObjectByTID("DefaultPlayerSpawn");
+                    if (spawnPoint != null)
+                    {
+                        teleportPoint = spawnPoint.transform.position;
+                    }
+                    transform.position = teleportPoint;
+                }
+            }
+        }
 
         private void HandleAnimation()
         {
@@ -568,37 +696,75 @@ namespace CommonCore.RpgGame.World
 
         private void HandleSounds()
         {
-            //this is the old code, it needs a rethink lol
+            if (WalkSound == null || RunSound == null)
+                return;
 
-            if (IsGrounded && !DidJump)
+            //we only need to handle movement sounds not "event" sounds like jumping and landing
+            bool isStepping = IsGrounded && !DidJump && IsMoving;
+            //bool soundPlaying = WalkSound.isPlaying;
+
+            if(isStepping)
             {
-                if (IsMoving)
+                if (!IsRunning) //if not running (ie walking)
                 {
-                    if (IsRunning && RunSound != null && !RunSound.isPlaying)
-                        RunSound.Play();
-                    else if (WalkSound != null && !WalkSound.isPlaying)
-                        WalkSound.Play();
-                }
-                else
-                {
-                    if (WalkSound != null)
-                        WalkSound.Pause();
+                    if (!RunSound.isPlaying) //if the run sound is not playing
+                    {
+                        if (!WalkSound.isPlaying) //start/loop the walk sound
+                        {
+                            WalkSound.Play();
+                        }
 
-                    if (RunSound != null)
-                        RunSound.Pause();
+                        WalkSound.loop = true;
+                    }
+
+                    RunSound.loop = false; //soft-stop the run sound
+                }
+                else if(IsRunning) //if running
+                {
+                    if(!WalkSound.isPlaying) //if the walk sound is not playing
+                    {
+                        if(!RunSound.isPlaying) //start/loop the run sound
+                        {
+                            RunSound.Play();
+                        }
+
+                        RunSound.loop = true;
+                    }
+
+                    WalkSound.loop = false; //soft-stop the walk sound
                 }
             }
+            else //if not moving, soft-stop both sounds
+            {
+                WalkSound.loop = false;
+                RunSound.loop = false;
+            }
+
+        }
+
+        /// <summary>
+        /// Animates the player camera going up/down for crouching
+        /// </summary>
+        private void HandleCrouchAnimation()
+        {
+            if (!CrouchTargetHeight.HasValue)
+                return;
+
+            Transform cameraRoot = PlayerController.CameraRoot;
+            float currentHeight = cameraRoot.localPosition.y;
+
+            if (Mathf.Approximately(currentHeight, CrouchTargetHeight.Value))
+                return;
+
+            //animate
+            float direction = Mathf.Sign(CrouchTargetHeight.Value - currentHeight);
+            float newHeight;
+            if (direction > 0)
+                newHeight = Mathf.Min(CrouchTargetHeight.Value, currentHeight + CrouchAnimateRate * Time.deltaTime);
             else
-            {
-                if (WalkSound != null)
-                    WalkSound.Pause();
-
-                if (RunSound != null)
-                    RunSound.Pause();
-
-                if (DidJump && JumpSound != null)
-                    JumpSound.Play();
-            }
+                newHeight = Mathf.Max(CrouchTargetHeight.Value, currentHeight - CrouchAnimateRate * Time.deltaTime);
+            
+            cameraRoot.localPosition = new Vector3(cameraRoot.localPosition.x, newHeight, cameraRoot.localPosition.z);
         }
 
         /// <summary>
@@ -606,7 +772,6 @@ namespace CommonCore.RpgGame.World
         /// </summary>
         private void SetCrouchState()
         {
-            //this is just the old code btw
 
             if (!CharControllerOriginalHeight.HasValue)
             {
@@ -620,7 +785,10 @@ namespace CommonCore.RpgGame.World
                 CharController.center = new Vector3(CharController.center.x, CharController.height / 2f, CharController.center.z);
                 Hitbox.height = HitboxOriginalHeight.Value * CrouchYScale;
                 Hitbox.center = new Vector3(Hitbox.center.x, Hitbox.height / 2f, Hitbox.center.z);
-                PlayerController.CameraRoot.localPosition = new Vector3(CameraRootOriginalLPos.Value.x, CameraRootOriginalLPos.Value.y * CrouchYScale, CameraRootOriginalLPos.Value.z);
+
+                //PlayerController.CameraRoot.localPosition = new Vector3(CameraRootOriginalLPos.Value.x, CameraRootOriginalLPos.Value.y * CrouchYScale, CameraRootOriginalLPos.Value.z);
+                CrouchTargetHeight = CameraRootOriginalLPos.Value.y * CrouchYScale;
+                CrouchSound.Ref()?.Play();
 
                 if (UseCrouchHack)
                 {
@@ -634,7 +802,10 @@ namespace CommonCore.RpgGame.World
                 CharController.center = new Vector3(CharController.center.x, CharControllerOriginalYPos.Value, CharController.center.z);
                 Hitbox.height = HitboxOriginalHeight.Value;
                 Hitbox.center = new Vector3(Hitbox.center.x, HitboxOriginalYPos.Value, Hitbox.center.z);
-                PlayerController.CameraRoot.localPosition = CameraRootOriginalLPos.Value;
+
+                //PlayerController.CameraRoot.localPosition = CameraRootOriginalLPos.Value;
+                CrouchTargetHeight = CameraRootOriginalLPos.Value.y;
+                CrouchSound.Ref()?.Play();
 
                 if (UseCrouchHack)
                 {
@@ -663,6 +834,10 @@ namespace CommonCore.RpgGame.World
         public void Push(Vector3 instantaneousVelocity, Vector3 instantaneousDisplacement)
         {
             Debug.Log($"Player pushed ({instantaneousVelocity}|{instantaneousDisplacement})");
+
+            if (GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoPhysics))
+                return;
+
             Velocity += instantaneousVelocity;
             CharController.Move(instantaneousDisplacement);
         }

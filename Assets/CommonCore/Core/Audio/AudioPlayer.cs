@@ -535,7 +535,7 @@ namespace CommonCore.Audio
             var clip = Module.GetSound(sound, type);
             if (clip == null)
             {
-                Debug.LogWarning("Can't play sound " + sound);
+                Debug.LogError("Can't play sound \"" + sound + "\" because it doesn't exist!");
                 throw new InvalidOperationException();
             }
 

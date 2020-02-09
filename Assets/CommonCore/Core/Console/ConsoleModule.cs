@@ -46,7 +46,7 @@ namespace CommonCore.Console
                 .Where((type) => type.GetInterfaces().Contains(typeof(IConsole)))
                 .ToArray();
 
-            Log(possibleConsoles.ToNiceString());
+            Log(possibleConsoles.ToNiceString(t => t.Name));
 
             //get our preferred console implmentation...
             Type preferredConsole = Array.Find(possibleConsoles, (t) => t.Name == CoreParams.PreferredCommandConsole);

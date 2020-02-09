@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using CommonCore.State;
+﻿using CommonCore.Config;
+using CommonCore.RpgGame;
 using CommonCore.RpgGame.State;
+using CommonCore.State;
+using System;
+using UnityEngine;
 
 namespace CommonCore.DelayedEvents
 {
@@ -36,7 +36,7 @@ namespace CommonCore.DelayedEvents
                 wm.RealTimeElapsed = DateTimeOffset.Now.ToUnixTimeSeconds();
 
                 //advance world (scaled) time
-                wm.WorldSecondsElapsed += (Time.time - LastScaledTime) * wm.WorldTimeScale;
+                wm.WorldSecondsElapsed += (Time.time - LastScaledTime) * wm.WorldTimeScale * ConfigState.Instance.GetGameplayConfig().WorldTimeScaleBias;
                 while (wm.WorldTimeUseRollover && wm.WorldSecondsElapsed > SecondsInDay)
                 {
                     wm.WorldSecondsElapsed -= SecondsInDay;

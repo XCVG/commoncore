@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using CommonCore.Messaging;
 using CommonCore.DebugLog;
+using CommonCore.Config;
 
 namespace CommonCore.LockPause
 {
@@ -264,7 +265,7 @@ namespace CommonCore.LockPause
         private void DoUnpause()
         {
             PauseLockState = null;
-            Time.timeScale = 1.0f;
+            Time.timeScale = ConfigState.Instance.DefaultTimescale;
 
             //recapture mouse (if applicable)
             if (EnableMouseCapture)

@@ -35,6 +35,7 @@ namespace CommonCore.RpgGame.World
         public GameObject ModelRoot;        
         public Transform TargetPoint;
         public PlayerCameraZoomComponent CameraZoomComponent;
+        public PlayerDeathComponent DeathComponent;
         private QdmsMessageInterface MessageInterface;
 
         [Header("Sounds")]
@@ -43,12 +44,17 @@ namespace CommonCore.RpgGame.World
 
         [Header("Shooting")]
         public bool AttackEnabled = true;
-        public bool AttemptToUseStats = true;
 
         [Header("Options")]
         public bool HandleDeath = true;
+        public bool SynchronizeDeathDelay = true;
+        public float DeathWaitTime = 5f;
 
         private Renderer[] ModelRendererCache;
+
+        private float DyingElapsed = 0;
+        public bool IsDying { get; private set; } = false;
+        public bool IsDead { get; private set; } = false;
 
         private bool HadTargetLastFrame = false;
 
@@ -90,6 +96,11 @@ namespace CommonCore.RpgGame.World
                 CameraZoomComponent = GetComponentInChildren<PlayerCameraZoomComponent>(true);
             }
 
+            if(!DeathComponent)
+            {
+                DeathComponent = GetComponentInChildren<PlayerDeathComponent>();
+            }
+
             if(!HUDScript)
             {
                 HUDScript = (RpgHUDController)BaseHUDController.Current; //I would not recommend this cast
@@ -112,8 +123,7 @@ namespace CommonCore.RpgGame.World
             SetInitialViewModels();            
         }
 
-        //TODO: still unsure about the state system, but I'll likely rewrite this whole class
-        //should be fixedupdate
+        //should be fixedupdate, probably
         public override void Update()
         {
             HandleMessages();
@@ -121,14 +131,8 @@ namespace CommonCore.RpgGame.World
             if (Time.timeScale == 0 || LockPauseModule.IsPaused())
                 return;
 
-            if(PlayerInControl && HandleDeath && GameState.Instance.PlayerRpgState.Health <= 0 && !MetaState.Instance.SessionFlags.Contains("BuddhaMode"))
-            {
-                Debug.Log("You died!");
-                PlayerInControl = false;
-                MessageInterface.PushToBus(new QdmsFlagMessage("PlayerDead"));
-                WeaponComponent.Ref()?.RequestHideWeapon();
-                DeathSound.Ref()?.Play();
-            }
+            if (HandleDeath)
+                HandleDying();
 
             if (PlayerInControl && !LockPauseModule.IsInputLocked())
             {
@@ -149,26 +153,27 @@ namespace CommonCore.RpgGame.World
                 case PlayerViewType.PreferFirst:
                     tpCamera.SetActive(false);
                     fpCamera.SetActive(true);
-                    SetModelVisibility(false);
+                    SetModelVisibility(ModelVisibility.Invisible);
                     break;
                 case PlayerViewType.PreferThird:
                     tpCamera.SetActive(true);
                     fpCamera.SetActive(false);
-                    SetModelVisibility(true);
+                    SetModelVisibility(ModelVisibility.Visible);
                     break;
                 case PlayerViewType.ForceFirst:
                     tpCamera.SetActive(false);
                     fpCamera.SetActive(true);
-                    SetModelVisibility(false);
+                    SetModelVisibility(ModelVisibility.Invisible);
                     break;
                 case PlayerViewType.ForceThird:
                     tpCamera.SetActive(true);
                     fpCamera.SetActive(false);
-                    SetModelVisibility(true);
+                    SetModelVisibility(ModelVisibility.Visible);
                     break;
                 case PlayerViewType.ExplicitOther:
                     tpCamera.SetActive(false);
                     fpCamera.SetActive(false);
+                    //SetModelVisibility(ModelVisibility.TotallyInvisible);
                     break;
             }
 
@@ -231,14 +236,14 @@ namespace CommonCore.RpgGame.World
                 {
                     fpCamera.SetActive(true);
                     tpCamera.SetActive(false);
-                    SetModelVisibility(false);
+                    SetModelVisibility(ModelVisibility.Invisible);
                     PushViewChangeMessage(PlayerViewType.ForceFirst);
                 }
                 else
                 {
                     fpCamera.SetActive(false);
                     tpCamera.SetActive(true);
-                    SetModelVisibility(true);
+                    SetModelVisibility(ModelVisibility.Visible);
                     PushViewChangeMessage(PlayerViewType.ForceThird);
                 }
             }
@@ -250,7 +255,7 @@ namespace CommonCore.RpgGame.World
 
             bool haveTarget = false;
 
-            int layerMask = LayerMask.GetMask("Default","ActorHitbox");
+            int layerMask = LayerMask.GetMask("Default","ActorHitbox","Actor");
 
             Debug.DrawRay(CameraRoot.position, CameraRoot.transform.forward * MaxProbeDist);
 
@@ -281,7 +286,7 @@ namespace CommonCore.RpgGame.World
 
                     //get the interactable component and hitbox component; if it doesn't have either then it's an obstacle
                     InteractableComponent ic = hit.collider.GetComponent<InteractableComponent>();
-                    ActorHitboxComponent ahc = hit.collider.GetComponent<ActorHitboxComponent>();
+                    IHitboxComponent ahc = hit.collider.GetComponent<IHitboxComponent>();
                     if (ic == null && ahc == null)
                     {
                         //we null out our hit first since it's occluded by this one                        
@@ -321,7 +326,7 @@ namespace CommonCore.RpgGame.World
                     haveTarget = true;
 
                     //actual use
-                    if (MappedInput.GetButtonDown(DefaultControls.Use))
+                    if (MappedInput.GetButtonDown(DefaultControls.Use) && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoInteract))
                     {
                         nearestInteractable.OnActivate(this.gameObject);
                     }
@@ -337,7 +342,36 @@ namespace CommonCore.RpgGame.World
 
         }
 
-        private void SetModelVisibility(bool visible) //sets the visibility of the _third-person_ model, I think
+        private void HandleDying()
+        {
+            if (IsDying && !IsDead)
+            {
+                float waitTime = (SynchronizeDeathDelay && DeathComponent) ? DeathComponent.TotalWaitTime : DeathWaitTime;
+
+                if (DyingElapsed > waitTime)
+                {
+                    //Debug.Log("Death complete!");
+                    IsDead = true;
+                    MessageInterface.PushToBus(new QdmsFlagMessage("PlayerDead"));
+                }
+
+                DyingElapsed += Time.deltaTime;
+            }
+
+            if (!IsDying && GameState.Instance.PlayerRpgState.Health <= 0 && !MetaState.Instance.SessionFlags.Contains("BuddhaMode") && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.Immortal))
+            {
+                Debug.Log("You died!");
+                IsDying = true;
+                PlayerInControl = false;
+                MessageInterface.PushToBus(new QdmsFlagMessage("PlayerDying"));
+                SetModelVisibility(ModelVisibility.TotallyInvisible);
+                WeaponComponent.Ref()?.RequestHideWeapon();
+                DeathSound.Ref()?.Play();
+                DeathComponent.Ref()?.Die();
+            }
+        }
+
+        private void SetModelVisibility(ModelVisibility visibility) //sets the visibility of the _third-person_ model, I think
         {
             //fill renderer cache if empty
             if(ModelRendererCache == null || ModelRendererCache.Length == 0)
@@ -347,15 +381,18 @@ namespace CommonCore.RpgGame.World
 
             foreach(var r in ModelRendererCache)
             {
-                if (visible)
+                if (visibility == ModelVisibility.Visible)
                     r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
                 else
                     r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+
+                if (visibility == ModelVisibility.TotallyInvisible)
+                    r.enabled = false;
+                else
+                    r.enabled = true;
             }
 
-            //WIP delegate to PlayerWeaponComponent
-
-            WeaponComponent.SetVisibility(!visible); //invert because that sets the visibility of the first-person models
+            WeaponComponent.SetVisibility(!(visibility == ModelVisibility.Visible)); //invert because that sets the visibility of the first-person models
         }
 
         private void PushViewChangeMessage(PlayerViewType newView)
@@ -369,7 +406,7 @@ namespace CommonCore.RpgGame.World
 
         public void TakeDamage(ActorHitInfo data)
         {
-            if (MetaState.Instance.SessionFlags.Contains("GodMode"))
+            if (MetaState.Instance.SessionFlags.Contains("GodMode") || GameState.Instance.PlayerFlags.Contains(PlayerFlags.Invulnerable) || IsDying)
                 return;
 
             CharacterModel playerModel = GameState.Instance.PlayerRpgState;
@@ -383,8 +420,6 @@ namespace CommonCore.RpgGame.World
             else if (data.HitLocation == (int)ActorBodyPart.LeftArm || data.HitLocation == (int)ActorBodyPart.LeftLeg || data.HitLocation == (int)ActorBodyPart.RightArm || data.HitLocation == (int)ActorBodyPart.RightLeg)
                 damageTaken *= 0.75f;
 
-            damageTaken *= (1f / ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerEndurance);
-
             if (damageTaken > 0)
             {
                 if (PainSound != null && !PainSound.isPlaying)
@@ -393,6 +428,11 @@ namespace CommonCore.RpgGame.World
 
             playerModel.Health -= damageTaken;
 
+        }
+
+        private enum ModelVisibility
+        {
+            Visible, Invisible, TotallyInvisible
         }
 
     }

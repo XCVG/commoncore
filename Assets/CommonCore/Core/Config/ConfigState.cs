@@ -142,7 +142,7 @@ namespace CommonCore.Config
         public int AntialiasingQuality { get; set; } = 1;
         public float ViewDistance { get; set; } = 1000.0f;
         public bool ShowFps { get; set; } = false;
-        public SubtitlesLevel Subtitles { get; set; } = SubtitlesLevel.Always;
+        public float EffectDwellTime { get; set; } = 30;
 
         //VIDEO CONFIG (EXTENDED)
         public QualityLevel ShadowQuality { get; set; } = QualityLevel.Medium;
@@ -153,11 +153,18 @@ namespace CommonCore.Config
         public AnisotropicFiltering AnisotropicFiltering { get; set; } = AnisotropicFiltering.Enable;
         public QualityLevel RenderingQuality { get; set; } = QualityLevel.Medium;
 
+        //GAME/GAMEPLAY CONFIG
+        public SubtitlesLevel Subtitles { get; set; } = SubtitlesLevel.Always;
+        public bool ShakeEffects { get; set; } = true;
+        public bool FlashEffects { get; set; } = true;
+        public float DefaultTimescale { get; set; } = 1;
+        public float GameSpeed { get; set; } = 1; //experimental, must be explicitly handled
 
         //INPUT CONFIG
         public string InputMapper { get; set; } = "UnityInputMapper";
         public Dictionary<string, object> InputMapperData { get; set; } = new Dictionary<string, object>();
         public float LookSpeed { get; set; } = 1.0f;
+        public bool LookInvert { get; set; } = false;
         public KeyCode ScreenshotKey { get; set; } = KeyCode.F12;
 
         //EXTRA/GAME-SPECIFIC CONFIG

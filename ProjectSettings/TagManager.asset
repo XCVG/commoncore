@@ -4,7 +4,6 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - CCObject
   - EphemeralRoot
   layers:
   - Default
@@ -18,19 +17,19 @@ TagManager:
   - ActorHitbox
   - Bullet
   - NonShootableEffect
+  - BlockActors
+  - Actor
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 
   - 
   - ViewModel
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
   - 
   - 
   - 

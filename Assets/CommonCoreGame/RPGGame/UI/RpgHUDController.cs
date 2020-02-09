@@ -29,6 +29,7 @@ namespace CommonCore.RpgGame.UI
 
         public Slider EnergySlider;
         public Text EnergyText;
+        public Image EnergyFillArea;
 
         [Header("Right Bar")]
         public Text RightWeaponText;
@@ -37,23 +38,38 @@ namespace CommonCore.RpgGame.UI
         public Text RightAmmoTypeText;
 
         [Header("Misc")]
+        public Canvas Canvas;
         public Image Crosshair;
         public Image HitIndicator;
+        public Image DamageFadeOverlay;
 
         [Header("Options")]
         public float HealthbarFlashTime;
         public Color HealthbarFlashColor;
+        public float EnergyBarFlashTime;
+        public Color EnergyBarFlashColor;
+
         public float HitIndicatorHoldTime;
         public float HitIndicatorFadeTime;
+
+        public float DamageFadeMin;
+        public float DamageFadeMax;
+        public float DamageFadeFactor;
+        public float DamageFadeRate;
 
         //local state is, as it turns out, unavoidable
         private string OverrideTarget = null;
 
 
-        private float TimeSinceLastHealthSample = 0;
-        private float? LastHealthSampleValue = null;
+        private float? LastTriggeredHealthFraction = null;
+        private float LastFrameHealthFraction = 1;
         private Color? HealthOriginalColor = null;
         private Coroutine HealthFlashCoroutine = null;
+
+        private Color? EnergyOriginalColor = null;
+        private Coroutine EnergyFlashCoroutine = null;
+
+        private float DamageFadeIntensityTarget = 0;
 
         private Coroutine HitIndicatorFlashCoroutine = null;
 
@@ -61,7 +77,8 @@ namespace CommonCore.RpgGame.UI
         {
             base.Start();
 
-            LastHealthSampleValue = GameState.Instance.PlayerRpgState.HealthFraction; //okayish
+            LastTriggeredHealthFraction = GameState.Instance.PlayerRpgState.HealthFraction; //okayish
+            LastFrameHealthFraction = LastTriggeredHealthFraction.Value;
             UpdateStatusDisplays();
             UpdateWeaponDisplay();
 
@@ -73,7 +90,11 @@ namespace CommonCore.RpgGame.UI
             //this is all slow and dumb and temporary... which means it'll probably be untouched until Ferelden
             base.Update();
 
-            UpdateStatusDisplays();            
+            UpdateVisibility();
+            
+            UpdateStatusDisplays();
+            UpdateDamageFade();
+            LastFrameHealthFraction = GameState.Instance.PlayerRpgState.HealthFraction;
         }
 
         protected override bool HandleMessage(QdmsMessage message)
@@ -85,6 +106,11 @@ namespace CommonCore.RpgGame.UI
             else if(message is HUDPushMessage)
             {
                 AppendHudMessage(Sub.Macro(((HUDPushMessage)message).Contents));
+                return true;
+            }
+            else if(message is ConfigChangedMessage)
+            {
+                SetDamageFadeVisibility();
                 return true;
             }
             else if(message is QdmsKeyValueMessage kvmessage)
@@ -133,6 +159,9 @@ namespace CommonCore.RpgGame.UI
                     case "PlayerHitTarget":
                         FlashHitIndicator();
                         break;
+                    case "RpgInsufficientEnergy":
+                        FlashEnergyBar();
+                        break;
                     case "RpgQuestStarted":
                     case "RpgQuestEnded":
                         AddQuestMessage(message);
@@ -168,12 +197,66 @@ namespace CommonCore.RpgGame.UI
                 Crosshair.gameObject.SetActive(false);
         }
 
+        private void UpdateDamageFade()
+        {
+            if (!ConfigState.Instance.FlashEffects || !ConfigState.Instance.GetGameplayConfig().FullscreenDamageIndicator)
+                return;
+
+            Color damageFadeCurrentColor = DamageFadeOverlay.color;
+            float damageFadeCurrentIntensity = damageFadeCurrentColor.a;
+            if (DamageFadeIntensityTarget > 0 || (DamageFadeIntensityTarget == 0 && damageFadeCurrentIntensity > 0))
+            {
+                //make it a more intense red if we keep taking damage
+                //if(DamageFadeIntensityTarget > 0)
+                {
+                    float healthLost = LastFrameHealthFraction - GameState.Instance.PlayerRpgState.HealthFraction;
+                    if (!Mathf.Approximately(healthLost, 0))
+                    {
+                        float extraIntensity = Mathf.Clamp(DamageFadeFactor * healthLost, 0, DamageFadeMax);
+                        DamageFadeIntensityTarget = Mathf.Clamp(DamageFadeIntensityTarget + extraIntensity, DamageFadeMin, DamageFadeMax);
+                    }
+                }
+
+                //fade toward target
+                float sign = Mathf.Sign(DamageFadeIntensityTarget - damageFadeCurrentIntensity);
+                float newIntensity = Mathf.Clamp(damageFadeCurrentIntensity + sign * DamageFadeRate * Time.deltaTime, 0, 1);
+                DamageFadeOverlay.color = new Color(damageFadeCurrentColor.r, damageFadeCurrentColor.g, damageFadeCurrentColor.b, newIntensity);
+
+                //start the fade back
+                if (DamageFadeIntensityTarget > 0 && newIntensity >= DamageFadeIntensityTarget)
+                    DamageFadeIntensityTarget = 0;
+            }            
+                    
+        }
+
+        private void StartDamageFade(float healthLost)
+        {
+            //note that healthlost is positive and fractional
+            DamageFadeIntensityTarget = Mathf.Clamp(DamageFadeFactor * healthLost, DamageFadeMin, DamageFadeMax);
+            //Debug.LogWarning("Set DamageFadeIntensityTarget to " + DamageFadeIntensityTarget);
+        }
+
+        private void SetDamageFadeVisibility()
+        {
+            if (!ConfigState.Instance.FlashEffects)
+            {
+                Color oldColor = DamageFadeOverlay.color;
+                DamageFadeOverlay.color = new Color(oldColor.r, oldColor.g, oldColor.b, 0);
+            }
+        }
+
         private void UpdateStatusDisplays()
         {
             var player = GameState.Instance.PlayerRpgState;
-            HealthText.text = player.Health.ToString("f0");
-            if ((LastHealthSampleValue ?? HealthSlider.value) - player.HealthFraction > GameParams.DamageFlashThreshold)
+            HealthText.text = Mathf.Max(0, player.Health).ToString("f0");
+            if (LastTriggeredHealthFraction.HasValue && LastTriggeredHealthFraction.Value < player.HealthFraction && HealthFlashCoroutine == null)
+                LastTriggeredHealthFraction = player.HealthFraction; //handle healing
+            float healthLost = (LastTriggeredHealthFraction ?? HealthSlider.value) - player.HealthFraction;
+            if (healthLost > GameParams.DamageFlashThreshold)
+            {
                 FlashHealthBar();
+                StartDamageFade(healthLost);
+            }
             HealthSlider.value = player.HealthFraction;
 
             EnergyText.text = player.Energy.ToString("f0");
@@ -288,9 +371,60 @@ namespace CommonCore.RpgGame.UI
             }
 
             HealthFillArea.color = HealthOriginalColor.Value;
-            LastHealthSampleValue = healthOriginalValue;
+            LastTriggeredHealthFraction = Mathf.Max(healthOriginalValue, GameState.Instance.PlayerRpgState.HealthFraction);
             HealthFlashCoroutine = null;
 
+        }
+
+        private void FlashEnergyBar()
+        {
+            //flash the energy bar
+            if (!EnergyOriginalColor.HasValue)
+                EnergyOriginalColor = EnergyFillArea.color;
+
+            if (EnergyFlashCoroutine != null)
+                return;
+
+            EnergyFlashCoroutine = StartCoroutine(FlashEnergyBarCoroutine());
+        }
+
+        private IEnumerator FlashEnergyBarCoroutine()
+        {
+            yield return null;
+
+            float fadeHalfTime = EnergyBarFlashTime / 2f;
+
+            EnergyFillArea.color = EnergyOriginalColor.Value;
+
+            //fade to final color
+            for (float elapsed = 0; elapsed < fadeHalfTime; elapsed += Time.deltaTime)
+            {
+                float ratio = elapsed / fadeHalfTime;
+
+                Color c = Vector4.Lerp(EnergyOriginalColor.Value, EnergyBarFlashColor, ratio);
+                EnergyFillArea.color = c;
+
+                yield return null;
+            }
+
+            EnergyFillArea.color = EnergyBarFlashColor;
+            yield return null;
+
+            //fade back to original color
+
+            for (float elapsed = 0; elapsed < fadeHalfTime; elapsed += Time.deltaTime)
+            {
+                float ratio = elapsed / fadeHalfTime;
+
+                Color c = Vector4.Lerp(EnergyBarFlashColor, EnergyOriginalColor.Value, ratio);
+                EnergyFillArea.color = c;
+
+                yield return null;
+            }
+
+            EnergyFillArea.color = EnergyOriginalColor.Value;
+
+            EnergyFlashCoroutine = null;
         }
 
         private void UpdateWeaponDisplay()
@@ -332,6 +466,20 @@ namespace CommonCore.RpgGame.UI
                 RightAmmoTypeText.text = "";
             }
 
+        }
+
+        private void UpdateVisibility()
+        {
+            if(GameState.Instance.PlayerFlags.Contains(PlayerFlags.HideHud))
+            {
+                if (Canvas.enabled)
+                    Canvas.enabled = false;
+            }
+            else
+            {
+                if (!Canvas.enabled)
+                    Canvas.enabled = true;
+            }
         }
 
         private void AddQuestMessage(QdmsMessage message)

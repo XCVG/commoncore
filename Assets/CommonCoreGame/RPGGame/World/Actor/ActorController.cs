@@ -271,6 +271,9 @@ namespace CommonCore.RpgGame.World
                         return;
                     }
 
+                    if (Target == null)
+                        GetSwizzledTarget(); //fix for loading saves
+
                     //set animation, fire projectile, set timer
                     AttackComponent.BeginAttack();                 
                     break;
@@ -348,7 +351,7 @@ namespace CommonCore.RpgGame.World
                         break;
                     }
 
-                    if (MetaState.Instance.SessionFlags.Contains("NoTarget") && Target.GetComponent<PlayerController>())
+                    if ((MetaState.Instance.SessionFlags.Contains("NoTarget") || GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoTarget)) && Target.GetComponent<PlayerController>())
                     {
                         EnterState(BaseAiState);
                         break;
@@ -496,7 +499,7 @@ namespace CommonCore.RpgGame.World
             var detectionDifficultyFactor = 1f / gameplayConfig.Difficulty.ActorPerception;
 
             //check player first since it's (relatively) cheap
-            if (FactionModel.GetRelation(Faction, "Player") == FactionRelationStatus.Hostile && !MetaState.Instance.SessionFlags.Contains("NoTarget"))
+            if (FactionModel.GetRelation(Faction, "Player") == FactionRelationStatus.Hostile && !MetaState.Instance.SessionFlags.Contains("NoTarget") && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoTarget))
             {
                 var playerObj = WorldUtils.GetPlayerObject();
                 if(playerObj != null && RpgWorldUtils.TargetIsAlive(playerObj.transform))

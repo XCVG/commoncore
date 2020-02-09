@@ -1,4 +1,5 @@
 ﻿using CommonCore.World;
+using System.ComponentModel;
 
 namespace CommonCore.State
 {
@@ -9,7 +10,8 @@ namespace CommonCore.State
         /// <summary>
         /// [World] The spawn intent for the player 
         /// </summary>
-        public PlayerSpawnIntent PlayerIntent { get; set; } //horrible for cleanliness but should be faster
+        [DefaultValue((object)null), Clear]
+        public PlayerSpawnIntent PlayerIntent { get; set; }
 
     }
 

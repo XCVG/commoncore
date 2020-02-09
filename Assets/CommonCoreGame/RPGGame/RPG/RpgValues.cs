@@ -10,14 +10,11 @@ namespace CommonCore.RpgGame.Rpg
      */
     public static class RpgValues
     {
+        //eventually we'll make this an instance or delegate magic or something. I want to make it so that you can swap this out with mods. Delegate magic might be better so you can swap individual equations.
+
         public static int XPToNext(int level)
         {
             return level * 10 + 100; //for now
-        }
-
-        public static float MaxHealthForLevel(int level)
-        {
-            return 100 + level * 10;
         }
 
         public static int PotentialPointsForLevel(int newLevel, CharacterModel character)
@@ -57,15 +54,20 @@ namespace CommonCore.RpgGame.Rpg
             }
 
             return newXP;
-        } 
+        }
+
+        public static float MaxHealth(CharacterModel characterModel)
+        {
+            return 100 + characterModel.Level * 10;
+        }
 
         public static float MaxEnergy(CharacterModel characterModel)
         {
             return Mathf.FloorToInt(100 
                 + characterModel.DerivedStats.Stats[StatType.Dexterity] * 5.0f
-                + characterModel.DerivedStats.Stats[StatType.Resilience] * 2.0f
-                + characterModel.DerivedStats.Skills[SkillType.Athletics] * 5.0f
-                + characterModel.DerivedStats.Skills[SkillType.AthleticsFleet] * 2.0f);
+                + characterModel.DerivedStats.Stats[StatType.Resilience] * 10.0f
+                + characterModel.DerivedStats.Skills[SkillType.Athletics] * 0.5f
+                + characterModel.DerivedStats.Skills[SkillType.AthleticsFleet] * 0.25f);
         }
 
         public static int AdjustedBuyPrice(CharacterModel character, float value)
@@ -115,6 +117,31 @@ namespace CommonCore.RpgGame.Rpg
             return d2;
         }
 
+        /// <summary>
+        /// Calculates applied damage given the velocity of a fall
+        /// </summary>
+        public static float FallDamage(CharacterModel character, Vector3 velocity)
+        {
+            //parameters, local because stupid
+            const float minDamageVelocity = 15f;
+            const float instantKillVelocity = 100f;
+            const float minDamage = 5f; //minimum damage for any fall that counts
+            const float maxDamage = 50f; //maximum damage for any non-fatal fall
+            const float damageVelocityFactor = 1f; //1 damage per m/s of velocity
+
+            float yVelocity = Mathf.Abs(velocity.y); //for now we only care about y-velocity. Smash into a wall as fast as you want!
+
+            if (yVelocity < minDamageVelocity)
+                return 0;
+
+            if (yVelocity >= instantKillVelocity)
+                return character.Health + 1;
+
+            float damageFromVelocity = yVelocity * damageVelocityFactor;
+
+            return Mathf.Clamp(damageFromVelocity, minDamage, maxDamage);
+        }
+
         public static float DetectionChance(CharacterModel character, bool isSneaking, bool isRunning)
         {
 
@@ -127,6 +154,65 @@ namespace CommonCore.RpgGame.Rpg
             rawChance *= isRunning ? 1.5f : 1.0f;
 
             return Mathf.Clamp(rawChance, 0.05f, 0.95f);
+        }
+
+        //movement calculations
+
+        public static float GetMoveSpeedMultiplier(CharacterModel character)
+        {
+            float rawSpeed = 1f
+                + (character.DerivedStats.Stats[StatType.Dexterity] / 50f)
+                + (character.DerivedStats.Skills[SkillType.AthleticsFleet] / 150f)
+                + (character.DerivedStats.Skills[SkillType.Athletics] / 300f);
+            return Mathf.Clamp(rawSpeed, 0.75f, 1.75f);
+        }
+
+        public static float GetRunSpeedMultiplier(CharacterModel character)
+        {
+            return GetMoveSpeedMultiplier(character); //we use the same multiplier here
+        }
+
+        public static float GetRunEnergyRate(CharacterModel character)
+        {
+            float rawRate = 1f
+                - (character.DerivedStats.Skills[SkillType.AthleticsFleet] / 500f)
+                - (character.DerivedStats.Skills[SkillType.Athletics] / 500f);
+
+            return Mathf.Min(0.1f, rawRate);
+        }
+
+        public static float GetJumpVelocityMultiplier(CharacterModel character)
+        {
+            float rawMultiplier = 1f
+                + (character.DerivedStats.Stats[StatType.Dexterity] / 100f)
+                + (character.DerivedStats.Skills[SkillType.AthleticsFleet] / 200f)
+                + (character.DerivedStats.Skills[SkillType.Athletics] / 500f);
+
+            return Mathf.Clamp(rawMultiplier, 0.75f, 1.5f);
+        }
+
+        public static float GetJumpEnergyUse(CharacterModel character)
+        {
+            return 10f
+                - (character.DerivedStats.Skills[SkillType.Athletics] / 50f); //athletics very slightly reduces energy use
+        }
+
+        public static float GetAirMoveMultiplier(CharacterModel character)
+        {
+            return 1f;
+        }
+
+        public static float GetIdleEnergyRecoveryRate(CharacterModel character)
+        {
+            return 5f
+                + (character.DerivedStats.Stats[StatType.Dexterity] / 2f)
+                + (character.DerivedStats.Stats[StatType.Resilience] / 5f)
+                + (character.DerivedStats.Skills[SkillType.Athletics] / 100f);
+        }
+
+        public static float GetMovingEnergyRecoveryRate(CharacterModel character)
+        {
+            return GetIdleEnergyRecoveryRate(character) / 3f;
         }
 
         //weapon calculations

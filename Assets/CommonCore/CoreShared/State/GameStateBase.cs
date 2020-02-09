@@ -1,11 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
+using System.Runtime.Serialization;
 
 namespace CommonCore.State
 {
@@ -116,6 +115,29 @@ namespace CommonCore.State
             InitialLoaded = true;
         }
 
+        /// <summary>
+        /// Runs handling after GameState is deserialized 
+        /// </summary>
+        [OnDeserialized]
+        private void HandleOnDeserialized(StreamingContext context)
+        {
+            var loadMethods = GetType().GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                .Where(m => m.GetCustomAttributes(typeof(AfterLoadAttribute), false).Length > 0)
+                .ToList();
+
+            if (loadMethods.Count == 0)
+                return;
+            else if (loadMethods.Count == 1)
+                loadMethods[0].Invoke(this, null);
+            else
+            {
+                loadMethods.Sort((m1, m2) => ((AfterLoadAttribute)m2.GetCustomAttributes(typeof(AfterLoadAttribute), false)[0]).Priority
+                .CompareTo(((AfterLoadAttribute)m1.GetCustomAttributes(typeof(AfterLoadAttribute), false)[0]).Priority));
+                foreach (var m in loadMethods)
+                    m.Invoke(this, null);
+            }
+        }
+
         //basic game data to be shared across games
 
         /// <summary>
@@ -176,6 +198,28 @@ namespace CommonCore.State
 
             /// <param name="priority">When to run this init method; higher is sooner</param>
             public InitAttribute(int priority)
+            {
+                Priority = priority;
+            }
+        }
+
+        /// <summary>
+        /// Decorate methods with this attribute to have them run after deserializing GameState. Higher priority is sooner.
+        /// </summary>
+        public class AfterLoadAttribute : Attribute
+        {
+            /// <summary>
+            /// Higher priority load methods are run first
+            /// </summary>
+            public int Priority { get; private set; } = 0;
+
+            public AfterLoadAttribute()
+            {
+
+            }
+
+            /// <param name="priority">When to run this load method; higher is sooner</param>
+            public AfterLoadAttribute(int priority)
             {
                 Priority = priority;
             }

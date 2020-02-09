@@ -17,6 +17,7 @@ namespace CommonCore
 
         public static PlayerViewType DefaultPlayerView { get; private set; } = PlayerViewType.PreferFirst;
 
+        public static bool UseFallDamage { get; private set; } = true;
         public static bool UseRandomDamage { get; private set; } = true;
         public static float DamageFlashThreshold { get; private set; } = 0.01f; //very small because health is reported as a fraction
 

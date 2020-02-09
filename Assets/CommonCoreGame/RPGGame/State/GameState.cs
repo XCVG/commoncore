@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using UnityEngine;
-using Newtonsoft.Json;
-using CommonCore.DelayedEvents;
+﻿using CommonCore.DelayedEvents;
 using CommonCore.RpgGame.Rpg;
 using CommonCore.RpgGame.State;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace CommonCore.State
 {
@@ -62,7 +61,7 @@ namespace CommonCore.State
         [Init]
         private void RpgInit()
         {
-            Debug.LogWarning(nameof(RpgInit));
+            //Debug.LogWarning(nameof(RpgInit));
 
             //TODO better debugging and logging
 
@@ -77,6 +76,7 @@ namespace CommonCore.State
                     NullValueHandling = NullValueHandling.Ignore
                 });
                 instance.PlayerRpgState.UpdateStats();
+                PlayerFlags.RegisterSource(instance.PlayerRpgState);
             }
             catch (Exception e)
             {
@@ -111,6 +111,17 @@ namespace CommonCore.State
             }
 
             instance.InitialLoaded = true;
+        }
+
+        /// <summary>
+        /// Re-registers player flags source after a load
+        /// </summary>
+        /// <remarks>Will eventually do more, probably</remarks>
+        [AfterLoad]
+        private void RpgAfterLoad()
+        {
+            //need to register this since it's lost on load
+            PlayerFlags.RegisterSource(PlayerRpgState);
         }
 
     }

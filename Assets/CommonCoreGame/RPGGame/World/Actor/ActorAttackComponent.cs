@@ -131,7 +131,7 @@ namespace CommonCore.RpgGame.World
             if (UseMelee)
             {
                 //melee path (raycast)
-                LayerMask lm = LayerMask.GetMask("Default", "ActorHitbox");
+                LayerMask lm = WorldUtils.GetAttackLayerMask();
 
                 //TODO 2D/3D attack range, or just increase attack range?
 

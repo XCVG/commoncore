@@ -13,11 +13,14 @@ namespace CommonCore.RpgGame
 
         public CrosshairState Crosshair { get; set; } = CrosshairState.Auto;
         public AimAssistState AimAssist { get; set; } = AimAssistState.Off;
-        public bool ShakeEffects { get; set; } = true; //may move this to Core, not sure yet
         public bool BobEffects { get; set; } = true;
+        public float RecoilEffectScale { get; set; } = 1.0f;
         public bool HoldAds { get; set; } = false;
         public bool HitIndicatorsVisual { get; set; } = false;
         public bool HitIndicatorsAudio { get; set; } = false;
+        public bool FullscreenDamageIndicator { get; set; } = true;       
+        public float WorldTimeScaleBias { get; set; } = 1; 
+        
 
         //difficulty options
         public DifficultyLevel DifficultySetting { get; set; } = DifficultyLevel.Normal;
@@ -50,12 +53,13 @@ namespace CommonCore.RpgGame
             EnvironmentEnemyFrequency = 0.75f,
             EnvironmentLevelBias = 0.75f,
             EnvironmentLootFrequency = 1.5f,
+            PlayerAgility = 1.1f,
             PlayerEndurance = 1.5f,
             PlayerExperience = 1.5f,
-            PlayerSkill = 1.5f,
-            PlayerStrength = 1.5f,
+            PlayerSkill = 1.25f,
+            PlayerStrength = 1.25f,
             FollowerEndurance = 1.5f,
-            FollowerStrength = 1.5f,
+            FollowerStrength = 1.2f,
             FollowerMortality = FollowerMortality.Invulnerable
         };
 
@@ -67,6 +71,7 @@ namespace CommonCore.RpgGame
             EnvironmentEnemyFrequency = 1f,
             EnvironmentLevelBias = 1f,
             EnvironmentLootFrequency = 1f,
+            PlayerAgility = 1f,
             PlayerEndurance = 1f,
             PlayerExperience = 1f,
             PlayerSkill = 1f,
@@ -78,17 +83,18 @@ namespace CommonCore.RpgGame
 
         private static DifficultyValues HardDifficulty => new DifficultyValues()
         {
-            ActorAggression = 1.5f,
+            ActorAggression = 1.2f,
             ActorPerception = 1.5f,
             ActorStrength = 1.5f,
             EnvironmentEnemyFrequency = 1.5f,
-            EnvironmentLevelBias = 1.5f,
+            EnvironmentLevelBias = 1.25f,
             EnvironmentLootFrequency = 0.75f,
-            PlayerEndurance = 0.75f,
+            PlayerAgility = 0.9f,
+            PlayerEndurance = 0.9f,
             PlayerExperience = 0.75f,
             PlayerSkill = 0.75f,
-            PlayerStrength = 0.75f,
-            FollowerEndurance = 0.75f,
+            PlayerStrength = 0.9f,
+            FollowerEndurance = 0.9f,
             FollowerStrength = 0.75f,
             FollowerMortality = FollowerMortality.Immortal
         };
@@ -101,6 +107,7 @@ namespace CommonCore.RpgGame
         public float ActorStrength;
         public float ActorPerception;
 
+        public float PlayerAgility;
         public float PlayerEndurance;
         public float PlayerStrength;
         public float PlayerSkill;

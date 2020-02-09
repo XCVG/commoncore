@@ -120,7 +120,7 @@ Dirt Hit (Assets/Resources/DynamicSound/HitDirt)
 	Jordan Irwin (AntumDeluge) - Thwack Sounds [CC0]
 	https://opengameart.org/content/thwack-sounds
 
-Stone Hit (Assets/Resources/DynamicSound/HitStone)
+Stone Hit (Assets/Resources/DynamicSound/HitStone, Assets/Resources/DynamicSound/FallImpact, Assets/Resources/DynamicSound/StepsEnterCrouch)
 	rubberduck - 75 CC0 breaking/falling/hit sfx [CC0]	
 	https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx
 	

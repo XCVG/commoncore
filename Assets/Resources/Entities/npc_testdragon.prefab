@@ -934,7 +934,7 @@ GameObject:
   - component: {fileID: 6574105466673641160}
   - component: {fileID: 6854255942427767307}
   - component: {fileID: 3814989642167575624}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: npc_testdragon
   m_TagString: Untagged
   m_Icon: {fileID: 0}

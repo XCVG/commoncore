@@ -93,6 +93,26 @@ namespace CommonCore
             }
         }
 
+        public static string ToNiceString<T>(this IEnumerable<T> collection, Func<T, string> toStringFunction)
+        {
+            StringBuilder sb = new StringBuilder(256);
+            sb.Append("[");
+
+            IEnumerator<T> enumerator = collection.GetEnumerator();
+            bool eHasNext = enumerator.MoveNext();
+            while (eHasNext)
+            {
+                sb.Append(toStringFunction(enumerator.Current));
+
+                eHasNext = enumerator.MoveNext();
+                if (eHasNext)
+                    sb.Append(", ");
+            }
+            sb.Append("]");
+
+            return sb.ToString();
+        }
+
         public static string ToNiceString(this IEnumerable collection)
         {
             StringBuilder sb = new StringBuilder(256);

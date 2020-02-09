@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using CommonCore.World;
+using System.Collections.Generic;
 
 namespace CommonCore.State
 {
@@ -20,6 +21,11 @@ namespace CommonCore.State
         /// [World] Restorable object state for the player object
         /// </summary>
         public RestorableData PlayerWorldState { get; set; }
+
+        /// <summary>
+        /// [World] Player flags, stores some and handles those from other sources
+        /// </summary>
+        public PlayerFlagsCollection PlayerFlags { get; private set; } = new PlayerFlagsCollection();
 
     }
 

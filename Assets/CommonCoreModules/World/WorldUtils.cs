@@ -109,37 +109,52 @@ namespace CommonCore.World
         }
 
         /// <summary>
-        /// Finds all objects with form ID (entity name)
+        /// Finds an entity by thing ID (name)
         /// </summary>
-        public static GameObject[] FindObjectsWithFormID(string formID)
+        public static BaseController FindEntityByTID(string TID)
         {
-            List<GameObject> foundObjects = new List<GameObject>();
+            var targetTransform = GameObject.Find("WorldRoot").transform.FindDeepChild(TID);
+            if (targetTransform != null)
+            {
+                var bc = targetTransform.GetComponent<BaseController>();
+                if (bc != null)
+                    return bc;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Finds all entities with form ID (entity name)
+        /// </summary>
+        public static IList<BaseController> FindEntitiesWithFormID(string formID)
+        {
+            List<BaseController> foundObjects = new List<BaseController>();
             foreach (BaseController c in CoreUtils.GetWorldRoot().gameObject.GetComponentsInChildren<BaseController>(true))
             {
                 if (c.FormID == formID)
                 {
-                    foundObjects.Add(c.gameObject);
+                    foundObjects.Add(c);
                 }
             }
 
-            return foundObjects.ToArray();
+            return foundObjects;
         }
 
         /// <summary>
-        /// Finds all objects with CommonCore tag
+        /// Finds all entities with CommonCore tag
         /// </summary>
-        public static GameObject[] FindObjectsWithTag(string tag)
+        public static IList<BaseController> FindEntitiesWithTag(string tag)
         {
-            List<GameObject> foundObjects = new List<GameObject>();
+            List<BaseController> foundObjects = new List<BaseController>();
             foreach (BaseController c in CoreUtils.GetWorldRoot().gameObject.GetComponentsInChildren<BaseController>(true))
             {
                 if (c.Tags.Contains(tag))
                 {
-                    foundObjects.Add(c.gameObject);
+                    foundObjects.Add(c);
                 }
             }
 
-            return foundObjects.ToArray();
+            return foundObjects;
         }
 
         /// <summary>
@@ -236,7 +251,7 @@ namespace CommonCore.World
 
         public static LayerMask GetAttackLayerMask()
         {
-            return LayerMask.GetMask("Default", "ActorHitbox");
+            return LayerMask.GetMask("Default", "ActorHitbox", "Actor");
         }
 
         /// <summary>

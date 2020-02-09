@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 33719116878064500}
   - component: {fileID: 23907186441631318}
   - component: {fileID: 95805431795338902}
-  m_Layer: 15
+  m_Layer: 23
   m_Name: arming_sword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -108,7 +108,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4340844972125212}
   - component: {fileID: 114983153960877514}
-  m_Layer: 15
+  m_Layer: 23
   m_Name: Sword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -166,7 +166,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4502005239806292}
   - component: {fileID: 82014674553818382}
-  m_Layer: 15
+  m_Layer: 23
   m_Name: FireSound
   m_TagString: Untagged
   m_Icon: {fileID: 0}

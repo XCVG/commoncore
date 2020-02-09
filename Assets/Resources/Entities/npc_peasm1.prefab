@@ -674,7 +674,7 @@ GameObject:
   - component: {fileID: 143614234245427524}
   - component: {fileID: 195632123723564820}
   - component: {fileID: 114152924867305380}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: npc_peasm1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

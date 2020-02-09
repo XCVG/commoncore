@@ -1,5 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace CommonCore.State
@@ -44,10 +48,43 @@ namespace CommonCore.State
         public void Clear()
         {
             Intents.Clear();
+            clearDecorated();
+
             LoadSave = null;
             PreviousScene = null;
             NextScene = null;
             SkipLoadingScreen = false;
+
+            void clearDecorated()
+            {
+                var decoratedMembers = GetType().GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                    .Where(m => m.GetCustomAttributes(typeof(ClearAttribute), false).Length > 0)
+                    .ToList();
+
+                foreach(var member in decoratedMembers)
+                {
+                    object value = null;
+                    var defaultValueAttribute = member.GetCustomAttribute<DefaultValueAttribute>();
+                    if(defaultValueAttribute != null)
+                    {
+                        value = defaultValueAttribute.Value;
+                    }
+
+                    if(member.MemberType == MemberTypes.Property)
+                    {
+                        PropertyInfo property = member as PropertyInfo;
+
+                        property.SetValue(this, value); //apparently setting value to none will actually work
+                    }
+                    else if(member.MemberType == MemberTypes.Field)
+                    {
+                        FieldInfo field = member as FieldInfo;
+
+                        field.SetValue(this, value);
+                    }
+                }
+                
+            }
         }
 
         /// <summary>
@@ -123,5 +160,18 @@ namespace CommonCore.State
         /// Intents to be persisted/executed across the next transition
         /// </summary>
         public List<Intent> Intents { get; private set; } = new List<Intent>();
+
+        /// <summary>
+        /// Decorate fields or properties with this attribute to have them reset by Clear() soft-reset
+        /// </summary>
+        public class ClearAttribute : Attribute
+        {
+
+            public ClearAttribute()
+            {
+
+            }
+
+        }
     }
 }

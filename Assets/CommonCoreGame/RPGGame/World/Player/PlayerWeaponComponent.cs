@@ -30,7 +30,7 @@ namespace CommonCore.RpgGame.World
 
         [SerializeField, Header("Recoil Shake")]
         private WeaponViewShakeScript ViewShakeScript;
-        [SerializeField]
+        [SerializeField, Tooltip("Contribution of actual fire vector to recoil shake angle")]
         private float RecoilFireVecFactor = 0.2f;
 
         [SerializeField, Header("Fallback Weapon")]
@@ -74,6 +74,9 @@ namespace CommonCore.RpgGame.World
         private bool IsReloading;
         public bool IsADS { get; private set; }
 
+        private bool ShouldBeVisible;
+        private bool IsVisible;
+
         private float AccumulatedSpread;
         private float AccumulatedRecoil;
         private bool DidJustFire;
@@ -85,15 +88,6 @@ namespace CommonCore.RpgGame.World
         private float TimeToNextKick;
 
         //plan is to just bodge this for now, giving up on dual-wielding support, and add proper dual-wielding later
-        //we need to add that offhand kick BTW
-
-        //WIP ADS state
-        //WIP movebob
-        //TODO more
-        //TODO weapon raise/lower handling
-
-
-        private bool IsDualWielded => throw new NotImplementedException(); //TODO implement this
 
         private void Start()
         {
@@ -107,13 +101,10 @@ namespace CommonCore.RpgGame.World
             if (Time.timeScale == 0 || LockPauseModule.IsPaused())
                 return;
 
-            //HandleDynamicMovement();
-
             HandleAccumulators();
 
             DidJustFire = false;
 
-            //TODO handle player death
             if (PlayerController.PlayerInControl && !LockPauseModule.IsInputLocked())
             {
                 HandleWeapons();
@@ -128,12 +119,20 @@ namespace CommonCore.RpgGame.World
         /// </summary>
         public void SetVisibility(bool visibility)
         {
+            ShouldBeVisible = visibility;
+            SetModelsVisibility(visibility);
+        }
+
+        //handles actually setting the visibility of weapons and hands
+        private void SetModelsVisibility(bool visibility)
+        {
+            IsVisible = visibility;
             LeftViewModel.Ref()?.SetVisibility(visibility);
             RightViewModel.Ref()?.SetVisibility(visibility);
             Hands.Ref()?.SetVisibility(visibility);
 
             //force offhand kick to disappear
-            if(!visibility)
+            if (!visibility)
                 OffhandKickAnimator.Ref()?.gameObject.SetActive(false);
         }
 
@@ -154,8 +153,6 @@ namespace CommonCore.RpgGame.World
             //this thunk should just work
             SetVisibility(false);
         }
-
-        //copied from PlayerController
 
         /// <summary>
         /// Handle decay of accumulators (recoil/spread) every frame
@@ -233,6 +230,20 @@ namespace CommonCore.RpgGame.World
         //handle weapons (very temporary)
         protected void HandleWeapons()
         {
+            //handle hiding weapons (super janky)
+            if(GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoWeapons))
+            {
+                if (IsVisible)
+                    SetModelsVisibility(false);
+            }
+            else
+            {
+                if (ShouldBeVisible && !IsVisible)
+                    SetModelsVisibility(true);
+                else if (!ShouldBeVisible && IsVisible)
+                    SetModelsVisibility(false);
+            }
+
             //this is completely fuxxored for dual-wielding... actually everything basically assumes one action at a time...
             float oldTTN = TimeToNext;
             TimeToNext -= Time.deltaTime;
@@ -345,7 +356,7 @@ namespace CommonCore.RpgGame.World
             }
 
 
-            if (PlayerController.AttackEnabled)
+            if (PlayerController.AttackEnabled && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoAttack) && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoWeapons) && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.TotallyFrozen))
             {
                 bool rightEquipped = GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.RightWeapon);
                 bool leftEquipped = GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.LeftWeapon);
@@ -436,6 +447,11 @@ namespace CommonCore.RpgGame.World
         private bool TryRefire()
         {
             //Debug.Log("TryRefire");
+
+            if (!PlayerController.AttackEnabled || GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoAttack) || GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoWeapons) || GameState.Instance.PlayerFlags.Contains(PlayerFlags.TotallyFrozen))
+            {
+                return false;
+            }
 
             var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel;
             
@@ -572,10 +588,12 @@ namespace CommonCore.RpgGame.World
 
                 if (player.Energy <= energyUsed)
                 {
+                    //slow attack
                     player.Energy = 0;
                     calcDamage *= 0.5f;
                     calcDamagePierce *= 0.5f;
                     TimeToNext += wim.Rate;
+                    QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgInsufficientEnergy"));
                 }
                 else
                     player.Energy -= energyUsed;
@@ -752,8 +770,9 @@ namespace CommonCore.RpgGame.World
                         Quaternion recoilRotation = Quaternion.Euler(rawRecoilAngle);
 
                         Vector3 recoilAngle = (recoilRotation * scaledFireRotation).eulerAngles;
+                        float recoilScale = ConfigState.Instance.GetGameplayConfig().RecoilEffectScale;
 
-                        ViewShakeScript.Shake(recoilAngle, wim.RecoilImpulse.Time, wim.RecoilImpulse.Violence); //try that and see how terrible it looks
+                        ViewShakeScript.Shake(recoilAngle * recoilScale, wim.RecoilImpulse.Time, wim.RecoilImpulse.Violence); //try that and see how terrible it looks
 
                     }
                     
@@ -1111,7 +1130,7 @@ namespace CommonCore.RpgGame.World
                 }
             }
 
-            if(TimeToNextKick <= 0)
+            if(TimeToNextKick <= 0 && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoAttack))
             {
                 if (MappedInput.GetButtonDown(DefaultControls.Offhand1))
                 {

@@ -27,6 +27,11 @@ namespace CommonCore.RpgGame.Rpg
         Unspecified, Melee, Archery, Guns
     }
 
+    public enum PlayerFlags
+    {
+        Invulnerable, Immortal, NoTarget, NoFallDamage, NoClip, NoInteract, NoAttack, NoWeapons, NoPhysics, Frozen, TotallyFrozen, HideHud
+    }
+
     //mostly game dependent
     //will handle variant trees in leveling logic rather than here
     public enum SkillType

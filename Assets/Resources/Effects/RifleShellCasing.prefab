@@ -78,8 +78,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Persist: 0
   AutoUnparent: 1
-  Noncollidable: 1
   DestroyAfter: 30
+  UseGlobalDwellTime: 1
 --- !u!1 &8615416105029058966
 GameObject:
   m_ObjectHideFlags: 0

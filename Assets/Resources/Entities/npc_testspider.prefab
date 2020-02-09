@@ -827,6 +827,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentController: {fileID: 114041014958377300}
   BodyPartOverride: 0
+  HitMaterialOverride: 0
 --- !u!114 &114617734609497678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2040,9 +2041,9 @@ GameObject:
   - component: {fileID: 95739414101498982}
   - component: {fileID: 114527551432300584}
   - component: {fileID: 2454450528566267448}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: npc_testspider
-  m_TagString: CCObject
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2103,7 +2104,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EditorFormID: npc_testspider
-  Tags: []
+  HitMaterial: 0
   CharacterModelIdOverride: 
   InteractComponent: {fileID: 114617734609497678}
   TargetPoint: {fileID: 0}
@@ -2149,25 +2150,6 @@ MonoBehaviour:
   SearchRadius: 25
   SearchInterval: 35
   DisableInteractionOnHit: 1
-  Interaction: 0
-  InteractionTarget: 
-  InteractionSpecial: {fileID: 0}
-  AlternateCondition:
-    Type: 0
-    Target: 
-    Option: 0
-    OptionValue: 
-  AltInteraction: 0
-  AltInteractionTarget: 
-  AltInteractionSpecial: {fileID: 0}
-  UseDeadAction: 1
-  DeadInteraction: 0
-  DeadInteractionTarget: 
-  DeadInteractionSpecial: {fileID: 0}
-  InteractionDisabledByHit: 0
-  TooltipOverride: 
-  CorpseItems:
-    Items: []
   GrantXpOnDeath: 30
   RunOnChase: 1
   RunOnFlee: 1
@@ -2233,12 +2215,14 @@ MonoBehaviour:
   AttackHit:
     Damage: 10
     DamagePierce: 1
-    DType: 0
+    DamageType: 0
     HitLocation: 0
+    HitMaterial: 0
     Originator: {fileID: 0}
     HitPuff: 
-  BulletPrefab: {fileID: 0}
-  AttackEffectPrefab: {fileID: 0}
+  BulletPrefab: 
+  AttackEffectPrefab: 
+  AttackSound: {fileID: 0}
   ShootPoint: {fileID: 0}
   AttackAnimationOverride: 
 --- !u!114 &4686881414460589033
@@ -2253,16 +2237,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 850801c168eb61849a860fc5655978d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CharController: {fileID: 143072235710334534}
-  NavComponent: {fileID: 195267488173129686}
   ActorController: {fileID: 114041014958377300}
+  TargetThreshold: 1
+  <MovementTarget>k__BackingField: {x: 0, y: 0, z: 0}
+  <IsRunning>k__BackingField: 0
+  <ControlRotation>k__BackingField: 1
+  NavComponent: {fileID: 195267488173129686}
+  CharController: {fileID: 143072235710334534}
   ForceNavmeshOff: 0
   UseControllerGravity: 1
   WalkSpeed: 1
   RunSpeed: 2
   RotateSpeed: 90
-  NavThreshold: 1
-  <AltTarget>k__BackingField: {x: 0, y: 0, z: 0}
+  ShrinkColliderOnDeath: 0
+  DisableColliderOnDeath: 0
 --- !u!195 &195267488173129686
 NavMeshAgent:
   m_ObjectHideFlags: 0

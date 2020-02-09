@@ -35,8 +35,8 @@ namespace CommonCore.World
         public virtual void Start()
         {
             //set Unity tag
-            if (tag == null || tag == "Untagged")
-                tag = "CCObject";
+            //if (tag == null || tag == "Untagged")
+            //    tag = "CCEntity";
         }
 
         // Update is called once per frame

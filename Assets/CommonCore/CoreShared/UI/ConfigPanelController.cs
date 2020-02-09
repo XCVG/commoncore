@@ -25,6 +25,7 @@ namespace CommonCore.UI
 
         [Header("Basic Config Options")]
         public Slider LookSpeedSlider;
+        public Toggle LookYToggle;
 
         public Slider GraphicsQualitySlider;
         public Text GraphicsQualityLabel;
@@ -62,6 +63,7 @@ namespace CommonCore.UI
         private void PaintValues()
         {
             LookSpeedSlider.value = ConfigState.Instance.LookSpeed;
+            LookYToggle.isOn = ConfigState.Instance.LookInvert;
 
             GraphicsQualitySlider.maxValue = QualitySettings.names.Length - 1;
             GraphicsQualitySlider.value = QualitySettings.GetQualityLevel();
@@ -142,6 +144,7 @@ namespace CommonCore.UI
         private void UpdateValues()
         {
             ConfigState.Instance.LookSpeed = LookSpeedSlider.value;
+            ConfigState.Instance.LookInvert = LookYToggle.isOn;
 
             QualitySettings.SetQualityLevel( (int)GraphicsQualitySlider.value);
             ConfigState.Instance.AntialiasingQuality = (int)AntialiasingQualitySlider.value;

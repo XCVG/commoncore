@@ -69,6 +69,43 @@ namespace CommonCore.World
             WorldUtils.ChangeScene(scene, null, position, rotation);
         }
 
+        //***** STATE/PLAYERFLAG MANIPULATION
+
+        [Command (alias = "ListFlags", className = "Player")]
+        static void ListPlayerFlags()
+        {
+            string playerFlags = GameState.Instance.PlayerFlags.GetAllFlags().ToNiceString();
+            ConsoleModule.WriteLine(playerFlags);
+        }
+
+        [Command(alias = "AddFlag", className = "Player")]
+        static void AddPlayerFlag(string flag)
+        {
+            GameState.Instance.PlayerFlags.Add(flag);
+        }
+
+        [Command(alias = "RemoveFlag", className = "Player")]
+        static void RemovePlayerFlag(string flag)
+        {
+            GameState.Instance.PlayerFlags.Remove(flag);
+        }
+
+        [Command(alias = "AddTempFlag", className = "Player")]
+        static void AddTempPlayerFlag(string flag)
+        {
+            var sceneController = SharedUtils.TryGetSceneController() as WorldSceneController;
+            if (sceneController != null)
+                sceneController.TempPlayerFlags.Add(flag);
+        }
+
+        [Command(alias = "RemoveTempFlag", className = "Player")]
+        static void RemoveTempPlayerFlag(string flag)
+        {
+            var sceneController = SharedUtils.TryGetSceneController() as WorldSceneController;
+            if (sceneController != null)
+                sceneController.TempPlayerFlags.Remove(flag);
+        }
+
         //***** OBJECT MANIPULATION
 
         [Command]
@@ -81,19 +118,19 @@ namespace CommonCore.World
         [Command]
         static void Prid(string fid)
         {
-            var objs = WorldUtils.FindObjectsWithFormID(fid);
-            if (objs == null || objs.Length < 1)
+            var objs = WorldUtils.FindEntitiesWithFormID(fid);
+            if (objs == null || objs.Count < 1)
             {
                 ConsoleModule.WriteLine("No refs found with form id!");
                 return;
             }
-            if (objs.Length > 1)
+            if (objs.Count > 1)
                 ConsoleModule.WriteLine("More than one ref with form id!");
             var obj = objs[0];
             if (obj != null && obj.GetComponent<BaseController>())
             {
-                SelectedTID = obj.name;
-                SelectedObject = obj;
+                SelectedTID = obj.gameObject.name;
+                SelectedObject = obj.gameObject;
             }
             else
             {
@@ -107,19 +144,19 @@ namespace CommonCore.World
         [Command]
         static void Prbt(string tag)
         {
-            var objs = WorldUtils.FindObjectsWithTag(tag);
-            if (objs == null || objs.Length < 1)
+            var objs = WorldUtils.FindEntitiesWithTag(tag);
+            if (objs == null || objs.Count < 1)
             {
                 ConsoleModule.WriteLine("No refs found with tag!");
                 return;
             }
-            if (objs.Length > 1)
+            if (objs.Count > 1)
                 ConsoleModule.WriteLine("More than one ref with tag!");
             var obj = objs[0];
             if (obj != null && obj.GetComponent<BaseController>())
             {
-                SelectedTID = obj.name;
-                SelectedObject = obj;
+                SelectedTID = obj.gameObject.name;
+                SelectedObject = obj.gameObject;
             }
             else
             {
