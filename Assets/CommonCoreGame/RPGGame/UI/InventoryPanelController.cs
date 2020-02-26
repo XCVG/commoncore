@@ -26,7 +26,7 @@ namespace CommonCore.RpgGame.UI
         public Button SelectedItemDrop;
 
         private int SelectedItem;
-        private List<InventoryItemInstance> ItemLookupTable;
+        private InventoryItemInstance[] ItemLookupTable;
 
         public override void SignalPaint()
         {
@@ -44,21 +44,25 @@ namespace CommonCore.RpgGame.UI
             ScrollContent.DetachChildren();
 
             List<InventoryItemInstance> itemList = GameState.Instance.PlayerRpgState.Inventory.GetItemsListActual();
-            
-            ItemLookupTable = new List<InventoryItemInstance>(itemList.Count);
+
+            ItemLookupTable = new InventoryItemInstance[itemList.Count];
 
             for (int i = 0; i < itemList.Count; i++)
             {
                 var item = itemList[i];
+
+                if (item.ItemModel.Hidden)
+                    continue;
+
                 GameObject itemGO = Instantiate<GameObject>(ItemTemplatePrefab, ScrollContent);
                 if(!item.ItemModel.Stackable)
-                    itemGO.GetComponentInChildren<Text>().text = item.ItemModel.Name + (item.Equipped ? " [E]" : string.Empty); //for now
+                    itemGO.GetComponentInChildren<Text>().text = InventoryModel.GetNiceName(item.ItemModel) + (item.Equipped ? " [Equipped]" : string.Empty); //for now
                 else
-                    itemGO.GetComponentInChildren<Text>().text = string.Format("{0} ({1})", item.ItemModel.Name, item.Quantity); //for now
+                    itemGO.GetComponentInChildren<Text>().text = string.Format("{0} ({1})", InventoryModel.GetNiceName(item.ItemModel), item.Quantity); //for now
                 Button b = itemGO.GetComponent<Button>();
                 int lexI = i;
                 b.onClick.AddListener(delegate { OnItemSelected(lexI); }); //scoping is weird here
-                ItemLookupTable.Add(item);
+                ItemLookupTable[i] = item;
             }
         }
 
@@ -208,8 +212,10 @@ namespace CommonCore.RpgGame.UI
                 SelectedItemUse.transform.Find("Text").GetComponent<Text>().text = "Use";
             }
 
-            if(!itemModel.Essential)
+            if(!itemModel.Essential && (GameParams.AllowItemDropOutsideWorldScene || WorldUtils.IsWorldScene()) && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoDropItems))
                 SelectedItemDrop.gameObject.SetActive(true);
+            else
+                SelectedItemDrop.gameObject.SetActive(false);
 
             if (itemModel.Stackable)
             {

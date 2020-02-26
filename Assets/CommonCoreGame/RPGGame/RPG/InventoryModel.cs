@@ -41,7 +41,7 @@ namespace CommonCore.RpgGame.Rpg
             LoadAllModels();
             LoadAllNew();
 
-            CDebug.LogEx(string.Format("Loaded inventory ({0} items, {1} defs, {2} errors)", LoadItemCount, LoadDefCount, LoadErrorCount), LogLevel.Message, null);
+            CDebug.LogEx(string.Format("Loaded inventory ({0} items, {1} defs, {2} errors)", LoadItemCount, LoadDefCount, LoadErrorCount), LoadErrorCount > 0 ? LogLevel.Error : LogLevel.Message, null);
         }
 
         /// <summary>

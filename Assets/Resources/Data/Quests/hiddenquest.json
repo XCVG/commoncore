@@ -1,0 +1,14 @@
+{
+	"HiddenQuest": {
+		"def": {
+			"NiceName": "Example Hidden Quest",
+			"Image": "quest_demo",
+			"Description": "A hidden quest, should never be shown",
+			"Hidden": true,
+			"Stages": {
+				"0": "Quest not started, this should never show up :(",
+				"1": "If you see this, something is wrong"
+			}
+		}
+	}
+}

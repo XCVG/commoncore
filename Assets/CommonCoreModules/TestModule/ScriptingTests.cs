@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using CommonCore.Scripting;
+using System;
 using UnityEngine;
 
-namespace CommonCore.Scripting
+namespace CommonCore.TestModule
 {
     internal class ScriptingTest
     {
@@ -29,6 +28,30 @@ namespace CommonCore.Scripting
         private static void SingleArgTest(ScriptExecutionContext context, string arg0)
         {
             Debug.Log(arg0);
+        }
+
+        [CCScript(ClassName = "Test", Name = "SingleArgNoContext")]
+        private static void SingleArgNoContextTest(string arg0)
+        {
+            Debug.Log(arg0);
+        }
+
+        [CCScript(ClassName = "Test", Name = "SingleArgCastableContext", NeverPassExecutionContext = true)]
+        private static void SingleArgCastableContextTest(object arg0)
+        {
+            Debug.Log(arg0);
+        }
+
+        [CCScript(ClassName = "Test", Name = "TwoArg")]
+        private static void TwoArgTest(ScriptExecutionContext context, string arg0, string arg1)
+        {
+            Debug.Log($"{arg0} {arg1}");
+        }
+
+        [CCScript(ClassName = "Test", Name = "TypedArg")]
+        private static void TypedArgTest(ScriptExecutionContext context, int arg0)
+        {
+            Debug.Log($"Argument value: {arg0} ({arg0.GetType().Name})");
         }
 
         [CCScript(ClassName = "Test", Name = "ReturnValue")]
@@ -122,7 +145,7 @@ namespace CommonCore.Scripting
         }
 
         [CCScript, CCScriptHook(Hook = ScriptHook.OnPlayerSpawn)]
-        private static void OnPlayerSpawn(ScriptExecutionContext context)
+        private static void OnPlayerSpawn(ScriptExecutionContext context, GameObject player)
         {
             Debug.Log($"OnPlayerSpawn\n{context}");
         }

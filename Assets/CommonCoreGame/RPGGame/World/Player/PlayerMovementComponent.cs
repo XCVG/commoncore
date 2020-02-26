@@ -121,6 +121,8 @@ namespace CommonCore.RpgGame.World
         public bool IsOnSlope { get; private set; }
         public bool IsAnimating { get; private set; }
 
+        private int WalkableLayerMask;
+
         private Vector3 LastGroundNormal;
         private bool DidJump;
         private bool DidChangeCrouch;
@@ -169,7 +171,8 @@ namespace CommonCore.RpgGame.World
             {
                 AnimController = GetComponent<Animator>();
             }
-                        
+
+            WalkableLayerMask = LayerMask.GetMask("Default", "BlockActors");
 
             SetBaseScaleVars();
         }
@@ -218,6 +221,15 @@ namespace CommonCore.RpgGame.World
             {
                 LastGroundNormal = hit.normal;
                 return; //ignore terrain hits
+            }
+
+            if(Physics.Raycast(transform.position, Vector3.down, out var raycastHit, 1f, WalkableLayerMask, QueryTriggerInteraction.Ignore))
+            {
+                if (hit.collider == raycastHit.collider)
+                {
+                    //Debug.Log(raycastHit.collider.name);
+                    LastGroundNormal = hit.normal;
+                }
             }
 
             if (!EnableCollisions || GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoPhysics))
@@ -638,6 +650,7 @@ namespace CommonCore.RpgGame.World
                         teleportPoint = spawnPoint.transform.position;
                     }
                     transform.position = teleportPoint;
+                    Velocity = Vector3.zero;
                 }
             }
         }

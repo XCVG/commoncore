@@ -7,11 +7,15 @@ using UnityEngine.SceneManagement;
 using CommonCore.State;
 using CommonCore.Scripting;
 using CommonCore.Messaging;
+using CommonCore.Config;
 
 namespace CommonCore
 {
     public abstract class BaseSceneController : MonoBehaviour
     {
+        public bool AutosaveOnEnter = false;
+        public bool AutosaveOnExit = true;
+
         public bool AutoinitUi = true;
         public bool AutoinitHud = false;
         public bool AutoinitState = true;
@@ -26,6 +30,14 @@ namespace CommonCore
         /// Set this to true if you want to handle the AfterSceneLoad scripting hook in your subclass controller
         /// </summary>
         protected virtual bool DeferAfterSceneLoadToSubclass => false;
+        /// <summary>
+        /// Set this to true if you want to handle the on-enter autosave in your subclass controller
+        /// </summary>
+        protected virtual bool DeferEnterAutosaveToSubclass => false;
+        /// <summary>
+        /// Set this to true to enable quicksave handling in this scene
+        /// </summary>
+        protected virtual bool AllowQuicksaveInScene => false;
 
         public virtual void Awake()
         {
@@ -51,16 +63,33 @@ namespace CommonCore
 
             if (!DeferAfterSceneLoadToSubclass)
                 ScriptingModule.CallHooked(ScriptHook.AfterSceneLoad, this);
+
+            if (!DeferEnterAutosaveToSubclass)
+                SaveUtils.DoAutoSave();
         }
 
         public virtual void Update()
         {
-
+            HandleQuicksave();
         }
 
         public virtual void OnDestroy()
         {
             
+        }
+
+        protected void HandleQuicksave()
+        {
+            if(AllowQuicksaveInScene && UnityEngine.Input.GetKeyDown(ConfigState.Instance.QuicksaveKey))
+            { 
+                SaveUtils.DoQuickSave();
+                return;                
+            }
+            if(UnityEngine.Input.GetKeyDown(ConfigState.Instance.QuickloadKey))
+            {
+                SaveUtils.DoQuickLoad();
+                return;
+            }
         }
 
         /// <summary>
@@ -80,6 +109,8 @@ namespace CommonCore
         {
             Debug.Log("Exiting scene: ");
             Commit();
+            if (AutosaveOnExit)
+                SaveUtils.DoAutoSave();
         }
 
         protected void InitUI()

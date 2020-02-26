@@ -49,7 +49,7 @@ namespace CommonCore
         /// </remarks>
         public static bool IsNullOrEmpty(this JToken token)
         {
-            return 
+            return
                (token == null) ||
                (token.Type == JTokenType.Null) ||
                (token.Type == JTokenType.Undefined) ||
@@ -83,6 +83,53 @@ namespace CommonCore
         }
 
         /// <summary>
+        /// Coerces a value of some type into a value of the target type
+        /// </summary>
+        public static object CoerceValue(object value, Type targetType)
+        {
+            if (value == null)
+            {
+                if (targetType.IsValueType)
+                    return Activator.CreateInstance(targetType);
+                else
+                    return null;
+            }
+
+            if (targetType.IsAssignableFrom(value.GetType()))
+                return value;
+
+            Type nullableType = Nullable.GetUnderlyingType(targetType);
+            if (nullableType != null)
+                targetType = nullableType;
+
+            if (targetType.IsEnum && value is string stringValue)
+            {
+                return Enum.Parse(targetType, stringValue, true); //ignore case to taste
+            }
+
+            return Convert.ChangeType(value, targetType);
+        }
+
+        /// <summary>
+        /// Coerces a value of some type into a value of the target type
+        /// </summary>
+        public static T CoerceValue<T>(object value)
+        {
+            return (T)CoerceValue(value, typeof(T));
+        }
+
+        /// <summary>
+        /// Gets the default value of a type
+        /// </summary>
+        public static object GetDefault(Type type)
+        {
+            if (type.IsValueType)
+                return Activator.CreateInstance(type);
+
+            return null;
+        }
+
+        /// <summary>
         /// Converts a string to a target type, handling enums and other special cases
         /// </summary>
         public static object Parse(string value, Type parseType)
@@ -102,10 +149,13 @@ namespace CommonCore
         public static object StringToNumericAuto(string input)
         {
             //check if it is integer first
-            int iResult;
-            bool isInteger = int.TryParse(input, out iResult);
-            if (isInteger)
-                return iResult;
+            if (input.IndexOf('.') < 0)
+            {
+                int iResult;
+                bool isInteger = int.TryParse(input, out iResult);
+                if (isInteger)
+                    return iResult;
+            }
 
             //then check if it could be decimal
             float fResult;
@@ -127,10 +177,13 @@ namespace CommonCore
         public static object StringToNumericAutoDouble(string input)
         {
             //check if it is integer first
-            long iResult;
-            bool isInteger = long.TryParse(input, out iResult);
-            if (isInteger)
-                return iResult;
+            if (input.IndexOf('.') < 0)
+            {
+                long iResult;
+                bool isInteger = long.TryParse(input, out iResult);
+                if (isInteger)
+                    return iResult;
+            }
 
             //then check if it could be decimal
             double fResult;

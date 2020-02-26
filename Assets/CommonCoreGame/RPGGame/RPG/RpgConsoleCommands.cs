@@ -245,13 +245,30 @@ namespace CommonCore.RpgGame.Rpg
         [Command(className = "Campaign")]
         static void GetVar(string varName)
         {
-            ConsoleModule.WriteLine(GameState.Instance.CampaignState.GetVar(varName));
+            var value = GameState.Instance.CampaignState.GetVar<object>(varName);
+            ConsoleModule.WriteLine($"{value} ({value.GetType().Name})");
         }
 
         [Command(className = "Campaign")]
         static void SetVar(string varName, string newValue)
         {
-            GameState.Instance.CampaignState.SetVar(varName, newValue);
+            GameState.Instance.CampaignState.SetVarEx(varName, newValue);
+        }
+
+        [Command(className = "Campaign")]
+        static void SetVarAuto(string varName, string newValue)
+        {
+            object value = TypeUtils.StringToNumericAuto(newValue);
+
+            GameState.Instance.CampaignState.SetVarEx(varName, value);
+        }
+
+        [Command(className = "Campaign")]
+        static void SetVarTyped(string varName, string newValue, string typeName)
+        {
+            object value = Convert.ChangeType(newValue, Type.GetType(typeName));
+
+            GameState.Instance.CampaignState.SetVar<object>(varName, value);
         }
 
         [Command(className = "Campaign")]

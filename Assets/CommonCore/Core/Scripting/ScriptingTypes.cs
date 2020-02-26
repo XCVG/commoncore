@@ -17,6 +17,10 @@ namespace CommonCore.Scripting
         /// If true, will automatically try to find a static singleton instance
         /// </summary>
         public bool AutoResolveInstance { get; set; } = false;
+        /// <summary>
+        /// If set, will never pass ScriptExecutionContext even if the types match
+        /// </summary>
+        public bool NeverPassExecutionContext { get; set; } = false;
     }
 
     /// <summary>
@@ -86,6 +90,14 @@ namespace CommonCore.Scripting
     public class ScriptAlreadyRegisteredException : Exception
     {
         public override string Message => "The script has already been registered.";
+    }
+
+    public class ArgumentCoercionException : Exception
+    {
+        public ArgumentCoercionException(Type sourceType, Type targetType, Exception innerException) : base($"Failed to coerce {sourceType.Name} to {targetType.Name}", innerException)
+        {
+
+        }
     }
 
 }

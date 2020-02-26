@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using CommonCore.State;
+using CommonCore.Config;
 
 namespace CommonCore.World
 {
@@ -50,7 +51,8 @@ namespace CommonCore.World
                 return go;
             }
 
-            Debug.LogWarning("Couldn't find player!");
+            if (ConfigState.Instance.UseVerboseLogging)
+                Debug.LogWarning("Couldn't find player!");
 
             return null;
         }
@@ -67,9 +69,22 @@ namespace CommonCore.World
             }
             else
             {
-                Debug.LogWarning("Couldn't find PlayerController!");
+                if(ConfigState.Instance.UseVerboseLogging)
+                    Debug.LogWarning("Couldn't find PlayerController!");
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Checks if this scene is considered a world scene (ie has WorldSceneController)
+        /// </summary>
+        public static bool IsWorldScene()
+        {
+            var controller = SharedUtils.TryGetSceneController();
+            if (controller != null && controller is WorldSceneController)
+                return true;
+
+            return false;
         }
         
         /// <summary>
@@ -249,6 +264,70 @@ namespace CommonCore.World
             return false;
         }
 
+        /// <summary>
+        /// Gets the currently active "main" camera
+        /// </summary>
+        /// <remarks>
+        /// <para>The logic for this is different than Camera.main. It searches the player object, if it exists, first.</para>
+        /// <para>Note that this is potentially very slow: it has good best-case but horrendous worst-case performance.</para>
+        /// </remarks>
+        public static Camera GetActiveCamera()
+        {
+            var playerObject = GetPlayerObject();
+            if(playerObject != null && playerObject.activeSelf)
+            {
+                var cameras = playerObject.GetComponentsInChildren<Camera>();
+
+                //speedhack: if there is one camera on the player and it is enabled, it's our best choice by the conditions below
+                if (cameras.Length == 1 && cameras[0].enabled)
+                    return cameras[0];
+
+                foreach(var camera in cameras)
+                {
+                    //First choice is the camera on the player object tagged MainCamera and enabled
+                    if (camera.gameObject.tag == "MainCamera" && camera.enabled)
+                        return camera;
+                }
+
+                foreach(var camera in cameras)
+                {
+                    //Next choice is the camera on the player object that is enabled
+                    if (camera.enabled)
+                        return camera;
+                }
+            }
+
+            //next, try the objects tagged "Main Camera"
+            var taggedObjects = GameObject.FindGameObjectsWithTag("MainCamera");
+            foreach (var taggedObject in taggedObjects)
+            {
+                if (taggedObject != null && taggedObject.activeInHierarchy)
+                {
+                    var camera = taggedObject.GetComponent<Camera>();
+                    if (camera != null && camera.enabled)
+                        return camera;
+                }
+            }
+
+            //as a last resort, find *any* active camera
+            { //do not remove this curly brace
+                var cameras = UnityEngine.Object.FindObjectsOfType<Camera>();
+                if (cameras.Length > 0)
+                {
+                    foreach (var camera in cameras)
+                    {
+                        if (camera.enabled)
+                            return camera;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the default layermask used for attacks
+        /// </summary>
         public static LayerMask GetAttackLayerMask()
         {
             return LayerMask.GetMask("Default", "ActorHitbox", "Actor");

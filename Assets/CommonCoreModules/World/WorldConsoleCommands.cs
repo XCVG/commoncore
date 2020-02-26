@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using Newtonsoft.Json;
 using CommonCore.State;
 using CommonCore.Console;
+using CommonCore.Messaging;
 
 namespace CommonCore.World
 {
@@ -47,6 +48,8 @@ namespace CommonCore.World
                 MetaState.Instance.SessionFlags.Remove("NoTarget");
             else
                 MetaState.Instance.SessionFlags.Add("NoTarget");
+
+            QdmsMessageBus.Instance.PushBroadcast(new ClearAllTargetsMessage());
         }
 
         //***** SCENE WARP
@@ -239,6 +242,18 @@ namespace CommonCore.World
         static void Destroy()
         {
             GameObject.Destroy(SelectedObject);
+        }
+
+        //***** MISCELLANEOUS
+
+        [Command]
+        static void GetActiveCamera()
+        {
+            var camera = WorldUtils.GetActiveCamera();
+            if (camera != null)
+                Debug.Log($"Found active camera on {camera.gameObject.name}");
+            else
+                Debug.Log($"Couldn't find active camera!");
         }
 
     }

@@ -116,21 +116,7 @@ namespace CommonCore.Scripting
 
         private void RegisterScript(MethodInfo scriptMethod)
         {
-            string className = scriptMethod.DeclaringType.Name;
-            string methodName = scriptMethod.Name;
-
-            var scriptAttribute = (CCScriptAttribute)scriptMethod.GetCustomAttributes(typeof(CCScriptAttribute), false)[0];
-
-            if (scriptAttribute != null)
-            {
-                if (!string.IsNullOrEmpty(scriptAttribute.Name))
-                    methodName = scriptAttribute.Name;
-
-                if (!string.IsNullOrEmpty(scriptAttribute.ClassName))
-                    className = scriptAttribute.ClassName;
-            }
-
-            string callableName = className + "." + methodName;
+            string callableName = GetCallableName(scriptMethod);
 
             //Debug.Log(string.Format("Loaded script: {0}", callableName));
 
@@ -189,7 +175,7 @@ namespace CommonCore.Scripting
                 }
                 catch(Exception e)
                 {
-                    LogError($"Failed to execute {Hook.ToString()} script \"{scriptMethod.DeclaringType.Name}.{scriptMethod.Name}\"");
+                    LogError($"Failed to execute {Hook.ToString()} script \"{scriptMethod.DeclaringType.Name}.{scriptMethod.Name}\" ({e.Message})");
                     LogException(e);
                 }
             }
@@ -208,7 +194,7 @@ namespace CommonCore.Scripting
             }
             catch (Exception e)
             {
-                LogError($"Failed to execute script \"{script}\"");
+                LogError($"Failed to execute script \"{script}\" ({e.Message})");
                 LogException(e);
 
                 throw new ScriptExecutionFailedException(script, e);
@@ -243,13 +229,119 @@ namespace CommonCore.Scripting
                     throw new NoInstanceForNonStaticMethodException();
             }
 
-            List<object> allArgs = new List<object>(args.Length + 1);
-            allArgs.Add(context);
-            allArgs.AddRange(args);
+            var scriptParameters = scriptMethod.GetParameters();
 
-            object[] trimmedArgs = allArgs.GetRange(0, scriptMethod.GetParameters().Length).ToArray();
+            //trim and coerce arguments
+            object[] trimmedArgs;
+            if (scriptParameters == null || scriptParameters.Length == 0)
+            {
+                //cheap path: pass empty array
+                trimmedArgs = new object[] { };
+            }
+            else if ((scriptAttribute != null && scriptAttribute.NeverPassExecutionContext) || !(scriptParameters != null && scriptParameters.Length > 0 && scriptParameters[0].ParameterType.IsAssignableFrom(typeof(ScriptExecutionContext))))
+            {
+                //do not pass ScriptExecutionContext
+                trimmedArgs = CoerceAndTrimArguments(args, scriptParameters, null);
+
+                //display warning if we had to trim
+                if (scriptParameters.Length != args.Length)
+                {
+                    Debug.LogWarning($"[{nameof(ScriptingModule)}] Argument coercion warning: {GetCallableName(scriptMethod)} expected {scriptParameters.Length} arguments but was passed {args.Length}");
+                }
+            }
+            else
+            {
+                //pass all args including ScriptExecutionContext
+                if (scriptParameters.Length == 1)
+                {
+                    trimmedArgs = new object[] { context };
+                }
+                else
+                {
+                    trimmedArgs = CoerceAndTrimArguments(args, scriptParameters, context);
+                }
+
+                //display warning if we had to trim
+                if (scriptParameters.Length != args.Length + 1)
+                {
+                    Debug.LogWarning($"[{nameof(ScriptingModule)}] Argument coercion warning: {GetCallableName(scriptMethod)} expected 1+{scriptParameters.Length-1} arguments but was passed 1+{args.Length}");
+                }
+
+            }
 
             return scriptMethod.Invoke(instance, trimmedArgs);
+        }
+
+        private static object[] CoerceAndTrimArguments(object[] args, ParameterInfo[] parameters, ScriptExecutionContext? context)
+        {
+            int numArgs = parameters.Length;
+
+            object[] trimmedArgs = new object[numArgs];
+
+            for(int i = 0; i < numArgs; i++)
+            {
+                if (i == 0 && context.HasValue)
+                {
+                    trimmedArgs[0] = context; //we know it's assignable at this point
+                    continue;
+                }
+
+                int srcI = context.HasValue ? i - 1 : i;
+                if (args.Length > srcI)
+                {
+                    try
+                    {
+                        trimmedArgs[i] = TypeUtils.CoerceValue(args[srcI], parameters[i].ParameterType);
+                    }
+                    catch(Exception e)
+                    {
+                        throw new ArgumentCoercionException(args[srcI].GetType(), parameters[i].ParameterType, e);
+                    }
+
+                }
+                else
+                    trimmedArgs[i] = TypeUtils.GetDefault(parameters[i].ParameterType);
+            }
+
+            return trimmedArgs;
+        }
+
+        private static object[] CoerceArguments(object[] args, MethodInfo method)
+        {
+            var parameters = method.GetParameters();
+            int numArgs = Math.Min(args.Length, parameters.Length - 1);
+            if (numArgs <= 0)
+                return new object[] { };
+            object[] typedArgs = new object[numArgs];
+            for(int i = 0; i < numArgs; i++)
+            {
+                object arg = args[i];
+                var parameter = parameters[i + 1]; //account for ScriptExecutionContext 
+                object typedArg = TypeUtils.CoerceValue(arg, parameter.ParameterType);
+                typedArgs[i] = typedArg;
+            }
+
+            return typedArgs;
+        }
+
+        private static string GetCallableName(MethodInfo method)
+        {
+            string className = method.DeclaringType.Name;
+            string methodName = method.Name;
+
+            var scriptAttribute = (CCScriptAttribute)method.GetCustomAttributes(typeof(CCScriptAttribute), false)[0];
+
+            if (scriptAttribute != null)
+            {
+                if (!string.IsNullOrEmpty(scriptAttribute.Name))
+                    methodName = scriptAttribute.Name;
+
+                if (!string.IsNullOrEmpty(scriptAttribute.ClassName))
+                    className = scriptAttribute.ClassName;
+            }
+
+            string callableName = className + "." + methodName;
+            return callableName;
         }
 
         /// <summary>
@@ -289,7 +381,15 @@ namespace CommonCore.Scripting
         /// </summary>
         public static T CallForResult<T>(string script, ScriptExecutionContext context, params object[] args)
         {
-            return (T)Convert.ChangeType(Instance.CallScript(script, null, context, args), typeof(T));
+            return TypeUtils.CoerceValue<T>(Instance.CallScript(script, null, context, args));
+        }
+
+        /// <summary>
+        /// Calls a script through the scripting system on an object, returning a typed result
+        /// </summary>
+        public static T CallOnForResult<T>(string script, object instance, ScriptExecutionContext context, params object[] args)
+        {
+            return TypeUtils.CoerceValue<T>(Instance.CallScript(script, instance, context, args));
         }
 
         /// <summary>

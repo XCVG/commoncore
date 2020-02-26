@@ -6,5 +6,16 @@
     "SecurityMechanisms": "Lockpicking",
     "SecurityComputers": "Hacking"
   },
+  "IGUI_SAVE": {
+	"Autosave": "Autosave",
+	"Quicksave": "Quicksave",
+	"NewSave": "New Save",
+	"SaveSuccess": "Saved Successfully",
+	"SaveSuccessMessage": "",
+	"SaveFail": "Save Failed",
+	"SaveNotAllowed": "Save Not Allowed",
+	"SaveBadFilenameMessage": "You need to enter a filename!",
+	"SaveNotAllowedMessage": "You cannot save here!"
+  },
   "TEST": {}
 }

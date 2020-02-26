@@ -12,6 +12,7 @@ namespace CommonCore.World
 
     public class WorldSceneController : BaseSceneController
     {
+        public bool AllowQuicksave = true;
         public bool AutoGameover = true;
         public bool Autoload = true;
         public string SetMusic;
@@ -20,6 +21,8 @@ namespace CommonCore.World
         public SetPlayerFlagsSource TempPlayerFlags { get; private set; } = new SetPlayerFlagsSource();
 
         protected override bool DeferAfterSceneLoadToSubclass => true;
+        protected override bool DeferEnterAutosaveToSubclass => true;
+        protected override bool AllowQuicksaveInScene => AllowQuicksave;
 
         public override void Awake()
         {
@@ -48,6 +51,8 @@ namespace CommonCore.World
             }
 
             ScriptingModule.CallHooked(ScriptHook.AfterSceneLoad, this);
+            if(AutosaveOnEnter)
+                SaveUtils.DoAutoSave();
         }
 
         public override void Update()

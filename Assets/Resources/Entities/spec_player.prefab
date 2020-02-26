@@ -1478,7 +1478,6 @@ MonoBehaviour:
   PainSound: {fileID: 82971931974348954}
   DeathSound: {fileID: 7557136994811983079}
   AttackEnabled: 1
-  AttemptToUseStats: 1
   HandleDeath: 1
   SynchronizeDeathDelay: 1
   DeathWaitTime: 5
@@ -1539,6 +1538,7 @@ MonoBehaviour:
   FallMinDetectTime: 0.25
   FallMinGruntVelocity: 15
   UseCrouchHack: 1
+  CountRotateAsMovement: 0
   PlayerController: {fileID: 114399906522207162}
   CharController: {fileID: 143302546512910276}
   CharRigidbody: {fileID: 0}
@@ -3966,7 +3966,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 1847
+    m_Bits: 7991
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

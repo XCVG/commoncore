@@ -76,8 +76,7 @@ namespace CommonCore.State
             catch(Exception e)
             {
                 //pokemon exception handling
-
-                Modal.PushMessageModal(string.Format("{0}\n{1}", e.ToString(), e.StackTrace), "Error loading scene", null, OnErrorConfirmed);
+                Modal.PushConfirmModal(string.Format("{0}\n{1}", e.ToString(), e.StackTrace), "Error loading scene", "Exit", "Return", null, OnErrorConfirmed);
             }            
 
             //clear certain metagamestate on use
@@ -95,7 +94,7 @@ namespace CommonCore.State
 
             if (asyncLoad == null)
             {
-                Modal.PushMessageModal("Async load operation failed", "Error loading scene", null, OnErrorConfirmed);
+                Modal.PushConfirmModal("Async load operation failed", "Error loading scene", "Exit", "Return", null, OnErrorConfirmed);
                 yield break;
             }
 
@@ -106,14 +105,22 @@ namespace CommonCore.State
         }
 
         /// <summary>
-        /// Handler for when the user acknowledges there was an error, sends them back to the main menu
+        /// Handler for when the user acknowledges there was an error, sends them back
         /// </summary>
-        private void OnErrorConfirmed(ModalStatusCode status, string tag)
+        private void OnErrorConfirmed(ModalStatusCode status, string tag, bool result)
         {
-            GameState.Reset();
-            MetaState.Reset();
-            GC.Collect();
-            SceneManager.LoadScene("MainMenuScene");
+            if (result)
+            {
+                GameState.Reset();
+                MetaState.Reset();
+                GC.Collect();
+                SceneManager.LoadScene("MainMenuScene");
+            }
+            else
+            {
+                MetaState.Instance.NextScene = MetaState.Instance.PreviousScene;
+                SceneManager.LoadScene("LoadingScene");
+            }
         }
 
         /// <summary>
@@ -129,7 +136,8 @@ namespace CommonCore.State
             if (type == LogType.Error)
             {
                 if (log.Contains("Cannot load scene"))
-                    Modal.PushMessageModal(log, "Error loading game (failed to load scene)", null, OnErrorConfirmed);
+                    Modal.PushConfirmModal(log, "Error loading game (failed to load scene)", "Exit", "Return", null, OnErrorConfirmed);
+
             }
         }
 

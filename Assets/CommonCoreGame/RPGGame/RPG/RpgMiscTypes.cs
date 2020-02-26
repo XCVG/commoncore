@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -29,7 +30,7 @@ namespace CommonCore.RpgGame.Rpg
 
     public enum PlayerFlags
     {
-        Invulnerable, Immortal, NoTarget, NoFallDamage, NoClip, NoInteract, NoAttack, NoWeapons, NoPhysics, Frozen, TotallyFrozen, HideHud
+        Invulnerable, Immortal, NoTarget, NoFallDamage, NoClip, NoInteract, NoAttack, NoWeapons, NoPhysics, Frozen, TotallyFrozen, HideHud, Invisible, NoDropItems
     }
 
     //mostly game dependent
@@ -61,6 +62,9 @@ namespace CommonCore.RpgGame.Rpg
         public Dictionary<StatType, int> Stats { get; set; }
         public Dictionary<SkillType, int> Skills { get; set; }
 
+        [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
+        public Dictionary<string, object> ExtraData { get; set; }
+
         public StatsSet()
         {
             DamageResistance = new Dictionary<DamageType, float>();
@@ -72,6 +76,8 @@ namespace CommonCore.RpgGame.Rpg
             Stats.SetupFromEnum(default);
             Skills = new Dictionary<SkillType, int>();
             Skills.SetupFromEnum(default);
+
+            ExtraData = new Dictionary<string, object>();
         }
 
         public StatsSet(StatsSet original) : this()
@@ -111,6 +117,10 @@ namespace CommonCore.RpgGame.Rpg
                     int propertyIndex = (int)Enum.Parse(typeof(SkillType), propertyAlias);
                     Skills[(SkillType)propertyIndex] = Convert.ToInt32(value);
                 }
+                else if(propertyName == "ExtraData")
+                {
+                    ExtraData[propertyAlias] = value;
+                }
             }
             else
             {
@@ -145,6 +155,23 @@ namespace CommonCore.RpgGame.Rpg
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(SkillType), propertyAlias);
                     Skills[(SkillType)propertyIndex] += Convert.ToInt32(value);
+                }
+                else if (propertyName == "ExtraData")
+                {
+#if ENABLE_IL2CPP
+                    throw new NotImplementedException();
+#else
+                    if(ExtraData.ContainsKey(propertyAlias))
+                    {
+                        dynamic newValue = (dynamic)ExtraData[propertyAlias] + (dynamic)value;
+                        ExtraData[propertyAlias] = newValue;
+                    }
+                    else
+                    {
+                        ExtraData[propertyAlias] = value;
+                    }
+                    
+#endif
                 }
             }
             else
@@ -200,6 +227,11 @@ namespace CommonCore.RpgGame.Rpg
                 {
                     int propertyIndex = (int)Enum.Parse(typeof(SkillType), propertyAlias);
                     result = Skills[(SkillType)propertyIndex];
+                }
+                else if(propertyName == "ExtraData")
+                {
+                    if (ExtraData.ContainsKey(propertyAlias))
+                        return ExtraData[propertyAlias];
                 }
             }
             else

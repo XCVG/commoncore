@@ -1,4 +1,5 @@
-﻿using CommonCore.Console;
+﻿using CommonCore.Config;
+using CommonCore.Console;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace CommonCore.BasicConsole
 
         public BasicCommandConsoleImplementation()
         {
-            var consoleObject = UnityEngine.Object.Instantiate(CoreUtils.LoadResource<GameObject>("BasicConsole/BasicConsole"));
+            var consoleObject = UnityEngine.Object.Instantiate(CoreUtils.LoadResource<GameObject>("Modules/BasicConsole/BasicConsole"));
             Console = consoleObject.GetComponent<BasicConsoleController>();
             Console.SetBaseImplementation(this);
         }
@@ -58,7 +59,7 @@ namespace CommonCore.BasicConsole
         /// <see cref="IConsole.WriteLineEx(string, LogLevel, object)"/>
         public void WriteLineEx(string line, LogLevel type, object context)
         {
-            if (type == LogLevel.Verbose && !CoreParams.UseVerboseLogging)
+            if (type == LogLevel.Verbose && !ConfigState.Instance.UseVerboseLogging)
                 return;
 
             LogType logType;

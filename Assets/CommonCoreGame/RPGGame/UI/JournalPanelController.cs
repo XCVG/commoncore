@@ -47,13 +47,16 @@ namespace CommonCore.RpgGame.UI
                 var qd = QuestModel.GetDef(quest.Key);
                 if (qd != null && !string.IsNullOrEmpty(qd.NiceName))
                     questName = qd.NiceName;
+                if (qd != null && qd.Hidden)
+                    continue;
+
                 GameObject itemGO = Instantiate<GameObject>(ItemTemplatePrefab, ScrollContent);
                 itemGO.GetComponentInChildren<Text>().text = questName;
                 if (quest.Value < 0)
                     itemGO.GetComponentInChildren<Text>().color = Color.red;
                 Button b = itemGO.GetComponent<Button>();
-                string lexS = quest.Key; //captured quest name
-                b.onClick.AddListener(delegate { OnQuestSelected(lexS); }); //scoping is weird here
+                string questKey = quest.Key; //captured quest name
+                b.onClick.AddListener(delegate { OnQuestSelected(questKey); }); //scoping is weird here
             }
         }
 
@@ -73,7 +76,7 @@ namespace CommonCore.RpgGame.UI
             if(qd == null)
             {
                 SelectedTitle.text = SelectedQuest;
-                SelectedDescription.text = "{missing def}";
+                SelectedDescription.text = $"missing def\nstage: {questStage}";
             }
             else
             {

@@ -9,6 +9,8 @@ Most dependencies are included. A few of them are pulled in automatically as Uni
 
 A basic command console is included; the third party DevConsole 2 asset is no longer required. You can still use it if you want by installing the SickDevConsoleIntegration module and importing the DevConsole 2 asset from the Asset Store.
 
+You can get the extra CommonCore modules at https://github.com/XCVG/commoncore-modules
+
 There is no dependency on the Standard Assets but you can bring them in if you need to.
 
 # Assets included in repository

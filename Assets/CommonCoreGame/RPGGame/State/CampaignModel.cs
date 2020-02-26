@@ -14,8 +14,8 @@ namespace CommonCore.RpgGame.State
     {
         //TODO need to flesh this out with accessors
 
-        [JsonProperty]
-        private Dictionary<string, string> Vars { get; set; } //generic data store
+        [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
+        private Dictionary<string, object> Vars { get; set; } //generic data store
         [JsonProperty]
         private HashSet<string> Flags { get; set; } //fast and easy flag store
         [JsonProperty]
@@ -23,42 +23,85 @@ namespace CommonCore.RpgGame.State
 
         public CampaignModel()
         {
-            Vars = new Dictionary<string, string>();
+            Vars = new Dictionary<string, object>();
             Flags = new HashSet<string>();
             Quests = new Dictionary<string, int>();
         }
 
         //***** Var/Flag accessors
+        [Obsolete]
         public string GetVar(string varName)
         {
             if (Vars.ContainsKey(varName))
-                return Vars[varName];
+            {
+                if(Vars[varName] is string s)
+                    return s;
+                return Vars[varName]?.ToString();
+            }
             return null;
         }
 
+        /// <summary>
+        /// Gets the value of a variable
+        /// </summary>
         public T GetVar<T>(string varName)
         {
-            //we may eventually do some fancy footwork to allow eg retrieving a string as an int, but not today
-            var value = GetVar(varName);
-            if (value == null)
-                return default(T);
-            else
-                return (T)Convert.ChangeType(value, typeof(T));
+            //do some fancy footwork to coerce the value
+
+            if (!Vars.TryGetValue(varName, out var value) || value == null) //return default on null values
+                return default;
+
+            if (typeof(T).IsAssignableFrom(value.GetType())) //if value is assignable to T, do it
+                return (T)value;
+
+            if (typeof(T) == typeof(string)) //if we want a string, make it a string
+                return (T)(object)value.ToString();
+
+            return TypeUtils.CoerceValue<T>(value);
         }
 
+        /// <summary>
+        /// Checks if a variable is already defined
+        /// </summary>
         public bool HasVar(string varName)
         {
             return Vars.ContainsKey(varName);
         }
 
-        public KeyValuePair<string, string>[] GetAllVars()
-        {
-            return Vars.ToArray();
-        }
-
-        public void SetVar(string varName, string value)
+        [Obsolete]
+        public void SetVar(string varName, object value)
         {
             Vars[varName] = value;
+        }
+
+        /// <summary>
+        /// Sets the value of a variable, overriding its existing type
+        /// </summary>
+        public void SetVar<T>(string varName, T value)
+        {
+            Vars[varName] = value;
+        }
+
+        /// <summary>
+        /// Sets the value of a variable, respecting its existing type
+        /// </summary>
+        public void SetVarEx<T>(string varName, T value)
+        {
+            if(!Vars.ContainsKey(varName) || Vars[varName] == null)
+            {
+                //if it doesn't exist, use SetVar
+                SetVar(varName, value);
+            }
+            else
+            {
+                //if it does exist, coerce the type
+                Vars[varName] = TypeUtils.CoerceValue(value, Vars[varName].GetType());
+            }
+        }
+
+        public KeyValuePair<string, string>[] GetAllVars()
+        {
+            return Vars.Select(kvp => new KeyValuePair<string, string>(kvp.Key, kvp.Value?.ToString())).ToArray();
         }
 
         public string ListAllVars()

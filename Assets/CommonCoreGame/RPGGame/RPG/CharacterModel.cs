@@ -274,7 +274,7 @@ namespace CommonCore.RpgGame.Rpg
             ModAV(av, value, null);
         }
 
-        public void ModAV(string av, object value, bool? propagate)
+        public void ModAV(string av, object value, bool? propagate) //nullable bool is tri-state: force propagate, force nopropagate, or default
         {
             if (av.Contains("."))
             {
@@ -390,44 +390,11 @@ namespace CommonCore.RpgGame.Rpg
 
         public T GetAV<T>(string av)
         {
-            if (av.Contains("."))
-            {
-                string firstPart = av.Substring(0, av.IndexOf('.'));
-                string secondPart = av.Substring(av.IndexOf('.') + 1);
-                if (firstPart == "BaseStats")
-                {
-                    return BaseStats.GetStat<T>(secondPart);
-                }
-                else if (firstPart == "DerivedStats")
-                {
-                    return DerivedStats.GetStat<T>(secondPart);
-                }
-                else if (firstPart == "Conditions")
-                {
-                    string fqConditionName = GetType().Namespace + "." + secondPart.ToString();
-                    Condition newC = (Condition)Activator.CreateInstance(Type.GetType(fqConditionName));
-                    bool found = false;
+            object untypedValue = GetAV(av);
+            if (untypedValue is Condition c)
+                return (T)untypedValue;
 
-                    foreach (Condition c in Conditions)
-                    {
-                        if (c.GetType() == newC.GetType())
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    return (T)(object)found;
-                }
-            }
-            else
-            {
-                //search and get property
-                return (T)Convert.ChangeType(GetType().GetProperty(av).GetValue(this, null), typeof(T));
-            }
-
-            //fail
-            throw new KeyNotFoundException();
+            return (T)Convert.ChangeType(untypedValue, typeof(T));            
         }
 
         public (float damageThreshold, float damageResistance) GetDamageThresholdAndResistance(int damageType)

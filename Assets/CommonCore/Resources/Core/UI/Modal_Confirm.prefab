@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 224217926578337186}
   - component: {fileID: 222651794076744846}
   - component: {fileID: 114129261352107394}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 224233012241195766}
   - component: {fileID: 222851879125930310}
   - component: {fileID: 114194207077438252}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Heading
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -164,7 +164,7 @@ GameObject:
   - component: {fileID: 224666011282358528}
   - component: {fileID: 222461706476427298}
   - component: {fileID: 114236297654366114}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -241,7 +241,7 @@ GameObject:
   - component: {fileID: 224533685140987236}
   - component: {fileID: 222853413629841748}
   - component: {fileID: 114113787933155962}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -319,7 +319,7 @@ GameObject:
   - component: {fileID: 222566790722993174}
   - component: {fileID: 114321006506591694}
   - component: {fileID: 114516370161143536}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ButtonContinue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -445,7 +445,7 @@ GameObject:
   - component: {fileID: 114228125693250596}
   - component: {fileID: 114919873112972742}
   - component: {fileID: 114355382152508566}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Modal_Confirm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -562,7 +562,7 @@ GameObject:
   - component: {fileID: 222974746548137900}
   - component: {fileID: 114417396578409356}
   - component: {fileID: 114829126422788760}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ButtonCancel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -686,7 +686,7 @@ GameObject:
   - component: {fileID: 224215997820728772}
   - component: {fileID: 222909261454027574}
   - component: {fileID: 114970261412939508}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -763,7 +763,7 @@ GameObject:
   - component: {fileID: 224043561719434450}
   - component: {fileID: 222776728361115780}
   - component: {fileID: 114678660913759930}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: BlockPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}

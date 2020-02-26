@@ -28,15 +28,6 @@ namespace CommonCore
         }
 
         /// <summary>
-        /// Logs a message to verbose debug output, prepending module name
-        /// </summary>
-        protected void LogVerbose(string text)
-        {
-            if(CoreParams.UseVerboseLogging)
-                Debug.Log($"[{GetType().Name}] {text}");
-        }
-
-        /// <summary>
         /// Logs a warning message to debug output, prepending module name
         /// </summary>
         protected void LogWarning(string text)

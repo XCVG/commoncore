@@ -34,13 +34,12 @@ namespace CommonCore
         private static bool UseGlobalScreenshotFolder = true;
 
         //*****additional config settings
-        public static bool UseVerboseLogging { get; private set; } = true;
         public static float DelayedEventPollInterval { get; private set; } = 1.0f;
-        public static bool UseAggressiveLookups { get; private set; } = true;
-        public static bool UseDirectSceneTransitions { get; private set; } = false;
+        //public static bool UseAggressiveLookups { get; private set; } = true; //may bring this back someday if performance is an issue
 
         //*****game config settings
         public static string InitialScene { get; private set; } = "World_Ext_Frangis_Arena";
+        public static bool UseCampaignIdentifier { get; private set; } = true;
 
         //*****path variables (some hackery to provide thread-safeish versions)
         public static string DataPath { get; private set; }

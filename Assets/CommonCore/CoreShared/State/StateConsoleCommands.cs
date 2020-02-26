@@ -15,6 +15,12 @@ namespace CommonCore.State
     /// </remarks>
     public static class StateConsoleCommands
     {
+        [Command(alias = "PrintCampaignHash", className = "GameState", useClassName = true)]
+        public static void DumpCampaignHash()
+        {
+            Debug.Log(GameState.Instance.CampaignIdentifier);
+        }
+
         [Command(alias = "Print", className = "GameState", useClassName = true)]
         public static void DumpGameState()
         {

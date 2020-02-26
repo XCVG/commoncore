@@ -41,6 +41,8 @@ namespace CommonCore.RpgGame.World
         private MeleeWeaponItemModel FallbackWeapon => InventoryModel.GetModel(FallbackItemModel) as MeleeWeaponItemModel;
 
         [SerializeField, Header("Offhand Kick")] //TODO ought to move this into another component
+        private bool OffhandKickEnabled = true;
+        [SerializeField]
         private Animator OffhandKickAnimator = null;
         [SerializeField]
         private Transform OffhandKickPoint = null;
@@ -1130,7 +1132,7 @@ namespace CommonCore.RpgGame.World
                 }
             }
 
-            if(TimeToNextKick <= 0 && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoAttack))
+            if(TimeToNextKick <= 0 && PlayerController.AttackEnabled && OffhandKickEnabled && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoAttack) && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoWeapons) && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.TotallyFrozen))
             {
                 if (MappedInput.GetButtonDown(DefaultControls.Offhand1))
                 {

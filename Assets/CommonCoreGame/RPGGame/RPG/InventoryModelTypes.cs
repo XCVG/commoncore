@@ -30,6 +30,7 @@ namespace CommonCore.RpgGame.Rpg
 
     public enum ItemFlag
     {
+        Undefined, Unique,
         WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponNeverRandomize, MeleeWeaponUsePreciseCasting
     }
 
@@ -163,8 +164,8 @@ namespace CommonCore.RpgGame.Rpg
 
     public class MiscItemModel : InventoryItemModel
     {
-        public MiscItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags, string worldModel)
-            : base(name, weight, value, maxCondition, unique, essential, flags, worldModel)
+        public MiscItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags, string worldModel)
+            : base(name, weight, value, maxCondition, hidden, essential, flags, worldModel)
         {
         }
     }
@@ -182,10 +183,10 @@ namespace CommonCore.RpgGame.Rpg
         public readonly float LowerTime;
         public readonly float RaiseTime;
 
-        public WeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags,
+        public WeaponItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags,
             float damage, float damagePierce, float damageSpread, float damagePierceSpread,
             DamageType dType, WeaponSkillType skillType, string viewModel, string worldModel, string hitPuff, float lowerTime, float raiseTime)
-            : base(name, weight, value, maxCondition, unique, essential, flags, worldModel)
+            : base(name, weight, value, maxCondition, hidden, essential, flags, worldModel)
         {
             Damage = damage;
             DamagePierce = damagePierce;
@@ -206,11 +207,11 @@ namespace CommonCore.RpgGame.Rpg
         public readonly float Rate;
         public readonly float EnergyCost;
 
-        public MeleeWeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags,
+        public MeleeWeaponItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags,
             float damage, float damagePierce, float damageSpread, float damagePierceSpread,
             float reach, float rate, float energyCost, DamageType dType, WeaponSkillType skillType,
             string viewModel, string worldModel, string hitPuff, float lowerTime, float raiseTime) 
-            : base(name, weight, value, maxCondition, unique, essential, flags, damage, damagePierce, damageSpread, damagePierceSpread, dType, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
+            : base(name, weight, value, maxCondition, hidden, essential, flags, damage, damagePierce, damageSpread, damagePierceSpread, dType, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
         {
             Reach = reach;
             Rate = rate;
@@ -245,14 +246,14 @@ namespace CommonCore.RpgGame.Rpg
         public readonly string Projectile;
 
         //it looks like JSON.net is actually using these constructors and the naming of the parameters matters, which is somewhat terrifying
-        public RangedWeaponItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags,
+        public RangedWeaponItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags,
             float damage, float damagePierce, float damageSpread, float damagePierceSpread, float projectileVelocity,
             RangeEnvelope recoil, RangeEnvelope spread, RangeEnvelope adsRecoil, RangeEnvelope adsSpread,
             PulseEnvelope recoilImpulse, PulseEnvelope adsRecoilImpulse,
             float movementSpreadFactor, float movementRecoveryFactor, float crouchSpreadFactor, float crouchRecoveryFactor,
             float fireInterval, int numProjectiles, int magazineSize, float reloadTime,
             AmmoType aType, DamageType dType, WeaponSkillType skillType, string viewModel, string worldModel, string hitPuff, string projectile, float adsZoomFactor, float lowerTime, float raiseTime)
-            : base(name, weight, value, maxCondition, unique, essential, flags, damage, damagePierce, damageSpread, damagePierceSpread, dType, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
+            : base(name, weight, value, maxCondition, hidden, essential, flags, damage, damagePierce, damageSpread, damagePierceSpread, dType, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
         {
             ProjectileVelocity = projectileVelocity;
 
@@ -297,9 +298,9 @@ namespace CommonCore.RpgGame.Rpg
         public readonly Dictionary<DamageType, float> DamageThreshold;
         public readonly EquipSlot Slot;
 
-        public ArmorItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags, string worldModel,
+        public ArmorItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags, string worldModel,
             Dictionary<DamageType, float> damageResistance, Dictionary<DamageType, float> damageThreshold, EquipSlot slot)
-            : base(name, weight, value, maxCondition, unique, essential, flags, worldModel)
+            : base(name, weight, value, maxCondition, hidden, essential, flags, worldModel)
         {
             DamageResistance = new Dictionary<DamageType, float>(damageResistance);
             DamageThreshold = new Dictionary<DamageType, float>(damageThreshold);
@@ -313,9 +314,9 @@ namespace CommonCore.RpgGame.Rpg
         public readonly RestoreType RType;
         public float Amount;
 
-        public AidItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags, string worldModel,
+        public AidItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags, string worldModel,
             AidType aType, RestoreType rType, float amount)
-            : base(name, weight, value, maxCondition, unique, essential, flags, worldModel)
+            : base(name, weight, value, maxCondition, hidden, essential, flags, worldModel)
         {
             AType = aType;
             RType = rType;
@@ -357,8 +358,8 @@ namespace CommonCore.RpgGame.Rpg
     {
         public readonly MoneyType Type;
 
-        public MoneyItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags, string worldModel, MoneyType type) :
-            base(name, weight, value, maxCondition, unique, essential, flags, worldModel)
+        public MoneyItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags, string worldModel, MoneyType type) :
+            base(name, weight, value, maxCondition, hidden, essential, flags, worldModel)
         {
             Type = type;
             Stackable = true;
@@ -369,8 +370,8 @@ namespace CommonCore.RpgGame.Rpg
     {
         public readonly AmmoType Type;
 
-        public AmmoItemModel(string name, float weight, float value, float maxCondition, bool unique, bool essential, string[] flags, string worldModel, AmmoType type) :
-            base(name, weight, value, maxCondition, unique, essential, flags, worldModel)
+        public AmmoItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags, string worldModel, AmmoType type) :
+            base(name, weight, value, maxCondition, hidden, essential, flags, worldModel)
         {
             Type = type;
             Stackable = true;

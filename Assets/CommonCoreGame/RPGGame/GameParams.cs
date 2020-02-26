@@ -12,6 +12,12 @@ namespace CommonCore
     public static partial class GameParams
     {
 
+        public static bool ForceCampaignVarNumericEvaluation { get; private set; } = false; //if set, Conditionals will evaluate campaign vars as numeric, like Katana
+        public static bool UseCampaignVarSimulatedLooseTyping { get; private set; } = true; //if set, Conditionals will auto-promote numeric types in campaign vars when setting
+
+        public static bool UseDialoguePositionInheritance { get; private set; } = true; //Katana does not inherit the position property from the dialogue scene
+        public static bool DialogueVerboseLogging { get; private set; } = false;
+
         public static bool UseCustomLeveling { get; private set; } = true;
         public static bool UseDerivedSkills { get; private set; } = true;
 
@@ -22,6 +28,8 @@ namespace CommonCore
         public static float DamageFlashThreshold { get; private set; } = 0.01f; //very small because health is reported as a fraction
 
         public static bool AutoQuestNotifications { get; private set; } = true;
+
+        public static bool AllowItemDropOutsideWorldScene { get; private set; } = false;
 
         public static bool ShowImpossibleSkillChecks { get; private set; } = true;
         public static bool AttemptImpossibleSkillChecks { get; private set; } = true;

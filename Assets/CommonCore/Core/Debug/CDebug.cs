@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonCore.Config;
+using System;
 using UnityEngine;
 
 namespace CommonCore.DebugLog
@@ -19,7 +20,7 @@ namespace CommonCore.DebugLog
         /// </summary>
         public static void LogVerbose(object message)
         {
-            if(CoreParams.UseVerboseLogging)
+            if(ConfigState.Instance.UseVerboseLogging)
                 Debug.Log(message);
         }
 
@@ -28,7 +29,7 @@ namespace CommonCore.DebugLog
         /// </summary>
         public static void LogVerbose(object message, UnityEngine.Object context)
         {
-            if (CoreParams.UseVerboseLogging)
+            if (ConfigState.Instance.UseVerboseLogging)
                 Debug.Log(message, context);
         }
                 
@@ -61,7 +62,7 @@ namespace CommonCore.DebugLog
                         Debug.Log(string.Format("[{1}] {0}", message, context));
                     break;
                 case LogLevel.Verbose:
-                    if (CoreParams.UseVerboseLogging)
+                    if (ConfigState.Instance.UseVerboseLogging)
                     {
                         if (context is UnityEngine.Object)
                             Debug.Log(message, (UnityEngine.Object)context);

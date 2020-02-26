@@ -129,6 +129,11 @@ namespace CommonCore.Config
 
         //actual config data here (WIP)
 
+        //SYSTEM CONFIG
+        public bool UseVerboseLogging { get; set; } = true;
+        public bool UseCampaignIdentifier { get; set; } = true;
+        public float DefaultTimescale { get; set; } = 1;
+
         //AUDIO CONFIG
         public float MusicVolume { get; set; } = 0.8f;
         public float SoundVolume { get; set; } = 0.8f;
@@ -156,16 +161,19 @@ namespace CommonCore.Config
         //GAME/GAMEPLAY CONFIG
         public SubtitlesLevel Subtitles { get; set; } = SubtitlesLevel.Always;
         public bool ShakeEffects { get; set; } = true;
-        public bool FlashEffects { get; set; } = true;
-        public float DefaultTimescale { get; set; } = 1;
-        public float GameSpeed { get; set; } = 1; //experimental, must be explicitly handled
+        public bool FlashEffects { get; set; } = true;        
+        public float GameSpeed { get; set; } = 1; //experimental, must be explicitly handled        
+        public int AutosaveCount { get; set; } = 3;
 
         //INPUT CONFIG
         public string InputMapper { get; set; } = "UnityInputMapper";
+        [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
         public Dictionary<string, object> InputMapperData { get; set; } = new Dictionary<string, object>();
         public float LookSpeed { get; set; } = 1.0f;
         public bool LookInvert { get; set; } = false;
         public KeyCode ScreenshotKey { get; set; } = KeyCode.F12;
+        public KeyCode QuicksaveKey { get; set; } = KeyCode.F5;
+        public KeyCode QuickloadKey { get; set; } = KeyCode.F9;
 
         //EXTRA/GAME-SPECIFIC CONFIG
         public HashSet<string> CustomConfigFlags { get; private set; } = new HashSet<string>();

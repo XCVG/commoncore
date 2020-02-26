@@ -27,6 +27,7 @@ namespace CommonCore.RpgGame.World
         public ActorMovementComponentBase MovementComponent;
         public ActorAttackComponent AttackComponent;
         public ActorInteractionComponent InteractionComponent;
+        public ActorAudioComponent AudioComponent;
 
         //basically each of these headers can be moved into a separate component but we might not get to all of it yet
 
@@ -124,6 +125,11 @@ namespace CommonCore.RpgGame.World
             if (InteractionComponent == null)
                 CDebug.LogEx(name + " couldn't find InteractionComponent", LogLevel.Warning, this);
 
+            if (AudioComponent == null)
+                AudioComponent = GetComponentInChildren<ActorAudioComponent>();
+            if (AudioComponent == null)
+                CDebug.LogEx(name + " couldn't find AudioComponent", LogLevel.Verbose, this);
+
             InitialPosition = transform.position;
 
             MovementComponent.Init();
@@ -176,6 +182,10 @@ namespace CommonCore.RpgGame.World
             {
                 MovementComponent.HandleDifficultyChanged();  
             }
+            else if(message is ClearAllTargetsMessage)
+            {
+                Target = null;
+            }
         }
 
         public void ForceEnterState(ActorAiState newState)
@@ -216,6 +226,9 @@ namespace CommonCore.RpgGame.World
                     else
                         AnimationComponent.Ref()?.SetAnimation(ActorAnimState.Dying);
 
+                    AudioComponent.Ref()?.StopLivingSounds();
+                    AudioComponent.Ref()?.PlayDeathSound();
+
                     if(InteractionComponent != null)
                         InteractionComponent.InteractionDisabledByHit = false;
 
@@ -225,7 +238,7 @@ namespace CommonCore.RpgGame.World
                     if (OnDeathSpecial != null)
                         OnDeathSpecial.Execute(new ActionInvokerData { Activator = this });
 
-                    if (Target != null && Target.GetComponent<PlayerController>() && GrantXpOnDeath > 0)
+                    if (Target != null && Target.GetComponent<PlayerController>() && GrantXpOnDeath > 0) //what the fuck
                         GameState.Instance.PlayerRpgState.GrantXPScaled(GrantXpOnDeath);
                     break;
                 case ActorAiState.Wandering:
@@ -234,15 +247,21 @@ namespace CommonCore.RpgGame.World
                     //set initial destination
                     Vector2 newpos = VectorUtils.GetRandomVector2(InitialPosition.GetFlatVector(), WanderRadius);
                     MovementComponent.SetDestination(newpos.GetSpaceVector());
+                    AudioComponent.Ref()?.StartWalkSound();
                     break;
                 case ActorAiState.Chasing:
                     if (RunOnChase)
                     {
                         MovementComponent.IsRunning = true;
                         AnimationComponent.Ref()?.SetAnimation(ActorAnimState.Running);
+                        AudioComponent.Ref()?.StartRunSound();
                     }
                     else
-                        AnimationComponent.Ref()?.SetAnimation(ActorAnimState.Walking);                    
+                    {
+                        AnimationComponent.Ref()?.SetAnimation(ActorAnimState.Walking);
+                        AudioComponent.Ref()?.StartWalkSound();
+                    }
+
                     {
                         //set target
 
@@ -258,9 +277,13 @@ namespace CommonCore.RpgGame.World
                     {
                         MovementComponent.IsRunning = true;
                         AnimationComponent.Ref()?.SetAnimation(ActorAnimState.Running);
+                        AudioComponent.Ref()?.StartRunSound();
                     }
                     else
+                    {
                         AnimationComponent.Ref()?.SetAnimation(ActorAnimState.Walking);
+                        AudioComponent.Ref()?.StartWalkSound();
+                    }
                     MovementComponent.SetDestination(MovementComponent.MovementTarget);
                     break;
                 case ActorAiState.Attacking:
@@ -281,15 +304,21 @@ namespace CommonCore.RpgGame.World
                     break;
                 case ActorAiState.Hurting:
                     AnimationComponent.Ref()?.SetAnimation(ActorAnimState.Hurting);
+                    AudioComponent.Ref()?.PlayPainSound();
                     break;
                 case ActorAiState.Fleeing:
                     if (RunOnFlee)
                     {
                         MovementComponent.IsRunning = true;
                         AnimationComponent.Ref()?.SetAnimation(ActorAnimState.Running);
+                        AudioComponent.Ref()?.StartRunSound();
                     }
                     else
-                        AnimationComponent.Ref()?.SetAnimation(ActorAnimState.Walking);                    
+                    {
+                        AnimationComponent.Ref()?.SetAnimation(ActorAnimState.Walking);
+                        AudioComponent.Ref()?.StartWalkSound();
+                    }
+
                     {
                         //set target
                         var d = transform.position + ((Target.position - transform.position).normalized * -1);
@@ -341,7 +370,10 @@ namespace CommonCore.RpgGame.World
                         //search for targets, select target
                         SelectTarget();
                         if (Target != null)
+                        {
                             EnterState(ActorAiState.Chasing);
+                            AudioComponent.Ref()?.PlayAlertSound();
+                        }
                     }
                     break;
                 case ActorAiState.Chasing:
@@ -470,9 +502,11 @@ namespace CommonCore.RpgGame.World
                     break;
                 case ActorAiState.Wandering:
                     MovementComponent.AbortMove();
+                    AudioComponent.Ref()?.StopMoveSound();
                     break;
                 case ActorAiState.Chasing:
                     MovementComponent.AbortMove();
+                    AudioComponent.Ref()?.StopMoveSound();
                     break;
                 case ActorAiState.Attacking:
                     AttackComponent.Ref()?.EndAttack();
@@ -481,6 +515,7 @@ namespace CommonCore.RpgGame.World
                     break;
                 case ActorAiState.Fleeing:
                     MovementComponent.AbortMove();
+                    AudioComponent.Ref()?.StopMoveSound();
                     break;
                 default:
                     break;
@@ -604,8 +639,6 @@ namespace CommonCore.RpgGame.World
             
         }
 
-
-
         public void TakeDamage(ActorHitInfo data)
         {
             //damage model is very stupid right now, we will make it better later
@@ -622,21 +655,6 @@ namespace CommonCore.RpgGame.World
 
             if(!Invincible)
                 Health -= damageTaken;
-
-            /*
-            if(!string.IsNullOrEmpty(data.HitPuff))
-            {
-                Debug.Log($"Spawning hitpuff \"{data.HitPuff}\" at {data.HitCoords}");
-                Vector3 hitCoords = data.HitCoords.HasValue ? data.HitCoords.Value : transform.position;
-                WorldUtils.SpawnEffect(data.HitPuff, hitCoords, transform.eulerAngles, null);
-            }
-            else if(!string.IsNullOrEmpty(DefaultHitPuff))
-            {                
-                Vector3 hitCoords = data.HitCoords.HasValue ? data.HitCoords.Value : transform.position;
-                WorldUtils.SpawnEffect(DefaultHitPuff, hitCoords, transform.eulerAngles, null);
-            }
-            */
-            //we no longer spawn hitpuffs here
 
             if (CurrentAiState == ActorAiState.Dead) //abort if we're already dead
                 return;

@@ -33,6 +33,11 @@ namespace CommonCore.Audio
 
         public AudioClip GetSound(string name, SoundType sType)
         {
+            return GetSound(name, sType, false);
+        }
+
+        public AudioClip GetSound(string name, SoundType sType, bool suppressWarnings)
+        {
             AudioClip clip = null;
 
             if (sType == SoundType.Any)
@@ -66,7 +71,7 @@ namespace CommonCore.Audio
 
             }
 
-            if (clip == null)
+            if (clip == null && !suppressWarnings)
             {
                 CDebug.LogEx(string.Format("Couldn't find sound {0} in category {1}", name, sType.ToString()), LogLevel.Verbose, this);
             }

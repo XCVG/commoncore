@@ -1,5 +1,6 @@
 ﻿using CommonCore.State;
 using System;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -48,6 +49,7 @@ namespace CommonCore
             MetaState.Instance.NextScene = sceneOverride;
             MetaState.Instance.TransitionType = SceneTransitionType.EndGame;
             //GC.Collect();
+            TryGetSceneController().Ref()?.ExitScene();
             SceneManager.LoadScene("LoadingScene");
         }
 
@@ -73,21 +75,14 @@ namespace CommonCore
 
             TryGetSceneController().Ref()?.ExitScene(); //run scene exit routine if a scene controller exists
 
-            if (CoreParams.UseDirectSceneTransitions) // || skipLoading)
-            {
-                MetaState.Instance.IntentsExecuteLoading();
-                SceneManager.LoadScene(scene);
-            }
-            else
-            {
-                SceneManager.LoadScene("LoadingScene"); //TODO put loading scene name somewhere
-            }
+            SceneManager.LoadScene("LoadingScene"); //TODO put loading scene name somewhere            
             
         }
 
         /// <summary>
         /// Loads a saved game to state and transitions to its scene
         /// </summary>
+        /// <param name="saveName">The name of the save file, with prefix and extension but without path</param>
         public static void LoadGame(string saveName)
         {
             MetaState.Instance.Clear();
@@ -95,14 +90,22 @@ namespace CommonCore
             mgs.LoadSave = saveName;
             mgs.TransitionType = SceneTransitionType.LoadGame;
 
-            if (CoreParams.UseDirectSceneTransitions)
-            {
-                throw new NotImplementedException(); //TODO move LoadingSceneController functionality here or something
-            }
-            else
-            {
-                SceneManager.LoadScene("LoadingScene");
-            }
+            SceneManager.LoadScene("LoadingScene");
+        }
+
+        /// <summary>
+        /// Saves the current state to file
+        /// </summary>
+        /// <param name="saveName">The name of the save file, with prefix and extension but without path</param>
+        /// <param name="commit">Whether to commit or not</param>
+        public static void SaveGame(string saveName, bool commit)
+        {
+            string savePath = CoreParams.SavePath + @"\" + saveName;
+            if(commit)
+                BaseSceneController.Current.Commit();
+            DateTime savePoint = DateTime.Now;
+            GameState.SerializeToFile(savePath);
+            File.SetCreationTime(savePath, savePoint);
         }
 
         /// <summary>
@@ -110,22 +113,14 @@ namespace CommonCore
         /// </summary>
         public static BaseSceneController TryGetSceneController()
         {
-            //TODO refactor this to use CoreUtils.GetWorldRoot
+            if (BaseSceneController.Current != null)
+                return BaseSceneController.Current;
 
-            GameObject go = GameObject.FindGameObjectWithTag("GameController");
-            if (go != null)
+            // try grabbing WorldRoot
+            Transform t = CoreUtils.GetWorldRoot();
+            if (t != null)
             {
-                BaseSceneController bsc = go.GetComponent<BaseSceneController>();
-
-                if (bsc != null)
-                    return bsc;
-            }
-
-            //couldn't find it, try grabbing WorldRoot
-            go = GameObject.Find("WorldRoot");
-            if (go != null)
-            {
-                BaseSceneController bsc = go.GetComponent<BaseSceneController>();
+                BaseSceneController bsc = t.gameObject.GetComponent<BaseSceneController>();
 
                 if (bsc != null)
                     return bsc;
@@ -149,6 +144,6 @@ namespace CommonCore
 
             throw new NullReferenceException(); //not having a scene controller is fatal
         }
-
+        
     }
 }

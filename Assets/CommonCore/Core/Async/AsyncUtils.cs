@@ -51,7 +51,7 @@ namespace CommonCore.Async
         /// Waits a specified number of seconds in scaled (game) time
         /// </summary>
         /// <remarks>Can only be used from the main thread</remarks>
-        public static async Task WaitScaled(float timeToWait)
+        public static async Task DelayScaled(float timeToWait)
         {
             float startTime = Time.time;
             while (Time.time - startTime < timeToWait)

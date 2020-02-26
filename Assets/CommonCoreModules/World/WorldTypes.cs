@@ -43,6 +43,17 @@ namespace CommonCore.World
     }
 
     /// <summary>
+    /// Message signaling a request to clear all actor targets. Must be received by all actors or things that can target
+    /// </summary>
+    public class ClearAllTargetsMessage : QdmsFlagMessage
+    {
+        public ClearAllTargetsMessage() : base("WorldClearAllTargets")
+        {
+
+        }
+    }
+
+    /// <summary>
     /// Data passed from GetClosestHit indicating what has been hit
     /// </summary>
     public readonly struct HitInfo

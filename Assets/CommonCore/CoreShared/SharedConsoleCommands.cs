@@ -83,17 +83,11 @@ public static class SharedConsoleCommands
     static void LoadClean(string name)
     {
         MetaState.Instance.TransitionType = SceneTransitionType.LoadGame;
-        MetaState.Instance.LoadSave = CoreParams.SavePath + @"\" + name;
+        MetaState.Instance.LoadSave = name;
         MetaState.Instance.Intents.Clear();
 
-        if (CoreParams.UseDirectSceneTransitions) // || skipLoading)
-        {
-            SceneManager.LoadScene(MetaState.Instance.NextScene);
-        }
-        else
-        {
-            SceneManager.LoadScene("LoadingScene"); //TODO put loading scene name somewhere
-        }
+        SceneManager.LoadScene("LoadingScene"); //TODO put loading scene name somewhere
+        
     }
 
     /// <summary>
@@ -157,5 +151,25 @@ public static class SharedConsoleCommands
     static void Reload()
     {
         SharedUtils.ChangeScene(SceneManager.GetActiveScene().name);
+    }
+
+    /// <summary>
+    /// Ends the current game
+    /// </summary>
+    [Command]
+    static void EndGame()
+    {
+        SharedUtils.EndGame();
+    }
+
+    //***** SCREENFADE
+
+    /// <summary>
+    /// Clears any screen fade
+    /// </summary>
+    [Command(alias = "Clear", className = "ScreenFader", useClassName = true)]
+    static void ClearScreenFade()
+    {
+        ScreenFader.ClearFade();
     }
 }

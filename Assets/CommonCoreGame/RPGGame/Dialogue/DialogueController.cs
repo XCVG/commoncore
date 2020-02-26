@@ -112,7 +112,7 @@ namespace CommonCore.RpgGame.Dialogue
             //present audio
             if (VoiceAudioSource.isPlaying)
                 VoiceAudioSource.Stop();
-            var voiceClip = CCBase.GetModule<AudioModule>().GetSound($"{CurrentSceneName}/{CurrentFrameName}", SoundType.Voice); //GetModule<T> is now preferred
+            var voiceClip = CCBase.GetModule<AudioModule>().GetSound($"{CurrentSceneName}/{CurrentFrameName}", SoundType.Voice, !GameParams.DialogueVerboseLogging); //GetModule<T> is now preferred
             if (voiceClip != null)
             {
                 VoiceAudioSource.clip = voiceClip;
@@ -132,7 +132,8 @@ namespace CommonCore.RpgGame.Dialogue
                 }
                 else
                 {
-                    CDebug.LogEx($"Couldn't find face sprite Dialogue/bg/{f.Background}", LogLevel.Verbose, this);
+                    if(GameParams.DialogueVerboseLogging)
+                        CDebug.LogEx($"Couldn't find face sprite Dialogue/bg/{f.Background}", LogLevel.Verbose, this);
                 }
             }
 
@@ -172,7 +173,8 @@ namespace CommonCore.RpgGame.Dialogue
                 }
                 else
                 {
-                    CDebug.LogEx($"Couldn't find face sprite Dialogue/char/{f.Image}", LogLevel.Verbose, this);
+                    if(GameParams.DialogueVerboseLogging)
+                        CDebug.LogEx($"Couldn't find face sprite Dialogue/char/{f.Image}", LogLevel.Verbose, this);
                 }
             }
 

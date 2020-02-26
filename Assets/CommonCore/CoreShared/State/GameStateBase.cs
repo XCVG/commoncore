@@ -1,10 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using CommonCore.Config;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace CommonCore.State
 {
@@ -87,6 +90,7 @@ namespace CommonCore.State
         public static void LoadInitial()
         {
             instance.Init();
+            instance.SetCampaignHash();
         }
 
         /// <summary>
@@ -113,6 +117,36 @@ namespace CommonCore.State
             }
 
             InitialLoaded = true;
+        }
+
+        /// <summary>
+        /// Calculates and sets the campaign hash
+        /// </summary>
+        private void SetCampaignHash()
+        {
+            if(CoreParams.UseCampaignIdentifier && ConfigState.Instance.UseCampaignIdentifier)
+            {
+                StringBuilder campaignDescriptor = new StringBuilder(1024);
+
+                Random rnd = new Random();
+
+                campaignDescriptor.Append(CoreParams.GameName + CoreParams.GameVersion.ToString() + CoreParams.UnityVersionName); //game descriptor
+                campaignDescriptor.Append(Environment.UserName + Environment.MachineName + Environment.OSVersion.ToString()); //machine descriptor
+                campaignDescriptor.Append(DateTime.Now.ToString() + rnd.Next().ToString()); //session descriptor
+
+                //UnityEngine.Debug.LogError(campaignDescriptor);
+
+                using (HashAlgorithm algo = SHA1.Create())
+                {
+                    byte[] result = algo.ComputeHash(Encoding.UTF8.GetBytes(campaignDescriptor.ToString()));
+                    CampaignIdentifier = BitConverter.ToString(result).Replace("-", string.Empty);
+                }
+            }
+            else
+            {
+                CampaignIdentifier = "0000000000000000000000000000000000000000";
+            }
+
         }
 
         /// <summary>
@@ -170,6 +204,12 @@ namespace CommonCore.State
         /// </summary>
         [JsonProperty]
         public bool InitialLoaded { get; private set; }
+
+        /// <summary>
+        /// A unique value identifying this game instance
+        /// </summary>
+        [JsonProperty]
+        public string CampaignIdentifier { get; private set; }
 
         [JsonProperty]
         private long CurrentUID;

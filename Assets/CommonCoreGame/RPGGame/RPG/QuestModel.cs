@@ -117,14 +117,17 @@ namespace CommonCore.RpgGame.Rpg
         public readonly string Description;
         [JsonProperty]
         protected readonly Dictionary<int, string> Stages;
+        [JsonProperty]
+        public readonly bool Hidden;
 
         [JsonConstructor]
-        public QuestDef(string niceName, string image, string description, Dictionary<int, string> stageText)
+        public QuestDef(string niceName, string image, string description, Dictionary<int, string> stageText, bool hidden)
         {
             NiceName = niceName;
             Image = image;
             Description = description;
             Stages = stageText;
+            Hidden = hidden;
         }
 
         public string GetStageText(int stage)

@@ -66,9 +66,18 @@ namespace CommonCore.RpgGame.State
                         return false;
                     else return true;
                 case ConditionType.Variable:
-                    if (GameState.Instance.CampaignState.HasVar(Target))
-                        return EvaluateValueWithOption(GameState.Instance.CampaignState.GetVar<int>(Target));
-                    else return false;
+                    if (GameParams.ForceCampaignVarNumericEvaluation)
+                    {
+                        if (GameState.Instance.CampaignState.HasVar(Target))
+                            return EvaluateValueWithOption(GameState.Instance.CampaignState.GetVar<decimal>(Target)); //should work I hope
+                        else return false;
+                    }
+                    else
+                    {
+                        if(GameState.Instance.CampaignState.HasVar(Target))
+                            return EvaluateValueWithOption(GameState.Instance.CampaignState.GetVar<IComparable>(Target)); //fingers crossed
+                        else return false;
+                    }
                 case ConditionType.Affinity:
                     throw new NotImplementedException(); //could be supported, but isn't yet
                 case ConditionType.Quest:
@@ -78,7 +87,8 @@ namespace CommonCore.RpgGame.State
                 case ConditionType.ActorValue:
                     try
                     {
-                        int av = GameState.Instance.PlayerRpgState.GetAV<int>(Target);
+                        //we assume ActorValue is numeric here, which is probably safe
+                        decimal av = GameState.Instance.PlayerRpgState.GetAV<decimal>(Target);
                         return EvaluateValueWithOption(av);
                     }
                     catch (KeyNotFoundException)
@@ -104,24 +114,49 @@ namespace CommonCore.RpgGame.State
 
         private bool EvaluateValueWithOption(IComparable value)
         {
+            //"started" and "finished" will work with anything
             //technically out of spec but should be fine
             //probably the only instance that will work here but not with Katana
+
+            //I expect this to completely shit the bed when types are different
+            //yeah, it breaks *horribly*
+
+            IComparable value0 = value; //target value
+            IComparable value1 = OptionValue; //our value (comparison value)
+
+            if (value0 == null || value1 == null)
+                return false; //assume null = false
+
+            if(TypeUtils.IsNumericType(value0.GetType()) && TypeUtils.IsNumericType(value1.GetType()))
+            {
+                //if both are numeric, compare as decimal
+                value0 = Convert.ToDecimal(value0);
+                value1 = Convert.ToDecimal(value1);
+            }
+            else if(value0.GetType() == typeof(string) || value1.GetType() == typeof(string))
+            {
+                //if one is a string, compare as string
+                value0 = value0.ToString();
+                value1 = value1.ToString();
+            }
+            //otherwise yolo it
+
             switch (Option.Value)
             {
                 case ConditionOption.Greater:
-                    return value.CompareTo(OptionValue) > 0;
+                    return value0.CompareTo(value1) > 0;
                 case ConditionOption.Less:
-                    return value.CompareTo(OptionValue) < 0;
+                    return value0.CompareTo(value1) < 0;
                 case ConditionOption.Equal:
-                    return value.CompareTo(OptionValue) == 0;
+                    return value0.CompareTo(value1) == 0;
                 case ConditionOption.GreaterEqual:
-                    return value.CompareTo(OptionValue) >= 0;
+                    return value0.CompareTo(value1) >= 0;
                 case ConditionOption.LessEqual:
-                    return value.CompareTo(OptionValue) <= 0;
+                    return value0.CompareTo(value1) <= 0;
                 case ConditionOption.Started:
-                    return value.CompareTo(0) > 0;
+                    return value0.CompareTo(0) > 0;
                 case ConditionOption.Finished:
-                    return value.CompareTo(0) < 0;
+                    return value0.CompareTo(0) < 0;
                 default:
                     throw new NotSupportedException();
             }
@@ -228,14 +263,47 @@ namespace CommonCore.RpgGame.State
                     }
                     break;
                 case MicroscriptType.Variable:
-                    if (Action == MicroscriptAction.Set)
+                    if (Action == MicroscriptAction.Set || (Action == MicroscriptAction.Add && !GameState.Instance.CampaignState.HasVar(Target)))
                     {
-                        GameState.Instance.CampaignState.SetVar(Target, Value.ToString());
+                        if (GameParams.UseCampaignVarSimulatedLooseTyping)
+                        {
+                            GameState.Instance.CampaignState.SetVar<object>(Target, Value);
+                        }
+                        else
+                        {
+                            GameState.Instance.CampaignState.SetVarEx(Target, Value);
+                        }
                     }
                     else if (Action == MicroscriptAction.Add)
                     {
-                        decimal oldVal = Convert.ToDecimal(GameState.Instance.CampaignState.GetVar(Target));
-                        GameState.Instance.CampaignState.SetVar(Target, (oldVal + Convert.ToDecimal(Value)).ToString()); //this is probably unsafe
+                        if(GameParams.UseCampaignVarSimulatedLooseTyping)
+                        {
+#if ENABLE_IL2CPP
+                            throw new NotImplementedException(); //it's probably possible at least for our edge cases, but will require much messier code
+#else
+
+                            //use dynamic operator +
+                            dynamic oldVal = GameState.Instance.CampaignState.GetVar<object>(Target);
+                            dynamic newVal = oldVal + (dynamic)Value;
+
+                            GameState.Instance.CampaignState.SetVar<object>(Target, newVal);
+#endif
+                        }
+                        else
+                        {
+#if ENABLE_IL2CPP
+                            throw new NotImplementedException(); //it's probably possible at least for our edge cases, but will require much messier code
+#else
+
+                            //use target value's operator +
+                            dynamic oldVal = GameState.Instance.CampaignState.GetVar<object>(Target);
+                            dynamic addedVal = TypeUtils.CoerceValue(Value, oldVal.GetType());
+                            dynamic newVal = oldVal + addedVal;
+
+                            GameState.Instance.CampaignState.SetVar<object>(Target, newVal);
+#endif
+                        }
+
                     }
                     else
                     {

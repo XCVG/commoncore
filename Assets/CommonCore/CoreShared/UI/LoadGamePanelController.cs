@@ -1,14 +1,10 @@
-﻿using System;
+﻿using CommonCore.State;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using CommonCore;
-using CommonCore.DebugLog;
-using CommonCore.State;
 
 namespace CommonCore.UI
 {
@@ -25,14 +21,14 @@ namespace CommonCore.UI
         public Text DetailLocation;
         public Button LoadButton;
 
-        private SaveItem[] Saves;
-        private SaveItem SelectedSave;
+        private SaveGameInfo[] Saves;
+        private int SelectedSaveIndex = -1;
 
         public override void SignalPaint()
         {
             base.SignalPaint();
 
-            SelectedSave = null;
+            SelectedSaveIndex = -1;
 
             ClearList();
             ListSaves();
@@ -56,37 +52,18 @@ namespace CommonCore.UI
             DirectoryInfo saveDInfo = new DirectoryInfo(savePath);
             FileInfo[] savesFInfo = saveDInfo.GetFiles().OrderBy(f => f.CreationTime).Reverse().ToArray();
 
-            List<SaveItem> allSaves = new List<SaveItem>(savesFInfo.Length); //we don't go straight into the array in case of invalids...
+            List<SaveGameInfo> allSaves = new List<SaveGameInfo>(savesFInfo.Length); //we don't go straight into the array in case of invalids...
 
             foreach(FileInfo saveFI in savesFInfo)
             {
                 try
                 {
-                    SaveType type = SaveType.Manual;
-                    string niceName = Path.GetFileNameWithoutExtension(saveFI.Name);
-                    if(niceName.Contains("_"))
-                    {
-                        //split nicename
-                        string[] splitName = niceName.Split('_');
-                        if(splitName.Length >= 2)
-                        {
-                            niceName = splitName[1];
-                            if (splitName[0] == "q")
-                                type = SaveType.Quick;
-                            else if (splitName[0] == "a")
-                                type = SaveType.Auto;
-                            else
-                                niceName = Path.GetFileNameWithoutExtension(saveFI.Name); //undo our oopsie if it turns out someone is trolling with prefixes
-                        }
-
-                    }
-
-                    var save = new SaveItem(niceName, saveFI.Name, type, string.Empty, saveFI.CreationTime);
+                    var save = new SaveGameInfo(saveFI);
                     allSaves.Add(save);
                 }
                 catch(Exception e)
                 {
-                    Debug.LogError("Failed to load save!" + saveFI.ToString(), this);
+                    Debug.LogError("Failed to read save! " + saveFI.ToString(), this);
                     Debug.LogException(e);
                 }
                 
@@ -108,48 +85,27 @@ namespace CommonCore.UI
 
         public void OnSaveSelected(int i, Button b)
         {
-            SelectedSave = Saves[i];
+            SelectedSaveIndex = i;
 
-            DetailName.text = SelectedSave.NiceName;
-            DetailType.text = SelectedSave.Type.ToString();
-            DetailLocation.text = SelectedSave.Location;
-            DetailDate.text = SelectedSave.Date.ToString();
+            var selectedSave = Saves[i];
+
+            //TODO read metadata, handle different save types differently
+
+            DetailName.text = selectedSave.NiceName;
+            DetailType.text = selectedSave.Type.ToString();
+            DetailLocation.text = selectedSave.Location;
+            DetailDate.text = selectedSave.Date.ToString();
 
             LoadButton.interactable = true;
         }
 
         public void OnClickLoad()
         {
-            if (SelectedSave == null)
+            if (SelectedSaveIndex < 0)
                 return;
 
-            SharedUtils.LoadGame(SelectedSave.FileName);
+            SharedUtils.LoadGame(Saves[SelectedSaveIndex].FileName);
         }
-
-        private enum SaveType
-        {
-            Manual, Quick, Auto
-        }
-
-        private class SaveItem
-        {
-            public string NiceName;
-            public string FileName;
-            public SaveType Type;
-            public string Location;
-            public DateTime Date;
-
-            public SaveItem(string niceName, string fileName, SaveType type, string location, DateTime date)
-            {
-                NiceName = niceName;
-                FileName = fileName;
-                Type = type;
-                Location = location;
-                Date = date;
-            }
-
-        }
-
 
     }
 

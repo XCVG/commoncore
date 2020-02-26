@@ -32,7 +32,7 @@ namespace CommonCore.RpgGame.State
                     result = GameState.Instance.CampaignState.HasFlag(sequenceParts[1]).ToString();
                     break;
                 case "cpv":
-                    result = GameState.Instance.CampaignState.GetVar(sequenceParts[1]);
+                    result = GameState.Instance.CampaignState.GetVar<string>(sequenceParts[1]);
                     break;
                 case "cqs":
                     result = GameState.Instance.CampaignState.GetQuestStage(sequenceParts[1]).ToString();

@@ -9,7 +9,7 @@
       "nameText": "Matsuda Toyoda",
       "next": "this.matsuda2",
       "text": "Hey, there you are! I made it into the academy, too!",
-	  "nextText": "Next!"
+      "nextText": "Next!"
     },
     "started1": {
       "type": "choice",
@@ -19,115 +19,238 @@
           "text": "I want to test the new features",
           "next": "this.newtest1"
         },
-		{
+        {
           "text": "I want to test the camera",
           "next": "this.camtest1"
         },
-		{
+        {
           "text": "I want to see if the headmaster is in",
           "next": "this.headmaster"
         },
-		{
+        {
+          "text": "I want to test the new conditionals",
+          "next": "this.ctest1"
+        },
+        {
           "text": "(LIE) They fell swiftly by the edge of my sword",
           "conditional": [
-			{
-				"next": "this.endlie1",
-				"conditions": []
-			},
+            {
+              "next": "this.endlie1",
+              "conditions": []
+            },
             {
               "next": "this.endlie2",
               "conditions": [
                 {
                   "exec": "TestScripts.LogAndReturnTrue",
-				  "arg": "asdf"
+                  "arg": "asdf"
                 }
               ]
-            }			
+            }
           ],
           "next": "this.endlie1"
         },
-		{
+        {
           "text": "I just want to know if skill checks work",
           "next": "meta.return",
-		  "skillCheck": {
-			  "checkType": "soft",
-			  "stat": "Dexterity",
-			  "greaterEqual": 5,
-			  "passNext": "this.endlie2",
-			  "failNext": "this.endlie1",
-			  "appendCheckText": true
-			}
-        },		
+          "skillCheck": {
+            "checkType": "soft",
+            "stat": "Dexterity",
+            "greaterEqual": 5,
+            "passNext": "this.endlie2",
+            "failNext": "this.endlie1",
+            "appendCheckText": true
+          }
+        },
         {
           "text": "I'm working on it",
           "next": "meta.return"
         }
       ]
-    },    
+    },
     "endlie1": {
       "type": "text",
       "text": "Didn't",
       "next": "meta.return"
     },
-	"endlie2": {
+    "endlie2": {
       "type": "text",
       "text": "Did",
       "next": "meta.return"
     },
-	"newtest1": {
+    "ctest1": {
+      "type": "text",
+      "text": "Testing if HealthFraction > 0.5",
+      "conditional": [
+        {
+          "next": "ctest2b",
+          "conditions": []
+        },
+        {
+          "next": "ctest2a",
+          "conditions": [
+            {
+              "actorvalue": "HealthFraction",
+              "greater": 0.5
+            }
+          ]
+        }
+      ]
+    },
+    "ctest2a": {
+      "type": "text",
+      "text": "HealthFraction IS greater than 0.5",
+      "next": "ctest3"
+    },
+    "ctest2b": {
+      "type": "text",
+      "text": "HealthFraction IS NOT greater than 0.5",
+      "next": "ctest3"
+    },
+    "ctest3": {
+      "type": "text",
+      "text": "Checking if TestVar is equal to 1",
+      "conditional": [
+        {
+          "next": "ctest3b",
+          "conditions": []
+        },
+        {
+          "next": "ctest3a",
+          "conditions": [
+            {
+              "variable": "TestVar",
+              "equal": 1
+            }
+          ]
+        }
+      ]
+    },
+    "ctest3a": {
+      "type": "text",
+      "text": "TestVar IS EQUAL to 1",
+      "next": "ctest4"
+    },
+    "ctest3b": {
+      "type": "text",
+      "text": "TestVar is NOT EQUAL to 1",
+      "next": "ctest4"
+    },
+    "ctest4": {
+      "type": "text",
+      "text": "Setting TestVar to 1",
+      "next": "ctest5",
+      "microscript": [
+        {
+          "variable": "TestVar",
+          "set": 1
+        }
+      ]
+    },
+    "ctest5": {
+      "type": "text",
+      "text": "TestVar has been set to 1",
+      "next": "ctest6"
+    },
+    "ctest6": {
+      "type": "text",
+      "text": "Again checking if TestVar is equal to 1",
+      "conditional": [
+        {
+          "next": "ctest6b",
+          "conditions": []
+        },
+        {
+          "next": "ctest6a",
+          "conditions": [
+            {
+              "variable": "TestVar",
+              "equal": 1
+            }
+          ]
+        }
+      ]
+    },
+    "ctest6a": {
+      "type": "text",
+      "text": "TestVar IS EQUAL TO 1",
+      "next": "ctest7"
+    },
+    "ctest6b": {
+      "type": "text",
+      "text": "TestVar IS NOT EQUAL TO 1",
+      "next": "ctest7"
+    },
+    "ctest7": {
+      "type": "text",
+      "text": "Adding 0.73 to TestVar (should equal 1.73)",
+      "next": "ctest8",
+      "microscript": [
+        {
+          "variable": "TestVar",
+          "set": 1.73
+        }
+      ]
+    },
+    "ctest8": {
+      "type": "text",
+      "text": "TestVar has been set to 1.73\nTestVar is actually <cpv:TestVar>",
+      "next": "ctest9"
+    },
+    "newtest1": {
       "type": "text",
       "image": "jen",
-	  "music": "overworld",
-	  "position": "character",
+      "music": "overworld",
+      "position": "character",
       "nameText": "New Test",
       "next": "newtest2",
       "text": "<player:name|keepcase> has <av:Health> health and <av:BaseStats.Stats.Dexterity> dexterity (<av:DerivedStats.Stats.Dexterity> dexterity with items)!\n<player:name> <player:Name> <player:NAme> <player:NAME> <PLAYER:NAME>\n<player:pronoun> <player:pronounObj> <player:pronounPosObj> <player:pronounRef> <player:pronounInt>\nFace image in character position.",
-	  "nextText": "Next!"
+      "nextText": "Next!"
     },
-	"newtest2": {
+    "newtest2": {
       "type": "text",
-	  "background": "map_library",
+      "background": "map_library",
       "image": "jen",
-	  "music": "overworld",
-	  "position": "center",
+      "music": "overworld",
+      "position": "center",
       "nameText": "Center Test",
       "next": "newtest3",
       "text": "Face image in center/default position.\n\nBackground image exists"
     },
-	"newtest3": {
+    "newtest3": {
       "type": "text",
       "image": "jen",
-	  "music": "overworld",
-	  "position": "fill",
+      "music": "overworld",
+      "position": "fill",
       "nameText": "Fill Test",
       "next": "default",
       "text": "Face image in fill position."
     },
-	"camtest1": {
+    "camtest1": {
       "type": "text",
-	  "cameraDir": "Default",
+      "cameraDir": "Default",
       "next": "this.camtest2",
       "text": "Default/no camera position"
     },
-	"camtest2": {
+    "camtest2": {
       "type": "text",
-	  "cameraDir": "Player",
+      "cameraDir": "Player",
       "next": "this.camtest3",
       "text": "Point to Player"
     },
-	"camtest3": {
+    "camtest3": {
       "type": "text",
-	  "cameraDir": "FaceTarget:npc_peasm1",
+      "cameraDir": "FaceTarget:npc_peasm1",
       "next": "this.camtest4",
       "text": "Pointing at npc_peasm1"
     },
-	"camtest4": {
+    "camtest4": {
       "type": "text",
-	  "cameraDir": "CopyTransform:PushableBox",
+      "cameraDir": "CopyTransform:PushableBox",
       "next": "default",
       "text": "Copied transform of PushableBox"
     },
-	"headmaster": {
+    "headmaster": {
       "type": "blank",
       "conditional": [
         {
@@ -144,12 +267,12 @@
         }
       ]
     },
-	"headmaster_in": {
+    "headmaster_in": {
       "title": "Zero Hayabusa Academy Offices",
       "type": "text",
       "background": "map_offices",
       "music": "overworld",
-	  "nameText": "Headmaster IS in",
+      "nameText": "Headmaster IS in",
       "text": "The Headmaster is in his office",
       "next": "meta.return"
     },
@@ -158,7 +281,7 @@
       "type": "text",
       "background": "map_offices",
       "music": "overworld",
-	  "nameText": "Headmaster NOT in",
+      "nameText": "Headmaster NOT in",
       "text": "The Headmaster is not in his office",
       "next": "meta.return"
     }

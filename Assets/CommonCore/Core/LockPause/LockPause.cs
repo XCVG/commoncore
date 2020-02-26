@@ -344,6 +344,9 @@ namespace CommonCore.LockPause
 
         public static void UnpauseGame(object token)
         {
+            if (Instance == null)
+                return; //the game is already exiting
+
             if (token is PauseLock)
                 Instance.RemovePauseLock((PauseLock)token);
             else

@@ -93,7 +93,7 @@ namespace CommonCore.RpgGame.Dialogue
             string nextText = baseFrame.NextText;
             string type = null;
             string cameraDir = baseFrame.CameraDirection;
-            FrameImagePosition position = FrameImagePosition.Center;
+            FrameImagePosition position = GameParams.UseDialoguePositionInheritance ? baseFrame.ImagePosition : FrameImagePosition.Center;
 
             if (jt["background"] != null)
                 background = jt["background"].Value<string>();
@@ -367,6 +367,10 @@ namespace CommonCore.RpgGame.Dialogue
                     option = ConditionOption.Finished;
                     optionValue = Convert.ToInt32(jt["finished"].Value<bool>());
                 }
+
+                if (!option.HasValue)
+                    throw new FormatException();
+
             }
             else if(type == ConditionType.Exec)
             {
@@ -517,7 +521,7 @@ namespace CommonCore.RpgGame.Dialogue
                 if (type == MicroscriptType.Flag) //parse as boolean
                     value = Convert.ToInt32(jt["set"].Value<bool>());
                 else //otherwise parse as number
-                    value = jt["set"].Value<int>();
+                    value = TypeUtils.StringToNumericAuto(jt["set"].Value<string>());
             }
             else if (jt["toggle"] != null)
             {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonCore.Config;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -53,7 +54,7 @@ namespace CommonCore.World
             catch(Exception e)
             {
                 Debug.LogError($"EntityPlaceholder on {gameObject.name}: Failed to spawn entity ({e.GetType().Name})");
-                if (CoreParams.UseVerboseLogging)
+                if (ConfigState.Instance.UseVerboseLogging)
                     Debug.LogException(e);
             }
 
