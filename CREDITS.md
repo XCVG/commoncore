@@ -104,6 +104,10 @@ Demo Rifle (Assets/Objects/OpenSource/rifle)
 	OrbitStudios, Fernando Ferreira :D - Low poly stylized Rifle (AK-47) [CC0/public domain]
 	https://opengameart.org/content/low-poly-stylized-rifle-ak-47
 	
+Freedoom assets (Assets/Objects/OpenSource/spriteguy, Assets/Objects/OpenSource/spriterifle, Assets/Objects/OpenSource/spritetorch)
+	Contributors to the Freedoom project
+	https://github.com/freedoom/freedoom/
+	
 ## Sounds
 
 Footsteps (Assets/Shared/Sounds/Footsteps)
@@ -156,6 +160,10 @@ Hit Indicator (Assets/Resources/DynamicSound/HitIndicator)
 	SFX: The Ultimate 2017 16 bit Mini pack
 	https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack
 	SwissArcadeGameEntertainment, licensed CC0/Public Domain
+	
+Freedoom assets (Assets/Objects/OpenSource/spriteguy, Assets/Objects/OpenSource/spriterifle, Assets/Objects/OpenSource/spritetorch)
+	Contributors to the Freedoom project
+	https://github.com/freedoom/freedoom/
 	
 
 	
