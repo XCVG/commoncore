@@ -9,13 +9,15 @@ namespace CommonCore.ObjectActions
     {
         public bool Persistent = false;
         public bool Repeatable = false;
+        [Tooltip("Set this to something unique for saving if the object isn't uniquely named")]
+        public string SaveTag = string.Empty;
 
         protected bool Triggered;
 
         public ActionSpecialEvent Special;
 
         protected virtual string LookupName { get {
-                return string.Format("{0}_{1}_{2}", gameObject.name, GetType().Name, "ActionTrigger");
+                return string.Format("{0}_{1}_{2}", gameObject.name, GetType().Name, string.IsNullOrEmpty(SaveTag) ? "ActionTrigger" : SaveTag);
             } }
 
         protected virtual void RestoreState()

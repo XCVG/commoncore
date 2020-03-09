@@ -23,7 +23,7 @@ namespace CommonCore.RpgGame.World
         public ActorInteractableComponent InteractComponent;
         //public NavMeshAgent NavComponent;
         public Transform TargetPoint;
-        public ActorAnimationComponent AnimationComponent;
+        public ActorAnimationComponentBase AnimationComponent;
         public ActorMovementComponentBase MovementComponent;
         public ActorAttackComponent AttackComponent;
         public ActorInteractionComponent InteractionComponent;
@@ -106,7 +106,7 @@ namespace CommonCore.RpgGame.World
             //TODO may remove some warnings, TODO change to Debug.Log
 
             if (AnimationComponent == null)
-                AnimationComponent = GetComponent<ActorAnimationComponent>();
+                AnimationComponent = GetComponent<ActorAnimationComponentBase>();
             if (AnimationComponent == null)
                 CDebug.LogEx(name + " couldn't find AnimationComponent", LogLevel.Warning, this);
 

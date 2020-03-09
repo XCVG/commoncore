@@ -22,6 +22,7 @@ namespace CommonCore.RpgGame.World
         public Transform WeaponBobNode;
         public Transform ShootPointNear;
         public Transform ShootPointFar;
+        public WeaponMovebobComponent MovebobComponent;
 
         [SerializeField, Header("Hands")]
         private WeaponHandModelScript Hands;
@@ -1037,15 +1038,18 @@ namespace CommonCore.RpgGame.World
             if (slot != EquipSlot.RightWeapon)
                 throw new NotImplementedException();
 
-            WeaponItemModel wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel as WeaponItemModel;
+            InventoryItemInstance item = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon];
+            WeaponItemModel wim = item.ItemModel as WeaponItemModel;
             if (wim != null && !string.IsNullOrEmpty(wim.ViewModel))
             {
 
                 var prefab = CoreUtils.LoadResource<GameObject>("WeaponViewModels/" + wim.ViewModel);
                 if (prefab != null)
                 {
-                    var go = Instantiate<GameObject>(prefab, RightViewModelPoint);
+                    var vmo = new ViewModelOptions(item, slot, this, ViewShakeScript, MovebobComponent);
+                    var go = Instantiate<GameObject>(prefab, RightViewModelPoint);                    
                     RightViewModel = go.GetComponent<WeaponViewModelScript>();
+                    RightViewModel.Options = vmo;
                 }
                 else
                 {

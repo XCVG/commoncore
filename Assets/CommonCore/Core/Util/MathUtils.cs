@@ -18,5 +18,15 @@ namespace CommonCore
             else if (val.CompareTo(max) > 0) return max;
             else return val;
         }
+
+        /// <summary>
+        /// Scales a value from an old range to a new range
+        /// </summary>
+        public static float ScaleRange(float val, float oldMin, float oldMax, float newMin, float newMax)
+        {
+            return (val / ((oldMax - oldMin) / (newMax - newMin))) + newMin;
+        }
+
+
     }
 }

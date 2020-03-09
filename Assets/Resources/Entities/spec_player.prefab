@@ -2080,11 +2080,13 @@ MonoBehaviour:
   WeaponBobNode: {fileID: 5102652345881562587}
   ShootPointNear: {fileID: 1153593174931657323}
   ShootPointFar: {fileID: 4557770027376622}
+  MovebobComponent: {fileID: 6950274804185776564}
   Hands: {fileID: 3045301259593936865}
   ViewShakeScript: {fileID: 2953231337129782815}
   RecoilFireVecFactor: 0.2
   FallbackViewModel: {fileID: 3734574598850474063}
   FallbackItemModel: fists
+  OffhandKickEnabled: 1
   OffhandKickAnimator: {fileID: 2097069516354292413}
   OffhandKickPoint: {fileID: 4916345796375513965}
   OffhandKickRange: 1.5

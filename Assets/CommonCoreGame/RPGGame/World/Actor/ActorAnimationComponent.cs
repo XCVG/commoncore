@@ -6,37 +6,19 @@ namespace CommonCore.RpgGame.World
     /// <summary>
     /// Handles the animations for an Actor
     /// </summary>
-    public class ActorAnimationComponent : MonoBehaviour //eventually we'll make an abstract class so we can swap them in and out
+    public class ActorAnimationComponent : ActorAnimationComponentBase
     {
-        //TODO custom overrides
+        //TODO custom overrides (?!)
 
         [Header("Components"), SerializeField]
         private Animator AnimController;
 
-        [SerializeField, Tooltip("You will need to set this if ActorAnimationComponent ")]
-        private ActorController ActorController;
-
         [Header("Options"), SerializeField]
         private string AttackAnimationOverride;
 
-        //TODO visibility, proxy fields and attribute spam
-        [Header("Etc")]        
-        public ActorAnimState CurrentAnimState = ActorAnimState.Idle;
-        public bool LockAnimState = false;
-
-        private void Start()
+        protected override void FindComponents()
         {
-            FindComponents();
-
-        }
-
-        private void FindComponents()
-        {
-            if (ActorController == null)
-                ActorController = GetComponent<ActorController>();
-
-            if (ActorController == null)
-                Debug.LogError($"{nameof(ActorAnimationComponent)} on {name} is missing ActorController!");
+            base.FindComponents();
 
             if (AnimController == null)
                 AnimController = GetComponentInChildren<Animator>();
@@ -45,15 +27,7 @@ namespace CommonCore.RpgGame.World
                 Debug.LogError($"{nameof(ActorAnimationComponent)} on {name} is missing Animator!");
         }
 
-        //let's go with explicit initialization
-        public void Init()
-        {
-            FindComponents();
-
-            SetAnimationForced(CurrentAnimState);
-        }
-
-        public void SetAnimation(ActorAnimState state)
+        public override void SetAnimation(ActorAnimState state)
         {
             if (LockAnimState)
                 return;
@@ -64,7 +38,7 @@ namespace CommonCore.RpgGame.World
 
         }
 
-        public void SetAnimationForced(ActorAnimState state)
+        public override void SetAnimationForced(ActorAnimState state)
         {
             if (AnimController != null)
             {
@@ -74,12 +48,10 @@ namespace CommonCore.RpgGame.World
                     stateName = AttackAnimationOverride;
 
                 AnimController.Play(stateName);
-
-                //TODO sounds, eventually
             }
         }
 
-        public void SetAnimationForced(string stateName)
+        public override void SetAnimationForced(string stateName)
         {
             if (AnimController != null)
             {

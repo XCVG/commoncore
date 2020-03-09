@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e984a0b1d0f2fad488a47273426dece0, type: 3}
+  m_Name: SSWVC
+  m_EditorClassIdentifier: 
+  Front: {fileID: 21300000, guid: 3a659b0534cec4f478757ffb75f6ce1e, type: 3}
+  FrontLeft: {fileID: 21300000, guid: b3a6f29e3735c584a9683f2202afe27d, type: 3}
+  Left: {fileID: 21300000, guid: 7a76b1b30f912ff4db065574aff6cd8f, type: 3}
+  BackLeft: {fileID: 21300000, guid: a2bbf46d1dfb9194ebff1d09019a0cb5, type: 3}
+  Back: {fileID: 21300000, guid: ca51c98d819be764da325de6206f284a, type: 3}
+  BackRight: {fileID: 0}
+  Right: {fileID: 0}
+  FrontRight: {fileID: 0}
+  MirrorBackRight: 1
+  MirrorRight: 1
+  MirrorFrontRight: 1
