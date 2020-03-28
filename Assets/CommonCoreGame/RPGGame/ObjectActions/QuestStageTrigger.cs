@@ -1,5 +1,6 @@
 ﻿using CommonCore.ObjectActions;
 using CommonCore.State;
+using UnityEngine;
 
 namespace CommonCore.RpgGame.ObjectActions
 {
@@ -9,6 +10,7 @@ namespace CommonCore.RpgGame.ObjectActions
     /// </summary>
     public class QuestStageTrigger : ActionTrigger
     {
+        [Header("Quest Stage Trigger Options")]
         public string Quest;
         public int Stage = 0;
         public QuestStageTriggerType Comparison = QuestStageTriggerType.Equal;

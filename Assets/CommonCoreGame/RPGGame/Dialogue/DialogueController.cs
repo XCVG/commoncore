@@ -250,7 +250,7 @@ namespace CommonCore.RpgGame.Dialogue
 
                         string passValue = cn.SkillCheck.CheckType == SkillCheckType.Soft ? $"{(int)(cn.SkillCheck.GetApproximatePassChance() * 100)}%" : cn.SkillCheck.Value.ToString();
 
-                        prependText = $"[{Sub.Replace(cn.SkillCheck.Target, "IGUI_AV")} {passValue}] ";
+                        prependText = $"[{Sub.Replace(cn.SkillCheck.Target, "RPG_AV")} {passValue}] ";
                     }
 
                     if(showChoice)

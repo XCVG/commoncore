@@ -27,7 +27,7 @@ namespace CommonCore.RpgGame.ObjectActions
 
         public override void Execute(ActionInvokerData data)
         {
-            if (Locked)
+            if (Locked || (!AllowInvokeWhenDisabled && !isActiveAndEnabled))
                 return;
 
             SpawnObjectEx();

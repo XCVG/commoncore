@@ -26,6 +26,8 @@ namespace CommonCore.RpgGame.World
         BaseController IHitboxComponent.ParentController => ParentController;
         int IHitboxComponent.HitLocationOverride => (int)BodyPartOverride;
         int IHitboxComponent.HitMaterial => HitMaterialResolved;
+        float IHitboxComponent.DamageMultiplier => 1;
+        bool IHitboxComponent.AllDamageIsPierce => false;
 
         void Start()
         {

@@ -158,20 +158,16 @@ namespace CommonCore.RpgGame.Rpg
                 }
                 else if (propertyName == "ExtraData")
                 {
-#if ENABLE_IL2CPP
-                    throw new NotImplementedException();
-#else
                     if(ExtraData.ContainsKey(propertyAlias))
                     {
-                        dynamic newValue = (dynamic)ExtraData[propertyAlias] + (dynamic)value;
-                        ExtraData[propertyAlias] = newValue;
+                        //dynamic newValue = (dynamic)ExtraData[propertyAlias] + (dynamic)value;
+                        //ExtraData[propertyAlias] = newValue;
+                        ExtraData[propertyAlias] = TypeUtils.AddValuesDynamic(ExtraData[propertyAlias], value, false);
                     }
                     else
                     {
                         ExtraData[propertyAlias] = value;
                     }
-                    
-#endif
                 }
             }
             else

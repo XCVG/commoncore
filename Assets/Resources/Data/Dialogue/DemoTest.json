@@ -195,7 +195,7 @@
     "ctest8": {
       "type": "text",
       "text": "TestVar has been set to 1.73\nTestVar is actually <cpv:TestVar>",
-      "next": "ctest9"
+      "next": "started1"
     },
     "newtest1": {
       "type": "text",

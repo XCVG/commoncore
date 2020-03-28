@@ -5,6 +5,8 @@ using UnityEngine;
 using CommonCore.LockPause;
 using UnityEngine.UI;
 using CommonCore.Scripting;
+using CommonCore.State;
+using CommonCore.Input;
 
 namespace CommonCore.UI
 {
@@ -92,7 +94,10 @@ namespace CommonCore.UI
 
         private void CheckMenuOpen()
         {
-            bool menuToggled = UnityEngine.Input.GetKeyDown(KeyCode.Escape);
+            if (LockPauseModule.GetInputLockState() == InputLockType.All)
+                return;
+
+            bool menuToggled = UnityEngine.Input.GetKeyDown(KeyCode.Escape) || MappedInput.GetButtonDown(Input.DefaultControls.OpenMenu);
 
             if(menuToggled)
             {
@@ -205,8 +210,7 @@ namespace CommonCore.UI
             get
             {
                 var lockState = LockPauseModule.GetInputLockState();
-                return (lockState == null || lockState.Value >= InputLockType.GameOnly);
-                //TODO allow temporary locking with a session flag or something
+                return (lockState == null || lockState.Value >= InputLockType.GameOnly) && !GameState.Instance.MenuLocked;
             }
         }
     }

@@ -190,9 +190,14 @@ namespace CommonCore.State
         public string CurrentScene { get; set; }
 
         /// <summary>
-        /// If we are allowed to save at this point
+        /// If any saving is allowed at this point
         /// </summary>
         public bool SaveLocked { get; set; }
+
+        /// <summary>
+        /// If we are allowed to manually save at this point
+        /// </summary>
+        public bool ManualSaveLocked { get; set; }
 
         /// <summary>
         /// If we are allowed to open the menu at this point

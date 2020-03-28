@@ -1,5 +1,6 @@
 ﻿using CommonCore.ObjectActions;
 using CommonCore.State;
+using UnityEngine;
 
 namespace CommonCore.RpgGame.ObjectActions
 {
@@ -8,6 +9,7 @@ namespace CommonCore.RpgGame.ObjectActions
     /// </summary>
     public class CampaignFlagTrigger : ActionTrigger
     {
+        [Header("Campaign Flag Trigger Options")]
         public string Flag;
         public bool CheckContinuous;
         public bool InvertBehaviour;

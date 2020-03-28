@@ -1,21 +1,31 @@
 {
   "IGUI": {
     "Welcome": "Bienvenue"
-  },
-  "IGUI_AV": {
-    "SecurityMechanisms": "Lockpicking",
-    "SecurityComputers": "Hacking"
-  },
+  },  
   "IGUI_SAVE": {
-	"Autosave": "Autosave",
-	"Quicksave": "Quicksave",
-	"NewSave": "New Save",
-	"SaveSuccess": "Saved Successfully",
-	"SaveSuccessMessage": "",
-	"SaveFail": "Save Failed",
-	"SaveNotAllowed": "Save Not Allowed",
-	"SaveBadFilenameMessage": "You need to enter a filename!",
-	"SaveNotAllowedMessage": "You cannot save here!"
+    "Autosave": "Autosave",
+    "Quicksave": "Quicksave",
+    "NewSave": "New Save",
+    "SaveSuccess": "Saved Successfully",
+    "SaveSuccessMessage": "",
+    "SaveFail": "Save Failed",
+    "SaveNotAllowed": "Save Not Allowed",
+    "SaveBadFilenameMessage": "You need to enter a filename!",
+    "SaveNotAllowedMessage": "You cannot save here!",
+    "ContinueNoSaveHeading": "No Save Found",
+    "ContinueNoSaveMessage": "There is no game to continue, please start a new game"
+  },
+  "CFG": {
+    "AntiAliasing0": "Off",
+    "AntiAliasing1": "FXAA",
+    "AntiAliasing2": "SMAA",
+    "AntiAliasing3": "SMAA+"
+  },
+  "CFG_MAPPERS": {
+    "UnityInputMapper":  "Unity Input"
+  },
+  "CFG_MAPPINGS": {
+    "Fire1":  "Fire"
   },
   "TEST": {}
 }

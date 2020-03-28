@@ -278,30 +278,25 @@ namespace CommonCore.RpgGame.State
                     {
                         if(GameParams.UseCampaignVarSimulatedLooseTyping)
                         {
-#if ENABLE_IL2CPP
-                            throw new NotImplementedException(); //it's probably possible at least for our edge cases, but will require much messier code
-#else
 
                             //use dynamic operator +
-                            dynamic oldVal = GameState.Instance.CampaignState.GetVar<object>(Target);
-                            dynamic newVal = oldVal + (dynamic)Value;
+                            //dynamic oldVal = GameState.Instance.CampaignState.GetVar<object>(Target);
+                            //dynamic newVal = oldVal + (dynamic)Value;
 
+                            object newVal = TypeUtils.AddValuesDynamic(GameState.Instance.CampaignState.GetVar<object>(Target), Value, false);
                             GameState.Instance.CampaignState.SetVar<object>(Target, newVal);
-#endif
+
                         }
                         else
                         {
-#if ENABLE_IL2CPP
-                            throw new NotImplementedException(); //it's probably possible at least for our edge cases, but will require much messier code
-#else
 
                             //use target value's operator +
-                            dynamic oldVal = GameState.Instance.CampaignState.GetVar<object>(Target);
-                            dynamic addedVal = TypeUtils.CoerceValue(Value, oldVal.GetType());
-                            dynamic newVal = oldVal + addedVal;
+                            //dynamic oldVal = GameState.Instance.CampaignState.GetVar<object>(Target);
+                            //dynamic addedVal = TypeUtils.CoerceValue(Value, oldVal.GetType());
+                            //dynamic newVal = oldVal + addedVal;
 
+                            object newVal = TypeUtils.AddValuesDynamic(GameState.Instance.CampaignState.GetVar<object>(Target), Value, true);
                             GameState.Instance.CampaignState.SetVar<object>(Target, newVal);
-#endif
                         }
 
                     }

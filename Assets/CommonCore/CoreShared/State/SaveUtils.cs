@@ -9,6 +9,19 @@ using UnityEngine;
 namespace CommonCore.State
 {
 
+    public class SaveNotAllowedException : Exception
+    {
+        public SaveNotAllowedException() : base("Saving is not allowed")
+        {
+
+        }
+
+        public SaveNotAllowedException(string message) : base(message)
+        {
+
+        }
+    }
+
     public enum SaveGameType
     {
         Manual, Quick, Auto
@@ -112,34 +125,80 @@ namespace CommonCore.State
             return cleanName.ToString(0, Math.Min(30, cleanName.Length));
         }
 
+        /// <summary>
+        /// Gets the last save file, or null if it doesn't exist
+        /// </summary>
+        public static string GetLastSave()
+        {
+            string savePath = CoreParams.SavePath;
+            DirectoryInfo saveDInfo = new DirectoryInfo(savePath);
+            var files = saveDInfo.GetFiles();
+
+            if (files == null || files.Length == 0)
+            {
+                return null;
+            }
+
+            FileInfo saveFInfo = files.OrderBy(f => f.CreationTime).Last();
+            if (saveFInfo != null)
+                return saveFInfo.Name;
+            else
+                return null;
+        }
+
         //all these should be "safe" (log errors instead of throwing) and check conditions themselves
 
         /// <summary>
-        /// Creates a quicksave, if allowed to do so
+        /// Creates a quicksave, if allowed to do so, displaying an indicator and suppressing exceptions
         /// </summary>
         public static void DoQuickSave()
         {
             try
-            {                
-                if (GameState.Instance.SaveLocked)
-                    return;
-
-                //quicksave format will be q_<hash>
-                //since we aren't supporting campaign-unique autosaves yet, hash will just be 0
-
-                string campaignId = "0";
-                string saveFileName = $"q_{campaignId}.json";
-                string saveFilePath = Path.Combine(CoreParams.SavePath, saveFileName);
-
-                SharedUtils.SaveGame(saveFileName, true);                
-
-                //Debug.LogWarning("Quicksave!");
-            }
-            catch(Exception e)
             {
-                Debug.LogError($"Quicksave failed! ({e.GetType().Name})");
-                Debug.LogException(e);
+                DoQuickSave(false);
+                ShowSaveIndicator(SaveStatus.Success);
             }
+            catch (Exception e)
+            {
+                if (e is SaveNotAllowedException)
+                {
+                    Debug.Log("Quicksave failed: save not allowed");
+                    ShowSaveIndicator(SaveStatus.Blocked);
+                }
+                else
+                {
+                    Debug.LogError($"An error occurred during the quicksave process ({e.GetType().Name})");
+                    Debug.LogException(e);
+                    ShowSaveIndicator(SaveStatus.Error);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Creates a quicksave
+        /// </summary>
+        public static void DoQuickSave(bool force)
+        {
+
+            if (!CoreParams.AllowSaveLoad)
+                throw new NotSupportedException();
+
+            if(!force && (GameState.Instance.SaveLocked || GameState.Instance.ManualSaveLocked || !CoreParams.AllowManualSave))
+                    throw new SaveNotAllowedException();
+
+            //quicksave format will be q_<hash>
+            //since we aren't supporting campaign-unique autosaves yet, hash will just be 0
+
+            string campaignId = "0";
+            string saveFileName = $"q_{campaignId}.json";
+            //string saveFilePath = Path.Combine(CoreParams.SavePath, saveFileName);
+
+            SharedUtils.SaveGame(saveFileName, true);
+
+            Debug.Log($"Quicksave complete ({saveFileName})");
+
+            //Debug.LogWarning("Quicksave!");
+
         }
 
         /// <summary>
@@ -149,6 +208,9 @@ namespace CommonCore.State
         {
             try
             {
+                if (!CoreParams.AllowSaveLoad)
+                    return;
+
                 //quicksave format will be q_<hash>
                 //since we aren't supporting campaign-unique autosaves yet, hash will just be 0
 
@@ -163,6 +225,7 @@ namespace CommonCore.State
                 else
                 {
                     Debug.Log("Quickload failed (doesn't exist)");
+                    ShowSaveIndicator(SaveStatus.LoadMissing);
                 }
                 
             }
@@ -170,15 +233,36 @@ namespace CommonCore.State
             {
                 Debug.LogError($"Quickload failed! ({e.GetType().Name})");
                 Debug.LogException(e);
+                ShowSaveIndicator(SaveStatus.LoadError);
             }
         }
 
         /// <summary>
-        /// Creates an autosave, if allowed to do so
+        /// Creates an autosave, if allowed to do so, displaying an indicator and suppressing exceptions
         /// </summary>
         public static void DoAutoSave()
         {
-            DoAutoSave(false);
+            try
+            {
+                DoAutoSave(false);
+
+                ShowSaveIndicator(SaveStatus.Success);
+
+            }
+            catch (Exception e)
+            {
+                if (e is SaveNotAllowedException)
+                {
+                    Debug.Log("Autosave failed: save not allowed");
+                    ShowSaveIndicator(SaveStatus.Blocked);
+                }
+                else
+                {
+                    Debug.LogError($"An error occurred during the autosave process ({e.GetType().Name})");
+                    Debug.LogException(e);
+                    ShowSaveIndicator(SaveStatus.Error);
+                }
+            }
         }
 
         /// <summary>
@@ -186,70 +270,90 @@ namespace CommonCore.State
         /// </summary>
         public static void DoAutoSave(bool force)
         {
-            try
+            if (!CoreParams.AllowSaveLoad)
             {
-                if (GameState.Instance.SaveLocked && !force)
-                    return; //don't autosave if we're not allowed to
+                if (force) //you are not allowed to force a save if it's globally disabled; the assumption is that if it's globally disabled, it won't work at all
+                    throw new NotSupportedException("Save/Load is disabled in core params!");
 
-                if (ConfigState.Instance.AutosaveCount <= 0 && !force)
-                    return; //don't autosave if we've disabled it
-
-                //autosave format will be a_<hash>_<index>
-                //since we aren't supporting campaign-unique autosaves, yet, hash will just be 0
-                string campaignId = "0";
-                string filterString = $"a_{campaignId}_";
-
-                string savePath = CoreParams.SavePath;
-                DirectoryInfo saveDInfo = new DirectoryInfo(savePath);
-                FileInfo[] savesFInfo = saveDInfo.GetFiles().Where(f => f.Name.StartsWith(filterString)).OrderBy(f => f.Name).Reverse().ToArray();
-
-                //Debug.Log(savesFInfo.Select(f => f.Name).ToNiceString());
-
-                int highestSaveId = 1;
-                foreach(var saveFI in savesFInfo)
-                {
-                    try
-                    {
-                        var nameParts = Path.GetFileNameWithoutExtension(saveFI.Name).Split('_');
-                        int saveId = int.Parse(nameParts[2]);
-                        if (saveId > highestSaveId)
-                            highestSaveId = saveId;
-                    }
-                    catch(Exception)
-                    {
-                        Debug.LogError($"Found an invalid save file: {saveFI.Name}");
-                    }
-                }
-
-                //save this autosave
-                string newSaveName = $"a_{campaignId}_{highestSaveId + 1}.json";
-                SharedUtils.SaveGame(newSaveName, false);
-
-                //remove old autosaves
-                int numAutosaves = savesFInfo.Length + 1;
-                for(int i = savesFInfo.Length - 1; i >= 0 && numAutosaves > ConfigState.Instance.AutosaveCount; i--)
-                {
-                    var saveFI = savesFInfo[i];
-                    try
-                    {
-                        File.Delete(Path.Combine(CoreParams.SavePath, saveFI.Name));
-                        numAutosaves--;
-                    }
-                    catch(Exception)
-                    {
-                        Debug.LogError($"Failed to delete save file: {saveFI.Name}");
-                    }
-                }
-
-                Debug.Log($"Autosave complete ({newSaveName})"); //TODO autosave indication
+                throw new SaveNotAllowedException();
             }
-            catch(Exception e)
+
+            if (GameState.Instance.SaveLocked && !force)
+                throw new SaveNotAllowedException(); //don't autosave if we're not allowed to
+
+            if (ConfigState.Instance.AutosaveCount <= 0 && !force)
+                throw new SaveNotAllowedException(); //don't autosave if we've disabled it
+
+            //autosave format will be a_<hash>_<index>
+            //since we aren't supporting campaign-unique autosaves, yet, hash will just be 0
+            string campaignId = "0";
+            string filterString = $"a_{campaignId}_";
+
+            string savePath = CoreParams.SavePath;
+            DirectoryInfo saveDInfo = new DirectoryInfo(savePath);
+            FileInfo[] savesFInfo = saveDInfo.GetFiles().Where(f => f.Name.StartsWith(filterString)).OrderBy(f => f.Name).Reverse().ToArray();
+
+            //Debug.Log(savesFInfo.Select(f => f.Name).ToNiceString());
+
+            int highestSaveId = 1;
+            foreach(var saveFI in savesFInfo)
             {
-                Debug.LogError($"An error occurred during the autosave process ({e.GetType().Name})");
-                Debug.LogException(e);
+                try
+                {
+                    var nameParts = Path.GetFileNameWithoutExtension(saveFI.Name).Split('_');
+                    int saveId = int.Parse(nameParts[2]);
+                    if (saveId > highestSaveId)
+                        highestSaveId = saveId;
+                }
+                catch(Exception)
+                {
+                    Debug.LogError($"Found an invalid save file: {saveFI.Name}");
+                }
             }
+
+            //save this autosave
+            string newSaveName = $"a_{campaignId}_{highestSaveId + 1}.json";
+            SharedUtils.SaveGame(newSaveName, false);
+
+            //remove old autosaves
+            int numAutosaves = savesFInfo.Length + 1;
+            for(int i = savesFInfo.Length - 1; i >= 0 && numAutosaves > ConfigState.Instance.AutosaveCount; i--)
+            {
+                var saveFI = savesFInfo[i];
+                try
+                {
+                    File.Delete(Path.Combine(CoreParams.SavePath, saveFI.Name));
+                    numAutosaves--;
+                }
+                catch(Exception)
+                {
+                    Debug.LogError($"Failed to delete save file: {saveFI.Name}");
+                }
+            }
+
+            Debug.Log($"Autosave complete ({newSaveName})");
+
         }
 
+        private enum SaveStatus
+        {
+            Undefined, Success, Error, Blocked, LoadError, LoadMissing
+        }
+
+        private static void ShowSaveIndicator(SaveStatus status)
+        {
+            string path = $"UI/SaveIndicators/SaveIndicator{status.ToString()}";
+            var prefab = CoreUtils.LoadResource<GameObject>(path);
+            if(prefab != null)
+            {
+                UnityEngine.Object.Instantiate(prefab);
+            }
+            else
+            {
+                if (ConfigState.Instance.UseVerboseLogging)
+                    Debug.LogWarning($"{nameof(ShowSaveIndicator)} couldn't find prefab for \"{path}\"");
+            }
+        }
 
     }
 

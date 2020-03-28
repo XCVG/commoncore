@@ -85,6 +85,9 @@ namespace CommonCore
         /// <param name="saveName">The name of the save file, with prefix and extension but without path</param>
         public static void LoadGame(string saveName)
         {
+            if (!CoreParams.AllowSaveLoad)
+                throw new NotSupportedException("Save/Load is disabled in core params!");
+
             MetaState.Instance.Clear();
             MetaState mgs = MetaState.Instance;
             mgs.LoadSave = saveName;
@@ -100,6 +103,9 @@ namespace CommonCore
         /// <param name="commit">Whether to commit or not</param>
         public static void SaveGame(string saveName, bool commit)
         {
+            if (!CoreParams.AllowSaveLoad)
+                throw new NotSupportedException("Save/Load is disabled in core params!");
+
             string savePath = CoreParams.SavePath + @"\" + saveName;
             if(commit)
                 BaseSceneController.Current.Commit();

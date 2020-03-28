@@ -48,7 +48,7 @@ namespace CommonCore.UI
 
         private void SetButtonVisibility()
         {
-            if(GameState.Instance.SaveLocked)
+            if(GameState.Instance.SaveLocked || GameState.Instance.ManualSaveLocked)
             {
                 SaveButton.interactable = false;
             }
@@ -160,7 +160,7 @@ namespace CommonCore.UI
 
             //otherwise save over old save
 
-            if (!GameState.Instance.SaveLocked)
+            if (!GameState.Instance.SaveLocked && !GameState.Instance.ManualSaveLocked)
             {
                 string saveName = SaveNameField.text;
                 string saveFileName;

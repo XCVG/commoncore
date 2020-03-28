@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Scripting;
 
 namespace CommonCore.Scripting
 {
@@ -9,7 +10,7 @@ namespace CommonCore.Scripting
     /// Attach to a method to register it with the scripting system
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class CCScriptAttribute : Attribute
+    public class CCScriptAttribute : PreserveAttribute
     {
         public string Name { get; set; }
         public string ClassName { get; set; }

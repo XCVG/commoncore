@@ -44,6 +44,7 @@ namespace CommonCore.Console
         {
             Type[] possibleConsoles = CCBase.BaseGameTypes
                 .Where((type) => type.GetInterfaces().Contains(typeof(IConsole)))
+                .Where((type) => type != typeof(DummyCommandConsoleImplementation))
                 .ToArray();
 
             Log(possibleConsoles.ToNiceString(t => t.Name));
@@ -56,6 +57,8 @@ namespace CommonCore.Console
             {
                 if (possibleConsoles.Length > 0)
                     preferredConsole = possibleConsoles[0];
+                else
+                    preferredConsole = typeof(DummyCommandConsoleImplementation);
             }
 
             if (preferredConsole != null)
@@ -63,7 +66,7 @@ namespace CommonCore.Console
                 Console = (IConsole)Activator.CreateInstance(preferredConsole);
 
                 Log($"Using {preferredConsole.Name} console implementation");
-            }                      
+            }
 
         }
 

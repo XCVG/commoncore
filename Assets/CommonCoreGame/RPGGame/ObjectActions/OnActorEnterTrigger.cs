@@ -11,7 +11,7 @@ namespace CommonCore.RpgGame.ObjectActions
     /// </summary>
     public class OnActorEnterTrigger : ActionTrigger
     {
-
+        [Header("On Actor Enter Options")]
         public bool OnPlayerOnly = true;
         public bool OnActorsOnly = true;
 

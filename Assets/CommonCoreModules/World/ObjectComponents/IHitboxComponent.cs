@@ -10,5 +10,7 @@
         BaseController ParentController { get; }
         int HitLocationOverride { get; }
         int HitMaterial { get; }
+        float DamageMultiplier { get; }
+        bool AllDamageIsPierce { get; }
     }
 }

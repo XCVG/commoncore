@@ -247,7 +247,8 @@ MonoBehaviour:
   LoadPanel: {fileID: 1611655180659944}
   SavePanel: {fileID: 1821016168110670}
   ConfigPanel: {fileID: 1741768438214863197}
-  SaveInputField: {fileID: 114113923845712494}
+  SaveButton: {fileID: 114871560601030346}
+  LoadButton: {fileID: 114667931422099482}
 --- !u!1 &1310448427662460
 GameObject:
   m_ObjectHideFlags: 0
@@ -2288,18 +2289,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 4624676293029203764}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &114113923845712494 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4736463647378957658, guid: c532c62e97389104b915b580326b61bc,
-    type: 3}
-  m_PrefabInstance: {fileID: 4624676293029203764}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 575553740, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &5177849635449485543
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 ﻿using CommonCore.DebugLog;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -61,6 +62,25 @@ namespace CommonCore.Config
         private ConfigState()
         {
 
+        }
+
+        /// <summary>
+        /// Checks if a custom config flag is set
+        /// </summary>
+        public bool HasCustomFlag(string flag)
+        {
+            return CustomConfigFlags.Contains(flag);
+        }
+
+        /// <summary>
+        /// Sets/unsets a custom config flag
+        /// </summary>
+        public void SetCustomFlag(string flag, bool state)
+        {
+            if (!state && CustomConfigFlags.Contains(flag))
+                CustomConfigFlags.Remove(flag);
+            else if (state && !CustomConfigFlags.Contains(flag))
+                CustomConfigFlags.Add(flag);
         }
 
         /// <summary>
@@ -137,17 +157,21 @@ namespace CommonCore.Config
         //AUDIO CONFIG
         public float MusicVolume { get; set; } = 0.8f;
         public float SoundVolume { get; set; } = 0.8f;
-        public AudioSpeakerMode SpeakerMode { get; set; }
+        public AudioSpeakerMode SpeakerMode { get; set; } = AudioSpeakerMode.Stereo; //safe default on all platforms
 
         //VIDEO CONFIG
         [JsonIgnore]
         public bool UseCustomVideoSettings => (QualitySettings.GetQualityLevel() >= QualitySettings.names.Length - 1);
+        public Vector2Int Resolution { get; set; } = new Vector2Int(1920, 1080);
+        public int RefreshRate { get; set; } = 60;
+        public bool FullScreen { get; set; } = false;
         public int MaxFrames { get; set; } = -1;
         public int VsyncCount { get; set; } = 0;
         public int AntialiasingQuality { get; set; } = 1;
         public float ViewDistance { get; set; } = 1000.0f;
         public bool ShowFps { get; set; } = false;
         public float EffectDwellTime { get; set; } = 30;
+        public float FieldOfView { get; set; } = 60;
 
         //VIDEO CONFIG (EXTENDED)
         public QualityLevel ShadowQuality { get; set; } = QualityLevel.Medium;
@@ -176,10 +200,89 @@ namespace CommonCore.Config
         public KeyCode QuickloadKey { get; set; } = KeyCode.F9;
 
         //EXTRA/GAME-SPECIFIC CONFIG
-        public HashSet<string> CustomConfigFlags { get; private set; } = new HashSet<string>();
-        [JsonProperty(ItemTypeNameHandling = TypeNameHandling.All)]
+        public HashSet<string> CustomConfigFlags { get; private set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        [JsonIgnore]
         public Dictionary<string, object> CustomConfigVars { get; private set; } = new Dictionary<string, object>(); //note that serialization/deserialization can explode in edge cases
+        [JsonIgnore]
+        private Dictionary<string, JToken> UnparseableConfigVars { get; set; } = new Dictionary<string, JToken>(); //used to preserve unparseable config vars when loading config
 
+        //this bit of hackery lets us preserve unparseable/broken data in the config.json file
+        [JsonProperty(PropertyName = nameof(CustomConfigVars))]
+        private JToken CustomConfigVarsSerializable
+        {
+            get
+            {
+                JObject jo = new JObject();
+                foreach(KeyValuePair<string, object> kvp in CustomConfigVars)
+                {
+                    if (kvp.Value == null)
+                        continue;
+
+                    JObject subObject = JObject.FromObject(kvp.Value);
+                    var type = kvp.Value.GetType();
+                    subObject.AddFirst(new JProperty("$type", string.Format("{0}, {1}", type.ToString(), type.Assembly.GetName().Name)));
+                    jo.Add(kvp.Key, subObject);
+                }
+                foreach(KeyValuePair<string, JToken> kvp in UnparseableConfigVars)
+                {
+                    //we may end up with duplicates in rare edge cases
+                    if(!jo.ContainsKey(kvp.Key))
+                        jo.Add(kvp.Key, kvp.Value);
+                    else
+                    {
+                        int id = 1;
+                        string name = $"{kvp.Key}_{id}";
+                        while(jo.ContainsKey(name))
+                        {
+                            id++;
+                            name = $"{kvp.Key}_{id}";
+                        }
+                        jo.Add(name, kvp.Value);
+                    }
+                }
+                return jo;
+            }
+            set
+            {
+                var jo = value as JObject;
+                foreach(KeyValuePair<string, JToken> kvp in jo)
+                {
+                    JToken item = kvp.Value;
+                    if (item.IsNullOrEmpty())
+                        continue;
+
+                    try
+                    {
+                        if (item["$type"] == null || string.IsNullOrEmpty(item["$type"].Value<string>()))
+                        {
+                            //can't get type, add as unparseable
+                            Debug.LogWarning($"[Config] Can't parse custom config node {kvp.Key} because no type information is provided");
+                            UnparseableConfigVars.Add(kvp.Key, item);
+                            continue;
+                        }
+
+                        var type = Type.GetType(item["$type"].Value<string>());
+                        if (type == null)
+                        {
+                            //can't find type, add as unparseable
+                            Debug.LogWarning($"[Config] Can't parse custom config node {kvp.Key} because type \"{type}\" could not be found");
+                            UnparseableConfigVars.Add(kvp.Key, item);
+                            continue;
+                        }
+
+                        CustomConfigVars[kvp.Key] = item.ToObject(type);
+                    }
+                    catch(Exception e)
+                    {
+                        //failed somewhere, add as unparseable
+                        Debug.LogWarning($"[Config] Can't parse custom config node {kvp.Key} because of an error ({e.GetType().Name})");
+                        UnparseableConfigVars[kvp.Key] = item;
+                        if (CoreParams.IsDebug)
+                            Debug.LogException(e);
+                    }
+                }
+            }
+        }
     }
 
 

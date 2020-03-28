@@ -17,6 +17,10 @@ namespace CommonCore.World
         private int HitLocationOverride = 0;
         [SerializeField, Tooltip("This should correspond to a hit material type you have specified. Use 0 for no override")]
         private int HitMaterialOverride = 0;
+        [SerializeField, Tooltip("This will directly affect the amount of damage taken")]
+        private float DamageMultiplier = 1;
+        [SerializeField, Tooltip("Damage will be added to DamagePierce and zeroed. Use to simulate unarmored parts")]
+        private bool AllDamageIsPierce = false;
 
         //uses the parent controller's hit material if this doesn't have an override
         private int HitMaterial => HitMaterialOverride == 0 ? ParentController.HitMaterial : HitMaterialOverride;
@@ -25,6 +29,8 @@ namespace CommonCore.World
         BaseController IHitboxComponent.ParentController => ParentController;
         int IHitboxComponent.HitLocationOverride => HitLocationOverride;
         int IHitboxComponent.HitMaterial => HitMaterial;
+        float IHitboxComponent.DamageMultiplier => DamageMultiplier;
+        bool IHitboxComponent.AllDamageIsPierce => AllDamageIsPierce;
 
         void Start()
         {

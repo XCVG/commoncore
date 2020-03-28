@@ -110,11 +110,16 @@ namespace CommonCore.RpgGame.Rpg
         public static float DamageTaken(float damage, float pierce, float threshold, float resistance) //this is a dumb spot and we will move it later
         {
             float d1 = damage * ((100f - Mathf.Min(resistance, 99f)) / 100f);
-            float dt = Mathf.Max(0, threshold - pierce);
+            float dt = Mathf.Max(0, threshold); //threshold-pierce
             float d2 = Mathf.Max(d1 - dt, damage * 0.1f);
+            float dp = pierce;
             if (GameParams.UseRandomDamage)
-                d2 *= UnityEngine.Random.Range(0.75f, 1.25f);
-            return d2;
+            {
+                float dRand = UnityEngine.Random.Range(0.75f, 1.25f);
+                d2 *= dRand;
+                dp *= dRand;
+            }
+            return d2 + dp;
         }
 
         /// <summary>

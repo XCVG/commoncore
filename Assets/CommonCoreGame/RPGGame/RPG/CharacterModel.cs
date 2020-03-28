@@ -418,7 +418,7 @@ namespace CommonCore.RpgGame.Rpg
             if (Experience >= RpgValues.XPToNext(Level))
             {
                 QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgLevelUp"));
-                QdmsMessageBus.Instance.PushBroadcast(new HUDPushMessage("<l:IGUI_MESSAGE:LevelUp>"));
+                QdmsMessageBus.Instance.PushBroadcast(new HUDPushMessage("<l:RPG_MESSAGE:LevelUp>"));
             }
         }
 

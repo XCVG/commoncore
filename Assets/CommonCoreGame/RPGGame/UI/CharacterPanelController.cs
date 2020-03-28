@@ -15,7 +15,7 @@ namespace CommonCore.RpgGame.UI
 
     public class CharacterPanelController : PanelController
     {
-        private const string SubList = "IGUI_AV";
+        private const string SubList = "RPG_AV";
 
         public Text StatsText;
         public Text ConditionsText;

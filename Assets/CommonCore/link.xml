@@ -1,0 +1,5 @@
+<linker>
+    <assembly fullname="CommonCore.Core" preserve="all"/>
+	<assembly fullname="Assembly-CSharp" preserve="all"/>
+	<assembly fullname="Assembly-CSharp-firstpass" preserve="all" ignoreIfMissing="true"/>
+</linker>

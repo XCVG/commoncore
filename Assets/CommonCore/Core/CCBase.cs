@@ -159,7 +159,7 @@ namespace CommonCore
             sb.AppendLine("----------------------------------------");
             sb.AppendFormat("{1} v{3} {4} by {0} (appversion: {2})\n", Application.companyName, Application.productName, Application.version, Application.version, CoreParams.GameVersionName);
             sb.AppendFormat("CommonCore {0} {1}\n", CoreParams.VersionCode.ToString(), CoreParams.VersionName);
-            sb.AppendFormat("Unity {0} [{3} | {1} on {2}]\n", Application.unityVersion, Application.platform, SystemInfo.operatingSystem, SystemInfo.graphicsDeviceType);
+            sb.AppendFormat("Unity {0} [{3} | {1} on {2}] [{4}]\n", Application.unityVersion, Application.platform, SystemInfo.operatingSystem, SystemInfo.graphicsDeviceType, CoreParams.ScriptingBackend);
             if (CoreParams.IsDebug)
                 sb.AppendLine("[DEBUG MODE]");
             sb.AppendLine(Environment.CommandLine);

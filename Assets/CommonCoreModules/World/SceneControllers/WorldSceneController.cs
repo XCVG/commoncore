@@ -14,7 +14,6 @@ namespace CommonCore.World
     {
         public bool AllowQuicksave = true;
         public bool AutoGameover = true;
-        public bool Autoload = true;
         public string SetMusic;
         public Bounds WorldBounds = new Bounds(Vector3.zero, new Vector3(2000f, 2000f, 1000f));
 
@@ -22,6 +21,7 @@ namespace CommonCore.World
 
         protected override bool DeferAfterSceneLoadToSubclass => true;
         protected override bool DeferEnterAutosaveToSubclass => true;
+        protected override bool DeferInitialRestoreToSubclass => true;
         protected override bool AllowQuicksaveInScene => AllowQuicksave;
 
         public override void Awake()
@@ -37,7 +37,7 @@ namespace CommonCore.World
         {
             base.Start();
             Debug.Log("World Scene Controller Start");
-            if(Autoload)
+            if(AutoRestore)
             {
                 MetaState.Instance.IntentsExecutePreload();
                 Restore();

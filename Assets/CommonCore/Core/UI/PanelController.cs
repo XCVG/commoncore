@@ -34,7 +34,17 @@ namespace CommonCore.UI
         private void OnDisable()
         {
             if (HookupUnityEvents)
+            {
                 SignalUnpaint();
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if(HookupUnityEvents)
+            {
+                SignalFinalUnpaint();
+            }
         }
 
         /// <summary>
@@ -57,6 +67,14 @@ namespace CommonCore.UI
         /// Called just before the panel is hidden
         /// </summary>
         public virtual void SignalUnpaint()
+        {
+
+        }
+
+        /// <summary>
+        /// Called just before the panel is destroyed
+        /// </summary>
+        public virtual void SignalFinalUnpaint()
         {
 
         }

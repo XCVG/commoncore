@@ -1,0 +1,159 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4230617186317536613
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4230617186317536612}
+  m_Layer: 5
+  m_Name: HelpPanelContents
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &4230617186317536612
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4230617186317536613}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4230617187209603864}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &4230617187209603865
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4230617187209603864}
+  - component: {fileID: 4230617187209603866}
+  - component: {fileID: 4230617187209603867}
+  m_Layer: 5
+  m_Name: Text
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &4230617187209603864
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4230617187209603865}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4230617186317536612}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -112, y: 0}
+  m_SizeDelta: {x: -288, y: -64}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &4230617187209603866
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4230617187209603865}
+  m_CullTransparentMesh: 0
+--- !u!114 &4230617187209603867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4230617187209603865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: f6d4612d4d4efc84a8166dfaeb27697b, type: 3}
+    m_FontSize: 18
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 1
+    m_MaxSize: 40
+    m_Alignment: 0
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas justo
+    ligula, egestas eu facilisis eleifend, sollicitudin a libero. Etiam condimentum
+    velit aliquet, consectetur ligula blandit, ultrices leo. Proin malesuada risus
+    at orci auctor, eget auctor velit congue. Nunc mollis ut augue posuere fringilla.
+    Nulla ultricies a mi vel ultricies. Interdum et malesuada fames ac ante ipsum
+    primis in faucibus. Mauris eu nibh libero. Mauris non tincidunt nisl. Donec auctor
+    tristique ex, quis laoreet justo. Pellentesque eu urna risus. Sed scelerisque
+    risus sit amet metus gravida, sit amet facilisis eros commodo.\r\n\r\nEtiam placerat
+    dictum orci, vitae euismod tellus dapibus vitae. Donec id diam in diam ullamcorper
+    porttitor eu eget nunc. Phasellus a tellus neque. Cras et tortor sed diam consectetur
+    dictum. Sed sodales odio ut consequat rutrum. Orci varius natoque penatibus et
+    magnis dis parturient montes, nascetur ridiculus mus. Mauris non sapien vitae
+    augue porta blandit. Phasellus facilisis hendrerit purus, ac cursus sem ultricies
+    vel. Donec imperdiet tortor ut finibus condimentum. Suspendisse malesuada nulla
+    non sapien fringilla interdum. Curabitur a maximus diam. Donec ultricies justo
+    eros, in volutpat purus varius sit amet. Phasellus vitae tellus eu nibh convallis
+    vulputate. Aenean tortor mauris, mollis id tempor id, ultrices non neque. Mauris
+    nec orci placerat, vehicula orci sit amet, blandit libero.\r\n\r\nIn non risus
+    lectus. Proin nec urna ultrices, pellentesque eros vel, porta dui. Vestibulum
+    fermentum eget tortor at congue. Integer id pretium massa, a venenatis nibh. Pellentesque
+    iaculis leo ut risus blandit, nec molestie purus convallis. Vivamus purus lectus,
+    rhoncus id tempus vel, sagittis id lectus. Nam cursus lorem odio, accumsan lacinia
+    massa aliquam eu. Donec a orci dignissim, egestas massa ac, condimentum dui. Sed
+    quis gravida erat, vel aliquet sapien. Mauris vehicula justo a risus facilisis,
+    non sodales lacus mattis. Integer elementum semper ex, ac accumsan elit volutpat
+    in. Nulla facilisis nulla in tortor malesuada mattis. Phasellus massa quam, congue
+    vitae bibendum vitae, ullamcorper quis nibh. Maecenas dapibus sapien eget ante
+    ornare congue vitae eu augue. Cras diam odio, hendrerit non nulla ac, convallis
+    tincidunt magna. Sed consectetur tempus porttitor.\r\n\r\nProin a dictum nisl.
+    Cras bibendum a purus vel malesuada. Fusce consequat consequat augue, vel auctor
+    odio tristique id. Cras vitae vehicula metus. Donec iaculis placerat ultricies.
+    In augue lorem, scelerisque vel lectus vehicula, fermentum rutrum odio. Nunc accumsan,
+    enim sed imperdiet mollis, tellus justo finibus purus, vitae dapibus dolor ante
+    a leo. Proin justo augue, iaculis a condimentum in, eleifend quis tortor. Fusce
+    eleifend ac neque et blandit. Morbi porta nisl eget ligula finibus dapibus. Integer
+    quis ipsum magna. Mauris mauris ex, faucibus nec dui ac, hendrerit ultrices nibh.
+    Etiam metus velit, gravida ut dolor eu, mollis rhoncus dolor. Donec porta malesuada
+    lectus, quis sagittis arcu ultrices at.\r\n\r\nFusce dignissim quis tortor vehicula
+    interdum. Fusce elit turpis, aliquet ut magna id, posuere pretium urna. Donec
+    risus nunc, vehicula eget sagittis non, vestibulum vitae metus. Curabitur quis
+    fringilla erat. Duis dictum leo ut mi molestie, tristique hendrerit nisl tristique.
+    Vivamus accumsan mauris a tellus maximus viverra. Aenean sit amet lobortis augue,
+    in euismod lorem. Nam accumsan sem a dolor commodo malesuada. Cras commodo commodo
+    lectus egestas hendrerit. Vestibulum ante ipsum primis in faucibus orci luctus
+    et ultrices posuere cubilia Curae; "

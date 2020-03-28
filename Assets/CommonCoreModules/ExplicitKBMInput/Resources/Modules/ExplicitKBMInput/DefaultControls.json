@@ -1,0 +1,142 @@
+{
+  "AxisMappings": {
+        "NavigateX": {
+          "PrimaryPositive": 275,
+          "PrimaryNegative": 276,
+          "SecondaryPositive": 100,
+          "SecondaryNegative": 97,
+          "MouseAxis": 0,
+          "InvertMouse": false
+        },
+        "NavigateY": {
+          "PrimaryPositive": 273,
+          "PrimaryNegative": 274,
+          "SecondaryPositive": 119,
+          "SecondaryNegative": 115,
+          "MouseAxis": 0,
+          "InvertMouse": false
+        },
+        "Horizontal": {
+          "PrimaryPositive": 275,
+          "PrimaryNegative": 276,
+          "SecondaryPositive": 100,
+          "SecondaryNegative": 97,
+          "MouseAxis": 0,
+          "InvertMouse": false
+        },
+        "Vertical": {
+          "PrimaryPositive": 273,
+          "PrimaryNegative": 274,
+          "SecondaryPositive": 119,
+          "SecondaryNegative": 115,
+          "MouseAxis": 0,
+          "InvertMouse": false
+        },
+        "LookX": {
+          "PrimaryPositive": 0,
+          "PrimaryNegative": 0,
+          "SecondaryPositive": 0,
+          "SecondaryNegative": 0,
+          "MouseAxis": 1,
+          "InvertMouse": false
+        },
+        "LookY": {
+          "PrimaryPositive": 0,
+          "PrimaryNegative": 0,
+          "SecondaryPositive": 0,
+          "SecondaryNegative": 0,
+          "MouseAxis": 2,
+          "InvertMouse": false
+        }
+      },
+      "ButtonMappings": {
+        "Submit": {
+          "Primary": 13,
+          "Secondary": 32,
+          "Tertiary": 101
+        },
+        "Cancel": {
+          "Primary": 27,
+          "Secondary": 8,
+          "Tertiary": 0
+        },
+        "Jump": {
+          "Primary": 32,
+          "Secondary": 0,
+          "Tertiary": 0
+        },
+        "Run": {
+          "Primary": 304,
+          "Secondary": 0,
+          "Tertiary": 0
+        },
+        "Crouch": {
+          "Primary": 99,
+          "Secondary": 0,
+          "Tertiary": 0
+        },
+        "Fire1": {
+          "Primary": 323,
+          "Secondary": 306,
+          "Tertiary": 0
+        },
+        "Fire2": {
+          "Primary": 324,
+          "Secondary": 0,
+          "Tertiary": 0
+        },
+        "Fire3": {
+          "Primary": 325,
+          "Secondary": 0,
+          "Tertiary": 0
+        },
+        "Reload": {
+          "Primary": 114,
+          "Secondary": 0,
+          "Tertiary": 0
+        },
+        "Use": {
+          "Primary": 101,
+          "Secondary": 0,
+          "Tertiary": 0
+        },
+        "Use2": {
+          "Primary": 0,
+          "Secondary": 0,
+          "Tertiary": 0
+        },
+        "Offhand1": {
+          "Primary": 122,
+          "Secondary": 0,
+          "Tertiary": 0
+        },
+        "Offhand2": {
+          "Primary": 0,
+          "Secondary": 0,
+          "Tertiary": 0
+        },
+        "OpenMenu": {
+          "Primary": 0,
+          "Secondary": 0,
+          "Tertiary": 0
+        },
+        "OpenFastMenu": {
+          "Primary": 0,
+          "Secondary": 0,
+          "Tertiary": 0
+        },
+        "ChangeView": {
+          "Primary": 0,
+          "Secondary": 0,
+          "Tertiary": 0
+        },
+        "Confirm": {
+          "Primary": 13,
+          "Secondary": 0,
+          "Tertiary": 0
+        }
+      },
+      "MouseXSensitivity": 1.0,
+      "MouseYSensitivity": 1.0,
+      "MouseScrollSensitivity": 1.0
+}

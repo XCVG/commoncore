@@ -61,13 +61,27 @@ namespace CommonCore.World
 
             //find closest hit
             //var (otherController, hitPoint, hitLocation, hitMaterial) = GetClosestHit(hits);
-            var (otherController, hitPoint, hitLocation, hitMaterial) = WorldUtils.RaycastAttackHit(transform.position, forward, maxDistance, true, true, null);
+            var hit = WorldUtils.RaycastAttackHit(transform.position, forward, maxDistance, true, true, null);
 
-            if (otherController != null && otherController != HitInfo.Originator)
+            if (hit.Controller != null && hit.Controller != HitInfo.Originator)
             {
                 //Debug.Log("Bullet hit " + otherController.name + " via raycast!");
 
-                HandleCollision(otherController, hitLocation, hitMaterial, hitPoint);
+                float damageMultiplier;
+                bool allDamageIsPierce;
+                if(hit.Hitbox != null)
+                {
+                    Debug.Log((hit.Hitbox as MonoBehaviour)?.name);
+                    damageMultiplier = hit.Hitbox.DamageMultiplier;
+                    allDamageIsPierce = hit.Hitbox.AllDamageIsPierce;
+                }
+                else
+                {
+                    damageMultiplier = 1;
+                    allDamageIsPierce = false;
+                }
+
+                HandleCollision(hit.Controller, hit.HitLocation, hit.HitMaterial, hit.HitPoint, damageMultiplier, allDamageIsPierce);
             }
         }
 
@@ -96,8 +110,9 @@ namespace CommonCore.World
 
             HandleCollision(otherController, 0, hitMaterial, null);
         }
+        public void HandleCollision(BaseController otherController, int hitLocation, int hitmaterial, Vector3? positionOverride) => HandleCollision(otherController, hitLocation, hitmaterial, positionOverride, 1, false);
 
-        public void HandleCollision(BaseController otherController, int hitLocation, int hitmaterial, Vector3? positionOverride)
+        public void HandleCollision(BaseController otherController, int hitLocation, int hitmaterial, Vector3? positionOverride, float damageMultiplier, bool allDamageIsPierce)
         {
             //Debug.Log($"{name} hit {otherController?.name}");
 
@@ -114,6 +129,15 @@ namespace CommonCore.World
                     HitInfo.HitCoords = transform.position;
                 else
                     HitInfo.HitCoords = positionOverride;
+
+                HitInfo.Damage *= damageMultiplier;
+                HitInfo.DamagePierce *= damageMultiplier;
+
+                if(allDamageIsPierce)
+                {
+                    HitInfo.DamagePierce += HitInfo.Damage;
+                    HitInfo.Damage = 0;
+                }
 
                 if (hitLocation > 0)
                     HitInfo.HitLocation = hitLocation;

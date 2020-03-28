@@ -251,6 +251,68 @@ namespace CommonCore
         }
 
         /// <summary>
+        /// Adds two values dynamically, optionally coercing to the type of value0 first
+        /// </summary>
+        /// <remarks>Very, very different codepath for AOT</remarks>
+        public static object AddValuesDynamic(object value0, object value1, bool coerceFirst)
+        {
+            if(coerceFirst)
+            {
+                value1 = CoerceValue(value1, value0.GetType());
+            }
+
+#if ENABLE_IL2CPP
+
+            Type value0Type = value0.GetType();
+            Type value1Type = value1.GetType();
+            //may break in null edge cases but that's probably okay
+
+            if(value0Type == typeof(string) || value1Type == typeof(string))
+            {
+                //if one of them is a string, handle as string
+                return value0.ToString() + value1.ToString();
+            }
+            else if(value0Type.IsNumericType() && value1Type.IsNumericType())
+            {
+                //handle numeric types
+                if(value0Type == typeof(decimal) || value1Type == typeof(decimal))
+                {
+                    return (decimal)value0 + (decimal)value1;
+                }
+                else if(value0Type == typeof(double) || value1Type == typeof(double))
+                {
+                    return (double)value0 + (double)value1;
+                }
+                else if (value0Type == typeof(float) || value1Type == typeof(float))
+                {
+                    return (float)value0 + (float)value1;
+                }
+                else if(value0Type == typeof(long) || value1Type == typeof(long))
+                {
+                    return (long)value0 + (long)value1;
+                }
+                else if (value0Type == typeof(int) || value1Type == typeof(int))
+                {
+                    return (int)value0 + (int)value1;
+                }
+                else
+                {
+                    //add as int and truncate
+                    return Convert.ChangeType((int)value0 + (int)value1, value0Type);
+                }
+            }
+            else
+            {
+                throw new NotSupportedException($"Can't add {value0Type.Name} and {value1Type.Name}");
+            }
+            //it would be possible to get a little more flexibility via reflection (calling overloaded operator+) but probably not worth it
+#else
+            return (dynamic)value0 + (dynamic)value1;
+#endif
+
+        }
+
+        /// <summary>
         /// Parses a string to a Version object
         /// </summary>
         public static Version ParseVersion(string version)

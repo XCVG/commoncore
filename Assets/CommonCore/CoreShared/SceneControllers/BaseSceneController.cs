@@ -16,6 +16,9 @@ namespace CommonCore
         public bool AutosaveOnEnter = false;
         public bool AutosaveOnExit = true;
 
+        public bool AutoRestore = true;
+        public bool AutoCommit = true;
+
         public bool AutoinitUi = true;
         public bool AutoinitHud = false;
         public bool AutoinitState = true;
@@ -34,6 +37,10 @@ namespace CommonCore
         /// Set this to true if you want to handle the on-enter autosave in your subclass controller
         /// </summary>
         protected virtual bool DeferEnterAutosaveToSubclass => false;
+        /// <summary>
+        /// Set this to true if you want to handle the initial autorestore in your subclass controller
+        /// </summary>
+        protected virtual bool DeferInitialRestoreToSubclass => false;
         /// <summary>
         /// Set this to true to enable quicksave handling in this scene
         /// </summary>
@@ -60,6 +67,13 @@ namespace CommonCore
         public virtual void Start()
         {
             Debug.Log("Base Scene Controller Start");
+
+            if (!DeferInitialRestoreToSubclass && AutoRestore)
+            {
+                MetaState.Instance.IntentsExecutePreload();
+                Restore();
+                MetaState.Instance.IntentsExecutePostload();
+            }
 
             if (!DeferAfterSceneLoadToSubclass)
                 ScriptingModule.CallHooked(ScriptHook.AfterSceneLoad, this);
@@ -108,7 +122,8 @@ namespace CommonCore
         public virtual void ExitScene()
         {
             Debug.Log("Exiting scene: ");
-            Commit();
+            if(AutoCommit)
+                Commit();
             if (AutosaveOnExit)
                 SaveUtils.DoAutoSave();
         }

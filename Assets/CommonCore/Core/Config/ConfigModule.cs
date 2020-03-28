@@ -35,6 +35,21 @@ namespace CommonCore.Config
         public override void OnAllModulesLoaded()
         {
             ConfigState.Save();
+            ApplyConfiguration();
+        }
+
+        public override void Dispose()
+        {
+            //set safe resolution on exit. Hacky code ahead!
+            if(!CoreParams.IsEditor && CoreParams.SetSafeResolutionOnExit)
+            {
+                //Screen.SetResolution(CoreParams.SafeResolution.x, CoreParams.SafeResolution.y, false, 60);
+                //Debug.LogWarning($"W: {PlayerPrefs.GetInt("Screenmanager Resolution Width")} | H: {PlayerPrefs.GetInt("Screenmanager Resolution Height")}");
+                PlayerPrefs.SetInt("Screenmanager Resolution Width", CoreParams.SafeResolution.x);
+                PlayerPrefs.SetInt("Screenmanager Resolution Height", CoreParams.SafeResolution.y);
+                PlayerPrefs.SetInt("Screenmanager Fullscreen mode", 3); //set to windowed
+                PlayerPrefs.Save();
+            }
         }
 
         /// <summary>
@@ -76,6 +91,10 @@ namespace CommonCore.Config
             //AUDIO CONFIG
             AudioListener.volume = ConfigState.Instance.SoundVolume;
             var ac = AudioSettings.GetConfiguration();
+#if UNITY_WSA
+            if (ConfigState.Instance.SpeakerMode == AudioSpeakerMode.Raw)
+                ConfigState.Instance.SpeakerMode = AudioSpeakerMode.Stereo;
+#endif
             ac.speakerMode = ConfigState.Instance.SpeakerMode;
             AudioSettings.Reset(ac);
 
@@ -84,6 +103,9 @@ namespace CommonCore.Config
             {
                 ApplyExtendedGraphicsConfiguration();
             }
+
+            if(!CoreParams.IsEditor)
+                Screen.SetResolution(ConfigState.Instance.Resolution.x, ConfigState.Instance.Resolution.y, ConfigState.Instance.FullScreen, ConfigState.Instance.RefreshRate);
 
             QualitySettings.vSyncCount = ConfigState.Instance.VsyncCount;
             Application.targetFrameRate = ConfigState.Instance.MaxFrames;

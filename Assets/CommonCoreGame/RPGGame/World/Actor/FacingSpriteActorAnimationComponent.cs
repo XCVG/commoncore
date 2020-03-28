@@ -59,6 +59,7 @@ namespace CommonCore.RpgGame.World
 
         private bool LoopCurrentFrameSet = false;
         private SpriteFrame[] NextFrameSet = null;
+        private ActorAnimState? NextAnimState = null;
         private int CurrentFrame = 0;
         private SpriteFrame[] CurrentFrameSet = null;
         private float TimeInFrame = 0;
@@ -162,7 +163,9 @@ namespace CommonCore.RpgGame.World
                     if (NextFrameSet == Idle && LoopIdle)
                         LoopCurrentFrameSet = true;
 
-                    StartAnimationSequence(NextFrameSet);                    
+                    StartAnimationSequence(NextFrameSet);
+                    if(NextAnimState.HasValue)
+                        CurrentAnimState = NextAnimState.Value; //really only used for save/load
                     NextFrameSet = null;
                 }
             }
@@ -176,51 +179,61 @@ namespace CommonCore.RpgGame.World
                 case ActorAnimState.Idle:
                     LoopCurrentFrameSet = true;
                     NextFrameSet = null;
+                    NextAnimState = null;
                     StartAnimationSequence(Idle);
                     break;
                 case ActorAnimState.Dead:
                     LoopCurrentFrameSet = false;
                     NextFrameSet = null;
+                    NextAnimState = null;
                     StartAnimationSequence(Dead);
                     break;
                 case ActorAnimState.Dying:
                     LoopCurrentFrameSet = false;
                     NextFrameSet = Dead;
+                    NextAnimState = ActorAnimState.Dead;
                     StartAnimationSequence(Dying);
                     break;
                 case ActorAnimState.Walking:
                     LoopCurrentFrameSet = true;
                     NextFrameSet = null;
+                    NextAnimState = null;
                     StartAnimationSequence(Walking);
                     break;
                 case ActorAnimState.Running:
                     LoopCurrentFrameSet = true;
                     NextFrameSet = null;
+                    NextAnimState = null;
                     StartAnimationSequence(Running);
                     break;
                 case ActorAnimState.Hurting:
                     LoopCurrentFrameSet = false;
                     NextFrameSet = Idle;
+                    NextAnimState = ActorAnimState.Idle;
                     StartAnimationSequence(Hurting);
                     break;
                 case ActorAnimState.Talking:
                     LoopCurrentFrameSet = true;
                     NextFrameSet = null;
+                    NextAnimState = null;
                     StartAnimationSequence(Talking);
                     break;
                 case ActorAnimState.Shooting:
                     LoopCurrentFrameSet = false;
                     NextFrameSet = Idle;
+                    NextAnimState = ActorAnimState.Idle;
                     StartAnimationSequence(Shooting);
                     break;
                 case ActorAnimState.Punching:
                     LoopCurrentFrameSet = false;
                     NextFrameSet = Idle;
+                    NextAnimState = ActorAnimState.Idle;
                     StartAnimationSequence(Punching);
                     break;
                 default:
                     LoopCurrentFrameSet = false;
                     NextFrameSet = null;
+                    NextAnimState = null;
                     StartAnimationSequence(null);
                     Debug.LogWarning($"Failed to set animation sequence {state} on {name} because it is not supported by {GetType().Name}!");
                     break;

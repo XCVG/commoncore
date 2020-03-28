@@ -18,7 +18,12 @@ namespace CommonCore.RpgGame.UI
         [SerializeField]
         private Text DifficultyLabel;
 
-        [SerializeField, Header("Other Settings")]
+        [SerializeField, Header("Other Settings")]        
+        private Slider GameSpeedSlider;
+        [SerializeField]
+        private Text GameSpeedLabel;
+
+        [SerializeField]
         private Toggle SubtitlesAlwaysToggle;
         [SerializeField]
         private Toggle SubtitlesForcedToggle;
@@ -65,6 +70,7 @@ namespace CommonCore.RpgGame.UI
             var gameplayConfig = ConfigState.Instance.CustomConfigVars["GameplayConfig"] as GameplayConfig;
 
             //paint 
+            SetGameSpeedValue(ConfigState.Instance.GameSpeed);
             SetSubtitlesValue(ConfigState.Instance.Subtitles);
             ShakeEffectToggle.isOn = ConfigState.Instance.ShakeEffects;
             FlashEffectToggle.isOn = ConfigState.Instance.FlashEffects;
@@ -88,6 +94,7 @@ namespace CommonCore.RpgGame.UI
             ConfigState.Instance.AddCustomVarIfNotExists("GameplayConfig", () => new GameplayConfig());
             var gameplayConfig = ConfigState.Instance.CustomConfigVars["GameplayConfig"] as GameplayConfig;
 
+            ConfigState.Instance.GameSpeed = GetGameSpeedValue();
             ConfigState.Instance.Subtitles = GetSubtitlesValue();
             ConfigState.Instance.ShakeEffects = ShakeEffectToggle.isOn;
             ConfigState.Instance.FlashEffects = FlashEffectToggle.isOn;
@@ -124,6 +131,21 @@ namespace CommonCore.RpgGame.UI
         public void HandleAutoaimChanged()
         {
             AutoaimLabel.text = ((AimAssistState)(int)AutoaimSlider.value).ToString();
+        }
+
+        public void HandleGameSpeedChanged()
+        {
+            GameSpeedLabel.text = $"{Mathf.RoundToInt(GameSpeedSlider.value * 10)}%";
+        }
+
+        private float GetGameSpeedValue()
+        {
+            return GameSpeedSlider.value / 10;
+        }
+
+        private void SetGameSpeedValue(float speed)
+        {
+            GameSpeedSlider.value = Mathf.RoundToInt(Mathf.Clamp(speed * 10, GameSpeedSlider.minValue, GameSpeedSlider.maxValue));
         }
 
         private SubtitlesLevel GetSubtitlesValue()

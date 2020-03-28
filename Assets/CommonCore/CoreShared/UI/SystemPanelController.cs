@@ -1,11 +1,16 @@
 ﻿using CommonCore.Config;
 using CommonCore.State;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace CommonCore.UI
 {
+
+    /// <summary>
+    /// Controller for the "system" panel on the ingame menu. Most is now delegated to sub-panel controllers
+    /// </summary>
     public class SystemPanelController : PanelController
     {
         public Text MessageText;
@@ -13,11 +18,18 @@ namespace CommonCore.UI
         public GameObject LoadPanel;
         public GameObject SavePanel;
         public GameObject ConfigPanel;
-        public InputField SaveInputField;
+        public Button SaveButton;
+        public Button LoadButton;
+
+        public override void SignalInitialPaint()
+        {
+            base.SignalInitialPaint();            
+        }
 
         public override void SignalPaint()
         {
             HidePanels();
+            SetButtonVisibility();
         }
 
         public void OnClickLoad()
@@ -54,14 +66,19 @@ namespace CommonCore.UI
             }
         }
 
+        [Obsolete]
         public void OnClickActualSave()
         {
+            throw new NotImplementedException();
+
+            /*
             if (!GameState.Instance.SaveLocked)
             {
                 if(!string.IsNullOrEmpty(SaveInputField.text))
                 {
-                    BaseSceneController.Current.Commit();
-                    GameState.SerializeToFile(CoreParams.SavePath + @"\" + SaveInputField.text + ".json");
+                    SharedUtils.SaveGame(SaveInputField.text, true);
+                    //BaseSceneController.Current.Commit();
+                    //GameState.SerializeToFile(CoreParams.SavePath + @"\" + SaveInputField.text + ".json");
                     Modal.PushMessageModal("", "Saved Successfully", null, null);
                 }
                 else
@@ -76,6 +93,7 @@ namespace CommonCore.UI
                 
                 HidePanels();
             }
+            */
         }
 
         public void OnClickConfig()
@@ -103,6 +121,28 @@ namespace CommonCore.UI
             foreach (Transform child in ContainerPanel.transform)
             {
                 child.gameObject.SetActive(false);
+            }
+        }
+
+        private void SetButtonVisibility()
+        {
+            if(!CoreParams.AllowSaveLoad)
+            {
+                SaveButton.gameObject.SetActive(false);
+                LoadButton.gameObject.SetActive(false);
+            }
+            else if(!CoreParams.AllowManualSave)
+            {
+                SaveButton.gameObject.SetActive(false);
+            }
+
+            if(GameState.Instance.SaveLocked || GameState.Instance.ManualSaveLocked)
+            {
+                SaveButton.interactable = false;
+            }
+            else
+            {
+                SaveButton.interactable = true;
             }
         }
     }

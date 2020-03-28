@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine.Scripting;
 
 namespace CommonCore
 {
@@ -69,7 +70,7 @@ namespace CommonCore
     /// <summary>
     /// Console command attribute, syntactically compatible with SickDev.CommandSystem
     /// </summary>
-    public class CommandAttribute : Attribute
+    public class CommandAttribute : PreserveAttribute
     {
         public CommandAttribute()
         {
@@ -80,5 +81,26 @@ namespace CommonCore
         public string alias { get; set; }
         public string className { get; set; }
         public bool useClassName { get; set; }
+    }
+
+    /// <summary>
+    /// Defines possible scripting backends. Carbon-copy of UnityEditor.ScriptingImplementation
+    /// </summary>
+    public enum ScriptingImplementation
+    {
+        /// <summary>
+        /// The standard Mono runtime (editor, standalone platforms)
+        /// </summary>
+        Mono2x = 0,
+
+        /// <summary>
+        /// Unity's CIL-to-C++ AOT compiled runtime (mobile, UWP, consoles?)
+        /// </summary>
+        IL2CPP = 1,
+
+        /// <summary>
+        /// Microsoft's .NET runtime (UWP, deprecated)
+        /// </summary>
+        WinRTDotNET = 2
     }
 }

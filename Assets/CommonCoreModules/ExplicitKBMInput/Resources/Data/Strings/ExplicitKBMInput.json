@@ -1,0 +1,13 @@
+{
+  "CFG_MAPPERS": {
+    "ExplicitKBMInputMapper":  "Explicit KB/M"
+  },
+  "EXPLICITKBMINPUT" : {
+	"+": "Positive",
+	"-": "Negative"
+  },
+  "EXPLICITKBMINPUT_MOUSEAXIS": {
+	"Undefined": "None",
+	"Scroll": "Scroll Wheel"
+  }
+}

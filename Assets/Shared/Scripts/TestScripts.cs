@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CommonCore.Scripting;
+using CommonCore.State;
 
 public static class TestScripts
 {
@@ -18,5 +19,12 @@ public static class TestScripts
     {
         Debug.Log("LogAndReturnTrueEx: " + arg);
         return true;
+    }
+
+    [CCScript]
+    public static void ToggleManualSave()
+    {
+        GameState.Instance.ManualSaveLocked = !GameState.Instance.ManualSaveLocked;
+        Debug.Log($"Manual Save Locked: {GameState.Instance.ManualSaveLocked}");
     }
 }

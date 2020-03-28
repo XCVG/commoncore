@@ -24,6 +24,11 @@ James Newton-King - Json.NET
 	Included as DLL (Assets/Plugins/JsonNet)
 	MIT License
 	
+Kalle Jillheden - Newtonsoft.Json for Unity
+	https://github.com/jilleJr/Newtonsoft.Json-for-Unity
+	Included as DLL (Assets/Plugins/JsonNet/aot)
+	MIT License
+	
 Microsoft - System.Collections.Immutable
 	https://www.nuget.org/packages/System.Collections.Immutable/
 	Included as DLL (Assets/Plugins/Microsoft)
@@ -61,6 +66,10 @@ Crosshair (Assets/UI/Graphics/crosshair)
 Loading Indicator (Assets/CommonCore/Graphics/loadwheel)
 	CodeAndReload - Loading Wheel (Transparent) [CC0]
 	https://openclipart.org/detail/192512/loading-wheel-transparent
+
+Freedoom assets (Assets/Objects/OpenSource/spriteguy, Assets/Objects/OpenSource/spriterifle, Assets/Objects/OpenSource/spritetorch)
+	Contributors to the Freedoom project
+	https://github.com/freedoom/freedoom/
 
 ## Models
 
@@ -103,10 +112,6 @@ Crossbow (Assets/Objects/OpenSource/crossbow)
 Demo Rifle (Assets/Objects/OpenSource/rifle)
 	OrbitStudios, Fernando Ferreira :D - Low poly stylized Rifle (AK-47) [CC0/public domain]
 	https://opengameart.org/content/low-poly-stylized-rifle-ak-47
-	
-Freedoom assets (Assets/Objects/OpenSource/spriteguy, Assets/Objects/OpenSource/spriterifle, Assets/Objects/OpenSource/spritetorch)
-	Contributors to the Freedoom project
-	https://github.com/freedoom/freedoom/
 	
 ## Sounds
 

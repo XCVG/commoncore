@@ -5,11 +5,11 @@ using CommonCore.UI;
 
 namespace CommonCore.Input
 {
-    /*
-     * Abstract base InputMapper
-     * Functionality can be implemented by mappers with different backends
-     */
-    internal abstract class InputMapper
+
+    /// <summary>
+    /// Abstract base InputMapper. Functionality can be implemented by mappers with different backends
+    /// </summary>
+    public abstract class InputMapper
     {
         public virtual void Configure()
         {
@@ -17,18 +17,23 @@ namespace CommonCore.Input
         }
 
         public abstract float GetAxis(string axis);
+        public abstract float GetAxisRaw(string axis);
         public abstract bool GetButton(string button);
         public abstract bool GetButtonDown(string button);
         public abstract bool GetButtonUp(string button);
     }
 
-    /*
-     * Null InputMapper
-     * Useless but there anyway
-     */
+    /// <summary>
+    /// Null InputMapper. Useless but there anyway.
+    /// </summary>
     internal class NullInputMapper : InputMapper
     {
         public override float GetAxis(string axis)
+        {
+            return 0;
+        }
+
+        public override float GetAxisRaw(string axis)
         {
             return 0;
         }
@@ -49,10 +54,9 @@ namespace CommonCore.Input
         }
     }
 
-    /*
-     * Unity InputMapper
-     * Simple passthrough to built-in input system
-     */
+    /// <summary>
+    /// Unity InputMapper. Simple passthrough to built-in input system
+    /// </summary>
     internal class UnityInputMapper : InputMapper
     {
         public override void Configure()
@@ -63,6 +67,11 @@ namespace CommonCore.Input
         public override float GetAxis(string axis)
         {
             return UnityEngine.Input.GetAxis(axis);
+        }
+
+        public override float GetAxisRaw(string axis)
+        {
+            return UnityEngine.Input.GetAxisRaw(axis);
         }
 
         public override bool GetButton(string button)

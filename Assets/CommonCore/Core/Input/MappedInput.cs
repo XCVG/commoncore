@@ -28,6 +28,9 @@ namespace CommonCore.Input
         /// </summary>
         public static void SetMapper(string newMapper)
         {
+            if (Mappers == null || Mappers.Count == 0)
+                return; //either mappers isn't initialized or we don't have any, either way there's nothing we can do
+
             if (!Mappers.ContainsKey(newMapper))
             {
                 Debug.LogWarning($"[Input] Can't find mapper \"{newMapper}\"");
@@ -43,12 +46,19 @@ namespace CommonCore.Input
                 dMapper.Dispose();
 
             Mapper = (InputMapper)Activator.CreateInstance(newMapperType);
+
+            Debug.Log($"[InputModule] Input mapper set to {newMapper}");
         }
 
         internal static void SetMapper(InputMapper newMapper)
         {
             CDebug.LogEx(string.Format("[Input] Set mapper to {0}", newMapper.GetType().Name), LogLevel.Message, typeof(MappedInput));
             Mapper = newMapper;
+        }
+
+        public static InputMapper GetCurrentMapper()
+        {
+            return Mapper;
         }
 
         /// <summary>
@@ -62,6 +72,11 @@ namespace CommonCore.Input
         public static float GetAxis(string axis)
         {
             return Mapper.GetAxis(axis);
+        }
+
+        public static float GetAxisRaw(string axis)
+        {
+            return Mapper.GetAxisRaw(axis);
         }
 
         public static bool GetButton(string button)

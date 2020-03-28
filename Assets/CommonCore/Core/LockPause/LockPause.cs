@@ -8,51 +8,10 @@ using CommonCore.Config;
 
 namespace CommonCore.LockPause
 {
-    public enum InputLockType
-    {
-        All, GameOnly, MoveOnly
-    }
-    
-    public enum PauseLockType
-    {
-        All, AllowMenu
-    }
 
-    public class InputLock
-    {
-        public readonly InputLockType Type;
-        public readonly object Owner;
-
-        public InputLock(InputLockType type, object owner)
-        {
-            Type = type;
-            Owner = owner;
-        }
-
-        public override string ToString()
-        {
-            return string.Format("{0} [{2}:{1}]", Type.ToString(), Owner.ToString(), Owner.GetType().Name);
-        }
-    }
-
-    public class PauseLock
-    {
-        public readonly PauseLockType Type;
-        public readonly object Owner;
-
-        public PauseLock(PauseLockType type, object owner)
-        {
-            Type = type;
-            Owner = owner;
-        }
-
-        public override string ToString()
-        {
-            return string.Format("{0} [{2}:{1}]", Type.ToString(), Owner.ToString(), Owner.GetType().Name);
-        }
-
-    }
-
+    /// <summary>
+    /// Module that handles locking controls and pausing the game on request
+    /// </summary>
     public partial class LockPauseModule : CCModule
     {
 
@@ -293,10 +252,16 @@ namespace CommonCore.LockPause
         {
             get
             {
+                if (Instance == null)
+                    return false;
+
                 return Instance.EnableMouseCapture;
             }
             set
             {
+                if (Instance == null)
+                    return;
+
                 Instance.EnableMouseCapture = value;
                 if (Instance.EnableMouseCapture && !IsPaused())
                     Instance.DoCapture();
@@ -307,6 +272,9 @@ namespace CommonCore.LockPause
 
         public static InputLock LockControls(InputLockType type, object token)
         {
+            if (Instance == null)
+                return null;
+
             var iLock = new InputLock(type, token);
             Instance.AddInputLock(iLock);
             return iLock;
@@ -314,6 +282,9 @@ namespace CommonCore.LockPause
 
         public static void UnlockControls(object token)
         {
+            if (Instance == null)
+                return;
+
             if (token is InputLock)
                 Instance.RemoveInputLock((InputLock)token);
             else
@@ -322,11 +293,17 @@ namespace CommonCore.LockPause
 
         public static bool IsInputLocked()
         {
+            if (Instance == null)
+                return false;
+
             return (Instance.InputLockState != null && Instance.InputLockState.Value <= InputLockType.GameOnly);
         }
 
         public static InputLockType? GetInputLockState()
         {
+            if (Instance == null)
+                return null;
+
             return Instance.InputLockState;
         }
 
@@ -337,6 +314,9 @@ namespace CommonCore.LockPause
 
         public static PauseLock PauseGame(PauseLockType type, object token)
         {
+            if (Instance == null)
+                return null;
+
             var pLock = new PauseLock(type, token);
             Instance.AddPauseLock(pLock);
             return pLock;
@@ -355,29 +335,86 @@ namespace CommonCore.LockPause
 
         public static bool IsPaused()
         {
+            if (Instance == null)
+                return false;
+
             return (Instance.PauseLockState != null);
         }
     
         public static PauseLockType? GetPauseLockState()
         {
+            if (Instance == null)
+                return null;
+
             return Instance.PauseLockState;
         }
 
         public static void ForceClearLocks()
         {
+            if (Instance == null)
+                return;
+
             CDebug.LogEx("Forced unlock and unpause!", LogLevel.Warning, Instance);
             Instance.ClearAll();
         }
 
         public static void ForceCleanLocks()
         {
+            if (Instance == null)
+                return;
+
             Instance.CleanInputLocks();
             Instance.CleanPauseLocks();
         }
 
     }
 
-    //need to find a way to remove dependencies or something
+    public enum InputLockType
+    {
+        All, GameOnly, MoveOnly
+    }
+
+    public enum PauseLockType
+    {
+        All, AllowMenu
+    }
+
+    public class InputLock
+    {
+        public readonly InputLockType Type;
+        public readonly object Owner;
+
+        public InputLock(InputLockType type, object owner)
+        {
+            Type = type;
+            Owner = owner;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0} [{2}:{1}]", Type.ToString(), Owner.ToString(), Owner.GetType().Name);
+        }
+    }
+
+    public class PauseLock
+    {
+        public readonly PauseLockType Type;
+        public readonly object Owner;
+
+        public PauseLock(PauseLockType type, object owner)
+        {
+            Type = type;
+            Owner = owner;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0} [{2}:{1}]", Type.ToString(), Owner.ToString(), Owner.GetType().Name);
+        }
+
+    }
+
+    //these message signal a change in lock state, not a request to lock
 
     public class InputLockMessage : QdmsMessage
     {

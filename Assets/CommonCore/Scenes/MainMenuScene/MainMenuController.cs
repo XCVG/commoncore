@@ -1,5 +1,7 @@
 ﻿using CommonCore;
 using CommonCore.Scripting;
+using CommonCore.State;
+using CommonCore.StringSub;
 using CommonCore.UI;
 using System.IO;
 using System.Linq;
@@ -17,9 +19,16 @@ namespace GameUI
         public GameObject OptionsPanel;
         public GameObject HelpPanel;
 
+        [Header("Buttons")]
+        public Button ContinueButton;
+        public Button LoadButton;
+
         [Header("Special")]
         public GameObject MessageModal;
         public Text SystemText;
+
+        [Header("Options"), SerializeField]
+        private bool ShowMessageModal = true;
 
         public override void Awake()
         {
@@ -30,11 +39,13 @@ namespace GameUI
         {
             base.Start();
 
-            SystemText.text = string.Format("{0}\n{1} {2}\nCommonCore {3} {4}\nUnity {5}",
-                Application.productName,
-                Application.version, CoreParams.GameVersionName,
-                CoreParams.VersionCode.ToString(), CoreParams.VersionName,
-                Application.unityVersion);
+            SystemText.text = CoreParams.GetShortSystemText();
+
+            if(!CoreParams.AllowSaveLoad)
+            {
+                ContinueButton.gameObject.SetActive(false);
+                LoadButton.gameObject.SetActive(false);
+            }
 
             ScriptingModule.CallHooked(ScriptHook.AfterMainMenuCreate, this);
         }
@@ -46,16 +57,20 @@ namespace GameUI
 
         public void OnClickContinue()
         {
-            string savePath = CoreParams.SavePath;
-            DirectoryInfo saveDInfo = new DirectoryInfo(savePath);
-            FileInfo saveFInfo = saveDInfo.GetFiles().OrderBy(f => f.CreationTime).Last();
+            var save = SaveUtils.GetLastSave();
 
-            SharedUtils.LoadGame(saveFInfo.Name);
+            if (save != null)
+                SharedUtils.LoadGame(save);
+            else
+                Modal.PushMessageModal(Sub.Replace("ContinueNoSaveMessage", "IGUI_SAVE"), Sub.Replace("ContinueNoSaveHeading", "IGUI_SAVE"), null, null);
         }
 
         public void OnClickNew()
         {
-            MessageModal.SetActive(true);
+            if (ShowMessageModal)
+                MessageModal.SetActive(true);
+            else
+                StartGame();
         }      
 
         public void StartGame()

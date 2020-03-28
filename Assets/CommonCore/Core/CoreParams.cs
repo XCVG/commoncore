@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using UnityEngine;
@@ -18,6 +19,7 @@ namespace CommonCore
         public static Version UnityVersion { get; private set; } //auto-set
         public static string UnityVersionName { get; private set; } //auto-set
         public static RuntimePlatform Platform { get; private set; } //auto-set
+        public static ScriptingImplementation ScriptingBackend { get; private set; } //auto-set
 
         //*****game version info
         public static string GameName { get; private set; } //auto-set from Unity settings
@@ -31,7 +33,9 @@ namespace CommonCore
         public static string PreferredCommandConsole { get; private set; } = "SickDevConsoleImplementation";
         private static WindowsPersistentDataPath PersistentDataPathWindows = WindowsPersistentDataPath.Roaming;
         private static bool CorrectWindowsLocalDataPath = false; //if set, use AppData/Local/* instead of AppData/LocalLow/* for LocalDataPath
-        private static bool UseGlobalScreenshotFolder = true;
+        private static bool UseGlobalScreenshotFolder = true; //ignored on UWP and probably other platforms
+        public static bool SetSafeResolutionOnExit = true;
+        public static Vector2Int SafeResolution = new Vector2Int(1280, 720);
 
         //*****additional config settings
         public static float DelayedEventPollInterval { get; private set; } = 1.0f;
@@ -40,6 +44,11 @@ namespace CommonCore
         //*****game config settings
         public static string InitialScene { get; private set; } = "World_Ext_Frangis_Arena";
         public static bool UseCampaignIdentifier { get; private set; } = true;
+        public static bool AllowSaveLoad { get; private set; } = true;
+        public static bool AllowManualSave { get; private set; } = true;
+        public static IReadOnlyList<string> AdditionalAxes { get; private set; } = ImmutableArray.Create<string>(); //specify additional axes your game will use; it's up to individual input mappers to handle these
+        public static IReadOnlyList<string> AdditionalButtons { get; private set; } = ImmutableArray.Create<string>(); //same, but for buttons
+        public static IReadOnlyList<string> HideControlMappings { get; private set; } = ImmutableArray.Create<string>("OpenMenu"); //add things to this to hide DefaultControls you're not using, note that it's not guaranteed to stop the control from responding to input
 
         //*****path variables (some hackery to provide thread-safeish versions)
         public static string DataPath { get; private set; }
@@ -119,7 +128,17 @@ namespace CommonCore
                 Debug.LogException(e);
             }
 
+            //PLATFORM HANDLING
             Platform = Application.platform;
+
+            //afaict no way to check these at runtime
+#if !UNITY_EDITOR && UNITY_WSA && !ENABLE_IL2CPP
+            ScriptingBackend = ScriptingImplementation.WinRTDotNET;
+#elif ENABLE_IL2CPP
+            ScriptingBackend = ScriptingImplementation.IL2CPP;
+#else
+            ScriptingBackend = ScriptingImplementation.Mono2x; //default
+#endif
 
             //PATH HANDLING
 
@@ -161,10 +180,13 @@ namespace CommonCore
 
             //create data folder if it doesn't exist
             if (!Directory.Exists(PersistentDataPath))
-                Directory.CreateDirectory(PersistentDataPath);
-            
+                Directory.CreateDirectory(PersistentDataPath); //failing this is considered fatal
+
             //special handling for ScreenshotPath
-            if(UseGlobalScreenshotFolder)
+#if UNITY_WSA
+            ScreenshotsPath = Path.Combine(PersistentDataPath, "screenshot");
+#else
+            if (UseGlobalScreenshotFolder)
             {
                 ScreenshotsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "Screenshots");
             }
@@ -172,10 +194,31 @@ namespace CommonCore
             {
                 ScreenshotsPath = Path.Combine(PersistentDataPath, "screenshot");
             }
+#endif
 
-            //create screenshot folder if it doesn't exist
-            if (!Directory.Exists(ScreenshotsPath))
-                Directory.CreateDirectory(ScreenshotsPath);
+            //create screenshot folder if it doesn't exist (this is a survivable error)
+            try
+            {
+                if (!Directory.Exists(ScreenshotsPath))
+                    Directory.CreateDirectory(ScreenshotsPath);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to create screenshots directory ({ScreenshotsPath})");
+                Debug.LogException(e);
+            }
+        }
+
+        /// <summary>
+        /// Returns a "short" description of the application name, version, Unity environment (shown on main menu)
+        /// </summary>
+        public static string GetShortSystemText()
+        {
+            return string.Format("{0}\n{1} {2}\nCommonCore {3} {4}\nUnity {5}",
+                GameName,
+                GameVersion, GameVersionName,
+                VersionCode.ToString(), VersionName,
+                UnityVersionName);
         }
     }
 

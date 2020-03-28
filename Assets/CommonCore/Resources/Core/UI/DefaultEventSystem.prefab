@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4877343746732214}
   - component: {fileID: 114085542889613514}
-  - component: {fileID: 114443036667598438}
+  - component: {fileID: 5951834084240972450}
   m_Layer: 5
   m_Name: DefaultEventSystem
   m_TagString: Untagged
@@ -47,7 +47,7 @@ MonoBehaviour:
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 5
---- !u!114 &114443036667598438
+--- !u!114 &5951834084240972450
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -56,13 +56,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1495807673625998}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1077351063, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 4819f9a037760f142a257d9d044afca7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
+  m_HorizontalAxis: NavigateX
+  m_VerticalAxis: NavigateY
   m_SubmitButton: Submit
   m_CancelButton: Cancel
   m_InputActionsPerSecond: 10
   m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
+  m_ForceModuleActive: 1
+  UseMappedInput: 1
+  WarnAboutAxes: 1
