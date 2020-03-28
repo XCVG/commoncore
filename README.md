@@ -1,6 +1,6 @@
 # CommonCore RPG Libraries for Unity
-### Version 2.0.0pre
-### For Unity 2018.3+
+### Version 2.0.0pre9
+### For Unity 2018.4+
 
 ## Important Update
 
@@ -10,13 +10,13 @@ As of May 2019, CommonCore has been downgraded to an internal project. It will s
 
 CommonCore (formerly ARES) is a complete Role-Playing Game library for Unity... or will be someday. The intent is to provide a base that allows easy development of everything from quick adventures to epic open-world sagas, as well as being flexible enough to be adapted for mechanically similar genres such as open-world sandbox, shooters, and more.
 
-CommonCore handles or will handle standard RPG mechanics, game state with saving and loading, the player object, NPCs, dialogue, input, UI, configuration and more. It is (or will be) a complete solution that can be loaded on top of Unity followed immediately by building the actual game.
+CommonCore handles or will handle standard RPG mechanics, game state with saving and loading, the player object, NPCs, dialogue, input, UI, configuration and more. It is (or will be) a complete solution that can be loaded as a template followed immediately by building the actual game.
 
 ## Platform Support
 
-CommonCore supports Unity 2018.4 and (probably) later. The plan is to continue to target the latest stable version of 2018.x at least until the next release. Unity 2017.x is no longer supported, and Unity 2019.x should work but hasn't been tested yet.
+CommonCore supports Unity 2018.4 and Unity 2019.3. The plan is to continue to target the latest stable version of 2018.x at least until the next release. Unity 2017.x is no longer supported.
 
-CommonCore supports standalone platforms using Mono and the .NET 4.x scripting runtime. The basic core amost works on mobile and WebGL (IL2CPP) platforms.
+CommonCore is targeted toward standalone platforms using Mono and the .NET 4.x scripting runtime. As of this version, it works with IL2CPP and has been tested on UWP, though this is still experimental.
 
 ## Extra Modules
 
