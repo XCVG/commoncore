@@ -573,7 +573,7 @@ namespace CommonCore.RpgGame.World
 
                 //new code should be faster if n is large but it may not bear out in practice, and it probably allocs more dedotated wam
                 
-                var colliders = Physics.OverlapSphere(transform.position, SearchRadius, LayerMask.GetMask("Default", "ActorHitbox"));
+                var colliders = Physics.OverlapSphere(transform.position, SearchRadius, WorldUtils.GetAttackLayerMask());
                 HashSet<ActorController> potentialTargets = new HashSet<ActorController>();
 
                 foreach(var collider in colliders)
@@ -582,14 +582,14 @@ namespace CommonCore.RpgGame.World
                     if(actorController != null)
                     {
                         potentialTargets.Add(actorController);
-                        break;
+                        continue;
                     }
 
                     var hitboxComponent = collider.GetComponent<IHitboxComponent>();
                     if (hitboxComponent != null && hitboxComponent.ParentController is ActorController hitboxAC)
                     {
                         potentialTargets.Add(hitboxAC);
-                        break;
+                        continue;
                     }
                 }
                 

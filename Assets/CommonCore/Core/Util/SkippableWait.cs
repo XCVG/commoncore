@@ -14,6 +14,7 @@ namespace CommonCore
     {
         private static readonly string SkipButton = DefaultControls.Use;
         private static readonly string AltSkipButton = DefaultControls.Fire;
+        private static readonly string TerSkipButton = DefaultControls.Confirm;
 
         /// <summary>
         /// Waits for specified time, can be skipped with skip button
@@ -22,7 +23,7 @@ namespace CommonCore
         {
             for (float elapsed = 0; elapsed < time; elapsed += Time.deltaTime)
             {
-                if (MappedInput.GetButtonDown(SkipButton) || MappedInput.GetButtonDown(AltSkipButton))
+                if (MappedInput.GetButtonDown(SkipButton) || MappedInput.GetButtonDown(AltSkipButton) || MappedInput.GetButtonDown(TerSkipButton))
                     break;
 
                 yield return null;
@@ -38,7 +39,7 @@ namespace CommonCore
         {
             for (float elapsed = 0; elapsed < time; elapsed += Time.unscaledDeltaTime)
             {
-                if (MappedInput.GetButtonDown(SkipButton) || MappedInput.GetButtonDown(AltSkipButton))
+                if (MappedInput.GetButtonDown(SkipButton) || MappedInput.GetButtonDown(AltSkipButton) || MappedInput.GetButtonDown(TerSkipButton))
                     break;
 
                 yield return null;
@@ -55,7 +56,7 @@ namespace CommonCore
         {
             for(float elapsed = 0; elapsed < time; elapsed += Time.deltaTime)
             {
-                if (MappedInput.GetButtonDown(SkipButton) || MappedInput.GetButtonDown(AltSkipButton))
+                if (MappedInput.GetButtonDown(SkipButton) || MappedInput.GetButtonDown(AltSkipButton) || MappedInput.GetButtonDown(TerSkipButton))
                     break;
 
                 await Task.Yield();
@@ -72,7 +73,7 @@ namespace CommonCore
         {
             for (float elapsed = 0; elapsed < time; elapsed += Time.unscaledDeltaTime)
             {
-                if (MappedInput.GetButtonDown(SkipButton) || MappedInput.GetButtonDown(AltSkipButton))
+                if (MappedInput.GetButtonDown(SkipButton) || MappedInput.GetButtonDown(AltSkipButton) || MappedInput.GetButtonDown(TerSkipButton))
                     break;
 
                 await Task.Yield();

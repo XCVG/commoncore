@@ -45,7 +45,7 @@ namespace CommonCore.Input
         public static readonly string NavigateX = "NavigateX";
         [ControlIsAxis]
         public static readonly string NavigateY = "NavigateY";
-        public static readonly string Confirm = "Confirm";
+        public static readonly string Confirm = "Submit";
         public static readonly string Cancel = "Cancel";   
     }
 

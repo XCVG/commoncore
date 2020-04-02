@@ -64,11 +64,11 @@ namespace CommonCore.State
                 }
                 else if(MetaState.Instance.TransitionType == SceneTransitionType.EndGame)
                 {
+                    CCBase.OnGameEnd();
                     GameState.Reset();
                     MetaState.Instance.Clear();
                     if (string.IsNullOrEmpty(MetaState.Instance.NextScene))
-                        MetaState.Instance.NextScene = "MainMenuScene";
-                    CCBase.OnGameEnd();
+                        MetaState.Instance.NextScene = "MainMenuScene";                    
                     StartCoroutine(LoadNextSceneAsync());
                 }
                 //TODO move endgame into here

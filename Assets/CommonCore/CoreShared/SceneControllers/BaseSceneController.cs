@@ -78,7 +78,7 @@ namespace CommonCore
             if (!DeferAfterSceneLoadToSubclass)
                 ScriptingModule.CallHooked(ScriptHook.AfterSceneLoad, this);
 
-            if (!DeferEnterAutosaveToSubclass)
+            if (!DeferEnterAutosaveToSubclass && AutosaveOnEnter)
                 SaveUtils.DoAutoSave();
         }
 

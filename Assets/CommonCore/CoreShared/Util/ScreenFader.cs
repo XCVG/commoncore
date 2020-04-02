@@ -53,7 +53,7 @@ namespace CommonCore
                 UnityEngine.Object.Destroy(ScreenFaderScript.gameObject);
         }
 
-        [CCScript, CCScriptHook(AllowExplicitCalls = false, Hook = ScriptHook.OnSceneTransition)]
+        [CCScript, CCScriptHook(AllowExplicitCalls = false, Hook = ScriptHook.OnSceneUnload)]
         private static void HandleSceneChanged()
         {
             //clear non-persistent fade
