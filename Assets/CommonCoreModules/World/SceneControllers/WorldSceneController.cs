@@ -6,6 +6,7 @@ using CommonCore.State;
 using CommonCore.Audio;
 using CommonCore.Scripting;
 using CommonCore.Messaging;
+using CommonCore.Config;
 
 namespace CommonCore.World
 {
@@ -30,13 +31,15 @@ namespace CommonCore.World
 
             GameState.Instance.PlayerFlags.RegisterSource(TempPlayerFlags);
 
-            Debug.Log("World Scene Controller Awake");
+            if (ConfigState.Instance.UseVerboseLogging)
+                Debug.Log("World Scene Controller Awake");
         }
 
         public override void Start()
         {
             base.Start();
-            Debug.Log("World Scene Controller Start");
+            if (ConfigState.Instance.UseVerboseLogging)
+                Debug.Log("World Scene Controller Start");
             if(AutoRestore)
             {
                 MetaState.Instance.IntentsExecutePreload();
@@ -94,8 +97,7 @@ namespace CommonCore.World
             if (!AutoGameover)
                 return;
 
-            MetaState.Instance.NextScene = SceneManager.GetActiveScene().name; //in case we need it...
-            SceneManager.LoadScene("GameOverScene");
+            SharedUtils.ShowGameOver();
         }
 
         public override void Commit()

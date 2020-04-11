@@ -164,7 +164,7 @@ namespace CommonCore.Config
         public bool UseCustomVideoSettings => (QualitySettings.GetQualityLevel() >= QualitySettings.names.Length - 1);
         public Vector2Int Resolution { get; set; } = new Vector2Int(1920, 1080);
         public int RefreshRate { get; set; } = 60;
-        public bool FullScreen { get; set; } = false;
+        public bool FullScreen { get; set; } = true;
         public int MaxFrames { get; set; } = -1;
         public int VsyncCount { get; set; } = 0;
         public int AntialiasingQuality { get; set; } = 1;
@@ -195,6 +195,7 @@ namespace CommonCore.Config
         public Dictionary<string, object> InputMapperData { get; set; } = new Dictionary<string, object>();
         public float LookSpeed { get; set; } = 1.0f;
         public bool LookInvert { get; set; } = false;
+        public float AxisDeadzone { get; set; } = 0.1f;
         public KeyCode ScreenshotKey { get; set; } = KeyCode.F12;
         public KeyCode QuicksaveKey { get; set; } = KeyCode.F5;
         public KeyCode QuickloadKey { get; set; } = KeyCode.F9;

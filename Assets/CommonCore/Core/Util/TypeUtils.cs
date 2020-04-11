@@ -261,7 +261,7 @@ namespace CommonCore
                 value1 = CoerceValue(value1, value0.GetType());
             }
 
-#if ENABLE_IL2CPP
+#if ENABLE_IL2CPP || !NET_4_6
 
             Type value0Type = value0.GetType();
             Type value1Type = value1.GetType();

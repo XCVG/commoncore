@@ -24,7 +24,7 @@ namespace CommonCore
         //*****game version info
         public static string GameName { get; private set; } //auto-set from Unity settings
         public static Version GameVersion { get; private set; } //auto-set from Unity settings
-        public static string GameVersionName { get; private set; } = "Frangis Demo Development";
+        public static string GameVersionName { get; private set; } = "";
 
         //*****basic config settings
         public static bool AutoInit { get; private set; } = true;
@@ -42,7 +42,7 @@ namespace CommonCore
         //public static bool UseAggressiveLookups { get; private set; } = true; //may bring this back someday if performance is an issue
 
         //*****game config settings
-        public static string InitialScene { get; private set; } = "World_Ext_Frangis_Arena";
+        public static string InitialScene { get; private set; } = "TestScene";
         public static bool UseCampaignIdentifier { get; private set; } = true;
         public static bool AllowSaveLoad { get; private set; } = true;
         public static bool AllowManualSave { get; private set; } = true;

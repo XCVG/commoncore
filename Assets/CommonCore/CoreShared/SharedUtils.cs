@@ -33,6 +33,15 @@ namespace CommonCore
         }
 
         /// <summary>
+        /// Transitions to the GameOverScene, does not clear game data
+        /// </summary>
+        public static void ShowGameOver()
+        {
+            MetaState.Instance.NextScene = SceneManager.GetActiveScene().name; //in case we need it...
+            SceneManager.LoadScene("GameOverScene");
+        }
+
+        /// <summary>
         /// Clears data, sets up MetaState, and transitions to main menu scene
         /// </summary>
         public static void EndGame()

@@ -21,9 +21,9 @@ EditorBuildSettings:
     path: Assets/CommonCore/Scenes/ExampleScene.unity
     guid: 88e8ec212f116c54b8544ea5c7ced22c
   - enabled: 1
+    path: Assets/CommonCoreGame/Scenes/DialogueScene.unity
+    guid: 608d567fcf35b154fb63125b6e89847f
+  - enabled: 1
     path: Assets/Scenes/Other/TestScene.unity
     guid: 0b340932fb43bfa4b86dd20ee1c3e91e
-  - enabled: 1
-    path: Assets/Scenes/Other/DialogueScene.unity
-    guid: 186908a1a0aac3547b16d4228e10c68f
   m_configObjects: {}

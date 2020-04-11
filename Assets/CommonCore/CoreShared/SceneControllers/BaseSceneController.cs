@@ -48,7 +48,8 @@ namespace CommonCore
 
         public virtual void Awake()
         {
-            Debug.Log("Base Scene Controller Awake");
+            if (ConfigState.Instance.UseVerboseLogging)
+                Debug.Log("Base Scene Controller Awake");
 
             MessageInterface = new QdmsMessageInterface(this.gameObject);
             MessageInterface.SubscribeReceiver((m) => HandleMessage(m));
@@ -61,12 +62,16 @@ namespace CommonCore
 
             //mostly an editor hack
             if (AutoinitState && !GameState.Instance.InitialLoaded)
+            {
                 GameState.LoadInitial();
+                CCBase.OnGameStart();
+            }
         }
 
         public virtual void Start()
         {
-            Debug.Log("Base Scene Controller Start");
+            if(ConfigState.Instance.UseVerboseLogging)
+                Debug.Log("Base Scene Controller Start");
 
             if (!DeferInitialRestoreToSubclass && AutoRestore)
             {

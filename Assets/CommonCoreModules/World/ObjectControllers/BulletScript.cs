@@ -71,7 +71,7 @@ namespace CommonCore.World
                 bool allDamageIsPierce;
                 if(hit.Hitbox != null)
                 {
-                    Debug.Log((hit.Hitbox as MonoBehaviour)?.name);
+                    //Debug.Log((hit.Hitbox as MonoBehaviour)?.name);
                     damageMultiplier = hit.Hitbox.DamageMultiplier;
                     allDamageIsPierce = hit.Hitbox.AllDamageIsPierce;
                 }

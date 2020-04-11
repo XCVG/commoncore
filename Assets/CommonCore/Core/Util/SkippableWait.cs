@@ -14,7 +14,7 @@ namespace CommonCore
     {
         private static readonly string SkipButton = DefaultControls.Use;
         private static readonly string AltSkipButton = DefaultControls.Fire;
-        private static readonly string TerSkipButton = DefaultControls.Confirm;
+        private static readonly string TerSkipButton = DefaultControls.Submit;
 
         /// <summary>
         /// Waits for specified time, can be skipped with skip button

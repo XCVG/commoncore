@@ -71,7 +71,7 @@ namespace CommonCore
             if (UseUnityInput && (UnityEngine.Input.GetButton("Submit") || UnityEngine.Input.GetKey(KeyCode.Space)))
                 return true;
 
-            if (UseMappedInput && (MappedInput.GetButton(DefaultControls.Confirm) || MappedInput.GetButton(DefaultControls.Fire) || MappedInput.GetButton(DefaultControls.Use)))
+            if (UseMappedInput && (MappedInput.GetButton(DefaultControls.Submit) || MappedInput.GetButton(DefaultControls.Fire) || MappedInput.GetButton(DefaultControls.Use)))
                 return true;
 
             return false;
@@ -85,7 +85,7 @@ namespace CommonCore
             if (UseUnityInput && (UnityEngine.Input.GetButtonDown("Submit") || UnityEngine.Input.GetKeyDown(KeyCode.Space)))
                 return true;
 
-            if (UseMappedInput && (MappedInput.GetButtonDown(DefaultControls.Confirm) || MappedInput.GetButtonDown(DefaultControls.Fire) || MappedInput.GetButtonDown(DefaultControls.Use)))
+            if (UseMappedInput && (MappedInput.GetButtonDown(DefaultControls.Submit) || MappedInput.GetButtonDown(DefaultControls.Fire) || MappedInput.GetButtonDown(DefaultControls.Use)))
                 return true;
 
             return false;

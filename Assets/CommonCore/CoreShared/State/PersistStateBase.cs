@@ -27,7 +27,13 @@ namespace CommonCore.State
         {
             Instance = CoreUtils.LoadExternalJson<PersistState>(Path);
             if (Instance == null)
+            {
                 Instance = new PersistState();
+            }
+            else
+            {
+                Instance.IsFirstRun = false;
+            }
         }
 
         /// <summary>
@@ -53,5 +59,10 @@ namespace CommonCore.State
         /// Key/Value store for arbitrary persistent data
         /// </summary>
         public Dictionary<string, System.Object> ExtraStore { get; private set; } = new Dictionary<string, object>();
+
+        /// <summary>
+        /// If this is the first time the game has been run
+        /// </summary>
+        public bool IsFirstRun { get; set; } = true;
     }
 }
