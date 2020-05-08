@@ -82,7 +82,9 @@ namespace CommonCore.World
             if (controller)
             {
                 controller.SetVisibility(data.Visible);
-                controller.Tags = new HashSet<string>(data.Tags);
+                //controller.Tags = new HashSet<string>(data.Tags);
+                controller.Tags.Clear();
+                controller.Tags.UnionWith(data.Tags);
 
                 if (controller.FormID != data.FormID)
                     Debug.LogWarning(string.Format("Saved form ID does not match (saved:{0} , object: {1})", data.FormID, controller.FormID));

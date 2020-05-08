@@ -9,5 +9,7 @@
     public interface ITakeDamage
     {
         void TakeDamage(ActorHitInfo data);
+
+        float Health { get; }
     }
 }

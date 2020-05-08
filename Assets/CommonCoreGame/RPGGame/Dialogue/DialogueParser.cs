@@ -43,7 +43,11 @@ namespace CommonCore.RpgGame.Dialogue
             if (jo["image"] != null)
                 sImage = jo["image"].Value<string>();
             if (jo["music"] != null)
+            {
                 sMusic = jo["music"].Value<string>();
+                if (sMusic == null)
+                    sMusic = string.Empty;
+            }
             if (jo["default"] != null)
                 sNext = jo["default"].Value<string>();
             if (jo["text"] != null)
@@ -102,7 +106,11 @@ namespace CommonCore.RpgGame.Dialogue
             if (jt["next"] != null)
                 next = jt["next"].Value<string>();
             if (jt["music"] != null)
+            {
                 music = jt["music"].Value<string>();
+                if (music == null)
+                    music = string.Empty;
+            }
             if (jt["nameText"] != null)
                 nameText = jt["nameText"].Value<string>();
             if (jt["text"] != null)
@@ -314,7 +322,7 @@ namespace CommonCore.RpgGame.Dialogue
             }
             else
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("Unsupported or unrecognized condition type");
             }
 
             //options
@@ -369,7 +377,7 @@ namespace CommonCore.RpgGame.Dialogue
                 }
 
                 if (!option.HasValue)
-                    throw new FormatException();
+                    throw new FormatException("Unacceptable comparison for condition type");
 
             }
             else if(type == ConditionType.Exec)
@@ -419,7 +427,7 @@ namespace CommonCore.RpgGame.Dialogue
             }
             else
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("Unsupported or unrecognized skill check type");
             }
 
             //parse comparison type and value
@@ -453,7 +461,7 @@ namespace CommonCore.RpgGame.Dialogue
             }
             else
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("Unacceptable or unrecognized comparison for skill check");
             }
 
             string valueString = jt.Value<string>(comparisonFieldName);
@@ -511,7 +519,7 @@ namespace CommonCore.RpgGame.Dialogue
             }
             else
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("Unsupported or unrecognized microscript type");
             }
 
             //parse action/value            
@@ -554,7 +562,7 @@ namespace CommonCore.RpgGame.Dialogue
             }
             else
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("Unacceptable or unrecognized action for microscript");
             }
 
             //parse delay, if applicable

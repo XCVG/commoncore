@@ -244,7 +244,7 @@ namespace CommonCore.RpgGame.World
                 if(body.isKinematic || body.constraints.HasFlag(RigidbodyConstraints.FreezePosition))
                 {
                     //unmovable rigidbody; brake-slide behavior
-                    Velocity -= getBrakeVector();
+                    Velocity += getBrakeVector();
                 }
                 else
                 {
@@ -261,7 +261,7 @@ namespace CommonCore.RpgGame.World
             else
             {
                 //not a rigidbody; brake-slide behavior
-                Velocity -= getBrakeVector();
+                Velocity += getBrakeVector();
             }
 
             /*

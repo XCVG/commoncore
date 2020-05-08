@@ -256,5 +256,40 @@ namespace CommonCore.World
                 Debug.Log($"Couldn't find active camera!");
         }
 
+        [Command]
+        static void ListAllEntities()
+        {
+            var entities = CoreUtils.LoadResources<GameObject>("Entities/");
+            StringBuilder sb = new StringBuilder(entities.Length * 32);
+            foreach(var entity in entities)
+            {
+                sb.AppendLine(entity.name);
+            }
+            ConsoleModule.WriteLine(sb.ToString());
+        }
+
+        [Command]
+        static void ListAllEffects()
+        {
+            var effects = CoreUtils.LoadResources<GameObject>("Effects/");
+            StringBuilder sb = new StringBuilder(effects.Length * 32);
+            foreach (var effect in effects)
+            {
+                sb.AppendLine(effect.name);
+            }
+            ConsoleModule.WriteLine(sb.ToString());
+        }
+
+        [Command(alias = "Reset", useClassName = false)]
+        static void Reset()
+        {
+            string sceneName = SceneManager.GetActiveScene().name;
+
+            GameState.Instance.LocalDataState.Remove(sceneName);
+            GameState.Instance.LocalObjectState.Remove(sceneName);
+
+            SceneManager.LoadScene(sceneName);
+        }
+
     }
 }

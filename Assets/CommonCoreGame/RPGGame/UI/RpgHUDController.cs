@@ -102,12 +102,7 @@ namespace CommonCore.RpgGame.UI
             if(base.HandleMessage(message))
             {
                 return true;
-            }
-            else if(message is HUDPushMessage)
-            {
-                AppendHudMessage(Sub.Macro(((HUDPushMessage)message).Contents));
-                return true;
-            }
+            }            
             else if(message is ConfigChangedMessage)
             {
                 SetDamageFadeVisibility();

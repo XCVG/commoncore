@@ -13,6 +13,18 @@ using UnityEngine;
 public static class TestConsoleCommands
 {
     [Command]
+    public static void CCTestCommand()
+    {
+        Debug.Log("hello world");
+    }
+
+    [Command]
+    public static void CCTestArgCommand(string mystring)
+    {
+        Debug.Log(mystring);
+    }
+
+    [Command]
     public static void DumpQualitySettings()
     {
         Dictionary<string, Dictionary<string, object>> allQSettings = new Dictionary<string, Dictionary<string, object>>();

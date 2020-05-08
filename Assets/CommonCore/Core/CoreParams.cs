@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -22,20 +23,22 @@ namespace CommonCore
         public static ScriptingImplementation ScriptingBackend { get; private set; } //auto-set
 
         //*****game version info
+        public static string CompanyName { get; private set; } //auto-set from Unity settings
         public static string GameName { get; private set; } //auto-set from Unity settings
         public static Version GameVersion { get; private set; } //auto-set from Unity settings
-        public static string GameVersionName { get; private set; } = "";
+        public static string GameVersionName { get; private set; } = "Test";
 
         //*****basic config settings
         public static bool AutoInit { get; private set; } = true;
         public static ImmutableArray<string> ExplicitModules { get; private set; } = new string[] { "DebugModule", "QdmsMessageBus", "ConfigModule", "AsyncModule", "ScriptingModule", "ConsoleModule" }.ToImmutableArray();
         private static DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
         public static string PreferredCommandConsole { get; private set; } = "SickDevConsoleImplementation";
+        public static bool UseSeparateEditorConfigFile { get; private set; } = false; //if set, will use config.editor.json while in editor
         private static WindowsPersistentDataPath PersistentDataPathWindows = WindowsPersistentDataPath.Roaming;
         private static bool CorrectWindowsLocalDataPath = false; //if set, use AppData/Local/* instead of AppData/LocalLow/* for LocalDataPath
         private static bool UseGlobalScreenshotFolder = true; //ignored on UWP and probably other platforms
-        public static bool SetSafeResolutionOnExit = true;
-        public static Vector2Int SafeResolution = new Vector2Int(1280, 720);
+        public static bool SetSafeResolutionOnExit { get; private set; } = true;
+        public static Vector2Int SafeResolution { get; private set; } = new Vector2Int(1280, 720);
 
         //*****additional config settings
         public static float DelayedEventPollInterval { get; private set; } = 1.0f;
@@ -87,7 +90,23 @@ namespace CommonCore
         {
             get
             {
-                return PersistentDataPath + "/saves";
+                return PersistentDataPath + Path.DirectorySeparatorChar + "saves";
+            }
+        }
+
+        public static string FinalSavePath
+        {
+            get
+            {
+                return PersistentDataPath + Path.DirectorySeparatorChar + "finalsave";
+            }
+        }
+
+        public static string DebugPath
+        {
+            get
+            {
+                return PersistentDataPath + Path.DirectorySeparatorChar + "debug";
             }
         }
 
@@ -117,6 +136,7 @@ namespace CommonCore
             UnityVersion = TypeUtils.ParseVersion(Application.unityVersion);
             UnityVersionName = Application.unityVersion;
             GameName = Application.productName;
+            CompanyName = Application.companyName;
 
             try
             {
@@ -206,6 +226,27 @@ namespace CommonCore
             {
                 Debug.LogError($"Failed to create screenshots directory ({ScreenshotsPath})");
                 Debug.LogException(e);
+            }
+        }
+
+        /// <summary>
+        /// Attempts to load overrides from file
+        /// </summary>
+        internal static void LoadOverrides()
+        {
+            string path = Path.Combine(GameFolderPath, "coreparams.json");
+            if (File.Exists(path))
+            {
+                try
+                {
+                    TypeUtils.PopulateStaticObject(typeof(CoreParams), File.ReadAllText(path), new JsonSerializerSettings() { Converters = CCJsonConverters.Defaults.Converters, NullValueHandling = NullValueHandling.Ignore });
+                    Debug.LogWarning($"Loaded coreparams overrides from file (this may cause really weird things to happen)");
+                }
+                catch(Exception e)
+                {
+                    Debug.LogError($"Failed to load coreparams overrides from file!");
+                    Debug.LogException(e);
+                }
             }
         }
 

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using CommonCore.Input;
 using System.Collections;
+using CommonCore.LockPause;
 
 namespace CommonCore
 {
@@ -23,8 +24,11 @@ namespace CommonCore
         {
             for (float elapsed = 0; elapsed < time; elapsed += Time.deltaTime)
             {
-                if (MappedInput.GetButtonDown(SkipButton) || MappedInput.GetButtonDown(AltSkipButton) || MappedInput.GetButtonDown(TerSkipButton))
-                    break;
+                if (!LockPauseModule.IsInputLocked())
+                {
+                    if (MappedInput.GetButtonDown(SkipButton) || MappedInput.GetButtonDown(AltSkipButton) || MappedInput.GetButtonDown(TerSkipButton))
+                        break;
+                }
 
                 yield return null;
             }
@@ -39,8 +43,11 @@ namespace CommonCore
         {
             for (float elapsed = 0; elapsed < time; elapsed += Time.unscaledDeltaTime)
             {
-                if (MappedInput.GetButtonDown(SkipButton) || MappedInput.GetButtonDown(AltSkipButton) || MappedInput.GetButtonDown(TerSkipButton))
-                    break;
+                if (!LockPauseModule.IsInputLocked())
+                {
+                    if (MappedInput.GetButtonDown(SkipButton) || MappedInput.GetButtonDown(AltSkipButton) || MappedInput.GetButtonDown(TerSkipButton))
+                        break;
+                }
 
                 yield return null;
             }
@@ -56,8 +63,11 @@ namespace CommonCore
         {
             for(float elapsed = 0; elapsed < time; elapsed += Time.deltaTime)
             {
-                if (MappedInput.GetButtonDown(SkipButton) || MappedInput.GetButtonDown(AltSkipButton) || MappedInput.GetButtonDown(TerSkipButton))
-                    break;
+                if (!LockPauseModule.IsInputLocked())
+                {
+                    if (MappedInput.GetButtonDown(SkipButton) || MappedInput.GetButtonDown(AltSkipButton) || MappedInput.GetButtonDown(TerSkipButton))
+                        break;
+                }
 
                 await Task.Yield();
             }
@@ -73,8 +83,11 @@ namespace CommonCore
         {
             for (float elapsed = 0; elapsed < time; elapsed += Time.unscaledDeltaTime)
             {
-                if (MappedInput.GetButtonDown(SkipButton) || MappedInput.GetButtonDown(AltSkipButton) || MappedInput.GetButtonDown(TerSkipButton))
-                    break;
+                if (!LockPauseModule.IsInputLocked())
+                {
+                    if (MappedInput.GetButtonDown(SkipButton) || MappedInput.GetButtonDown(AltSkipButton) || MappedInput.GetButtonDown(TerSkipButton))
+                        break;
+                }
 
                 await Task.Yield();
             }

@@ -96,9 +96,7 @@ public static class SharedConsoleCommands
     [Command]
     static void Load(string name)
     {
-        GameState.DeserializeFromFile(CoreParams.SavePath + @"\" + name);
-
-        Restore();
+        SharedUtils.LoadGame(name, true);
     }
 
     /// <summary>
@@ -107,7 +105,7 @@ public static class SharedConsoleCommands
     [Command]
     static void Restore()
     {
-        MetaState.Instance.TransitionType = SceneTransitionType.LoadGame;
+        MetaState.Instance.TransitionType = SceneTransitionType.LoadGame; //?
         BaseSceneController bsc = SharedUtils.GetSceneController();
         bsc.Restore();
     }
@@ -128,9 +126,16 @@ public static class SharedConsoleCommands
     [Command]
     static void Save(string name)
     {
-        Commit();
+        SharedUtils.SaveGame(name, true, true);
+    }
 
-        GameState.SerializeToFile(CoreParams.SavePath + @"\" + name);
+    /// <summary>
+    /// Creates a final save
+    /// </summary>
+    [Command]
+    static void FinalSave()
+    {
+        SaveUtils.DoFinalSave();
     }
 
     //***** WARP

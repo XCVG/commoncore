@@ -1,9 +1,11 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -105,6 +107,11 @@ namespace CommonCore
             if (targetType.IsEnum && value is string stringValue)
             {
                 return Enum.Parse(targetType, stringValue, true); //ignore case to taste
+            }
+
+            if(targetType.IsEnum && (typeof(long).IsAssignableFrom(value.GetType()) || typeof(ulong).IsAssignableFrom(value.GetType())))
+            {
+                return Enum.ToObject(targetType, value);
             }
 
             return Convert.ChangeType(value, targetType);
@@ -345,6 +352,41 @@ namespace CommonCore
                     return 0;
 
                 return int.Parse(segment);
+            }
+        }
+
+        /// <summary>
+        /// Populates a static object with properties deserialzed from JSON
+        /// </summary>
+        /// <remarks>Based on an answer to https://stackoverflow.com/questions/50340801/deserializing-a-json-file-into-a-static-class-in-c-sharp</remarks>
+        public static void PopulateStaticObject(Type type, string json, JsonSerializerSettings settings)
+        {
+            var source = JsonConvert.DeserializeObject<JToken>(json, settings);
+
+            var destinationProperties = type.GetProperties(BindingFlags.Public | BindingFlags.Static);
+
+            foreach (JProperty prop in source)
+            {
+                var destinationProp = destinationProperties
+                    .SingleOrDefault(p => p.Name.Equals(prop.Name, StringComparison.OrdinalIgnoreCase));
+                if (destinationProp == null)
+                    continue;
+                var value = ((JValue)prop.Value).Value;
+
+                destinationProp.SetValue(null, CoerceValue(value, destinationProp.PropertyType));
+            }
+
+            var destinationFields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
+
+            foreach (JProperty prop in source)
+            {
+                var destinationField = destinationFields
+                    .SingleOrDefault(p => p.Name.Equals(prop.Name, StringComparison.OrdinalIgnoreCase));
+                if (destinationField == null)
+                    continue;
+                var value = ((JValue)prop.Value).Value;
+
+                destinationField.SetValue(null, CoerceValue(value, destinationField.FieldType));
             }
         }
 

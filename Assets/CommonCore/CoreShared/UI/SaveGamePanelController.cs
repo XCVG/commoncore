@@ -171,7 +171,7 @@ namespace CommonCore.UI
 
                     saveName = SelectedSaveName; //we know it already has a prefix
                     saveFileName = saveName + ".json";
-                    string savePath = CoreParams.SavePath + @"\" + saveName + ".json";
+                    string savePath = CoreParams.SavePath + Path.DirectorySeparatorChar + saveName + ".json";
                     if (File.Exists(savePath))
                         File.Delete(savePath); //this "works" but seems to be bugged- race condition?
                 }
@@ -184,7 +184,7 @@ namespace CommonCore.UI
                 {
                     try
                     {
-                        SharedUtils.SaveGame(saveFileName, true);
+                        SharedUtils.SaveGame(saveFileName, true, false);
                         Modal.PushMessageModal(Sub.Replace("SaveSuccessMessage", SubList), Sub.Replace("SaveSuccess", SubList), null, null);
                     }
                     catch(Exception e)

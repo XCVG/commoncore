@@ -19,6 +19,7 @@ namespace CommonCore.World
         public ActorHitInfo HitInfo;
         public float StayTime = 0;
         public float MaxDist = 10000f;
+        public float FakeGravity = 0;
 
         public bool FiredByPlayer = false;
 
@@ -31,6 +32,15 @@ namespace CommonCore.World
             Rigidbody = GetComponent<Rigidbody>();
 
             Update(); //seems legit
+        }
+
+        private void FixedUpdate()
+        {
+            //fake gravity
+            if (FakeGravity > 0)
+            {
+                Rigidbody.AddForce(Physics.gravity * FakeGravity * Time.fixedDeltaTime, ForceMode.Acceleration);
+            }
         }
 
         private void Update()
@@ -47,7 +57,7 @@ namespace CommonCore.World
                 }
             }
 
-            if(transform.position.magnitude > MaxDist)
+            if (transform.position.magnitude > MaxDist)
             {
                 //Debug.Log($"Destroying {name} because it's really far away");
                 Destroy(this.gameObject);
@@ -69,7 +79,7 @@ namespace CommonCore.World
 
                 float damageMultiplier;
                 bool allDamageIsPierce;
-                if(hit.Hitbox != null)
+                if (hit.Hitbox != null)
                 {
                     //Debug.Log((hit.Hitbox as MonoBehaviour)?.name);
                     damageMultiplier = hit.Hitbox.DamageMultiplier;
@@ -133,7 +143,7 @@ namespace CommonCore.World
                 HitInfo.Damage *= damageMultiplier;
                 HitInfo.DamagePierce *= damageMultiplier;
 
-                if(allDamageIsPierce)
+                if (allDamageIsPierce)
                 {
                     HitInfo.DamagePierce += HitInfo.Damage;
                     HitInfo.Damage = 0;
@@ -151,7 +161,7 @@ namespace CommonCore.World
                 }
             }
 
-            if(HitInfo.HitCoords == null)
+            if (HitInfo.HitCoords == null)
                 HitInfo.HitCoords = transform.position;
 
             if (hitmaterial > 0)

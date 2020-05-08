@@ -20,8 +20,10 @@ namespace CommonCore
         public bool AutoCommit = true;
 
         public bool AutoinitUi = true;
-        public bool AutoinitHud = false;
+        public bool AutoinitHud = true;
         public bool AutoinitState = true;
+
+        public string HudOverride = null;
 
         public static BaseSceneController Current { get; protected set; }
 
@@ -45,6 +47,10 @@ namespace CommonCore
         /// Set this to true to enable quicksave handling in this scene
         /// </summary>
         protected virtual bool AllowQuicksaveInScene => false;
+        /// <summary>
+        /// Override this to set a different default HUD object
+        /// </summary>
+        protected virtual string DefaultHud => "DefaultHUD";
 
         public virtual void Awake()
         {
@@ -143,8 +149,8 @@ namespace CommonCore
 
         protected void InitHUD()
         {
-            if (CoreUtils.GetUIRoot().Find("WorldHUD") == null)
-                Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/DefaultWorldHUD"), CoreUtils.GetUIRoot()).name = "WorldHUD";
+            if (CoreUtils.GetUIRoot().Find("HUD") == null)
+                Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>($"UI/{(string.IsNullOrEmpty(HudOverride) ? DefaultHud : HudOverride)}"), CoreUtils.GetUIRoot()).name = "HUD";
         }
 
         public virtual void Commit()

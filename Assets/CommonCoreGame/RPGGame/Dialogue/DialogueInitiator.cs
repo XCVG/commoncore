@@ -2,6 +2,8 @@
 using CommonCore.Console;
 using CommonCore.LockPause;
 using System;
+using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,6 +13,9 @@ namespace CommonCore.RpgGame.Dialogue
 
     public class DialogueInitiator
     {        
+        /// <summary>
+        /// Initiates dialogue, optionally running a callback method on completion
+        /// </summary>
         public static void InitiateDialogue(string dialogue, bool pause, DialogueFinishedDelegate callback)
         {
             DialogueController.CurrentDialogue = dialogue;
@@ -20,6 +25,31 @@ namespace CommonCore.RpgGame.Dialogue
             if (pause)
                 LockPauseModule.PauseGame(PauseLockType.All, go);
 
+        }
+
+        /// <summary>
+        /// Initiates dialogue and waits for completion (async/await variant)
+        /// </summary>
+        public static async Task RunDialogueAsync(string dialogue, bool pause)
+        {
+            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+            InitiateDialogue(dialogue, pause, () => {
+                tcs.SetResult(true);
+            });
+            await tcs.Task;
+        }
+
+        /// <summary>
+        /// Initiates dialogue and waits for completion (IEnumerator coroutine variant)
+        /// </summary>
+        public static IEnumerator RunDialogueCoroutine(string dialogue, bool pause)
+        {
+            bool complete = false;
+            InitiateDialogue(dialogue, pause, () => {
+                complete = true;
+            });
+            while (!complete)
+                yield return null;
         }
 
         [Command(alias = "Test", className = "Monologue")]

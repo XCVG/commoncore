@@ -10,6 +10,7 @@ namespace CommonCore.ObjectActions
     public class UnityEventSpecial : ActionSpecial
     {
         public UnityEvent Event;
+        public ActionSpecialEvent ActionEvent;
 
         private bool Locked;
 
@@ -18,7 +19,10 @@ namespace CommonCore.ObjectActions
             if (Locked || (!AllowInvokeWhenDisabled && !isActiveAndEnabled))
                 return;
 
-            Event.Invoke();
+            if(Event != null)
+                Event.Invoke();
+            if(ActionEvent != null)
+                ActionEvent.Invoke(data);
 
             if (!Repeatable)
                 Locked = true;

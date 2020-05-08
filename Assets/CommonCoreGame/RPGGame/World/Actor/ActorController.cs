@@ -89,11 +89,27 @@ namespace CommonCore.RpgGame.World
 
         private QdmsMessageInterface MessageInterface;
 
+        float ITakeDamage.Health => Health;
+
+        public override HashSet<string> Tags
+        {
+            get
+            {
+                if (_Tags == null)
+                {
+                    _Tags = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+                    _Tags.Add("Actor");
+                    if (EntityTags != null && EntityTags.Length > 0)
+                        Tags.UnionWith(EntityTags);
+                }
+
+                return _Tags;
+            }
+        }
+
         public override void Awake()
         {
             base.Awake();
-
-            Tags.Add("Actor");
 
             MessageInterface = new QdmsMessageInterface(this.gameObject);
             MessageInterface.SubscribeReceiver(HandleMessage);            
@@ -653,7 +669,7 @@ namespace CommonCore.RpgGame.World
 
             damageTaken *= (1f / ConfigState.Instance.GetGameplayConfig().Difficulty.ActorStrength);
 
-            if(!Invincible)
+            if (!Invincible)
                 Health -= damageTaken;
 
             if (CurrentAiState == ActorAiState.Dead) //abort if we're already dead
@@ -664,16 +680,16 @@ namespace CommonCore.RpgGame.World
             if (Defensive && data.Originator != null && data.Originator != this)
             {
                 FactionRelationStatus relation = FactionRelationStatus.Neutral;
-                if(data.Originator is PlayerController)
+                if (data.Originator is PlayerController)
                 {
                     relation = FactionModel.GetRelation(Faction, "Player");
                 }
-                else if(data.Originator is ActorController)
+                else if (data.Originator is ActorController)
                 {
                     relation = FactionModel.GetRelation(Faction, ((ActorController)data.Originator).Faction);
                 }
 
-                if(relation != FactionRelationStatus.Friendly || Infighting)
+                if (relation != FactionRelationStatus.Friendly || Infighting)
                 {
                     Target = data.Originator.transform;
                     BeenHit = true;
@@ -682,15 +698,16 @@ namespace CommonCore.RpgGame.World
                         InteractionComponent.InteractionDisabledByHit = true;
 
                     if (FeelPain && didTakePain)
-                        EnterState(ActorAiState.Hurting);
-                    else
-                        EnterState(ActorAiState.Chasing);
+                        if (CurrentAiState != ActorAiState.Hurting)
+                            EnterState(ActorAiState.Hurting);
+                        else
+                            EnterState(ActorAiState.Chasing);
                 }
-                else
+                else if (CurrentAiState != ActorAiState.Hurting)
                     EnterState(ActorAiState.Hurting);
 
             }
-            else if(FeelPain && didTakePain)
+            else if (FeelPain && didTakePain && CurrentAiState != ActorAiState.Hurting)
                 EnterState(ActorAiState.Hurting);
         }
 

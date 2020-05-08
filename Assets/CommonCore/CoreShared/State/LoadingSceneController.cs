@@ -2,6 +2,7 @@
 using CommonCore.UI;
 using System;
 using System.Collections;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -46,7 +47,7 @@ namespace CommonCore.State
                 else if (MetaState.Instance.TransitionType == SceneTransitionType.LoadGame)
                 {
                     //we are loading a game, so load the game data and then load the next scene (which is part of save data)
-                    GameState.DeserializeFromFile(CoreParams.SavePath + @"\" + MetaState.Instance.LoadSave);
+                    GameState.DeserializeFromFile(CoreParams.SavePath + Path.DirectorySeparatorChar + MetaState.Instance.LoadSave);
                     MetaState.Instance.NextScene = GameState.Instance.CurrentScene;
                     ScriptingModule.CallHooked(ScriptHook.OnGameLoad, this);
                     StartCoroutine(LoadNextSceneAsync());

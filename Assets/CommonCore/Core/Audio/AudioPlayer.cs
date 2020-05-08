@@ -80,7 +80,7 @@ namespace CommonCore.Audio
         }
 
         private void Start()
-        {            
+        {
             MessageInterface = new QdmsMessageInterface(gameObject);
 
             //initialize music players
@@ -113,19 +113,19 @@ namespace CommonCore.Audio
         void Update()
         {
             //message bus integration
-            while(MessageInterface.HasMessageInQueue)
+            while (MessageInterface.HasMessageInQueue)
             {
                 HandleMessage(MessageInterface.PopFromQueue());
             }
 
             //run cleanup periodically
             TimeElapsed += Time.deltaTime;
-            if(TimeElapsed >= CleanupInterval)
+            if (TimeElapsed >= CleanupInterval)
             {
-                for(int i = PlayingSounds.Count-1; i >= 0; i--)
+                for (int i = PlayingSounds.Count - 1; i >= 0; i--)
                 {
                     var s = PlayingSounds[i];
-                    if(s.Source == null || !s.Source.isPlaying)
+                    if (s.Source == null || !s.Source.isPlaying)
                     {
                         Destroy(s.Source.gameObject);
                         PlayingSounds.RemoveAt(i);
@@ -140,7 +140,7 @@ namespace CommonCore.Audio
                 CurrentUserMusicComponent.ReportTime(MusicPlayers[MusicSlot.User].time);
 
             //handle track ended
-            if(MusicEnabled && CurrentUserMusicComponent != null && CurrentMusicSlot == MusicSlot.User && 
+            if (MusicEnabled && CurrentUserMusicComponent != null && CurrentMusicSlot == MusicSlot.User &&
                 !MusicPlayers[MusicSlot.User].isPlaying && MusicPlayers[MusicSlot.User].clip != null && MusicPlayers[MusicSlot.User].timeSamples == MusicPlayers[MusicSlot.User].clip.samples)
             {
                 CurrentUserMusicComponent.SignalTrackEnded();
@@ -149,7 +149,7 @@ namespace CommonCore.Audio
 
         private void HandleMessage(QdmsMessage message)
         {
-            if(message is QdmsFlagMessage)
+            if (message is QdmsFlagMessage)
             {
                 //TODO allow playing sounds by message
 
@@ -157,9 +157,9 @@ namespace CommonCore.Audio
                 switch (flagMessage.Flag)
                 {
                     case "ConfigChanged":
-                        if(CurrentMusicSlot != null)
+                        if (CurrentMusicSlot != null)
                         {
-                            foreach(var umc in UserMusicComponents)
+                            foreach (var umc in UserMusicComponents)
                             {
                                 umc.SignalAudioRestarted();
                             }
@@ -170,7 +170,7 @@ namespace CommonCore.Audio
                                 if (CurrentMusics[CurrentMusicSlot.Value].Playing) //needed if the audio system is totally reset
                                     MusicPlayers[CurrentMusicSlot.Value].Play(); //this doesn't work with user music
                             }
-                            
+
 
                         }
                         break;
@@ -201,12 +201,17 @@ namespace CommonCore.Audio
             }
 
             //handle unretain for all slots
-            foreach(var slot in CurrentMusics.Keys.ToArray())
+            foreach (var slot in CurrentMusics.Keys.ToArray())
             {
                 if (!CurrentMusics[slot].Retain)
                     CurrentMusics.Remove(slot);
             }
             HandleMusicChanged();
+        }
+
+        public void HandleGameEnd()
+        {
+            StopMusic(MusicSlot.User); //just this for now
         }
 
         private void HandleMusicChanged()
@@ -293,7 +298,7 @@ namespace CommonCore.Audio
         {
             Type uacType = uac.GetType();
 
-            if(UserMusicComponents.Find(x => x.GetType() == uacType) != null)
+            if (UserMusicComponents.Find(x => x.GetType() == uacType) != null)
             {
                 Debug.LogError($"Can't register UserMusicComponent of type {uacType} because an instance is already registered!");
                 throw new InvalidOperationException();
@@ -326,9 +331,9 @@ namespace CommonCore.Audio
                 }
             }
 
-            if(CurrentUserMusicComponent != null)
+            if (CurrentUserMusicComponent != null)
             {
-                if(CurrentMusics.ContainsKey(MusicSlot.User))
+                if (CurrentMusics.ContainsKey(MusicSlot.User))
                 {
                     AudioClip clip = CurrentMusics[MusicSlot.User].Clip;
                     CurrentMusics.Remove(MusicSlot.User);
@@ -337,7 +342,7 @@ namespace CommonCore.Audio
                     MusicPlayers[MusicSlot.User].Stop();
                     MusicPlayers[MusicSlot.User].clip = null;
 
-                    if(clip != null)
+                    if (clip != null)
                         CurrentUserMusicComponent.ReportClipReleased(clip);
                 }
 
@@ -346,7 +351,7 @@ namespace CommonCore.Audio
 
             CurrentUserMusicComponent = uac;
 
-            if(uac != null)
+            if (uac != null)
             {
                 CurrentUserMusicComponent.Enabled = true;
             }
@@ -354,7 +359,7 @@ namespace CommonCore.Audio
             {
                 HandleMusicChanged();
             }
-           
+
 
         }
 
@@ -379,7 +384,7 @@ namespace CommonCore.Audio
             {
                 var s = PlayingSounds[i];
                 Destroy(s.Source.gameObject);
-                PlayingSounds.RemoveAt(i);                
+                PlayingSounds.RemoveAt(i);
             }
         }
 
@@ -389,7 +394,7 @@ namespace CommonCore.Audio
         public void ClearAllMusic()
         {
             //explicitly release user clip if applicable
-            if(CurrentMusics.ContainsKey(MusicSlot.User))
+            if (CurrentMusics.ContainsKey(MusicSlot.User))
             {
                 MusicPlayers[MusicSlot.User].Stop();
                 var clip = MusicPlayers[MusicSlot.User].clip;
@@ -401,7 +406,7 @@ namespace CommonCore.Audio
             CurrentMusics.Clear();
 
             //stop and unload all musics
-            foreach(var musicSource in MusicPlayers.Values)
+            foreach (var musicSource in MusicPlayers.Values)
             {
                 musicSource.Stop();
                 musicSource.clip = null;
@@ -424,7 +429,7 @@ namespace CommonCore.Audio
             {
                 PlaySoundEx(sound, SoundType.Sound, true, true, false, false, 1.0f, Vector3.zero);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debug.LogWarning($"Failed to play sound {e.GetType().Name}");
             }
@@ -659,7 +664,7 @@ namespace CommonCore.Audio
             if (CurrentMusics.ContainsKey(slot))
             {
                 //release old clip from user music slot
-                if(slot == MusicSlot.User && CurrentMusics.ContainsKey(slot) && CurrentMusics[slot].Clip != null && CurrentMusics[slot].Clip != clip)
+                if (slot == MusicSlot.User && CurrentMusics.ContainsKey(slot) && CurrentMusics[slot].Clip != null && CurrentMusics[slot].Clip != clip)
                 {
                     MusicPlayers[MusicSlot.User].Stop();
                     var oldClip = MusicPlayers[MusicSlot.User].clip;
@@ -719,7 +724,7 @@ namespace CommonCore.Audio
         /// </summary>
         public void StartMusic(MusicSlot slot, bool restart)
         {
-            if(CurrentMusics.ContainsKey(slot))
+            if (CurrentMusics.ContainsKey(slot))
             {
                 CurrentMusics[slot].Playing = true;
                 if (restart)
@@ -769,9 +774,22 @@ namespace CommonCore.Audio
         /// </summary>
         public string GetMusicName(MusicSlot slot)
         {
-            if(CurrentMusics.ContainsKey(slot))
+            if (CurrentMusics.ContainsKey(slot))
             {
                 return CurrentMusics[slot].Name;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the volume of the current music in the slot, if it exists
+        /// </summary>
+        public float? GetMusicVolume(MusicSlot slot)
+        {
+            if(CurrentMusics.ContainsKey(slot))
+            {
+                return CurrentMusics[slot].Volume;
             }
 
             return null;

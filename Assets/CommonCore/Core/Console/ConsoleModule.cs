@@ -220,33 +220,4 @@ namespace CommonCore.Console
 
     }
 
-    /// <summary>
-    /// Test commands for the command system
-    /// </summary>
-    public class TestCommands
-    {
-        [Command]
-        public static void CCTestCommand()
-        {
-            Debug.Log("hello world");
-        }
-
-        [Command]
-        public static void CCTestArgCommand(string mystring)
-        {
-            Debug.Log(mystring);
-        }
-
-        [Command]
-        private static string GetVersion()
-        {
-            return string.Format("{0} {1} (Unity {2})", CoreParams.VersionCode, CoreParams.VersionName, CoreParams.UnityVersionName);
-        }
-
-        [Command]
-        private static void Quit()
-        {
-            Application.Quit();
-        }
-    }
 }

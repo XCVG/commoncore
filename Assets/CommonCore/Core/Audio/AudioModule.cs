@@ -18,7 +18,7 @@ namespace CommonCore.Audio
     /// </summary>
     public class AudioModule : CCModule
     {
-        //private static AudioModule Instance;
+        public AudioPlayer AudioPlayer { get; private set; }
 
         public AudioModule()
         {
@@ -26,9 +26,14 @@ namespace CommonCore.Audio
 
             //create AudioPlayer object
             GameObject audioObject = new GameObject("AudioPlayer");
-            AudioPlayer audioPlayer = audioObject.AddComponent<AudioPlayer>();
-            audioPlayer.SetModule(this);
+            AudioPlayer = audioObject.AddComponent<AudioPlayer>();
+            AudioPlayer.SetModule(this);
 
+        }
+
+        public override void OnGameEnd()
+        {
+            AudioPlayer.HandleGameEnd();
         }
 
         public AudioClip GetSound(string name, SoundType sType)

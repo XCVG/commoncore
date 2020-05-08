@@ -163,7 +163,7 @@ namespace CommonCore.World
             List<BaseController> foundObjects = new List<BaseController>();
             foreach (BaseController c in CoreUtils.GetWorldRoot().gameObject.GetComponentsInChildren<BaseController>(true))
             {
-                if (c.Tags.Contains(tag))
+                if (c.Tags != null && c.Tags.Count > 0 && c.Tags.Contains(tag))
                 {
                     foundObjects.Add(c);
                 }
@@ -172,16 +172,17 @@ namespace CommonCore.World
             return foundObjects;
         }
 
+        
         /// <summary>
         /// Sets parameters and loads a different scene
         /// </summary>
-        public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Vector3 rotation, bool skipLoading)
+        public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Quaternion rotation, bool skipLoading)
         {
             MetaState mgs = MetaState.Instance;
             if (spawnPoint != null)
                 mgs.PlayerIntent = new PlayerSpawnIntent(spawnPoint); //handle string.Empty as default spawn point
             else
-                mgs.PlayerIntent = new PlayerSpawnIntent(position, Quaternion.Euler(rotation));
+                mgs.PlayerIntent = new PlayerSpawnIntent(position, rotation);
 
             SharedUtils.ChangeScene(scene, skipLoading);
         }
@@ -189,15 +190,17 @@ namespace CommonCore.World
         /// <summary>
         /// Sets parameters and loads a different scene
         /// </summary>
-        public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Vector3 rotation)
-        {
-            ChangeScene(scene, spawnPoint, position, rotation, false);
-        }
+        public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Vector3 rotation, bool skipLoading) => ChangeScene(scene, spawnPoint, position, Quaternion.Euler(rotation), skipLoading);
+
+        /// <summary>
+        /// Sets parameters and loads a different scene
+        /// </summary>
+        public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Vector3 rotation) => ChangeScene(scene, spawnPoint, position, rotation, false);
 
         /// <summary>
         /// Spawn an entity into the world (entities/*)
         /// </summary>
-        public static GameObject SpawnEntity(string formID, string thingID, Vector3 position, Vector3 rotation, Transform parent)
+        public static GameObject SpawnEntity(string formID, string thingID, Vector3 position, Quaternion rotation, Transform parent)
         {
             if (parent == null)
                 parent = CoreUtils.GetWorldRoot();
@@ -206,7 +209,7 @@ namespace CommonCore.World
             if (prefab == null)
                 return null;
 
-            var go = UnityEngine.Object.Instantiate(prefab, position, Quaternion.Euler(rotation), parent) as GameObject;
+            var go = UnityEngine.Object.Instantiate(prefab, position, rotation, parent) as GameObject;
             if (string.IsNullOrEmpty(thingID))
                 thingID = string.Format("{0}_{1}", go.name.Replace("(Clone)", "").Trim(), GameState.Instance.NextUID);
             go.name = thingID;
@@ -214,14 +217,14 @@ namespace CommonCore.World
         }
 
         /// <summary>
-        /// Spawn an effect into the world (Effects/*)
+        /// Spawn an entity into the world (entities/*)
         /// </summary>
-        public static GameObject SpawnEffect(string effectID, Vector3 position, Vector3 rotation, Transform parent) => SpawnEffect(effectID, position, rotation, parent, false);
+        public static GameObject SpawnEntity(string formID, string thingID, Vector3 position, Vector3 rotation, Transform parent) => SpawnEntity(formID, thingID, position, Quaternion.Euler(rotation), parent);
 
         /// <summary>
         /// Spawn an effect into the world (Effects/*)
         /// </summary>
-        public static GameObject SpawnEffect(string effectID, Vector3 position, Vector3 rotation, Transform parent, bool useUniqueId)
+        public static GameObject SpawnEffect(string effectID, Vector3 position, Quaternion rotation, Transform parent, bool useUniqueId)
         {
             if (parent == null)
                 parent = CoreUtils.GetWorldRoot();
@@ -230,11 +233,21 @@ namespace CommonCore.World
             if (prefab == null)
                 return null;
 
-            var go = UnityEngine.Object.Instantiate(prefab, position, Quaternion.Euler(rotation), parent) as GameObject;
+            var go = UnityEngine.Object.Instantiate(prefab, position, rotation, parent) as GameObject;
             go.name = string.Format("{0}_{1}", go.name.Replace("(Clone)", "").Trim(), useUniqueId ? GameState.Instance.NextUID.ToString() : "fx");
 
             return go;
         }
+
+        /// <summary>
+        /// Spawn an effect into the world (Effects/*)
+        /// </summary>
+        public static GameObject SpawnEffect(string effectID, Vector3 position, Vector3 rotation, Transform parent, bool useUniqueId) => SpawnEffect(effectID, position, Quaternion.Euler(rotation), parent, useUniqueId);
+
+        /// <summary>
+        /// Spawn an effect into the world (Effects/*)
+        /// </summary>
+        public static GameObject SpawnEffect(string effectID, Vector3 position, Vector3 rotation, Transform parent) => SpawnEffect(effectID, position, rotation, parent, false);
 
         /// <summary>
         /// Check if this object is considered a CommonCore Entity

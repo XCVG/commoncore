@@ -48,6 +48,7 @@ namespace CommonCore
             Debug.Log("[Core] Initializing CommonCore...");
 
             CoreParams.SetInitial();
+            CoreParams.LoadOverrides();
             LoadGameTypes();
             InitializeResourceManager();
             HookMonobehaviourEvents();
@@ -156,17 +157,18 @@ namespace CommonCore
             //this is not efficient, but it's a hell of a lot more readable than a gigantic string.format
             StringBuilder sb = new StringBuilder(1024);
 
-            sb.AppendLine("----------------------------------------");
+            sb.AppendLine("---------------SYSTEM INFO---------------");
             sb.AppendFormat("{1} v{3} {4} by {0} (appversion: {2})\n", Application.companyName, Application.productName, Application.version, Application.version, CoreParams.GameVersionName);
             sb.AppendFormat("CommonCore {0} {1}\n", CoreParams.VersionCode.ToString(), CoreParams.VersionName);
             sb.AppendFormat("Unity {0} [{3} | {1} on {2}] [{4}]\n", Application.unityVersion, Application.platform, SystemInfo.operatingSystem, SystemInfo.graphicsDeviceType, CoreParams.ScriptingBackend);
             if (CoreParams.IsDebug)
                 sb.AppendLine("[DEBUG MODE]");
+            sb.AppendLine(SystemInfo.graphicsDeviceName);
             sb.AppendLine(Environment.CommandLine);
             sb.AppendFormat("DataPath: {0} | StreamingAssetsPath: {1} | GameFolderPath: {2}\n", CoreParams.DataPath, CoreParams.StreamingAssetsPath, CoreParams.GameFolderPath);
             sb.AppendFormat("PersistentDataPath: {0} | LocalDataPath: {1}\n", CoreParams.PersistentDataPath, CoreParams.LocalDataPath);
             sb.AppendFormat("SavePath: {0} | ScreenshotsPath: {1}\n", CoreParams.SavePath, CoreParams.ScreenshotsPath);            
-            sb.AppendLine("----------------------------------------");
+            sb.AppendLine("-----------------------------------------");
 
             Debug.Log(sb.ToString());
         }
@@ -442,7 +444,12 @@ namespace CommonCore
         {
             try
             {
+                Directory.CreateDirectory(CoreParams.LocalDataPath);
+                Directory.CreateDirectory(CoreParams.PersistentDataPath);
                 Directory.CreateDirectory(CoreParams.SavePath);
+                Directory.CreateDirectory(CoreParams.FinalSavePath);
+                Directory.CreateDirectory(CoreParams.DebugPath);
+                Directory.CreateDirectory(CoreParams.ScreenshotsPath);
             }
             catch(Exception e)
             {

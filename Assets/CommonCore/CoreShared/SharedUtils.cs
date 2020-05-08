@@ -92,9 +92,9 @@ namespace CommonCore
         /// Loads a saved game to state and transitions to its scene
         /// </summary>
         /// <param name="saveName">The name of the save file, with prefix and extension but without path</param>
-        public static void LoadGame(string saveName)
+        public static void LoadGame(string saveName, bool force)
         {
-            if (!CoreParams.AllowSaveLoad)
+            if (!force && !CoreParams.AllowSaveLoad)
                 throw new NotSupportedException("Save/Load is disabled in core params!");
 
             MetaState.Instance.Clear();
@@ -110,12 +110,12 @@ namespace CommonCore
         /// </summary>
         /// <param name="saveName">The name of the save file, with prefix and extension but without path</param>
         /// <param name="commit">Whether to commit or not</param>
-        public static void SaveGame(string saveName, bool commit)
+        public static void SaveGame(string saveName, bool commit, bool force)
         {
-            if (!CoreParams.AllowSaveLoad)
+            if (!force && !CoreParams.AllowSaveLoad)
                 throw new NotSupportedException("Save/Load is disabled in core params!");
 
-            string savePath = CoreParams.SavePath + @"\" + saveName;
+            string savePath = CoreParams.SavePath + Path.DirectorySeparatorChar + saveName;
             if(commit)
                 BaseSceneController.Current.Commit();
             DateTime savePoint = DateTime.Now;

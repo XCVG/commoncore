@@ -16,6 +16,17 @@ namespace CommonCore.UI
     }
 
     /// <summary>
+    /// Message signalling to clear the onscreen log
+    /// </summary>
+    public class HUDClearMessage : QdmsMessage
+    {
+        public HUDClearMessage() : base()
+        {
+
+        }
+    }
+
+    /// <summary>
     /// Message signaling a subtitle to display on screen
     /// </summary>
     public class SubtitleMessage : QdmsMessage

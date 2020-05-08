@@ -65,6 +65,15 @@ namespace CommonCore.UI
                 }
                 return true;
             }
+            else if (message is HUDClearMessage)
+            {
+                ClearHudMessages();
+            }
+            else if (message is HUDPushMessage)
+            {
+                AppendHudMessage(Sub.Macro(((HUDPushMessage)message).Contents));
+                return true;
+            }
 
             return false;
         }
@@ -85,7 +94,20 @@ namespace CommonCore.UI
 
         protected void AppendHudMessage(string newMessage)
         {
+            if (MessageText == null) //strictly speaking, it's optional
+                return;
+
             MessageText.text = MessageText.text + "\n" + newMessage;
+            Canvas.ForceUpdateCanvases();
+            MessageScrollRect.verticalNormalizedPosition = 0;
+        }
+
+        protected void ClearHudMessages()
+        {
+            if (MessageText == null) //strictly speaking, it's optional
+                return;
+
+            MessageText.text = string.Empty;
             Canvas.ForceUpdateCanvases();
             MessageScrollRect.verticalNormalizedPosition = 0;
         }

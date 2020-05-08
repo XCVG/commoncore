@@ -45,6 +45,7 @@ namespace CommonCore.UI
         public Text FovLabel;
         public Slider EffectDwellSlider;
         public Text EffectDwellLabel;
+        public Toggle ShowFpsToggle;
 
         [Header("Sound")]
         public Slider SoundVolumeSlider;
@@ -106,6 +107,8 @@ namespace CommonCore.UI
             ViewDistanceSlider.value = ConfigState.Instance.ViewDistance;
             FovSlider.value = Mathf.RoundToInt(ConfigState.Instance.FieldOfView);
             EffectDwellSlider.value = Mathf.RoundToInt(ConfigState.Instance.EffectDwellTime);
+
+            ShowFpsToggle.isOn = ConfigState.Instance.ShowFps;
 
             SoundVolumeSlider.value = ConfigState.Instance.SoundVolume;
             MusicVolumeSlider.value = ConfigState.Instance.MusicVolume;
@@ -237,11 +240,13 @@ namespace CommonCore.UI
             ConfigState.Instance.MaxFrames = FramerateSlider.value > 0 ? Mathf.RoundToInt(FramerateSlider.value) : -1;
             ConfigState.Instance.VsyncCount = Mathf.RoundToInt(VsyncSlider.value);
 
-            QualitySettings.SetQualityLevel( (int)GraphicsQualitySlider.value);
+            QualitySettings.SetQualityLevel( (int)GraphicsQualitySlider.value, true);
             ConfigState.Instance.AntialiasingQuality = (int)AntialiasingQualitySlider.value;
             ConfigState.Instance.ViewDistance = ViewDistanceSlider.value;
             ConfigState.Instance.FieldOfView = FovSlider.value;
             ConfigState.Instance.EffectDwellTime = EffectDwellSlider.value;
+
+            ConfigState.Instance.ShowFps = ShowFpsToggle.isOn;
 
             ConfigState.Instance.SoundVolume = SoundVolumeSlider.value;
             ConfigState.Instance.MusicVolume = MusicVolumeSlider.value;

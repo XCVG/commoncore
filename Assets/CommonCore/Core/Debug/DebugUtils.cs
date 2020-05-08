@@ -13,7 +13,6 @@ namespace CommonCore.DebugLog
     /// </summary>
     public static class DebugUtils
     {
-        private const string DebugPath = "debug";
         private const string DateFormat = "yyyy-MM-dd_HHmmss";
 
         /// <summary>
@@ -49,7 +48,7 @@ namespace CommonCore.DebugLog
             try
             {
                 string fileName = DateTime.Now.ToString(DateFormat) + "_" + name + ".json";
-                string filePath = Path.Combine(CoreParams.PersistentDataPath, DebugPath, fileName);
+                string filePath = Path.Combine(CoreParams.PersistentDataPath, CoreParams.DebugPath, fileName);
 
                 string jsonData = JsonStringify(o, true);
 
@@ -72,7 +71,7 @@ namespace CommonCore.DebugLog
             try
             {
                 string fileName = DateTime.Now.ToString(DateFormat) + "_" + name + ".txt";
-                string filePath = Path.Combine(CoreParams.PersistentDataPath, DebugPath, fileName);
+                string filePath = Path.Combine(CoreParams.PersistentDataPath, CoreParams.DebugPath, fileName);
 
                 if (!Directory.Exists(Path.GetDirectoryName(filePath)))
                     Directory.CreateDirectory(Path.GetDirectoryName(filePath));
@@ -93,7 +92,7 @@ namespace CommonCore.DebugLog
             try
             {
                 string fileName = DateTime.Now.ToString(DateFormat) + "_" + name + ".bin";
-                string filePath = Path.Combine(CoreParams.PersistentDataPath, DebugPath, fileName);
+                string filePath = Path.Combine(CoreParams.PersistentDataPath, CoreParams.DebugPath, fileName);
 
                 if (!Directory.Exists(Path.GetDirectoryName(filePath)))
                     Directory.CreateDirectory(Path.GetDirectoryName(filePath));

@@ -78,6 +78,8 @@ namespace CommonCore.World
         [Header("Debug")]
         public float Health;
 
+        float ITakeDamage.Health => Health;
+
         private bool IsDead = false;
         private bool ForceDeadState = false;
         private BaseController LastDamageDealer = null;

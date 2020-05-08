@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,10 +11,27 @@ namespace CommonCore.World
         //I call it the "work around unity" design pattern
         public string EditorFormID;
         public string FormID { get; private set; }
+        [SerializeField]
+        protected string[] EntityTags;
 
         public int HitMaterial = 0;
 
-        public HashSet<string> Tags; //these are NOT unity tags!
+        public virtual HashSet<string> Tags
+        {
+            get
+            {
+                if(_Tags == null)
+                {
+                    _Tags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                    if (EntityTags != null && EntityTags.Length > 0)
+                        Tags.UnionWith(EntityTags);
+                }
+
+                return _Tags;
+            }
+        }
+        protected HashSet<string> _Tags;
 
         public virtual void Awake()
         {
@@ -25,10 +43,6 @@ namespace CommonCore.World
                 Debug.LogWarning("TID is the same as FID (did you forget to assign TID?)");
             }
 
-            if(Tags == null)
-            {
-                Tags = new HashSet<string>();
-            }
         }
 
         // Use this for initialization

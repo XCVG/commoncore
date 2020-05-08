@@ -88,7 +88,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaIndirect: 2
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ShowResolutionOverlay: 1
-  m_LightingDataAsset: {fileID: 112000000, guid: 41fe3e4aaf0df6b4992c7880d0a2de44,
+  m_LightingDataAsset: {fileID: 112000000, guid: dabd8488233b7fc489fbc0a507d32369,
     type: 2}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -273,19 +273,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b7c2cb90a0781644b3014f1633bd6cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AutosaveOnEnter: 0
-  AutosaveOnExit: 1
-  AutoRestore: 1
-  AutoCommit: 1
   AutoinitUi: 1
   AutoinitHud: 0
   AutoinitState: 1
-  AllowQuicksave: 1
   AutoGameover: 1
+  Autoload: 1
   SetMusic: 
-  WorldBounds:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 1000, y: 1000, z: 500}
 --- !u!114 &175064702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -363,11 +356,6 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 10
       objectReference: {fileID: 0}
-    - target: {fileID: 95443514302475540, guid: 3f6f1049247585146b5f703e29829950,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: d7dbe25864372ce48ad1ff4d5595e15e, type: 2}
     - target: {fileID: 114344645711853442, guid: 3f6f1049247585146b5f703e29829950,
         type: 3}
       propertyPath: CorpseItems.Items.Array.size
@@ -413,6 +401,11 @@ PrefabInstance:
       propertyPath: InteractionTarget
       value: DemoTest
       objectReference: {fileID: 0}
+    - target: {fileID: 95443514302475540, guid: 3f6f1049247585146b5f703e29829950,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: d7dbe25864372ce48ad1ff4d5595e15e, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3f6f1049247585146b5f703e29829950, type: 3}
 --- !u!4 &183910587
@@ -954,7 +947,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EditorFormID: debug_ball
-  HitMaterial: 0
+  Tags: []
 --- !u!54 &681029983
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1373,6 +1366,11 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 114399906522207162, guid: cd005af43e73e74428bc7e6a16566c7f,
+        type: 3}
+      propertyPath: AutoinitHud
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 114071243785619744, guid: cd005af43e73e74428bc7e6a16566c7f,
         type: 3}
       propertyPath: m_ShowToolkit
@@ -1383,20 +1381,15 @@ PrefabInstance:
       propertyPath: antialiasingMode
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114399906522207162, guid: cd005af43e73e74428bc7e6a16566c7f,
+    - target: {fileID: 1491905935902915833, guid: cd005af43e73e74428bc7e6a16566c7f,
         type: 3}
-      propertyPath: AutoinitHud
+      propertyPath: UseAggressiveConfigurationCheck
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114577494278041528, guid: cd005af43e73e74428bc7e6a16566c7f,
         type: 3}
       propertyPath: antialiasingMode
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1491905935902915833, guid: cd005af43e73e74428bc7e6a16566c7f,
-        type: 3}
-      propertyPath: UseAggressiveConfigurationCheck
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7874645604441645901, guid: cd005af43e73e74428bc7e6a16566c7f,
         type: 3}
@@ -1753,7 +1746,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EditorFormID: spec_container
-  HitMaterial: 0
+  Tags: []
   LocalContainer:
     Items:
     - Quantity: 1
@@ -1824,7 +1817,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Repeatable: 1
-  AllowInvokeWhenDisabled: 0
   Microscripts:
   - Type: 6
     Target: Test.NoArgs
@@ -2061,7 +2053,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Repeatable: 1
-  AllowInvokeWhenDisabled: 0
   Microscripts:
   - Type: 7
     Target: TestShinySphere
@@ -2210,7 +2201,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Repeatable: 1
-  AllowInvokeWhenDisabled: 0
   Script: Test.HelloWorld
   ScriptArguments: []
   AutoconvertArguments: 0
@@ -2489,7 +2479,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EditorFormID: spec_container
-  HitMaterial: 0
+  Tags: []
   LocalContainer:
     Items: []
   SharedContainer: TestSharedContainer
@@ -2630,10 +2620,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 175064700}
     m_Modifications:
-    - target: {fileID: 1459372254336898, guid: f3543b6421601124b8692e426b9e6518, type: 3}
-      propertyPath: m_Name
-      value: npc_mhguy
-      objectReference: {fileID: 0}
     - target: {fileID: 4323876786651924, guid: f3543b6421601124b8692e426b9e6518, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.6667945
@@ -2677,6 +2663,10 @@ PrefabInstance:
     - target: {fileID: 4323876786651924, guid: f3543b6421601124b8692e426b9e6518, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1459372254336898, guid: f3543b6421601124b8692e426b9e6518, type: 3}
+      propertyPath: m_Name
+      value: npc_mhguy
       objectReference: {fileID: 0}
     - target: {fileID: 95180931477446130, guid: f3543b6421601124b8692e426b9e6518,
         type: 3}

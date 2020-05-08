@@ -1,6 +1,8 @@
 ﻿using CommonCore.Config;
 using CommonCore.StringSub;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -146,7 +148,7 @@ namespace CommonCore.State
                 return null;
         }
 
-        //all these should be "safe" (log errors instead of throwing) and check conditions themselves
+        //all non-Ex should be "safe" (log errors instead of throwing) and check conditions themselves
 
         /// <summary>
         /// Creates a quicksave, if allowed to do so, displaying an indicator and suppressing exceptions
@@ -155,7 +157,7 @@ namespace CommonCore.State
         {
             try
             {
-                DoQuickSave(false);
+                DoQuickSaveEx(false);
                 ShowSaveIndicator(SaveStatus.Success);
             }
             catch (Exception e)
@@ -177,7 +179,8 @@ namespace CommonCore.State
         /// <summary>
         /// Creates a quicksave
         /// </summary>
-        public static void DoQuickSave(bool force)
+        /// <remarks>Note that this does not display the indicator and can throw exceptions</remarks>
+        public static void DoQuickSaveEx(bool force)
         {
 
             if (!CoreParams.AllowSaveLoad)
@@ -193,7 +196,7 @@ namespace CommonCore.State
             string saveFileName = $"q_{campaignId}.json";
             //string saveFilePath = Path.Combine(CoreParams.SavePath, saveFileName);
 
-            SharedUtils.SaveGame(saveFileName, true);
+            SharedUtils.SaveGame(saveFileName, true, false);
 
             Debug.Log($"Quicksave complete ({saveFileName})");
 
@@ -220,7 +223,7 @@ namespace CommonCore.State
 
                 if(File.Exists(saveFilePath))
                 {
-                    SharedUtils.LoadGame(saveFileName);
+                    SharedUtils.LoadGame(saveFileName, false);
                 }
                 else
                 {
@@ -238,13 +241,41 @@ namespace CommonCore.State
         }
 
         /// <summary>
+        /// Loads the quicksave if it exists
+        /// </summary>
+        /// <remarks>Note that this does not display the indicator and can throw exceptions</remarks>
+        public static void DoQuickLoadEx()
+        {
+
+            if (!CoreParams.AllowSaveLoad)
+                throw new NotSupportedException();
+
+            //quicksave format will be q_<hash>
+            //since we aren't supporting campaign-unique autosaves yet, hash will just be 0
+
+            string campaignId = "0";
+            string saveFileName = $"q_{campaignId}.json";
+            string saveFilePath = Path.Combine(CoreParams.SavePath, saveFileName);
+
+            if (File.Exists(saveFilePath))
+            {
+                SharedUtils.LoadGame(saveFileName, false);
+            }
+            else
+            {
+                throw new FileNotFoundException("Quickload file could not be found");
+            }
+
+        }
+
+        /// <summary>
         /// Creates an autosave, if allowed to do so, displaying an indicator and suppressing exceptions
         /// </summary>
         public static void DoAutoSave()
         {
             try
             {
-                DoAutoSave(false);
+                DoAutoSaveEx(false);
 
                 ShowSaveIndicator(SaveStatus.Success);
 
@@ -268,7 +299,8 @@ namespace CommonCore.State
         /// <summary>
         /// Creates an autosave
         /// </summary>
-        public static void DoAutoSave(bool force)
+        /// <remarks>Note that this does not display the indicator and can throw exceptions</remarks>
+        public static void DoAutoSaveEx(bool force)
         {
             if (!CoreParams.AllowSaveLoad)
             {
@@ -295,6 +327,7 @@ namespace CommonCore.State
 
             //Debug.Log(savesFInfo.Select(f => f.Name).ToNiceString());
 
+            List<int> knownSaveIds = new List<int>();
             int highestSaveId = 1;
             foreach(var saveFI in savesFInfo)
             {
@@ -302,37 +335,85 @@ namespace CommonCore.State
                 {
                     var nameParts = Path.GetFileNameWithoutExtension(saveFI.Name).Split('_');
                     int saveId = int.Parse(nameParts[2]);
+                    knownSaveIds.Add(saveId);
                     if (saveId > highestSaveId)
                         highestSaveId = saveId;
                 }
                 catch(Exception)
                 {
-                    Debug.LogError($"Found an invalid save file: {saveFI.Name}");
+                    Debug.LogWarning($"Found an invalid save file: {saveFI.Name}");
                 }
             }
 
             //save this autosave
             string newSaveName = $"a_{campaignId}_{highestSaveId + 1}.json";
-            SharedUtils.SaveGame(newSaveName, false);
+            SharedUtils.SaveGame(newSaveName, false, false);
 
             //remove old autosaves
+            //this I think is the broken part
+            knownSaveIds.Sort();
             int numAutosaves = savesFInfo.Length + 1;
-            for(int i = savesFInfo.Length - 1; i >= 0 && numAutosaves > ConfigState.Instance.AutosaveCount; i--)
+            if(numAutosaves > ConfigState.Instance.AutosaveCount)
             {
-                var saveFI = savesFInfo[i];
-                try
+                int autosavesToDelete = numAutosaves - ConfigState.Instance.AutosaveCount;
+                while(autosavesToDelete > 0)
                 {
-                    File.Delete(Path.Combine(CoreParams.SavePath, saveFI.Name));
-                    numAutosaves--;
-                }
-                catch(Exception)
-                {
-                    Debug.LogError($"Failed to delete save file: {saveFI.Name}");
+                    string oldSaveName = $"a_{campaignId}_{knownSaveIds[0]}.json";
+                    try
+                    {
+                        File.Delete(Path.Combine(CoreParams.SavePath, oldSaveName));
+                        
+                    }
+                    catch(Exception e)
+                    {
+                        Debug.LogWarning($"Failed to delete save file: {oldSaveName} ({e.GetType().Name})");
+                    }
+
+                    knownSaveIds.RemoveAt(0);
+                    autosavesToDelete--;
+
                 }
             }
 
             Debug.Log($"Autosave complete ({newSaveName})");
 
+        }
+
+        /// <summary>
+        /// Creates a full finalsave, displaying an indicator and suppressing exceptions
+        /// </summary>
+        public static void DoFinalSave()
+        {
+            try
+            {
+                DoFinalSaveEx();
+                ShowSaveIndicator(SaveStatus.Success);
+            }
+            catch (Exception e)
+            {
+
+                Debug.LogError($"An error occurred during the finalsave process ({e.GetType().Name})");
+                Debug.LogException(e);
+                ShowSaveIndicator(SaveStatus.Error);
+                
+            }
+        }
+
+        /// <summary>
+        /// Creates a full finalsave
+        /// </summary>
+        /// <remarks>
+        /// <para>Ignores all restrictions on saving; finalsaves are special</para>
+        /// <para>Does not commit scene state before saving</para>
+        /// </remarks>
+        public static void DoFinalSaveEx()
+        {
+            string finalSaveName = $"finalsave_{DateTime.Now.ToString("yyyy-MM-dd_HHmmss", CultureInfo.InvariantCulture)}.json";
+            string savePath = CoreParams.FinalSavePath + Path.DirectorySeparatorChar + finalSaveName;
+            DateTime savePoint = DateTime.Now;
+            GameState.SerializeToFile(savePath);
+            File.SetCreationTime(savePath, savePoint);
+            Debug.Log($"Finalsave complete ({finalSaveName})");
         }
 
         private enum SaveStatus

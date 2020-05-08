@@ -1,4 +1,5 @@
-﻿using CommonCore.DelayedEvents;
+﻿using CommonCore.Config;
+using CommonCore.DelayedEvents;
 using CommonCore.Scripting;
 using CommonCore.State;
 using System;
@@ -104,7 +105,9 @@ namespace CommonCore.RpgGame.State
                     }
                     catch(Exception e)
                     {
-                        Debug.LogError($"Conditional.Evaluate failed: Script execution failed {e}");
+                        Debug.LogError($"Conditional.Evaluate failed: Script execution failed ({e.GetType().Name}:{e.Message})");
+                        if(ConfigState.Instance.UseVerboseLogging)
+                            Debug.LogException(e);
                         return false;
                     }
                 default:

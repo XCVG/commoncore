@@ -43,7 +43,8 @@ namespace CommonCore.RpgGame.World
 
         [Header("Other")]
         public bool InteractionDisabledByHit; //not sure why this is public
-        public string TooltipOverride; //TODO move this back into ActorController?
+        public bool DisableTooltip;
+        public string TooltipOverride;
         public SerializableContainerModel CorpseItems;
 
 
@@ -74,7 +75,7 @@ namespace CommonCore.RpgGame.World
 
         }
 
-        public string Tooltip => string.IsNullOrEmpty(TooltipOverride) ? name : TooltipOverride;
+        public string Tooltip => DisableTooltip ? null : (string.IsNullOrEmpty(TooltipOverride) ? name : TooltipOverride);
 
         public void OnInteract(ActionInvokerData data)
         {

@@ -104,7 +104,7 @@ namespace CommonCore.UI
             if (SelectedSaveIndex < 0)
                 return;
 
-            SharedUtils.LoadGame(Saves[SelectedSaveIndex].FileName);
+            SharedUtils.LoadGame(Saves[SelectedSaveIndex].FileName, false);
         }
 
     }

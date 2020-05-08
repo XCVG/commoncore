@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using CommonCore.Scripting;
 using CommonCore.State;
+using System.Globalization;
 
 public static class TestScripts
 {
@@ -26,5 +27,11 @@ public static class TestScripts
     {
         GameState.Instance.ManualSaveLocked = !GameState.Instance.ManualSaveLocked;
         Debug.Log($"Manual Save Locked: {GameState.Instance.ManualSaveLocked}");
+    }
+
+    [CCScript(ClassName = "Test", Name = "PrintLocale"), CCScriptHook(AllowExplicitCalls = true, Hook = ScriptHook.AfterModulesLoaded)]
+    public static void PrintLocale()
+    {
+        Debug.Log("Current culture: " + CultureInfo.CurrentCulture);
     }
 }

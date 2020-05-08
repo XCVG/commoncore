@@ -46,15 +46,14 @@ namespace CommonCore.World
 
         protected bool CheckEligibility(GameObject activator)
         {
-            //FIXME really not a good way of doing things here
             if (PlayerCanActivate)
             {
-                if (activator.GetComponent("PlayerController"))
+                if (activator.IsPlayer())
                     return true;
             }
             if (NpcCanActivate)
             {
-                if (activator.GetComponent("ActorController"))
+                if (activator.IsActor())
                     return true;
             }
             return false;

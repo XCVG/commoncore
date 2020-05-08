@@ -12,7 +12,7 @@ namespace CommonCore.Config
 {
     public class ConfigState
     {
-        private static readonly string Path = CoreParams.PersistentDataPath + "/config.json";
+        private static string Path => System.IO.Path.Combine(CoreParams.PersistentDataPath, (CoreParams.UseSeparateEditorConfigFile && CoreParams.IsEditor) ? "config.editor.json" : "config.json");
 
         public static ConfigState Instance { get; private set; }
 
@@ -134,11 +134,6 @@ namespace CommonCore.Config
                 Debug.LogWarning($"Failed to load a custom config var (path: {errorContext.Path}). Please check your config file.");
                 errorContext.Handled = true;
             }
-            else if (errorContext.Path.StartsWith(nameof(InputMapperData)))
-            {
-                Debug.LogWarning($"Failed to load input mapper data (path: {errorContext.Path}). Please check your config file.");
-                errorContext.Handled = true;
-            }
             else
             {
                 Debug.LogError($"A fatal error occurred during config file loading. Please check your config file. \n{errorContext.Error.Message}");
@@ -165,7 +160,7 @@ namespace CommonCore.Config
         public Vector2Int Resolution { get; set; } = new Vector2Int(1920, 1080);
         public int RefreshRate { get; set; } = 60;
         public bool FullScreen { get; set; } = true;
-        public int MaxFrames { get; set; } = -1;
+        public int MaxFrames { get; set; } = 120;
         public int VsyncCount { get; set; } = 0;
         public int AntialiasingQuality { get; set; } = 1;
         public float ViewDistance { get; set; } = 1000.0f;
@@ -191,8 +186,6 @@ namespace CommonCore.Config
 
         //INPUT CONFIG
         public string InputMapper { get; set; } = "UnityInputMapper";
-        [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
-        public Dictionary<string, object> InputMapperData { get; set; } = new Dictionary<string, object>();
         public float LookSpeed { get; set; } = 1.0f;
         public bool LookInvert { get; set; } = false;
         public float AxisDeadzone { get; set; } = 0.1f;

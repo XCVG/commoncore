@@ -82,6 +82,8 @@ namespace CommonCore.RpgGame.Dialogue
         private void PresentNewFrame(string s)
         {
             CurrentFrameName = s;
+            if (!CurrentSceneFrames.ContainsKey(s))
+                Debug.LogError($"[Dialogue] Can't find frame \"{s}\"");
             PresentNewFrame(CurrentSceneFrames[s]);
         }
         
@@ -104,7 +106,7 @@ namespace CommonCore.RpgGame.Dialogue
                     AudioPlayer.Instance.StartMusic(MusicSlot.Cinematic);
                 }                
             }
-            else
+            else if(f.Music != null) //null = no change, empty = no music
             {
                 AudioPlayer.Instance.ClearMusic(MusicSlot.Cinematic);
             }
@@ -283,30 +285,34 @@ namespace CommonCore.RpgGame.Dialogue
         public void OnChoiceButtonClick(int idx)
         {
             string choice = null;
-            if(CurrentFrameObject is ChoiceFrame)
+            if (CurrentFrameObject is ChoiceFrame)
             {
                 var cf = (ChoiceFrame)CurrentFrameObject;
 
-                if(cf.Choices[idx].SkillCheck != null)
+                if (cf.Choices[idx].SkillCheck != null)
                 {
                     choice = cf.Choices[idx].SkillCheck.EvaluateSkillCheck();
                 }
-                else if(cf.Choices[idx].NextConditional != null)
+                else if (cf.Choices[idx].NextConditional != null)
                 {
                     choice = cf.Choices[idx].EvaluateConditional();
-                    
-                    if(choice == null)
+
+                    if (choice == null)
                         choice = cf.Choices[idx].Next;
                 }
                 else
                 {
                     choice = cf.Choices[idx].Next;
-                } 
+                }
 
                 //exec microscripts
-                if(cf.Choices[idx].NextMicroscript != null)
+                if (cf.Choices[idx].NextMicroscript != null)
                 {
                     cf.Choices[idx].EvaluateMicroscript();
+                }
+                if (GameParams.DialogueAlwaysExecuteFrameMicroscript && cf.NextMicroscript != null)
+                {
+                    cf.EvaluateMicroscript();
                 }
             }
             else
@@ -316,12 +322,12 @@ namespace CommonCore.RpgGame.Dialogue
                 else
                     choice = CurrentFrameObject.Next;
 
-                if(CurrentFrameObject.NextMicroscript != null)
+                if (CurrentFrameObject.NextMicroscript != null)
                 {
                     CurrentFrameObject.EvaluateMicroscript();
                 }
             }
-            
+
             //Debug.Log(choice);
 
             GotoNext(choice);

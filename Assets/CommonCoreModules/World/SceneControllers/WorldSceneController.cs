@@ -24,6 +24,7 @@ namespace CommonCore.World
         protected override bool DeferEnterAutosaveToSubclass => true;
         protected override bool DeferInitialRestoreToSubclass => true;
         protected override bool AllowQuicksaveInScene => AllowQuicksave;
+        protected override string DefaultHud => "DefaultWorldHUD";
 
         public override void Awake()
         {

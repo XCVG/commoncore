@@ -2,13 +2,12 @@
 using CommonCore.Scripting;
 using CommonCore.State;
 using CommonCore.StringSub;
-using CommonCore.UI;
 using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace GameUI
+namespace CommonCore.UI
 {
 
     public class MainMenuController : BaseMenuController
@@ -60,7 +59,7 @@ namespace GameUI
             var save = SaveUtils.GetLastSave();
 
             if (save != null)
-                SharedUtils.LoadGame(save);
+                SharedUtils.LoadGame(save, false);
             else
                 Modal.PushMessageModal(Sub.Replace("ContinueNoSaveMessage", "IGUI_SAVE"), Sub.Replace("ContinueNoSaveHeading", "IGUI_SAVE"), null, null);
         }

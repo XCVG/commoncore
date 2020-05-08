@@ -465,9 +465,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AutosaveOnEnter: 0
   AutosaveOnExit: 1
-  AutoinitUi: 0
-  AutoinitHud: 0
+  AutoRestore: 1
+  AutoCommit: 1
+  AutoinitUi: 1
+  AutoinitHud: 1
   AutoinitState: 1
+  HudOverride: 
 --- !u!1 &459941351
 GameObject:
   m_ObjectHideFlags: 0

@@ -58,11 +58,28 @@ namespace CommonCore.RpgGame.World
 
         private bool HadTargetLastFrame = false;
 
+        float ITakeDamage.Health => GameState.Instance.PlayerRpgState.Health;
+
+        public override HashSet<string> Tags
+        {
+            get
+            {
+                if (_Tags == null)
+                {
+                    _Tags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    _Tags.Add("Player");
+
+                    if (EntityTags != null && EntityTags.Length > 0)
+                        Tags.UnionWith(EntityTags);
+                }
+
+                return _Tags;
+            }
+        }
+
         public override void Awake()
         {
             base.Awake();
-
-            Tags.Add("Player");
         }
 
         public override void Start()
@@ -321,9 +338,13 @@ namespace CommonCore.RpgGame.World
                     //Debug.Log("Detected: " + nearestInteractable.Tooltip);
 
                     //HUDScript.SetTargetMessage(nearestInteractable.Tooltip);
-                    MessageInterface.PushToBus(new QdmsKeyValueMessage("PlayerHasTarget", "Target", nearestInteractable.Tooltip));
-                    HadTargetLastFrame = true;
-                    haveTarget = true;
+                    nearestInteractable.OnLook(this.gameObject);
+                    if (!string.IsNullOrEmpty(nearestInteractable.Tooltip))
+                    {
+                        MessageInterface.PushToBus(new QdmsKeyValueMessage("PlayerHasTarget", "Target", nearestInteractable.Tooltip));
+                        HadTargetLastFrame = true;
+                        haveTarget = true;
+                    }
 
                     //actual use
                     if (MappedInput.GetButtonDown(DefaultControls.Use) && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoInteract))

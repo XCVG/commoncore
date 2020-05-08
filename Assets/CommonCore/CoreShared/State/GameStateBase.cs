@@ -172,6 +172,18 @@ namespace CommonCore.State
             }
         }
 
+        //metadata for save games
+        [JsonProperty]
+        private Version GameVersion => CoreParams.GameVersion;
+        [JsonProperty]
+        private Version FrameworkVersion => CoreParams.VersionCode;
+        [JsonProperty]
+        private Version UnityVersion => CoreParams.UnityVersion;
+        [JsonProperty]
+        private string GameName => CoreParams.GameName;
+        [JsonProperty]
+        private string CompanyName => CoreParams.CompanyName;
+
         //basic game data to be shared across games
 
         /// <summary>
