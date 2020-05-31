@@ -10,13 +10,13 @@ As of May 2019, CommonCore has been downgraded to an internal project. It will s
 
 CommonCore (formerly ARES) is a complete Role-Playing Game library for Unity... or will be someday. The intent is to provide a base that allows easy development of everything from quick adventures to epic open-world sagas, as well as being flexible enough to be adapted for mechanically similar genres such as open-world sandbox, shooters, and more.
 
-CommonCore handles or will handle standard RPG mechanics, game state with saving and loading, the player object, NPCs, dialogue, input, UI, configuration and more. It is (or will be) a complete solution that can be loaded as a template followed immediately by building the actual game.
+CommonCore handles or will handle standard RPG mechanics, game state with saving and loading, the player object, NPCs, dialogue, input, UI, configuration and more. It is (or will be) a complete solution that can be loaded as a template followed immediately by building the actual game. For cases where you don't need all the functionality, it is divided into a separate Core, some modules, and RPGGame so you don't have to use it all (more modularity is planned).
 
 ## Platform Support
 
 CommonCore supports Unity 2018.4 and Unity 2019.3. The plan is to continue to target the latest stable version of 2018.x at least until the next release. Unity 2017.x is no longer supported.
 
-CommonCore is targeted toward standalone platforms using Mono and the .NET 4.x scripting runtime. As of this version, it works with IL2CPP and has been tested on UWP, though this is still experimental.
+CommonCore is targeted toward standalone platforms using Mono and the .NET 4.x scripting runtime. As of 2.0.0pre9 (18f00d1), it works with IL2CPP and has been tested on UWP, though this is still experimental.
 
 ## Extra Modules
 
