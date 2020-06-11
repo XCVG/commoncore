@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonCore.ResourceManagement;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -35,6 +36,8 @@ namespace CommonCore
         /// Lookup table for modules by type
         /// </summary>
         private static Dictionary<Type, CCModule> ModulesByType;
+
+        public static ResourceManager ResourceManager { get; private set; }
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void OnApplicationStart()
@@ -61,6 +64,9 @@ namespace CommonCore
             InitializeModules();
             SetupModuleLookupTable();
             ExecuteAllModulesLoaded();
+
+            //mod loading will happen here
+            //ResourceManager.LoadStreamingAssets();
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -137,7 +143,8 @@ namespace CommonCore
 
         private static void InitializeResourceManager()
         {
-            CoreUtils.ResourceManager = new CCResourceManager();
+            CoreUtils.ResourceManager = new LegacyResourceManager(); //TODO remove this
+            ResourceManager = new ResourceManager();
         }
 
         private static void LoadGameTypes()

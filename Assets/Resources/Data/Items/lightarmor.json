@@ -21,7 +21,8 @@
 		"MaxCondition": 1.0,
 		"Unique": false,
 		"Essential": false,
-		"WorldModel": "item_lightarmor"
+		"WorldModel": "item_lightarmor",
+		"Slot": "Body"
     },
     "def": {
     "NiceName": "Explorer Armor",

@@ -92,6 +92,10 @@ namespace CommonCore.RpgGame.World
                 float moveDist = Mathf.Min(distToTarget, (BaseVelocity + extraVelocity) * Time.deltaTime);
                 transform.Translate(moveDist * dirToTarget, Space.Self);
             }
+            else if (TargetPosition == Vector3.zero)
+            {
+                transform.localPosition = Vector3.zero;
+            }
 
         }
     }

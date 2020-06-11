@@ -118,6 +118,21 @@ namespace CommonCore.Scripting
             }
         }
 
+        [Command(alias = "CallHooked", className = "Scripting")]
+        private static void CallHooked(string hook)
+        {
+            if (Enum.TryParse<ScriptHook>(hook, out ScriptHook parsedHook))
+                ScriptingModule.CallHooked(parsedHook, null, new object[] { });
+            else
+                ConsoleModule.WriteLine($"Failed to call hooked scripts because \"{hook}\" is not a valid built-in hook (were you looking for CallNamedHooked instead?)");
+        }
+
+        [Command(alias = "CallNamedHooked", className = "Scripting")]
+        private static void CallNamedHooked(string hook)
+        {
+            ScriptingModule.CallNamedHooked(hook, null, new object[] { });
+        }
+
         [Command(alias = "ListAll", className = "Scripting")]
         private static void ListAll()
         {

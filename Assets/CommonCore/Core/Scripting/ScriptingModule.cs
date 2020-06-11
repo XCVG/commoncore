@@ -20,6 +20,7 @@ namespace CommonCore.Scripting
 
         private Dictionary<string, MethodInfo> CallableMethods;
         private Dictionary<ScriptHook, List<MethodInfo>> HookedMethods;
+        private Dictionary<string, List<MethodInfo>> NamedHookedMethods;
 
         public ScriptingModule()
         {
@@ -81,6 +82,7 @@ namespace CommonCore.Scripting
 
             CallableMethods = new Dictionary<string, MethodInfo>();
             HookedMethods = SetupHookedMethodsDictionary();
+            NamedHookedMethods = new Dictionary<string, List<MethodInfo>>();
 
             foreach (var m in methods)
             {
@@ -128,7 +130,20 @@ namespace CommonCore.Scripting
 
                 foreach(var hookAttribute in hookAttributes)
                 {
-                    HookedMethods[((CCScriptHookAttribute)hookAttribute).Hook].Add(scriptMethod);
+                    var hookAttributeTyped = hookAttribute as CCScriptHookAttribute;
+
+                    if(hookAttributeTyped.Hook != ScriptHook.None)
+                        HookedMethods[hookAttributeTyped.Hook].Add(scriptMethod);
+                    if(!string.IsNullOrEmpty(hookAttributeTyped.NamedHook))
+                    {
+                        if(!NamedHookedMethods.TryGetValue(hookAttributeTyped.NamedHook, out var list))
+                        {
+                            list = new List<MethodInfo>();
+                            NamedHookedMethods[hookAttributeTyped.NamedHook] = list;
+                        }
+
+                        list.Add(scriptMethod);
+                    }
                 }
 
                 if (!firstHookAttribute.AllowExplicitCalls)
@@ -165,9 +180,9 @@ namespace CommonCore.Scripting
                 CallableMethods.Remove(callableName);
         }
 
-        private void CallHookedScripts(ScriptHook Hook, ScriptExecutionContext context, params object[] args)
+        private void CallHookedScripts(ScriptHook hook, ScriptExecutionContext context, params object[] args)
         {
-            foreach(var scriptMethod in HookedMethods[Hook])
+            foreach(var scriptMethod in HookedMethods[hook])
             {
                 try
                 {
@@ -175,7 +190,23 @@ namespace CommonCore.Scripting
                 }
                 catch(Exception e)
                 {
-                    LogError($"Failed to execute {Hook.ToString()} script \"{scriptMethod.DeclaringType.Name}.{scriptMethod.Name}\" ({e.Message})");
+                    LogError($"Failed to execute {hook.ToString()} script \"{scriptMethod.DeclaringType.Name}.{scriptMethod.Name}\" ({e.Message})");
+                    LogException(e);
+                }
+            }
+        }
+
+        private void CallNamedHookedScripts(string hook, ScriptExecutionContext context, params object[] args)
+        {
+            foreach(var scriptMethod in NamedHookedMethods[hook])
+            {
+                try
+                {
+                    CallScriptMethod(scriptMethod, null, context, args);
+                }
+                catch (Exception e)
+                {
+                    LogError($"Failed to execute {hook} script \"{scriptMethod.DeclaringType.Name}.{scriptMethod.Name}\" ({e.Message})");
                     LogException(e);
                 }
             }
@@ -306,24 +337,6 @@ namespace CommonCore.Scripting
             return trimmedArgs;
         }
 
-        private static object[] CoerceArguments(object[] args, MethodInfo method)
-        {
-            var parameters = method.GetParameters();
-            int numArgs = Math.Min(args.Length, parameters.Length - 1);
-            if (numArgs <= 0)
-                return new object[] { };
-            object[] typedArgs = new object[numArgs];
-            for(int i = 0; i < numArgs; i++)
-            {
-                object arg = args[i];
-                var parameter = parameters[i + 1]; //account for ScriptExecutionContext 
-                object typedArg = TypeUtils.CoerceValue(arg, parameter.ParameterType);
-                typedArgs[i] = typedArg;
-            }
-
-            return typedArgs;
-        }
-
         private static string GetCallableName(MethodInfo method)
         {
             string className = method.DeclaringType.Name;
@@ -402,6 +415,15 @@ namespace CommonCore.Scripting
         }
 
         /// <summary>
+        /// Calls all scripts registered to run with a named hook
+        /// </summary>
+        public static void CallNamedHooked(string hook, object caller, params object[] args)
+        {
+            ScriptExecutionContext context = new ScriptExecutionContext() { Caller = caller, NamedHook = hook };
+            Instance.CallNamedHookedScripts(hook, context, args);
+        }
+
+        /// <summary>
         /// Checks if a script exists
         /// </summary>
         public static bool CheckScript(string script)
@@ -423,7 +445,7 @@ namespace CommonCore.Scripting
         public static void Register(Delegate scriptDelegate, string className, string methodName)
         {
             throw new NotSupportedException(); //doesn't work. Need to rethink the scripting module
-            Instance.RegisterScript(scriptDelegate, className, methodName);
+            //Instance.RegisterScript(scriptDelegate, className, methodName);
         }
 
         /// <summary>

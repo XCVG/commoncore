@@ -150,6 +150,18 @@ namespace CommonCore.RpgGame.Rpg
             return item.Name;
         }
 
+        /// <summary>
+        /// Gets the nice name of an item, or its plain name if the nice name isn't available
+        /// </summary>
+        public static string GetNiceName(string name)
+        {
+            var def = GetDef(name);
+            if (def != null)
+                return def.NiceName;
+
+            return name;
+        }
+
         public static string GetModelsList()
         {
             StringBuilder sb = new StringBuilder(Models.Count * 64);

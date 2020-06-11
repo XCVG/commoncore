@@ -150,6 +150,21 @@ namespace CommonCore.State
         }
 
         /// <summary>
+        /// Sets the campaign start date if enabled
+        /// </summary>
+        private void SetCampaignStartDate()
+        {
+            if(CoreParams.UseCampaignStartDate)
+            {
+                CampaignStartDate = DateTime.Now;
+            }
+            else
+            {
+                CampaignStartDate = DateTime.MinValue;
+            }
+        }
+
+        /// <summary>
         /// Runs handling after GameState is deserialized 
         /// </summary>
         [OnDeserialized]
@@ -227,6 +242,9 @@ namespace CommonCore.State
         /// </summary>
         [JsonProperty]
         public string CampaignIdentifier { get; private set; }
+
+        [JsonProperty]
+        public DateTime CampaignStartDate { get; private set; } 
 
         [JsonProperty]
         private long CurrentUID;

@@ -150,6 +150,12 @@ namespace CommonCore.TestModule
             Debug.Log($"OnPlayerSpawn\n{context}");
         }
 
+        [CCScript, CCScriptHook(Hook = ScriptHook.OnGameOver)]
+        private static void OnGameOver(ScriptExecutionContext context)
+        {
+            Debug.Log($"OnGameOver\n{context}");
+        }
+
         [CCScript, CCScriptHook(Hook = ScriptHook.AfterMainMenuCreate)]
         private static void AfterMainMenuCreate(ScriptExecutionContext context)
         {
@@ -172,6 +178,12 @@ namespace CommonCore.TestModule
         private static void HookOrExplicit(ScriptExecutionContext context)
         {
             Debug.Log($"HookOrExplicit\n{context}");
+        }
+
+        [CCScript, CCScriptHook(NamedHook = "TestNamedHook")]
+        private static void NamedHook(ScriptExecutionContext context)
+        {
+            Debug.Log($"NamedHook\n{context}");
         }
     }
 }

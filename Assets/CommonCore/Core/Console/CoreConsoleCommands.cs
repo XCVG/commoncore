@@ -22,7 +22,7 @@ namespace CommonCore.Console
         [Command]
         private static void Quit()
         {
-            Application.Quit();
+            CoreUtils.Quit();
         }
 
         /// <summary>

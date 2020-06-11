@@ -220,7 +220,7 @@ namespace CommonCore.RpgGame.UI
             if (itemModel.Stackable)
             {
                 int qty = ItemLookupTable[SelectedItem].Quantity;
-                SelectedItemText.text = SelectedItemText.text + string.Format(" {0}", qty);
+                SelectedItemText.text = SelectedItemText.text + string.Format(" ({0})", qty);
             }
             
         }

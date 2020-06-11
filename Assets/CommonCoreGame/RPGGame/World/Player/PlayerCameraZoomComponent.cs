@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CommonCore.Config;
+using CommonCore.Messaging;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -9,18 +11,31 @@ namespace CommonCore.RpgGame.World
     /// <summary>
     /// Component that handles zooming the camera in and out
     /// </summary>
-    /// <remarks>For now weapon ADS is the only thing that can zoom the camera in and out</remarks>
+    /// <remarks>
+    /// <para>This takes over FOV handling from CameraSettingsTackon</para>
+    /// <para>For now weapon ADS is the only thing that can zoom the camera in and out</para>
+    /// </remarks>
     public class PlayerCameraZoomComponent : MonoBehaviour
     {
+        private QdmsMessageInterface MessageInterface;
+
         [SerializeField, FormerlySerializedAs("AttachedCamera")]
         private Camera WorldCamera;
         [SerializeField]
         private Camera GunCamera;
+        [SerializeField]
+        private bool UseConfigViewAngle = true;
 
         private float? DefaultViewAngle;
         private float ADSZoomFactor = 1f;
 
         private Coroutine ADSZoomCoroutine = null;
+
+        private void Awake()
+        {
+            MessageInterface = new QdmsMessageInterface(this.gameObject);
+            MessageInterface.SubscribeReceiver(HandleMessage);
+        }
 
         private void Start()
         {
@@ -31,6 +46,26 @@ namespace CommonCore.RpgGame.World
                 Debug.LogWarning($"[{nameof(PlayerCameraZoomComponent)}] Gun camera must be set explicitly!");
 
             DefaultViewAngle = WorldCamera.fieldOfView;
+            SetConfiguredViewAngle();
+        }
+
+        private void HandleMessage(QdmsMessage message)
+        {
+            if (message is ConfigChangedMessage)
+            {
+                SetConfiguredViewAngle();
+            }
+        }
+
+        private void SetConfiguredViewAngle()
+        {
+            if (UseConfigViewAngle && ADSZoomCoroutine == null)
+            {
+                float viewAngle = ConfigState.Instance.FieldOfView;
+                WorldCamera.fieldOfView = viewAngle;
+                if (GunCamera)
+                    GunCamera.fieldOfView = viewAngle;
+            }
         }
 
         public void SetADSZoomFactor(float adsZoomFactor, float fadeTime)
@@ -76,7 +111,7 @@ namespace CommonCore.RpgGame.World
             if(!DefaultViewAngle.HasValue)
                 DefaultViewAngle = WorldCamera.fieldOfView;
 
-            float viewAngle = DefaultViewAngle.Value;
+            float viewAngle = UseConfigViewAngle ? ConfigState.Instance.FieldOfView : DefaultViewAngle.Value;
 
             viewAngle /= ADSZoomFactor;
 

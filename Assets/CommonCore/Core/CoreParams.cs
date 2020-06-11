@@ -32,6 +32,7 @@ namespace CommonCore
         public static bool AutoInit { get; private set; } = true;
         public static ImmutableArray<string> ExplicitModules { get; private set; } = new string[] { "DebugModule", "QdmsMessageBus", "ConfigModule", "AsyncModule", "ScriptingModule", "ConsoleModule" }.ToImmutableArray();
         private static DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
+        public static ResourceManagerPolicy DefaultResourceManager { get; private set; } = ResourceManagerPolicy.TestBothUseLegacy;
         public static string PreferredCommandConsole { get; private set; } = "SickDevConsoleImplementation";
         public static bool UseSeparateEditorConfigFile { get; private set; } = false; //if set, will use config.editor.json while in editor
         private static WindowsPersistentDataPath PersistentDataPathWindows = WindowsPersistentDataPath.Roaming;
@@ -43,10 +44,12 @@ namespace CommonCore
         //*****additional config settings
         public static float DelayedEventPollInterval { get; private set; } = 1.0f;
         //public static bool UseAggressiveLookups { get; private set; } = true; //may bring this back someday if performance is an issue
+        public static int ResourceMaxRecurseDepth { get; private set; } = 32;
 
         //*****game config settings
         public static string InitialScene { get; private set; } = "TestScene";
         public static bool UseCampaignIdentifier { get; private set; } = true;
+        public static bool UseCampaignStartDate { get; private set; } = true;
         public static bool AllowSaveLoad { get; private set; } = true;
         public static bool AllowManualSave { get; private set; } = true;
         public static IReadOnlyList<string> AdditionalAxes { get; private set; } = ImmutableArray.Create<string>(); //specify additional axes your game will use; it's up to individual input mappers to handle these
@@ -126,6 +129,8 @@ namespace CommonCore
                     return LoadData;
             }
         }
+
+        public static IReadOnlyList<string> CommandLineArgs;
 
         /// <summary>
         /// A hack necessary to preset variables so they can be safely accessed across threads
@@ -227,6 +232,9 @@ namespace CommonCore
                 Debug.LogError($"Failed to create screenshots directory ({ScreenshotsPath})");
                 Debug.LogException(e);
             }
+
+            //command line args
+            CommandLineArgs = Environment.GetCommandLineArgs().ToImmutableArray();
         }
 
         /// <summary>

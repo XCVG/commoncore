@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -85,31 +86,132 @@ namespace CommonCore
         }
 
         /// <summary>
+        /// Checks if the Type is an "integer" type
+        /// </summary>
+        public static bool IsIntegerType(this Type type)
+        {
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.Byte:
+                case TypeCode.SByte:
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Checks if the Type is castable from one type to another (includes user-defined operators)
+        /// </summary>
+        /// <remarks>Based on https://stackoverflow.com/questions/2119441/check-if-types-are-castable-subclasses</remarks>
+        public static bool IsCastableFrom(this Type toType, Type fromType)
+        {
+            return toType.IsAssignableFrom(fromType) || HasUserDefinedConversion(fromType, toType);
+        }
+
+        /// <summary>
+        /// Checks if there is an implicit or explicit conversion between fromType and toType
+        /// </summary>
+        /// <remarks>
+        /// Based on an answer to https://stackoverflow.com/questions/32025201/how-can-i-determine-if-an-implicit-cast-exists-in-c/32025393#32025393
+        /// </remarks>
+        public static bool HasUserDefinedConversion(Type fromType, Type toType)
+        {
+            return
+                fromType.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .Where(mi => (mi.Name == "op_Implicit" || mi.Name == "op_Explicit") && mi.ReturnType == toType)
+                .Any(mi =>
+                {
+                    ParameterInfo pi = mi.GetParameters().FirstOrDefault();
+                    return pi != null && pi.ParameterType == fromType;
+                })
+                ||
+                toType.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .Where(mi => (mi.Name == "op_Implicit" || mi.Name == "op_Explicit") && mi.ReturnType == toType)
+                .Any(mi =>
+                {
+                    ParameterInfo pi = mi.GetParameters().FirstOrDefault();
+                    return pi != null && pi.ParameterType == fromType;
+                });
+
+        }
+
+        /// <summary>
+        /// Gets a user-defined conversion method between fromType and toType if it exists, or null if it doesn't
+        /// </summary>
+        /// <remarks>
+        /// Based on an answer to https://stackoverflow.com/questions/32025201/how-can-i-determine-if-an-implicit-cast-exists-in-c/32025393#32025393
+        /// </remarks>
+        public static MethodInfo GetUserDefinedConversion(Type fromType, Type toType)
+        {
+            MethodInfo conversionMethod = null;
+
+            fromType.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .Where(mi => (mi.Name == "op_Implicit" || mi.Name == "op_Explicit") && mi.ReturnType == toType)
+                .Where(mi =>
+                {
+                    ParameterInfo pi = mi.GetParameters().FirstOrDefault();
+                    return pi != null && pi.ParameterType == fromType;
+                })?.First();
+
+            if(conversionMethod == null)
+            {
+                toType.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .Where(mi => (mi.Name == "op_Implicit" || mi.Name == "op_Explicit") && mi.ReturnType == toType)
+                .Where(mi =>
+                {
+                    ParameterInfo pi = mi.GetParameters().FirstOrDefault();
+                    return pi != null && pi.ParameterType == fromType;
+                })?.First();
+            }
+
+            return conversionMethod;
+        }
+
+        /// <summary>
         /// Coerces a value of some type into a value of the target type
         /// </summary>
         public static object CoerceValue(object value, Type targetType)
         {
+            Type valueType = value.GetType();
+
             if (value == null)
             {
                 if (targetType.IsValueType)
                     return Activator.CreateInstance(targetType);
                 else
                     return null;
-            }
+            }          
 
-            if (targetType.IsAssignableFrom(value.GetType()))
+            if (targetType.IsAssignableFrom(valueType))
                 return value;
 
             Type nullableType = Nullable.GetUnderlyingType(targetType);
             if (nullableType != null)
+            {
                 targetType = nullableType;
+                if (targetType.IsAssignableFrom(valueType))
+                    return value;
+            }
+
+            MethodInfo conversionMethod = GetUserDefinedConversion(valueType, targetType); //should we only allow implicit conversions?
+            if(conversionMethod != null)
+            {
+                return conversionMethod.Invoke(null, new object[] { value });
+            }
 
             if (targetType.IsEnum && value is string stringValue)
             {
                 return Enum.Parse(targetType, stringValue, true); //ignore case to taste
             }
 
-            if(targetType.IsEnum && (typeof(long).IsAssignableFrom(value.GetType()) || typeof(ulong).IsAssignableFrom(value.GetType())))
+            if(targetType.IsEnum && valueType.IsIntegerType())
             {
                 return Enum.ToObject(targetType, value);
             }

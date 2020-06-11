@@ -11,7 +11,7 @@ A basic command console is included; the third party DevConsole 2 asset is no lo
 
 You can get the extra CommonCore modules at https://github.com/XCVG/commoncore-modules
 
-There is no dependency on the Standard Assets but you can bring them in if you need to.
+There is no dependency on the Unity Standard Assets but you can bring them in if you need to.
 
 # Assets included in repository
 
@@ -70,6 +70,7 @@ Loading Indicator (Assets/CommonCore/Graphics/loadwheel)
 Freedoom assets (Assets/Objects/OpenSource/spriteguy, Assets/Objects/OpenSource/spriterifle, Assets/Objects/OpenSource/spritetorch)
 	Contributors to the Freedoom project
 	https://github.com/freedoom/freedoom/
+	licensed under a modified MIT license
 
 ## Models
 
@@ -169,6 +170,14 @@ Hit Indicator (Assets/Resources/DynamicSound/HitIndicator)
 Freedoom assets (Assets/Objects/OpenSource/spriteguy, Assets/Objects/OpenSource/spriterifle, Assets/Objects/OpenSource/spritetorch)
 	Contributors to the Freedoom project
 	https://github.com/freedoom/freedoom/
+	licensed under a modified MIT license
 	
-
+Sliding Door (Assets/Resources/DynamicSound/DoorSlide)
+	Dodge Caracan sliding door.wav
+	https://freesound.org/people/CGEffex/sounds/100771/
+	by CGEffex, licensed CC-BY 3.0
+	
+Door Open, Door Close Set (Assets/Resources/DynamicSound/DoorSwing*)
+	https://opengameart.org/content/door-open-door-close-set
+	by Iwan 'qubodup' Gabovitch, licensed CC0/public domain
 	

@@ -277,6 +277,19 @@ namespace CommonCore.Config
                 }
             }
         }
+
+        //ADDON CONFIG
+        public HashSet<string> AddonConfigFlags { get; private set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        [JsonIgnore]
+        public LazyLooseDictionary AddonConfigVars { get; private set; } = new LazyLooseDictionary();
+
+        //small hackery
+        [JsonProperty(PropertyName = nameof(AddonConfigVars))]
+        private JObject AddonConfigVarsSerializable
+        {
+            get => AddonConfigVars.GetFullJObject();
+            set => AddonConfigVars = new LazyLooseDictionary(value);
+        }
     }
 
 

@@ -14,7 +14,7 @@ namespace CommonCore.RpgGame.State
     /// </summary>
     public class StateStringSubber : IStringSubber
     {
-        public IEnumerable<string> MatchPatterns { get; } = new string[] { "av", "inv", "cpf", "cpv", "cqs", "player" };
+        public IEnumerable<string> MatchPatterns { get; } = new string[] { "av", "inv", "invname", "cpf", "cpv", "cqs", "cqname", "player" };
 
         public string Substitute(string[] sequenceParts)
         {
@@ -23,10 +23,16 @@ namespace CommonCore.RpgGame.State
             switch (sequenceParts[0])
             {
                 case "av":
-                    result = GameState.Instance.PlayerRpgState.GetAV<object>(sequenceParts[1]).ToString();
+                    result = GameState.Instance.PlayerRpgState.GetAV(sequenceParts[1]).ToString();
                     break;
                 case "inv":
                     result = GameState.Instance.PlayerRpgState.Inventory.CountItem(sequenceParts[1]).ToString();
+                    break;
+                case "invname":
+                    {
+                        var invModel = InventoryModel.GetModel(sequenceParts[1]);
+                        result = (invModel != null ? InventoryModel.GetNiceName(invModel) : "?MODEL?") ?? "?NAME?";
+                    }
                     break;
                 case "cpf":
                     result = GameState.Instance.CampaignState.HasFlag(sequenceParts[1]).ToString();
@@ -36,6 +42,9 @@ namespace CommonCore.RpgGame.State
                     break;
                 case "cqs":
                     result = GameState.Instance.CampaignState.GetQuestStage(sequenceParts[1]).ToString();
+                    break;
+                case "cqname":
+                    result = QuestModel.GetNiceName(sequenceParts[1]);
                     break;
                 case "player":
                     result = GetPlayerAlias(sequenceParts[1]);

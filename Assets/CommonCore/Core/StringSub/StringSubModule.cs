@@ -37,7 +37,9 @@ namespace CommonCore.StringSub
         {
             //load all substitution lists
 
-            TextAsset[][] textAssetArrays = CoreUtils.LoadDataResources<TextAsset>("Data/Strings/");
+            //TODO switch over to CoreUtils.LoadResourcesVariants
+            TextAsset[][] textAssetArrays = CoreUtils.LoadResourcesVariants<TextAsset>("Data/Strings/");
+            int numFiles = 0;
 
             foreach (var tas in textAssetArrays)
             {
@@ -64,6 +66,7 @@ namespace CommonCore.StringSub
                                 Strings.Add(list.Key, list.Value);
                             }
                         }
+                        numFiles++;
                     }
                     catch (Exception e)
                     {
@@ -71,10 +74,11 @@ namespace CommonCore.StringSub
                         LogException(e);
                     }
                 }
+                
+            }
 
-                string statusString = string.Format("({0} files, {1} lists)", tas.Length, Strings.Count);
-                Log("StringSub: Loaded lists " + statusString);
-            }            
+            string statusString = string.Format("({0} files, {1} lists)", numFiles, Strings.Count);
+            Log("StringSub: Loaded lists " + statusString);
         }
 
         private void LoadSubbers()
@@ -180,62 +184,64 @@ namespace CommonCore.StringSub
         internal string GetMacro(string sequence)
         {
             // l:*:* : Lookup (string substitution) List:String
-            // av:* : Player.GetAV
-            // inv:* : inventory
-            // cpf:* : Campaign Flag 
-            // cpv:* : Campaign Variable 
-            // cqs:* : Quest Stage 
             // general format is *:* where the first part is where to search
             // can add parameters with | but parsing this is deferred to the subbers
 
-            string[] sequenceParts = sequence.Split(':');
-
-            string result = "<ERROR>";
-            switch (sequenceParts[0])
+            string result = "?ERROR?";
+            try
             {
-                case "(":
-                    result = "<";
-                    break;
-                case ")":
-                    result = ">";
-                    break;
-                case "l":
-                    result = GetString(sequenceParts[2], sequenceParts[1], false, false);
-                    break;
-                case "strong":
-                    result = "<b>"; //handling dialogue written for proper html
-                    break;
-                case "/strong":
-                    result = "</b>"; //handling dialogue written for proper html
-                    break;
-                case "em":
-                    result = "<i>"; //handling dialogue written for proper html
-                    break;
-                case "/em":
-                    result = "</i>"; //handling dialogue written for proper html
-                    break;
-                case "b":
-                    result = "<b>"; //handling dialogue written for improper html
-                    break;
-                case "/b":
-                    result = "</b>"; //handling dialogue written for improper html
-                    break;
-                case "i":
-                    result = "<i>"; //handling dialogue written for improper html
-                    break;
-                case "/i":
-                    result = "</i>"; //handling dialogue written for improper html
-                    break;
-                default:
-                    if(SubMap.ContainsKey(sequenceParts[0]))
-                    {
-                        result = SubMap[sequenceParts[0]].Invoke(sequenceParts);
-                    }
-                    else
-                    {
-                        result = string.Format("<MISSING:{0}>", sequence);
-                    }                    
-                    break;
+                string[] sequenceParts = sequence.Split(':');
+
+                switch (sequenceParts[0])
+                {
+                    case "(":
+                        result = "<";
+                        break;
+                    case ")":
+                        result = ">";
+                        break;
+                    case "l":
+                        result = GetString(sequenceParts[2], sequenceParts[1], false, false);
+                        break;
+                    case "strong":
+                        result = "<b>"; //handling dialogue written for proper html
+                        break;
+                    case "/strong":
+                        result = "</b>"; //handling dialogue written for proper html
+                        break;
+                    case "em":
+                        result = "<i>"; //handling dialogue written for proper html
+                        break;
+                    case "/em":
+                        result = "</i>"; //handling dialogue written for proper html
+                        break;
+                    case "b":
+                        result = "<b>"; //handling dialogue written for improper html
+                        break;
+                    case "/b":
+                        result = "</b>"; //handling dialogue written for improper html
+                        break;
+                    case "i":
+                        result = "<i>"; //handling dialogue written for improper html
+                        break;
+                    case "/i":
+                        result = "</i>"; //handling dialogue written for improper html
+                        break;
+                    default:
+                        if (SubMap.ContainsKey(sequenceParts[0]))
+                        {
+                            result = SubMap[sequenceParts[0]].Invoke(sequenceParts);
+                        }
+                        else
+                        {
+                            result = string.Format("?SUBBER:{0}?", sequence);
+                        }
+                        break;
+                }
+            }
+            catch(Exception e)
+            {
+                CDebug.LogEx($"Failed to handle macro ({e.GetType().Name}: {e.Message})", LogLevel.Verbose, this);
             }
 
             return result;
@@ -338,7 +344,7 @@ namespace CommonCore.StringSub
             catch(Exception e) //eventually we won't need this
             {
                 Debug.LogException(e);
-                return "<<ERROR>>";
+                return "?FATALERROR?";
             }
                    
         }

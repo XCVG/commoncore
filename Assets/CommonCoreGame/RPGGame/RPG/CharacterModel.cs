@@ -346,7 +346,7 @@ namespace CommonCore.RpgGame.Rpg
                 UpdateStats();
         }
 
-        internal object GetAV(string av)
+        public object GetAV(string av)
         {
             if (av.Contains("."))
             {

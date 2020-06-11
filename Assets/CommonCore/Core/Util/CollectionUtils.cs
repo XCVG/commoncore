@@ -25,6 +25,44 @@ namespace CommonCore
             return def;
         }
 
+        public static TKey GetKeyForValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TValue value)
+        {
+            foreach(var kvp in dictionary)
+            {
+                if (kvp.Value.Equals(value)) //safe?
+                    return kvp.Key;
+            }
+
+            return default;
+        }
+
+        public static TKey GetKeyForValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TValue value, out bool duplicateValuesExist)
+        {
+            var keys = dictionary.GetKeysForValue(value);
+            if (keys.Count > 1)
+                duplicateValuesExist = true;
+            else
+                duplicateValuesExist = false;
+
+            if (keys.Count == 0)
+                return default;
+            else
+                return keys[0];
+        }
+
+        public static List<TKey> GetKeysForValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TValue value)
+        {
+            List<TKey> keys = new List<TKey>();
+
+            foreach(var kvp in dictionary)
+            {
+                if (kvp.Value.Equals(value))
+                    keys.Add(kvp.Key);
+            }
+
+            return keys;
+        }
+
         /// <summary>
         /// Gets the first value for a key from a dictionary, ignoring the case of the key
         /// </summary>
@@ -91,6 +129,38 @@ namespace CommonCore
                 list[k] = list[n];
                 list[n] = value;
             }
+        }
+
+        /// <summary>
+        /// IndexOf extension method for IReadOnlyList
+        /// </summary>
+        /// <remarks>See https://stackoverflow.com/questions/37431844/why-ireadonlycollection-has-elementat-but-not-indexof for where this is from and why it exists</remarks>
+        public static int IndexOf<T>(this IReadOnlyList<T> self, T elementToFind)
+        {
+            int i = 0;
+            foreach (T element in self)
+            {
+                if (Equals(element, elementToFind))
+                    return i;
+                i++;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// IndexOf extension method for IReadOnlyList (specialized version for strings)
+        /// </summary>
+        /// <remarks>See https://stackoverflow.com/questions/37431844/why-ireadonlycollection-has-elementat-but-not-indexof for where this is from and why it exists</remarks>
+        public static int IndexOf(this IReadOnlyList<string> self, string elementToFind, StringComparison comparisonType)
+        {
+            int i = 0;
+            foreach (string element in self)
+            {
+                if (string.Equals(element, elementToFind, comparisonType))
+                    return i;
+                i++;
+            }
+            return -1;
         }
 
         public static string ToNiceString<T>(this IEnumerable<T> collection, Func<T, string> toStringFunction)

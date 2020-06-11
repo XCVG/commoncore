@@ -7,6 +7,7 @@ using CommonCore.State;
 using CommonCore;
 using UnityEngine.UI;
 using CommonCore.Audio;
+using CommonCore.Scripting;
 
 namespace CommonCore.UI
 {
@@ -41,6 +42,9 @@ namespace CommonCore.UI
         public override void Start()
         {
             base.Start();
+
+            //execute hook
+            ScriptingModule.CallHooked(ScriptHook.OnGameOver, this);
 
             //set buttons
             if (ReturnButton != null)

@@ -93,6 +93,7 @@ namespace CommonCore.RpgGame.UI
             UpdateVisibility();
             
             UpdateStatusDisplays();
+            UpdateWeaponDisplay(); //ugly but oh well
             UpdateDamageFade();
             LastFrameHealthFraction = GameState.Instance.PlayerRpgState.HealthFraction;
         }

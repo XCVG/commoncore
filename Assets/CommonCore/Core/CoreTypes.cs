@@ -31,6 +31,29 @@ namespace CommonCore
     }
 
     /// <summary>
+    /// Which resource manager to use
+    /// </summary>
+    public enum ResourceManagerPolicy
+    {
+        /// <summary>
+        /// Use legacy resource manager only
+        /// </summary>
+        UseLegacy,
+        /// <summary>
+        /// Use legacy resource manager but test both
+        /// </summary>
+        TestBothUseLegacy,
+        /// <summary>
+        /// Use new resource manager but test both
+        /// </summary>
+        TestBothUseNew,
+        /// <summary>
+        /// Use new resource manager only
+        /// </summary>
+        UseNew
+    }
+
+    /// <summary>
     /// Persistent data path to use on Windows platform
     /// </summary>
     /// <remarks>Because the default is stupid</remarks>

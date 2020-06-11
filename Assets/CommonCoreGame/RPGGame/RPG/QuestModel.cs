@@ -94,6 +94,22 @@ namespace CommonCore.RpgGame.Rpg
             return Defs[name];
         }
 
+        /// <summary>
+        /// Gets the nice name of a quest, or its plain name if the nice name isn't available
+        /// </summary>
+        public static string GetNiceName(string name)
+        {
+            var qd = GetDef(name);
+            if(qd != null)
+            {
+                var niceName = qd.NiceName;
+                if (!string.IsNullOrEmpty(niceName))
+                    return niceName;
+            }
+
+            return name;
+        }
+
         public static string GetDefsList()
         {
             StringBuilder sb = new StringBuilder(Defs.Count * 64);

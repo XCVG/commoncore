@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace CommonCore.RpgGame.Rpg
@@ -19,7 +20,7 @@ namespace CommonCore.RpgGame.Rpg
 
     public enum AidType //are there even any other stats?
     {
-        None, Health //TODO energy
+        None, Health, Energy //other stats?
     }
 
     public enum RestoreType
@@ -146,7 +147,7 @@ namespace CommonCore.RpgGame.Rpg
 
         public virtual string GetStatsString()
         {
-            return Essential ? "Essential" : string.Empty;
+            return $"{(Essential ? "<b>Essential</b>" : string.Empty)}\nValue: {Value:F1}\nWeight: {Weight:F1}";
         }
 
         public bool CheckFlag(ItemFlag flag)
@@ -167,6 +168,11 @@ namespace CommonCore.RpgGame.Rpg
         public MiscItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags, string worldModel)
             : base(name, weight, value, maxCondition, hidden, essential, flags, worldModel)
         {
+        }
+
+        public override string GetStatsString()
+        {
+            return "<b>Misc Item</b>\n" + base.GetStatsString();
         }
     }
 
@@ -199,6 +205,11 @@ namespace CommonCore.RpgGame.Rpg
             LowerTime = lowerTime;
             RaiseTime = raiseTime;
         }
+
+        public override string GetStatsString()
+        {
+            return base.GetStatsString() + $"\nDamage: {Damage:F1} ({DamagePierce:F1})\nType: {DType.ToString()}";
+        }
     }
 
     public class MeleeWeaponItemModel : WeaponItemModel
@@ -216,6 +227,11 @@ namespace CommonCore.RpgGame.Rpg
             Reach = reach;
             Rate = rate;
             EnergyCost = energyCost;
+        }
+
+        public override string GetStatsString()
+        {
+            return $"<b>Melee Weapon ({SkillType})</b>\n" + base.GetStatsString() + $"\nSpeed: {(1/Rate):F1}";
         }
     }
 
@@ -285,10 +301,7 @@ namespace CommonCore.RpgGame.Rpg
 
         public override string GetStatsString()
         {
-            StringBuilder str = new StringBuilder(255);
-            //TODO finish impl
-
-            return str.ToString() + base.GetStatsString();
+            return $"<b>Ranged Weapon ({SkillType})</b>\n" + base.GetStatsString() + $"\nSpeed: {(1 / FireInterval):F1}\nMagazine: {MagazineSize}\nAmmo Type{InventoryModel.GetNiceName(AType.ToString())}";
         }
     }
 
@@ -306,6 +319,21 @@ namespace CommonCore.RpgGame.Rpg
             DamageThreshold = new Dictionary<DamageType, float>(damageThreshold);
             Slot = slot;
         }
+
+        public override string GetStatsString()
+        {
+            StringBuilder res = new StringBuilder();
+            foreach(var key in DamageResistance.Keys.Union(DamageThreshold.Keys))
+            {
+                float dr = DamageResistance.GetOrDefault(key, 0);
+                float dt = DamageThreshold.GetOrDefault(key, 0);
+                if (dr == 0 && dt == 0)
+                    continue;
+                res.AppendFormat("\n{0}: {1:F1} ({2:F1})", key, dr, dt);
+            }
+
+            return $"<b>Armor: {Slot.ToString()}</b>\n" + base.GetStatsString() + res.ToString();
+        }
     }
 
     public class AidItemModel : InventoryItemModel
@@ -313,6 +341,7 @@ namespace CommonCore.RpgGame.Rpg
         public readonly AidType AType;
         public readonly RestoreType RType;
         public float Amount;
+        //TODO conditions, exec script on use, etc
 
         public AidItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags, string worldModel,
             AidType aType, RestoreType rType, float amount)
@@ -352,6 +381,11 @@ namespace CommonCore.RpgGame.Rpg
                     break;                
             }
         }
+
+        public override string GetStatsString()
+        {
+            return $"<b>Aid Item</b>\n" + base.GetStatsString() + $"\n{AType}: {Amount:F1} ({RType})\n"; //will need to redo this when we extend AidItem
+        }
     }
 
     public class MoneyItemModel : InventoryItemModel
@@ -364,6 +398,11 @@ namespace CommonCore.RpgGame.Rpg
             Type = type;
             Stackable = true;
         }
+
+        public override string GetStatsString()
+        {
+            return "<b>Currency</b>\n" + base.GetStatsString(); //should probably be a lookup
+        }
     }
 
     public class AmmoItemModel : InventoryItemModel
@@ -375,6 +414,11 @@ namespace CommonCore.RpgGame.Rpg
         {
             Type = type;
             Stackable = true;
+        }
+
+        public override string GetStatsString()
+        {
+            return "<b>Ammunition</b>\n" + base.GetStatsString();
         }
     }
 }

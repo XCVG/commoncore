@@ -31,6 +31,8 @@ namespace CommonCore.Scripting
     public class CCScriptHookAttribute : Attribute
     {
         public ScriptHook Hook { get; set; } = ScriptHook.None;
+        public string NamedHook { get; set; } = null;
+
         /// <summary>
         /// If true, will allow the script to be called through the scripting system as well as automatically
         /// </summary>
@@ -39,7 +41,7 @@ namespace CommonCore.Scripting
 
     public enum ScriptHook
     {
-        None, AfterModulesLoaded, BeforeApplicationExit, OnGameStart, OnGameEnd, OnGameLoad, OnSceneTransition, OnSceneLoad, AfterSceneLoad, OnSceneUnload, OnPlayerSpawn, AfterMainMenuCreate, AfterIGUIMenuCreate, OnIGUIMenuOpen, OnFrameUpdate
+        None, AfterModulesLoaded, BeforeApplicationExit, OnGameStart, OnGameEnd, OnGameLoad, OnSceneTransition, OnSceneLoad, AfterSceneLoad, OnSceneUnload, OnPlayerSpawn, OnGameOver, AfterMainMenuCreate, AfterIGUIMenuCreate, OnIGUIMenuOpen, OnFrameUpdate
     }
 
     /// <summary>
@@ -62,9 +64,14 @@ namespace CommonCore.Scripting
         /// </summary>
         public ScriptHook Hook;
 
+        /// <summary>
+        /// The calling hook if it was called by a named hook
+        /// </summary>
+        public string NamedHook;
+
         public override string ToString()
         {
-            return string.Format("{0} : [Caller:{1}, Activator:{2}, Hook:{3}]", GetType().Name, Caller, Activator, Hook);
+            return string.Format("{0} : [Caller:{1}, Activator:{2}, Hook:{3}]", GetType().Name, Caller, Activator, Hook == ScriptHook.None ? (string.IsNullOrEmpty(NamedHook) ? "null" : NamedHook) : Hook.ToString());
         }
     }
 

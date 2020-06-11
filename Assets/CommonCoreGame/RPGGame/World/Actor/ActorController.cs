@@ -337,7 +337,7 @@ namespace CommonCore.RpgGame.World
 
                     {
                         //set target
-                        var d = transform.position + ((Target.position - transform.position).normalized * -1);
+                        var d = transform.position + ((Target.position - transform.position).normalized * -(1 + Mathf.Abs(MovementComponent.TargetThreshold)));
                         MovementComponent.SetDestination(d);
                     }                    
                     break;
@@ -474,7 +474,7 @@ namespace CommonCore.RpgGame.World
                     }
                     {
                         //set target
-                        var d = transform.position + ((Target.position - transform.position).normalized * -1);
+                        var d = transform.position + ((Target.position - transform.position).normalized * -(1 + Mathf.Abs(MovementComponent.TargetThreshold)));
                         MovementComponent.SetDestination(d);
                     }
                     break;

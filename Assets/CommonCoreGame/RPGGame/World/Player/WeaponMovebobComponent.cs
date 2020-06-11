@@ -16,7 +16,7 @@ namespace CommonCore.RpgGame.World
     public class WeaponMovebobComponent : MonoBehaviour
     {
 
-        private const float Threshold = 0.001f;
+        private const float Threshold = 0.0001f;
 
         [SerializeField, Header("Components")]
         private PlayerMovementComponent MovementComponent = null;
@@ -43,6 +43,7 @@ namespace CommonCore.RpgGame.World
         private Vector3 TargetPosition = Vector3.zero;
         private int TargetLastXSign = -1;
         private bool WasInADS = false;
+        private bool StopAndCenter = false;
 
         private void Start()
         {
@@ -94,15 +95,18 @@ namespace CommonCore.RpgGame.World
                 //reset state but don't change anything!
                 WasInADS = false;
             }
-            
-            if ((transform.localPosition - TargetPosition).magnitude < Threshold)
+
+            bool movementStopped = !(MovementComponent.IsMoving || (MovementComponent.IsOnSlope && MovementComponent.Velocity.sqrMagnitude > 0)) ||
+                !MovementComponent.IsGrounded;
+
+            if ((TargetPosition - transform.localPosition).magnitude < Threshold)
             {
-                if (!(MovementComponent.IsMoving || (MovementComponent.IsOnSlope && MovementComponent.Velocity.sqrMagnitude > 0)) ||
-                !MovementComponent.IsGrounded)
+                if (movementStopped)
                 {
                     if(TargetLastXSign == -1 || TargetLastXSign == 1)
-                        TargetLastXSign *= -2;
+                        TargetLastXSign *= -2; //WTF is this for?
                     TargetPosition = Vector3.zero;
+                    StopAndCenter = true;
                 }
                 //more complex selection logic
                 else if (Mathf.Approximately(TargetPosition.y, 0))
@@ -115,19 +119,21 @@ namespace CommonCore.RpgGame.World
                         0);
                     if (isADS)
                         TargetPosition *= ADSDisplacementMultiplier;
+                    StopAndCenter = false;
                 }
                 else
                 {
                     //return to center
                     TargetLastXSign *= -1;
                     TargetPosition = Vector3.zero;
+                    StopAndCenter = false;
                 }
 
             }
 
             //animate toward target (same as player movebob I think)
             Vector3 vecToTarget = TargetPosition - transform.localPosition;
-            float distToTarget = vecToTarget.magnitude;
+            float distToTarget = vecToTarget.magnitude; //this is recalculated because the above code block may change TargetPosition
             if (distToTarget > Threshold)
             {
                 //get extra velocity from movement speed
@@ -135,7 +141,17 @@ namespace CommonCore.RpgGame.World
                 Vector3 dirToTarget = vecToTarget.normalized;
                 float moveDist = Mathf.Min(distToTarget, (BaseVelocity + extraVelocity) * Time.deltaTime * (isADS ? ADSVelocityMultiplier : 1));
                 transform.Translate(moveDist * dirToTarget, Space.Self);
+                if(StopAndCenter && (TargetPosition - transform.localPosition).magnitude <= Threshold)
+                {
+                    transform.localPosition = Vector3.zero;
+                }
             }
+            else if (StopAndCenter)
+            {
+                transform.localPosition = Vector3.zero;
+                //Debug.Log(TargetPosition);
+            }
+
         }
 
         //wtf

@@ -841,6 +841,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UseAggressiveConfigurationCheck: 0
+  ApplyFov: 1
   AttachedCamera: {fileID: 0}
 --- !u!1 &1176460641798152
 GameObject:
@@ -1462,6 +1463,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EditorFormID: spec_player
+  EntityTags: []
   HitMaterial: 0
   AutoinitHud: 1
   PlayerInControl: 1
@@ -4075,6 +4077,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UseAggressiveConfigurationCheck: 0
+  ApplyFov: 0
   AttachedCamera: {fileID: 20537613908478950}
 --- !u!114 &1786127945102974842
 MonoBehaviour:
@@ -4090,6 +4093,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WorldCamera: {fileID: 20537613908478950}
   GunCamera: {fileID: 2407452120306009744}
+  UseConfigViewAngle: 1
 --- !u!1 &1906709062735506
 GameObject:
   m_ObjectHideFlags: 0
@@ -5409,9 +5413,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MovementComponent: {fileID: 7733546800836022910}
   WeaponComponent: {fileID: 0}
-  YDisplacement: 0.05
+  YDisplacement: 0.04
   YJitter: 0.001
-  XDisplacement: 0.05
+  XDisplacement: 0.04
   XJitter: 0.001
   BaseVelocity: 0.1
   VelocityFactor: 0.01

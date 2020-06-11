@@ -1,0 +1,66 @@
+{
+  "key_red": {
+    "model": {
+		"$type": "CommonCore.RpgGame.Rpg.MiscItemModel, Assembly-CSharp",
+		"Value": 0,
+		"Weight": 0,
+		"MaxCondition": 1.0,
+		"Unique": true,
+		"Essential": true,
+		"WorldModel": "wm_key_red"
+    },
+    "def": {
+    "NiceName": "Red Key",
+    "Image": "key_red",
+    "Description": "A red key"
+	}
+  },
+  "key_blue": {
+    "model": {
+		"$type": "CommonCore.RpgGame.Rpg.MiscItemModel, Assembly-CSharp",
+		"Value": 0,
+		"Weight": 0,
+		"MaxCondition": 1.0,
+		"Unique": true,
+		"Essential": true,
+		"WorldModel": "wm_key_blue"
+    },
+    "def": {
+    "NiceName": "Blue Key",
+    "Image": "key_blue",
+    "Description": "A blue key"
+	}
+  },
+  "key_green": {
+    "model": {
+		"$type": "CommonCore.RpgGame.Rpg.MiscItemModel, Assembly-CSharp",
+		"Value": 0,
+		"Weight": 0,
+		"MaxCondition": 1.0,
+		"Unique": true,
+		"Essential": true,
+		"WorldModel": "wm_key_green"
+    },
+    "def": {
+    "NiceName": "Green Key",
+    "Image": "key_green",
+    "Description": "A green key"
+	}
+  },
+  "key_yellow": {
+    "model": {
+		"$type": "CommonCore.RpgGame.Rpg.MiscItemModel, Assembly-CSharp",
+		"Value": 0,
+		"Weight": 0,
+		"MaxCondition": 1.0,
+		"Unique": true,
+		"Essential": true,
+		"WorldModel": "wm_key_yellow"
+    },
+    "def": {
+    "NiceName": "Yellow Key",
+    "Image": "key_yellow",
+    "Description": "A yellow key"
+	}
+  }
+}

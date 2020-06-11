@@ -10,7 +10,7 @@ namespace CommonCore
     /// <summary>
     /// Manager for flexible resource loading, with virtual path handling
     /// </summary>
-    internal class CCResourceManager
+    internal class LegacyResourceManager
     {
         private Dictionary<string, UnityEngine.Object> RemapTable = new Dictionary<string, UnityEngine.Object>();
         //convention will be path/to/resource.type
@@ -19,7 +19,7 @@ namespace CommonCore
         //we may need to rework it to handle mod support/resource injection
         //actually we'd basically need a tree for that or it would be dog slow because we'd have to traverse the list whenever we call GetResources()
 
-        internal CCResourceManager()
+        internal LegacyResourceManager()
         {
             //eventually we will support preloading the table (if set in config settings) but probably not until Citadel
         }

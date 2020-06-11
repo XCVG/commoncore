@@ -14,7 +14,7 @@ namespace CommonCore.RpgGame.World
         protected ActorController ActorController;
 
         [SerializeField, FormerlySerializedAs("NavThreshold"), Tooltip("Distance to be considered at the target")]
-        protected float TargetThreshold = 1.0f;
+        public float TargetThreshold = 1.0f;
 
         [field: SerializeField] //probably not safe but okay for debuggering
         public virtual Vector3 MovementTarget { get; set; } //TODO visibility?

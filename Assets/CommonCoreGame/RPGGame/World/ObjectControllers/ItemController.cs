@@ -46,7 +46,7 @@ namespace CommonCore.RpgGame.World
                     itemName = itemDef.NiceName;
                 else
                     itemName = ItemId;
-                iobj.GetComponent<InteractableComponent>().Tooltip = string.Format("{0} [{1}]", itemName, ItemQuantity);
+                iobj.GetComponent<InteractableComponent>().Tooltip = ItemQuantity > 1 ? string.Format("{0} [{1}]", itemName, ItemQuantity) : itemName;
             }
         }
 

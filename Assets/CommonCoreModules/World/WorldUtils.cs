@@ -381,6 +381,159 @@ namespace CommonCore.World
         }
 
         /// <summary>
+        /// Deals damage to everything in a radius around a position
+        /// </summary>
+        /// <remarks>
+        /// <para>If a HitPuff is passed in, the HitPuffs will be spawned</para>
+        /// <para>If useFalloff is enabled, a simple linear falloff will be used</para>
+        /// </remarks>
+        public static void RadiusDamage(Vector3 position, float radius, bool useFalloff, bool rejectBullets, bool damageDuplicates, bool damageSelf, ActorHitInfo actorHitInfo)
+        {
+            var hits = OverlapSphereAttackHit(position, radius, rejectBullets, damageDuplicates, damageSelf, actorHitInfo.Originator);
+            foreach(var hit in hits)
+            {
+                if (!(hit.Controller is ITakeDamage itd))
+                    continue;
+
+                var ahi = new ActorHitInfo(actorHitInfo.Damage, actorHitInfo.DamagePierce, actorHitInfo.DamageType, hit.HitLocation, hit.HitMaterial, actorHitInfo.Originator, actorHitInfo.HitPuff, hit.HitPoint);
+
+                if (useFalloff)
+                {
+                    float distance = Mathf.Min(radius, (hit.HitPoint - position).magnitude);
+                    float damageMultiplier = (radius - distance) / radius;
+                    ahi.Damage *= damageMultiplier;
+                    ahi.DamagePierce *= damageMultiplier;
+                }
+
+                if (hit.Hitbox != null)
+                {
+                    ahi.Damage *= hit.Hitbox.DamageMultiplier;
+                    ahi.DamagePierce *= hit.Hitbox.DamageMultiplier;
+                    if(hit.Hitbox.AllDamageIsPierce)
+                    {
+                        ahi.DamagePierce += ahi.Damage;
+                        ahi.Damage = 0;
+                    }
+                }
+
+                itd.TakeDamage(ahi);
+                if(!string.IsNullOrEmpty(actorHitInfo.HitPuff))
+                    HitPuffScript.SpawnHitPuff(ahi);
+            }
+        }
+
+        /// <summary>
+        /// SphereOverlaps and gets the hits within the radius of a position on IHitboxComponent or ITakeDamage
+        /// </summary>
+        /// <remarks>
+        /// <para>Meant for radius damage and such</para>
+        /// </remarks>
+        public static HitInfo[] OverlapSphereAttackHit(Vector3 position, float radius, bool rejectBullets, bool hitDuplicates, bool hitSelf, BaseController originator)
+        {
+            //rack up a collection of "things we hit"->"hitboxes on thing", then handle
+            var colliders = Physics.OverlapSphere(position, radius, GetAttackLayerMask(), QueryTriggerInteraction.Collide);
+            if (colliders == null || colliders.Length == 0)
+                return new HitInfo[] { };
+            
+            if(colliders.Length == 1)
+            {
+                var collider = colliders[0];
+
+                if(rejectBullets && collider.GetComponent<BulletScript>())
+                    return new HitInfo[] { };
+
+                var actorHitbox = collider.GetComponent<IHitboxComponent>();
+                if (actorHitbox != null)
+                    if(hitSelf || actorHitbox.ParentController != originator)
+                        return new HitInfo[] { new HitInfo(actorHitbox.ParentController, actorHitbox, collider.bounds.center, actorHitbox.HitLocationOverride, actorHitbox.HitMaterial) };
+                    else
+                        return new HitInfo[] { };
+
+                //try to find a basecontroller
+                if (!collider.isTrigger)
+                {
+                    var otherController = collider.GetComponent<BaseController>();
+                    if (otherController == null)
+                        otherController = collider.GetComponentInParent<BaseController>();
+                    if (otherController != null && (hitSelf || otherController != originator))
+                        return new HitInfo[] { new HitInfo(otherController, null, collider.bounds.center, 0, otherController?.HitMaterial ?? 0) };
+                }
+
+                return new HitInfo[] { };
+            }
+
+            Dictionary<BaseController, List<Collider>> controllersColliders = new Dictionary<BaseController, List<Collider>>();
+            foreach(var collider in colliders)
+            {
+                if (rejectBullets && collider.GetComponent<BulletScript>())
+                    continue;
+
+                var actorHitbox = collider.GetComponent<IHitboxComponent>();
+                if(actorHitbox != null)
+                {
+                    var pc = actorHitbox.ParentController;
+                    if (hitSelf || pc != originator)
+                        addCollider(collider, pc);
+
+                    continue;
+                }
+
+                if (collider.isTrigger)
+                    continue;
+
+                var otherController = collider.GetComponent<BaseController>();
+                if (otherController == null)
+                    otherController = collider.GetComponentInParent<BaseController>();
+                if(otherController != null && otherController is ITakeDamage)
+                {
+                    if (hitSelf || otherController != originator)
+                        addCollider(collider, otherController);
+                }
+
+                void addCollider(Collider c, BaseController bc)
+                {
+                    if(!controllersColliders.TryGetValue(bc, out var list))
+                    {
+                        list = new List<Collider>();
+                        controllersColliders.Add(bc, list);
+                    }
+
+                    list.Add(c);
+                }
+            }
+
+            if (controllersColliders.Count == 0)
+                return new HitInfo[] { };
+
+            List<HitInfo> hitList = new List<HitInfo>();
+
+            foreach (var kvp in controllersColliders)
+            {
+                if (kvp.Value == null || kvp.Value.Count == 0)
+                    continue;
+
+                //if damageDuplicates is true we will use all the hitboxes, if not we will not return any hitbox
+                //it's not optimal but I don't have a better solution
+                if (hitDuplicates)
+                {
+                    foreach(var collider in kvp.Value)
+                    {
+                        var actorHitbox = collider.GetComponent<IHitboxComponent>();
+                        hitList.Add(new HitInfo(kvp.Key, actorHitbox, collider.bounds.center, actorHitbox?.HitLocationOverride ?? 0, actorHitbox?.HitMaterial ?? kvp.Key.HitMaterial));
+                    }
+                }
+                else
+                {
+                    Collider collider = kvp.Value[0];
+                    hitList.Add(new HitInfo(kvp.Key, null, collider.bounds.center, 0, kvp.Key.HitMaterial));
+                }
+            }
+
+            return hitList.ToArray(); //should we return IList or IEnumerable instead?
+
+        }
+
+        /// <summary>
         /// Gets the closest/best hit on an IHitboxComponent or ITakeDamage
         /// </summary>
         /// <remarks>
