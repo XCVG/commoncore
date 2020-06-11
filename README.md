@@ -1,5 +1,5 @@
 # CommonCore RPG Libraries for Unity
-### Version 2.0.0pre10
+### Version 2.0.0pre11
 ### For Unity 2018.4+
 
 ## Important Update
@@ -16,7 +16,7 @@ CommonCore handles or will handle standard RPG mechanics, game state with saving
 
 CommonCore supports Unity 2018.4 and Unity 2019.3. The plan is to continue to target the latest stable version of 2018.x at least until the next release. Unity 2017.x is no longer supported.
 
-CommonCore is targeted toward standalone platforms using Mono and the .NET 4.x scripting runtime. As of 2.0.0pre9 (18f00d1), it works with IL2CPP and has been tested on UWP, though this is still experimental.
+CommonCore is targeted toward standalone platforms using Mono and the .NET 4.x scripting runtime. As of 2.0.0pre9 (18f00d1), it works with IL2CPP and has been tested on UWP, though this is still experimental and some features will not work.
 
 ## Extra Modules
 
@@ -32,9 +32,9 @@ Some open-licensed third-party assets are included in the repository. These are 
 
 **Please do not use the Ascension 3 name or Ascension 3 graphics in your own releases. The permissions granted above to not apply to these.** If you download a release package or recent source, these should be stripped out already. The game data in Resources/, Objects/ and Scenes/, however, falls under the same license as the code and may be used under the same conditions.
 
-## Ascension III Revolution (Demo)
+## Ascension III (Demo)
 
-Ascension III: Revolution is the sequel to my previous game, Ascension 2: Galaxy. It is a full 3D role-playing game built on the Unity engine and based on ideas from the failed Ascension Revolution project and earlier Ascension III Awakening plans. 
+[Ascension III](https://www.xcvgsystems.com/ascension-iii-2/) is the sequel to my previous game, Ascension 2: Galaxy. It is a full 3D role-playing game built on the Unity engine and based on ideas from the failed Ascension Revolution project and earlier Ascension III Awakening plans. 
 
-A partial demo/prototype of Ascension III serves as the example project for CommonCore.
+Ascension III is being developed in parallel with CommonCore and it serves as a demo/example for the library. You can get the latest test build [here](https://xcvg.itch.io/ascension-iii-revolution).
 
