@@ -12,6 +12,10 @@ CommonCore (formerly ARES) is a complete Role-Playing Game library for Unity... 
 
 CommonCore handles or will handle standard RPG mechanics, game state with saving and loading, the player object, NPCs, dialogue, input, UI, configuration and more. It is (or will be) a complete solution that can be loaded as a template followed immediately by building the actual game. For cases where you don't need all the functionality, it is divided into a separate Core, some modules, and RPGGame so you don't have to use it all (more modularity is planned).
 
+## Documentation
+
+Some limited documentation is available in the Reference folder. The Documentation folder, confusingly, contains documentation and license information for third-party components.
+
 ## Platform Support
 
 CommonCore supports Unity 2018.4 and Unity 2019.3. The plan is to continue to target the latest stable version of 2018.x at least until the next release. Unity 2017.x is no longer supported.

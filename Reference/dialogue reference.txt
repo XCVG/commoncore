@@ -1,0 +1,231 @@
+IMAGES
+
+Face images are located at Assets/char in katana and /Dialogue/char in CommonCore
+Background images are located at Assets/bg in katana and /Dialogue/bg in CommonCore
+
+The draw area is assumed to be 1280x720. It is constrained in katana and scaled in CommonCore
+
+In CommonCore, 100 is assumed to be the default pixels per unit, and images are scaled according to this value
+
+Images in the "character" position are drawn centered in katana, but 100px above center in CommonCore
+Images in the "battler" position are drawn slightly offset in katana, but centered in CommonCore. They were never really supported in either.
+
+_______________________________________________________________________________
+
+CONDITIONALS
+
+the "conditional" is an array containing "conditionNodes"
+each "conditionNode" contains a value for next and an array containing actual conditions that must be met
+
+[
+  { //condition node
+    "next": "badScene",
+    "conditions": [
+      {
+        "flag": "gotThing"
+      },
+      {
+        "item": "idcard",
+        "consume": false
+      },
+      {
+        "variable": "encCounter",
+        "greater": 5
+      },
+      {
+        "quest": "d5DestroyTower",
+        "started": false
+      }
+    ]
+  },
+  {
+    "next": "goodScene",
+    "conditions": []
+  }
+]
+
+conditionNodes are evaluated from last index to first index, and the first one that resolves true is used (implicit OR)
+all conditions form an implicit AND within a node
+
+AVAILABLE CONDITIONS:
+
+flag: <flag>
+noflag: <flag>
+(checks if a flag is set or unset, no additional options)
+
+item: <item>
+	consume: *boolean*
+(checks if the player has an item, uses it if specified [consume supported on Katana only])
+
+variable: <variable>
+	greater: *number*
+	less: *number*
+	equal: *number*
+	greaterEqual: *number*
+	lessEqual: *number*
+(checks if a variable meets one of the tests, ONLY ONE AT A TIME IS SUPPORTED)
+
+affinity: <character> [Katana only]
+	(all supported by variable)
+(checks if affinity meets one of the tests, similar to variable)
+
+actorvalue: <path> [CommonCore only]
+	(all supported by variable)
+(checks if the actorvalue meets one of the tests, similar to variable, paths are exact variable names)
+
+quest: <quest>
+	(all supported by variable)
+	started: *boolean* (quest > 0)
+	finished: *boolean* (quest < 0)
+(checks if quest meets one of the test, similar to variable but supports shorthands)
+
+av: <actorvalue>
+	(all supported by variable)
+
+eval: *javascript*
+(simply eval() the given code, naturally Katana only)
+
+exec: <script name>
+	arg: *any* (passed to script)
+(special directive, looks up and executes a script through ASE engine)
+
+_______________________________________________________________________________
+
+
+MICROSCRIPTS
+
+each "microscript" is an array of directives
+
+[
+  {
+    "flag": "d5Triggered",
+    "set": true
+  },
+  {
+    "quest": "d5Quest",
+    "set": 1
+  }
+]
+
+each directive has a target and an action
+one action per directive please
+
+AVAILABLE TARGETS
+	(supported actions)
+
+flag
+	set, toggle
+	
+item
+	give, take
+	
+variable
+	set, add
+	
+affinity
+	set, add
+
+quest
+	set, add, start, finish
+
+av
+	set, add
+
+eval (Katana only)
+	special directive, executes javascript passed as parameter
+
+exec (CommonCore only)
+	special directive, looks up and executes a script through ASE engine
+	
+AVAILABLE ACTIONS
+
+set: sets target to specified value
+toggle: flag only, inverts existing value
+add: adds specified value to target
+give: for inventory: value=quantity, target=item
+take: for inventory: value=quantity, target=item (value > 1 is undefined)
+start: for quests, sets target to value if and only if quest is not started
+finish: for quests, sets target to value if and only if quest is started
+
+non-numeric arguments are technically supported but not recommended
+	add is not defined and entirely at the mercy of javascript's type system
+	start and finish just simply won't work
+	this applies only to katana, not commoncore
+ 
+_______________________________________________________________________________
+
+
+MICROSCRIPT DELAY EXTENSIONS (CommonCore Only)
+
+a microscript node can be scheduled for later execution:
+
+[
+  {
+    "flag": "d5Triggered",
+    "set": true,
+	"delay": 60,
+	"delayType": "world",
+	"delayAbsolute": false
+  }
+]
+
+delay
+	delay in seconds
+
+delayType [optional] [default = game]
+	real, game, world
+	
+delayAbsolute [optional] [default = false]
+
+There are three ways to reckon time, and the exact meaning of delayAbsolute changes based on them:
+	REAL time: Time in the real world (technically system time). Never stops even if the game is closed. Absolute time is interpreted as seconds since January 1, 1970 (midnight UTC/GMT). Limited precision.
+	GAME time: Time passing inside the game, affected by pause and Unity timescale, but not RPG timescale. Absolute time is interpreted as seconds in game since the game state was created.
+	WORLD time: Time passing inside the world, ie affected by RPG timescale. Absolute time is interpreted as seconds in game since the game state was created.
+	
+Deferred events whose deadlines have passed will be executed as soon as possible. They do not expire.
+	
+_______________________________________________________________________________
+
+SKILL CHECKS (CommonCore Only)
+
+a choice node can optionally have a skill check attached
+
+{
+  "checkType": "soft", [optional, default = hard]
+  "stat": "Dexterity", [condition]
+  "greaterEqual": 5, [comparison]
+  "passNext": "this.passed",
+  "failNext": "meta.exit",
+  "appendCheckText": true [optional, default = false]
+}
+
+all will include a condition/target and a comparison
+
+AVAILABLE CONDITIONS:
+
+skill: <skill>
+
+stat: <stat>
+
+av: <actorvalue>
+
+AVAILABLE COMPARISONS
+
+greater: *number*
+less: *number*
+equal: *number*
+greaterEqual: *number*
+lessEqual: *number*
+
+Unlike conditionals, all comparisons are valid for all conditions
+
+OTHER OPTIONS
+
+checkType
+	soft - Meeting requirements is a 100% pass chance. Not meeting requirements is scaled linearly from 0%. Not defined for equal comparison operator.
+	hard - Must meet requirements exactly to pass. Supported fully for all comparison operators.
+	
+passNext - the frame to jump to if the check is passed
+failNext - the frame to jump to if the check is failed
+
+appendCheckText - If set, will prepend text that describes the skill check (ie [Dex 5])
