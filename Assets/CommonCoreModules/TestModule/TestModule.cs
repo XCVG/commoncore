@@ -47,5 +47,10 @@ namespace CommonCore.TestModule
             Log("Test module: all modules loaded!");
         }
 
+        public override void OnAllAddonsLoaded()
+        {
+            Log("Test module: all addons loaded!");
+        }
+
     }
 }

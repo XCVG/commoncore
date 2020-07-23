@@ -16,6 +16,9 @@ namespace CommonCore.DebugLog
 
         public override void OnFrameUpdate()
         {
+            if (!CCBase.Initialized)
+                return;
+
             if(ConfigState.Instance.ScreenshotKey != default)
             {
                 if(UnityEngine.Input.GetKeyDown(ConfigState.Instance.ScreenshotKey))

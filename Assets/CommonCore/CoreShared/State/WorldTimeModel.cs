@@ -1,14 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace CommonCore.RpgGame.State
+﻿namespace CommonCore.State
 {
 
     //WorldModel mostly keeps track of time for now, but could also be used to store data on weather or other such things
-    public class WorldModel
+    public class WorldTimeModel
     {
-        public WorldModel()
+        public WorldTimeModel()
         {
             //defaults here
             WorldTimeScale = 60.0f;

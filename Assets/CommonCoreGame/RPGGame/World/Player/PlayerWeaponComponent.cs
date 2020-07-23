@@ -603,7 +603,9 @@ namespace CommonCore.RpgGame.World
 
                 if (distance <= wim.Reach)
                 {
-                    hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, (int)wim.DType, hitLocation, hitMaterial, PlayerController, wim.HitPuff, hitPoint);
+                    bool harmFriendly = wim.HarmFriendly ?? GameParams.UseFriendlyFire;
+
+                    hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, (int)wim.DType, (int)wim.Effector, harmFriendly, hitLocation, hitMaterial, PlayerController, PredefinedFaction.Player.ToString(), wim.HitPuff, hitPoint);
 
                     if (otherController is ITakeDamage itd)
                     {
@@ -658,6 +660,8 @@ namespace CommonCore.RpgGame.World
                     bool useAmmo = !(wim.AType == AmmoType.NoAmmo);
                     bool autoReload = wim.CheckFlag(ItemFlag.WeaponAutoReload);
 
+                    bool harmFriendly = wim.HarmFriendly ?? GameParams.UseFriendlyFire;
+
                     //ammo logic
                     //TODO handle weapons that don't use magazine logic
                     if (useAmmo)
@@ -702,7 +706,8 @@ namespace CommonCore.RpgGame.World
                     bool useRandomPierce = wim.DamagePierceSpread > 0 && !wim.CheckFlag(ItemFlag.WeaponNeverRandomize);
                     float randomizedDamage = useRandomDamage ? Mathf.Max(Mathf.Min(1, wim.Damage), wim.Damage + UnityEngine.Random.Range(-wim.DamageSpread, wim.DamageSpread)) : wim.Damage;
                     float randomizedPierce = useRandomPierce ? Mathf.Max(Mathf.Min(1, wim.DamagePierce), wim.DamagePierce + UnityEngine.Random.Range(-wim.DamagePierceSpread, wim.DamagePierceSpread)) : wim.DamagePierce;
-                    bulletScript.HitInfo = new ActorHitInfo(randomizedDamage * damageRpgFactor * damageDifficultyFactor, randomizedPierce * damageRpgFactor * damageDifficultyFactor, (int)wim.DType, (int)ActorBodyPart.Unspecified, (int)DefaultHitMaterials.Unspecified, PlayerController, wim.HitPuff, null);
+                    bulletScript.HitInfo = new ActorHitInfo(randomizedDamage * damageRpgFactor * damageDifficultyFactor, randomizedPierce * damageRpgFactor * damageDifficultyFactor, (int)wim.DType, (int)wim.Effector, harmFriendly, (int)ActorBodyPart.Unspecified, (int)DefaultHitMaterials.Unspecified, PlayerController, PredefinedFaction.Player.ToString(), wim.HitPuff, null);
+                    //Debug.Log(wim.Effector);
                     //Debug.Log($"damage: {bulletScript.HitInfo.Damage:F2} | pierce: {bulletScript.HitInfo.DamagePierce:F2}");
                     bulletScript.FiredByPlayer = true;
 
@@ -1158,7 +1163,7 @@ namespace CommonCore.RpgGame.World
                     if (itd != null)
                     {
                         float damageMultiplier = RpgValues.GetKickDamageFactor(player) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerStrength; //from stats and difficulty
-                        var hitInfo = new ActorHitInfo(OffhandKickDamage * damageMultiplier, 0, (int)DamageType.Impact, (int)hitLocation, (int)hitMaterial, PlayerController, OffhandKickPuff, hitPoint);
+                        var hitInfo = new ActorHitInfo(OffhandKickDamage * damageMultiplier, 0, (int)DamageType.Impact, (int)DamageEffector.Melee, GameParams.UseFriendlyFire, (int)hitLocation, (int)hitMaterial, PlayerController, PredefinedFaction.Player.ToString(), OffhandKickPuff, hitPoint);
                         itd.TakeDamage(hitInfo);
                         if(!string.IsNullOrEmpty(OffhandKickPuff))
                             HitPuffScript.SpawnHitPuff(hitInfo);

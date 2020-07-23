@@ -27,9 +27,15 @@ namespace CommonCore.World
         static void God()
         {
             if (MetaState.Instance.SessionFlags.Contains("GodMode"))
+            {
+                ConsoleModule.WriteLine("Degreelessness mode off");
                 MetaState.Instance.SessionFlags.Remove("GodMode");
+            }
             else
+            {
+                ConsoleModule.WriteLine("Degreelessness mode on");
                 MetaState.Instance.SessionFlags.Add("GodMode");
+            }
         }
 
         [Command]

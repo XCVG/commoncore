@@ -1,7 +1,7 @@
-﻿using System;
-using CommonCore.DebugLog;
+﻿using CommonCore.RpgGame.State;
+using CommonCore.Scripting;
 using CommonCore.State;
-using CommonCore.RpgGame.State;
+using System;
 using UnityEngine;
 
 namespace CommonCore.DelayedEvents
@@ -41,13 +41,13 @@ namespace CommonCore.DelayedEvents
                 switch (ev.DelayType)
                 {
                     case DelayTimeType.Real:
-                        ev.DelayTime = GameState.Instance.WorldState.RealTimeElapsed + ev.DelayTime;
+                        ev.DelayTime = GameState.Instance.WorldTimeState.RealTimeElapsed + ev.DelayTime;
                         break;
                     case DelayTimeType.Game:
-                        ev.DelayTime = GameState.Instance.WorldState.GameTimeElapsed + ev.DelayTime;
+                        ev.DelayTime = GameState.Instance.WorldTimeState.GameTimeElapsed + ev.DelayTime;
                         break;
                     case DelayTimeType.World:
-                        ev.DelayTime = GameState.Instance.WorldState.WorldDaysElapsed * SecondsInDay + GameState.Instance.WorldState.WorldSecondsElapsed + ev.DelayTime;
+                        ev.DelayTime = GameState.Instance.WorldTimeState.WorldDaysElapsed * SecondsInDay + GameState.Instance.WorldTimeState.WorldSecondsElapsed + ev.DelayTime;
                         break;
                 }
 
@@ -67,6 +67,7 @@ namespace CommonCore.DelayedEvents
             ScheduleEvent(new DelayedEvent(action, timeType, delayTime, delayAbsolute));
         }
 
+        [CCScript, CCScriptHook(Hook = ScriptHook.OnWorldTimeUpdate)]
         public static void ExecuteScheduledEvents()
         {
             var delayedEvents = GameState.Instance.DelayedEvents;
@@ -86,13 +87,13 @@ namespace CommonCore.DelayedEvents
                     switch (delayedEvent.DelayType)
                     {
                         case DelayTimeType.Real:
-                            elapsedTime = GameState.Instance.WorldState.RealTimeElapsed;
+                            elapsedTime = GameState.Instance.WorldTimeState.RealTimeElapsed;
                             break;
                         case DelayTimeType.Game:
-                            elapsedTime = GameState.Instance.WorldState.GameTimeElapsed;
+                            elapsedTime = GameState.Instance.WorldTimeState.GameTimeElapsed;
                             break;
                         case DelayTimeType.World:
-                            elapsedTime = GameState.Instance.WorldState.WorldDaysElapsed * SecondsInDay + GameState.Instance.WorldState.WorldSecondsElapsed;
+                            elapsedTime = GameState.Instance.WorldTimeState.WorldDaysElapsed * SecondsInDay + GameState.Instance.WorldTimeState.WorldSecondsElapsed;
                             break;
                     }
 

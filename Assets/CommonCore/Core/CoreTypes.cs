@@ -54,6 +54,25 @@ namespace CommonCore
     }
 
     /// <summary>
+    /// How/when to start up CommonCore
+    /// </summary>
+    public enum StartupPolicy
+    {
+        /// <summary>
+        /// Run startup before first scene load (like early versions of CommonCore)
+        /// </summary>
+        SynchronousEarly,
+        /// <summary>
+        /// Run startup synchronously, but after first scene load
+        /// </summary>
+        Synchronous,
+        /// <summary>
+        /// Run startup asynchronously
+        /// </summary>
+        Asynchronous
+    }
+
+    /// <summary>
     /// Persistent data path to use on Windows platform
     /// </summary>
     /// <remarks>Because the default is stupid</remarks>

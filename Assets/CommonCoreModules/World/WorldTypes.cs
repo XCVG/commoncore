@@ -92,25 +92,32 @@ namespace CommonCore.World
         public float Damage;
         public float DamagePierce;
         public int DamageType; //up to you to define indices in an enum or static class
-        public int HitLocation; //up to you to define indices in an enum or static class
-        public int HitMaterial; //up to you to define indices in an enum or static class
+        public int DamageEffector; //up to you to define indices in an enum or static class (defaults/examples provided)
+        public bool HarmFriendly;
+        public int HitLocation; //up to you to define indices in an enum or static class (defaults/examples provided)
+        public int HitMaterial; //up to you to define indices in an enum or static class (defaults/examples provided)
         public BaseController Originator;
+        public string OriginatorFaction;
         public string HitPuff;
         public Vector3? HitCoords; //I'm no longer 100% sure this should be nullable
 
+        [Obsolete]
         public ActorHitInfo(float damage, float damagePierce, int dtype, int hitlocation, int hitmaterial, BaseController originator)
-            : this(damage, damagePierce, dtype, hitlocation, hitmaterial, originator, null, null)
+            : this(damage, damagePierce, dtype, 0, true, hitlocation, hitmaterial, originator, null, null, null)
         {
         }
 
-        public ActorHitInfo(float damage, float damagePierce, int dtype, int hitlocation, int hitmaterial, BaseController originator, string hitPuff, Vector3? hitCoords)
+        public ActorHitInfo(float damage, float damagePierce, int damageType, int damageEffector, bool harmFriendly, int hitlocation, int hitmaterial, BaseController originator, string originatorFaction, string hitPuff, Vector3? hitCoords)
         {
             Damage = damage;
             DamagePierce = damagePierce;
-            DamageType = dtype;
+            DamageType = damageType;
+            DamageEffector = damageEffector;
+            HarmFriendly = harmFriendly;
             HitLocation = hitlocation;
             HitMaterial = hitmaterial;
             Originator = originator;
+            OriginatorFaction = originatorFaction;
             HitPuff = hitPuff;
             HitCoords = hitCoords;
         }
@@ -130,6 +137,11 @@ namespace CommonCore.World
     public enum DefaultHitMaterials
     {
         Unspecified = 0, Generic = 1, Metal = 2, Wood = 3, Stone = 4, Dirt = 5, Flesh = 6
+    }
+
+    public enum DefaultDamageEffectors
+    {
+        Unspecified = 0, Projectile = 1, Explosion = 2, Melee = 3, Ambient = 4, Internal = 5
     }
 
     //I'm not 100% sure about providing these at all

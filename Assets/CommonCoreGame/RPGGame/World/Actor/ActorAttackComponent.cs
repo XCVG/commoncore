@@ -1,6 +1,8 @@
 ﻿using CommonCore.Config;
 using CommonCore.DebugLog;
+using CommonCore.RpgGame.Rpg;
 using CommonCore.World;
+using System;
 using UnityEngine;
 
 namespace CommonCore.RpgGame.World
@@ -19,6 +21,9 @@ namespace CommonCore.RpgGame.World
 
         //TODO visibility etc
         public bool UseMelee = true;
+        public bool UseSuicide = false;
+        public bool AutoDamageEffector = true;
+        public FriendlyFireMode FriendlyFire = FriendlyFireMode.Default;
         public float AttackRange = 1.0f;
         public float AttackStateWarmup = 0;
         public float AttackStateDelay = 1.0f;
@@ -28,6 +33,7 @@ namespace CommonCore.RpgGame.World
         public ActorHitInfo AttackHit;
         public string BulletPrefab;
         public string AttackEffectPrefab;
+        public bool ParentAttackEffect = true;
         public AudioSource AttackSound;
         public Transform ShootPoint;
         public string AttackAnimationOverride;
@@ -103,83 +109,107 @@ namespace CommonCore.RpgGame.World
 
         public void DoAttack()
         {
-            var target = ActorController.Target;
-
-            Vector3 aimPoint = target.position;
-
-            var targetAC = target.GetComponent<ActorController>();
-            if (targetAC != null && targetAC.TargetPoint != null)
-                aimPoint = targetAC.TargetPoint.position;
-
-            var targetPC = target.GetComponent<PlayerController>();
-            if (targetPC != null && targetPC.TargetPoint != null)
-                aimPoint = targetPC.TargetPoint.position;
-
-            aimPoint.y += UnityEngine.Random.Range(-AttackSpread, AttackSpread);
-            aimPoint.x += UnityEngine.Random.Range(-AttackSpread, AttackSpread);
-            aimPoint.z += UnityEngine.Random.Range(-AttackSpread, AttackSpread);
-
             Vector3 shootPos = ShootPoint == null ? (transform.position + (transform.forward * 0.6f) + (transform.up * 1.25f)) : ShootPoint.position;
-            Vector3 shootVec = (aimPoint - shootPos).normalized; //I screwed this up the first time
 
-            var modHit = AttackHit;
-            var gameplayConfig = ConfigState.Instance.GetGameplayConfig();
-            modHit.Damage *= gameplayConfig.Difficulty.ActorStrength;
-            modHit.DamagePierce *= gameplayConfig.Difficulty.ActorStrength;
-            modHit.Originator = ActorController;
-
-            if (UseMelee)
+            if (UseSuicide)
             {
-                //melee path (raycast)
-                LayerMask lm = WorldUtils.GetAttackLayerMask();
-
-                //TODO 2D/3D attack range, or just increase attack range?
-
-                var rc = Physics.RaycastAll(shootPos, shootVec, AttackRange, lm, QueryTriggerInteraction.Collide);
-                BaseController ac = null;
-                foreach (var r in rc)
-                {
-                    var go = r.collider.gameObject;
-                    var ahgo = go.GetComponent<IHitboxComponent>();
-                    if (ahgo != null)
-                    {
-                        ac = ahgo.ParentController;
-                        break;
-                    }
-                    var acgo = go.GetComponent<ActorController>();
-                    if (acgo != null)
-                    {
-                        ac = acgo;
-                        break;
-                    }
-                }
-                if (ac != null)
-                {
-                    if (ac is ITakeDamage itd)
-                        itd.TakeDamage(modHit);
-                }
-
-
-            }
-            else if (BulletPrefab != null)
-            {
-                //bullet path (shoot)
-                //var bullet = Instantiate<GameObject>(BulletPrefab, shootPos + (shootVec * 0.25f), Quaternion.identity, transform.root);
-                Quaternion bulletRotation = Quaternion.LookRotation(shootVec.normalized, Vector3.up);
-                var bullet = WorldUtils.SpawnEffect(BulletPrefab, shootPos + (shootVec * 0.25f), bulletRotation.eulerAngles, transform.root);
-                var bulletRigidbody = bullet.GetComponent<Rigidbody>();
-                bulletRigidbody.velocity = (shootVec * BulletSpeed);
-                bullet.GetComponent<BulletScript>().HitInfo = modHit;
+                //ActorController.TakeDamage(new ActorHitInfo(0, Mathf.Min(ActorController.MaxHealth * 100, float.MaxValue), 0, 0, 0, ActorController));
+                ActorController.Health = 0;
             }
             else
             {
-                CDebug.LogEx(string.Format("{0} tried to shoot a bullet, but has no prefab defined!", name), LogLevel.Error, this);
+                var target = ActorController.Target;
+
+                Vector3 aimPoint = target.position;
+
+                var targetAC = target.GetComponent<ActorController>();
+                if (targetAC != null && targetAC.TargetPoint != null)
+                    aimPoint = targetAC.TargetPoint.position;
+
+                var targetPC = target.GetComponent<PlayerController>();
+                if (targetPC != null && targetPC.TargetPoint != null)
+                    aimPoint = targetPC.TargetPoint.position;
+
+                aimPoint.y += UnityEngine.Random.Range(-AttackSpread, AttackSpread);
+                aimPoint.x += UnityEngine.Random.Range(-AttackSpread, AttackSpread);
+                aimPoint.z += UnityEngine.Random.Range(-AttackSpread, AttackSpread);
+
+                
+                Vector3 shootVec = (aimPoint - shootPos).normalized; //I screwed this up the first time
+
+                var modHit = AttackHit;
+                var gameplayConfig = ConfigState.Instance.GetGameplayConfig();
+                modHit.Damage *= gameplayConfig.Difficulty.ActorStrength;
+                modHit.DamagePierce *= gameplayConfig.Difficulty.ActorStrength;
+                modHit.Originator = ActorController;
+                if (FriendlyFire == FriendlyFireMode.Always)
+                    modHit.HarmFriendly = true;
+                else if (FriendlyFire == FriendlyFireMode.Never)
+                    modHit.HarmFriendly = false;
+                else
+                    modHit.HarmFriendly = GameParams.UseFriendlyFire;
+                if (string.IsNullOrEmpty(modHit.OriginatorFaction))
+                    modHit.OriginatorFaction = ActorController.Faction;               
+
+                if (UseMelee)
+                {
+                    if (AutoDamageEffector)
+                        modHit.DamageEffector = (int)DamageEffector.Melee;
+
+                    //melee path (raycast)
+                    LayerMask lm = WorldUtils.GetAttackLayerMask();
+
+                    //TODO 2D/3D attack range, or just increase attack range?
+
+                    var rc = Physics.RaycastAll(shootPos, shootVec, AttackRange, lm, QueryTriggerInteraction.Collide);
+                    BaseController ac = null;
+                    foreach (var r in rc)
+                    {
+                        var go = r.collider.gameObject;
+                        var ahgo = go.GetComponent<IHitboxComponent>();
+                        if (ahgo != null)
+                        {
+                            ac = ahgo.ParentController;
+                            break;
+                        }
+                        var acgo = go.GetComponent<ActorController>();
+                        if (acgo != null)
+                        {
+                            ac = acgo;
+                            break;
+                        }
+                    }
+                    if (ac != null)
+                    {
+                        if (ac is ITakeDamage itd)
+                            itd.TakeDamage(modHit);
+                    }
+
+
+                }
+                else if (BulletPrefab != null)
+                {
+                    if (AutoDamageEffector)
+                        modHit.DamageEffector = (int)DamageEffector.Projectile;
+
+                    //bullet path (shoot)
+                    //var bullet = Instantiate<GameObject>(BulletPrefab, shootPos + (shootVec * 0.25f), Quaternion.identity, transform.root);
+                    Quaternion bulletRotation = Quaternion.LookRotation(shootVec.normalized, Vector3.up);
+                    var bullet = WorldUtils.SpawnEffect(BulletPrefab, shootPos + (shootVec * 0.25f), bulletRotation.eulerAngles, transform.root);
+                    var bulletRigidbody = bullet.GetComponent<Rigidbody>();
+                    bulletRigidbody.velocity = (shootVec * BulletSpeed);
+                    bullet.GetComponent<BulletScript>().HitInfo = modHit;
+                }
+                else
+                {
+                    CDebug.LogEx(string.Format("{0} tried to shoot a bullet, but has no prefab defined!", name), LogLevel.Error, this);
+                }
             }
 
             //show the effect, if applicable            
             if (AttackEffectPrefab != null)
             {
-                WorldUtils.SpawnEffect(AttackEffectPrefab, shootPos, Vector3.zero, (ShootPoint == null ? transform : ShootPoint));
+                WorldUtils.SpawnEffect(AttackEffectPrefab, shootPos, Vector3.zero, ParentAttackEffect ? (ShootPoint == null ? transform : ShootPoint) : null);
                 //Instantiate(AttackEffectPrefab, shootPos, Quaternion.identity, (ShootPoint == null ? transform : ShootPoint));
             }
             if(AttackSound != null)
@@ -190,5 +220,12 @@ namespace CommonCore.RpgGame.World
             DidAttack = true;
             LastAttackTime = Time.time;
         }
+
+        [Serializable]
+        public enum FriendlyFireMode
+        {
+            Default, Always, Never
+        }
+
     }
 }

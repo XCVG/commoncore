@@ -387,7 +387,7 @@ namespace CommonCore.World
         /// <para>If a HitPuff is passed in, the HitPuffs will be spawned</para>
         /// <para>If useFalloff is enabled, a simple linear falloff will be used</para>
         /// </remarks>
-        public static void RadiusDamage(Vector3 position, float radius, bool useFalloff, bool rejectBullets, bool damageDuplicates, bool damageSelf, ActorHitInfo actorHitInfo)
+        public static void RadiusDamage(Vector3 position, float radius, bool useFalloff, bool rejectBullets, bool damageDuplicates, bool damageSelf, bool damageFriendly, ActorHitInfo actorHitInfo)
         {
             var hits = OverlapSphereAttackHit(position, radius, rejectBullets, damageDuplicates, damageSelf, actorHitInfo.Originator);
             foreach(var hit in hits)
@@ -395,7 +395,7 @@ namespace CommonCore.World
                 if (!(hit.Controller is ITakeDamage itd))
                     continue;
 
-                var ahi = new ActorHitInfo(actorHitInfo.Damage, actorHitInfo.DamagePierce, actorHitInfo.DamageType, hit.HitLocation, hit.HitMaterial, actorHitInfo.Originator, actorHitInfo.HitPuff, hit.HitPoint);
+                var ahi = new ActorHitInfo(actorHitInfo.Damage, actorHitInfo.DamagePierce, actorHitInfo.DamageType, actorHitInfo.DamageEffector, damageFriendly, hit.HitLocation, hit.HitMaterial, actorHitInfo.Originator, actorHitInfo.OriginatorFaction, actorHitInfo.HitPuff, hit.HitPoint);
 
                 if (useFalloff)
                 {

@@ -9,7 +9,7 @@ namespace CommonCore.RpgGame.Rpg
 {
     public enum PredefinedFaction
     {
-        None = 0, Player, Neutral, Monster
+        None = 0, Chaotic = 1, Player, Neutral, Monster
     }
 
     public enum FactionRelationStatus
@@ -74,10 +74,17 @@ namespace CommonCore.RpgGame.Rpg
             // -factions are always friendly with themselvs
             // -factions are always neutral toward factions they have no entry for
             // -factions are always neutral toward "None"
+            // -factions are always hostile toward "Chaotic"
             // -otherwise, it's a lookup
 
-            if (self == target || self == "None" || target == "None")
+            if (self == target)
                 return FactionRelationStatus.Friendly;
+
+            if (self == "None" || target == "None")
+                return FactionRelationStatus.Neutral;
+
+            if (self == "Chaotic" || target == "Chaotic")
+                return FactionRelationStatus.Hostile;
 
             var selfEntry = FactionTable.GetOrDefault(self);
             if(selfEntry != null)

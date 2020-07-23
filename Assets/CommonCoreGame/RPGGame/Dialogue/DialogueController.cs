@@ -59,10 +59,15 @@ namespace CommonCore.RpgGame.Dialogue
 
             var loc = ParseLocation(CurrentDialogue);
 
-            if(loc.Key == null)
+            if(loc.Key == null && GameParams.DialogueDefaultToThisScene)
             {
                 //use default
-                LoadScene(loc.Value);
+                LoadScene(loc.Value); //this has always been a hack
+                PresentNewFrame(CurrentScene.Default);
+            }
+            else if(loc.Value == null && GameParams.DialogueDefaultToThisScene)
+            {
+                LoadScene(loc.Key);
                 PresentNewFrame(CurrentScene.Default);
             }
             else
@@ -338,7 +343,10 @@ namespace CommonCore.RpgGame.Dialogue
         private KeyValuePair<string, string> ParseLocation(string loc)
         {
             if (!loc.Contains("."))
-                return new KeyValuePair<string, string>(null, loc);
+                if(GameParams.DialogueDefaultToThisScene)
+                    return new KeyValuePair<string, string>(null, loc);
+                else
+                    return new KeyValuePair<string, string>(loc, null);
 
             var arr = loc.Split('.');
             return new KeyValuePair<string, string>(arr[0], arr[1]);
@@ -348,14 +356,14 @@ namespace CommonCore.RpgGame.Dialogue
         {
             var nextLoc = ParseLocation(next);
 
-            if (nextLoc.Value == "default")
+            
+            if(string.IsNullOrEmpty(nextLoc.Key) || nextLoc.Key == "this" || nextLoc.Key == CurrentSceneName)
             {
-                PresentNewFrame(CurrentScene.Default);
-            }
-            else if(string.IsNullOrEmpty(nextLoc.Key) || nextLoc.Key == "this" || nextLoc.Key == CurrentSceneName)
-            {
-                PresentNewFrame(nextLoc.Value);
-            }
+                if (nextLoc.Value == "default")
+                    PresentNewFrame(CurrentScene.Default);
+                else
+                    PresentNewFrame(nextLoc.Value);
+            }            
             else if(nextLoc.Key == "meta")
             {
                 //probably the only one carried over from Garlic Gang or Katana
@@ -373,6 +381,8 @@ namespace CommonCore.RpgGame.Dialogue
             else if (nextLoc.Key == "scene")
             {
                 CloseDialogue();
+
+                //this has never been tested and I would not expect it to work in practise
 
                 var sceneController = BaseSceneController.Current;
 
@@ -403,7 +413,10 @@ namespace CommonCore.RpgGame.Dialogue
             else
             {
                 LoadScene(nextLoc.Key); //this loads a dialogue scene, not a Unity scene (it's confusing right?)
-                PresentNewFrame(nextLoc.Value);
+                if (nextLoc.Value == "default")
+                    PresentNewFrame(CurrentScene.Default);
+                else
+                    PresentNewFrame(nextLoc.Value);
             }
 
         }

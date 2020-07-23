@@ -17,11 +17,13 @@ namespace CommonCore.Messaging
     /// </summary>
     public class QdmsMessageComponent : MonoBehaviour
     {
+#pragma warning disable CS0649
         [SerializeField]
         private QdmsMessageEvent MessageEvent;
         private QdmsMessageInterface MessageInterface;
+#pragma warning restore CS0649
 
-        void Start()
+        void Awake()
         {
             MessageInterface = new QdmsMessageInterface(gameObject);
 

@@ -34,6 +34,11 @@ namespace CommonCore.Scripting
             CallHooked(ScriptHook.AfterModulesLoaded, null);
         }
 
+        public override void OnAllAddonsLoaded()
+        {
+            CallHooked(ScriptHook.AfterAddonsLoaded, null);
+        }
+
         public override void OnFrameUpdate()
         {
             if (HookedMethods[ScriptHook.OnFrameUpdate].Count > 0)

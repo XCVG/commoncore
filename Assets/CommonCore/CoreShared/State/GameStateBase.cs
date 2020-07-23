@@ -24,13 +24,15 @@ namespace CommonCore.State
         {
             get
             {
-                if (instance == null)
-                {
-                    instance = new GameState();
-                }
+                //if (instance == null)
+                //{
+                //    instance = new GameState();
+                //}
                 return instance;
             }
         }
+
+        public static bool Exists => Instance != null;
 
         /// <summary>
         /// Purges the current game state and recreates it
@@ -38,6 +40,14 @@ namespace CommonCore.State
         public static void Reset()
         {
             instance = new GameState();
+        }
+
+        /// <summary>
+        /// Purges the current game state
+        /// </summary>
+        public static void Clear()
+        {
+            instance = null;
         }
 
         /// <summary>
@@ -85,10 +95,15 @@ namespace CommonCore.State
         }
 
         /// <summary>
-        /// Loads initial values into the current game state
+        /// Loads initial values into the current game state, creating a new instance if it does not exist
         /// </summary>
         public static void LoadInitial()
         {
+            if (instance == null)
+            {
+                instance = new GameState();
+            }
+
             instance.Init();
             instance.SetCampaignHash();
         }
@@ -210,6 +225,11 @@ namespace CommonCore.State
         /// Generic data store for scene-local game state
         /// </summary>
         public Dictionary<string, Dictionary<string, object>> LocalDataState { get; private set; } = new Dictionary<string, Dictionary<string, object>>();
+
+        /// <summary>
+        /// State data of the world time
+        /// </summary>
+        public WorldTimeModel WorldTimeState { get; private set; } = new WorldTimeModel();
 
         /// <summary>
         /// The current scene we are in

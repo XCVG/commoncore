@@ -1,10 +1,12 @@
 ﻿using CommonCore.Config;
+using CommonCore.DelayedEvents;
+using CommonCore.RpgGame.Rpg;
 using Newtonsoft.Json;
 using System;
 using System.IO;
 using UnityEngine;
 
-namespace CommonCore.RpgGame.Rpg
+namespace CommonCore.RpgGame
 {
 
     /// <summary>
@@ -15,6 +17,8 @@ namespace CommonCore.RpgGame.Rpg
     /// </remarks>
     public class RpgModule : CCModule
     {
+        private float Elapsed;
+
         public RpgModule()
         {
             LoadGameParams();
@@ -66,6 +70,6 @@ namespace CommonCore.RpgGame.Rpg
         {
             QuestModel.Load();
         }
-       
+
     }
 }

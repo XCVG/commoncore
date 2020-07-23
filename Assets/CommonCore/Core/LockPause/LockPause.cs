@@ -5,6 +5,7 @@ using UnityEngine;
 using CommonCore.Messaging;
 using CommonCore.DebugLog;
 using CommonCore.Config;
+using System.Reflection;
 
 namespace CommonCore.LockPause
 {
@@ -202,14 +203,19 @@ namespace CommonCore.LockPause
 
         private bool IsOwnerAlive(object owner)
         {
-            if (owner is UnityEngine.Object && (UnityEngine.Object)owner == null) //fuck you, Unity
+            if (owner is UnityEngine.Object && (UnityEngine.Object)owner == null) //handle UnityEngine objects
                 return false;
 
-            if (owner == null)
+            if (owner == null) //handle normal objects
                 return false;
 
-            if (owner is WeakReference && !((WeakReference)owner).IsAlive)
+            if (owner is WeakReference && !((WeakReference)owner).IsAlive) //handle WeakReference
                 return false;
+
+            if(owner.GetType().IsGenericType && owner.GetType().GetGenericTypeDefinition() == typeof(WeakReference<>)) //safe-ish because WeakReference<T> is sealed
+            {
+                return (bool)owner.GetType().GetMethod("TryGetTarget", BindingFlags.Instance | BindingFlags.Public).Invoke(owner, new object[] { null });
+            }
 
             return true;
         }

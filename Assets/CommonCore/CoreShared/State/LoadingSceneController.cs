@@ -57,16 +57,16 @@ namespace CommonCore.State
                     GameState.Reset();
                     MetaState.Instance.Clear();
                     if(string.IsNullOrEmpty(MetaState.Instance.NextScene))
-                        MetaState.Instance.NextScene = CoreParams.InitialScene;
-                    GameState.Instance.CurrentScene = MetaState.Instance.NextScene;
+                        MetaState.Instance.NextScene = CoreParams.InitialScene;                    
                     GameState.LoadInitial();
+                    GameState.Instance.CurrentScene = MetaState.Instance.NextScene;
                     CCBase.OnGameStart();
                     StartCoroutine(LoadNextSceneAsync());
                 }
                 else if(MetaState.Instance.TransitionType == SceneTransitionType.EndGame)
                 {
                     CCBase.OnGameEnd();
-                    GameState.Reset();
+                    GameState.Clear();
                     MetaState.Instance.Clear();
                     if (string.IsNullOrEmpty(MetaState.Instance.NextScene))
                         MetaState.Instance.NextScene = "MainMenuScene";                    
@@ -112,7 +112,7 @@ namespace CommonCore.State
         {
             if (result)
             {
-                GameState.Reset();
+                GameState.Clear();
                 MetaState.Reset();
                 GC.Collect();
                 SceneManager.LoadScene("MainMenuScene");

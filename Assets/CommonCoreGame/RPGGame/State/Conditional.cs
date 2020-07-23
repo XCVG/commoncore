@@ -127,6 +127,10 @@ namespace CommonCore.RpgGame.State
             IComparable value0 = value; //target value
             IComparable value1 = OptionValue; //our value (comparison value)
 
+            //handle this up here so we can coerce properly
+            if (Option.Value == ConditionOption.Started || Option.Value == ConditionOption.Finished)
+                value1 = 0;
+
             if (value0 == null || value1 == null)
                 return false; //assume null = false
 
@@ -157,9 +161,9 @@ namespace CommonCore.RpgGame.State
                 case ConditionOption.LessEqual:
                     return value0.CompareTo(value1) <= 0;
                 case ConditionOption.Started:
-                    return value0.CompareTo(0) > 0;
+                    return value0.CompareTo(value1) > 0;
                 case ConditionOption.Finished:
-                    return value0.CompareTo(0) < 0;
+                    return value0.CompareTo(value1) < 0;
                 default:
                     throw new NotSupportedException();
             }

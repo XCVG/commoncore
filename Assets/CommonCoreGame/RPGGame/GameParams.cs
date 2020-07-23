@@ -16,6 +16,7 @@ namespace CommonCore
         public static bool UseCampaignVarSimulatedLooseTyping { get; private set; } = true; //if set, Conditionals will auto-promote numeric types in campaign vars when setting
 
         public static bool UseDialoguePositionInheritance { get; private set; } = true; //Katana does not inherit the position property from the dialogue scene
+        public static bool DialogueDefaultToThisScene { get; private set; } = true; //if set, non-fully-qualified scene.frame paths will be interpreted as this.* rather than *.default (latter is Katana style)
         public static bool DialogueAlwaysExecuteFrameMicroscript { get; private set; } = true; //if set, will always execute the top-level microscript of a frame even on choice frames
         public static bool DialogueVerboseLogging { get; private set; } = false;
 
@@ -26,6 +27,7 @@ namespace CommonCore
 
         public static bool UseFallDamage { get; private set; } = true;
         public static bool UseRandomDamage { get; private set; } = true;
+        public static bool UseFriendlyFire { get; private set; } = true; //note that this can be overridden by player weapons and actor attack components
         public static float DamageFlashThreshold { get; private set; } = 0.01f; //very small because health is reported as a fraction
 
         public static bool AutoQuestNotifications { get; private set; } = true;

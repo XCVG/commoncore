@@ -17,7 +17,7 @@ using CommonCore.RpgGame.UI;
 
 namespace CommonCore.RpgGame.World
 {
-    public class PlayerController : BaseController, ITakeDamage
+    public class PlayerController : BaseController, ITakeDamage, IAmTargetable
     {
         public bool AutoinitHud = true;
 
@@ -58,6 +58,9 @@ namespace CommonCore.RpgGame.World
 
         private bool HadTargetLastFrame = false;
 
+        //bringing back a stupid hack
+        public Func<ActorHitInfo, ActorHitInfo?> DamageHandler = null;
+
         float ITakeDamage.Health => GameState.Instance.PlayerRpgState.Health;
 
         public override HashSet<string> Tags
@@ -76,6 +79,12 @@ namespace CommonCore.RpgGame.World
                 return _Tags;
             }
         }
+
+        bool IAmTargetable.ValidTarget => isActiveAndEnabled && !(IsDead || IsDying || GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoTarget));
+
+        string IAmTargetable.Faction => PredefinedFaction.Player.ToString();
+
+        float IAmTargetable.Detectability => RpgValues.DetectionChance(GameState.Instance.PlayerRpgState, MovementComponent.IsCrouching, MovementComponent.IsRunning);
 
         public override void Awake()
         {
@@ -429,6 +438,26 @@ namespace CommonCore.RpgGame.World
         {
             if (MetaState.Instance.SessionFlags.Contains("GodMode") || GameState.Instance.PlayerFlags.Contains(PlayerFlags.Invulnerable) || IsDying)
                 return;
+
+            if (!data.HarmFriendly)
+            {
+                string hitFaction = data.OriginatorFaction;
+                if (!string.IsNullOrEmpty(hitFaction))
+                {
+                    FactionRelationStatus relation = FactionModel.GetRelation(hitFaction, PredefinedFaction.Player.ToString()); //this looks backwards but it's because we're checking if the Bullet is-friendly-to the Actor
+                    if (relation == FactionRelationStatus.Friendly)
+                        return; //no friendly fire
+                }
+            }
+
+            if (DamageHandler != null)
+            {
+                var hitOut = DamageHandler(data);
+                if (hitOut.HasValue)
+                    data = hitOut.Value;
+                else
+                    return;
+            }
 
             CharacterModel playerModel = GameState.Instance.PlayerRpgState;
 

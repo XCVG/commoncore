@@ -11,9 +11,9 @@ public class MusicVolumeTackon : MonoBehaviour
     [SerializeField, Tooltip("Check for changes to ConfigState after this tackon is started?")]
     private bool UseAggressiveConfigurationCheck = false;
     [SerializeField, Tooltip("Leave blank to attach to the AudioSource on this GameObject")]
-    private AudioSource AttachedMusic;
+    private AudioSource AttachedMusic = null;
     [SerializeField, Tooltip("Set to also apply IgnoreListenerPause")]
-    private bool IgnoreListenerPause;
+    private bool IgnoreListenerPause = false;
 
     private float? DefaultMusicVolume;
 

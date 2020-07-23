@@ -32,7 +32,7 @@ namespace CommonCore.RpgGame.Rpg
     public enum ItemFlag
     {
         Undefined, Unique,
-        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponNeverRandomize, MeleeWeaponUsePreciseCasting
+        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponNeverRandomize, WeaponNeverHarmFriendly, WeaponAlwaysHarmFriendly, MeleeWeaponUsePreciseCasting
     }
 
     //an actual inventory item that the player has
@@ -182,7 +182,8 @@ namespace CommonCore.RpgGame.Rpg
         public readonly float DamagePierce;
         public readonly float DamageSpread;        
         public readonly float DamagePierceSpread;
-        public readonly DamageType DType;
+        public readonly DamageType DType;        
+        protected readonly DamageEffector? DEffector;
         public readonly WeaponSkillType SkillType;
         public readonly string ViewModel;
         public readonly string HitPuff;
@@ -191,7 +192,7 @@ namespace CommonCore.RpgGame.Rpg
 
         public WeaponItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags,
             float damage, float damagePierce, float damageSpread, float damagePierceSpread,
-            DamageType dType, WeaponSkillType skillType, string viewModel, string worldModel, string hitPuff, float lowerTime, float raiseTime)
+            DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType, string viewModel, string worldModel, string hitPuff, float lowerTime, float raiseTime)
             : base(name, weight, value, maxCondition, hidden, essential, flags, worldModel)
         {
             Damage = damage;
@@ -199,6 +200,7 @@ namespace CommonCore.RpgGame.Rpg
             DamageSpread = damageSpread;
             DamagePierceSpread = damagePierceSpread;
             DType = dType;
+            DEffector = dEffector;
             ViewModel = viewModel;
             HitPuff = hitPuff;
             SkillType = skillType;
@@ -210,6 +212,31 @@ namespace CommonCore.RpgGame.Rpg
         {
             return base.GetStatsString() + $"\nDamage: {Damage:F1} ({DamagePierce:F1})\nType: {DType.ToString()}";
         }
+
+        [JsonIgnore]
+        public virtual DamageEffector Effector => DEffector ?? DamageEffector.Unspecified;
+
+        [JsonIgnore]
+        public bool? HarmFriendly {
+            get
+            {
+                bool alwaysFlag = CheckFlag(ItemFlag.WeaponAlwaysHarmFriendly);
+                bool neverFlag = CheckFlag(ItemFlag.WeaponNeverHarmFriendly);
+                if (alwaysFlag && neverFlag)
+                {
+                    UnityEngine.Debug.LogWarning($"Weapon item model \"{Name}\" is set to both always and never harm friendlies! (behaviour is undefined)");
+                    return null;
+                }
+
+                if (alwaysFlag)
+                    return true;
+
+                if (neverFlag)
+                    return false;
+
+                return null;
+            }
+        }
     }
 
     public class MeleeWeaponItemModel : WeaponItemModel
@@ -220,19 +247,22 @@ namespace CommonCore.RpgGame.Rpg
 
         public MeleeWeaponItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags,
             float damage, float damagePierce, float damageSpread, float damagePierceSpread,
-            float reach, float rate, float energyCost, DamageType dType, WeaponSkillType skillType,
+            float reach, float rate, float energyCost, DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType,
             string viewModel, string worldModel, string hitPuff, float lowerTime, float raiseTime) 
-            : base(name, weight, value, maxCondition, hidden, essential, flags, damage, damagePierce, damageSpread, damagePierceSpread, dType, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
+            : base(name, weight, value, maxCondition, hidden, essential, flags, damage, damagePierce, damageSpread, damagePierceSpread, dType, dEffector, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
         {
             Reach = reach;
             Rate = rate;
             EnergyCost = energyCost;
         }
 
+        public override DamageEffector Effector => DEffector ?? DamageEffector.Melee;
+
         public override string GetStatsString()
         {
             return $"<b>Melee Weapon ({SkillType})</b>\n" + base.GetStatsString() + $"\nSpeed: {(1/Rate):F1}";
         }
+                
     }
 
     public class RangedWeaponItemModel : WeaponItemModel
@@ -268,8 +298,8 @@ namespace CommonCore.RpgGame.Rpg
             PulseEnvelope recoilImpulse, PulseEnvelope adsRecoilImpulse,
             float movementSpreadFactor, float movementRecoveryFactor, float crouchSpreadFactor, float crouchRecoveryFactor,
             float fireInterval, int numProjectiles, int magazineSize, float reloadTime,
-            AmmoType aType, DamageType dType, WeaponSkillType skillType, string viewModel, string worldModel, string hitPuff, string projectile, float adsZoomFactor, float lowerTime, float raiseTime)
-            : base(name, weight, value, maxCondition, hidden, essential, flags, damage, damagePierce, damageSpread, damagePierceSpread, dType, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
+            AmmoType aType, DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType, string viewModel, string worldModel, string hitPuff, string projectile, float adsZoomFactor, float lowerTime, float raiseTime)
+            : base(name, weight, value, maxCondition, hidden, essential, flags, damage, damagePierce, damageSpread, damagePierceSpread, dType, dEffector, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
         {
             ProjectileVelocity = projectileVelocity;
 
@@ -298,6 +328,8 @@ namespace CommonCore.RpgGame.Rpg
         }
 
         public bool UseMagazine => MagazineSize > 0;
+
+        public override DamageEffector Effector => DEffector ?? DamageEffector.Projectile;
 
         public override string GetStatsString()
         {

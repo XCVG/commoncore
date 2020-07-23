@@ -19,7 +19,7 @@ namespace CommonCore.DebugLog
         public static FPSCounter Instance { get; private set; }
 
         [SerializeField]
-        private Text DisplayText;
+        private Text DisplayText = null;
 
         private QdmsMessageInterface MessageInterface;
 

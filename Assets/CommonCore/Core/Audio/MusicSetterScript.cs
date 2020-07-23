@@ -12,9 +12,9 @@ namespace CommonCore.Audio
     public class MusicSetterScript : MonoBehaviour
     {
         [SerializeField]
-        private MusicSlot MusicSlot;
+        private MusicSlot MusicSlot = default;
         [SerializeField]
-        private string Music;
+        private string Music = null;
         [SerializeField]
         private float Volume = 1.0f;
         [SerializeField]

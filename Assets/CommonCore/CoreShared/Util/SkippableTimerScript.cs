@@ -15,8 +15,8 @@ namespace CommonCore
     {
         [SerializeField, Tooltip("<= 0 means no timer")]
         private float TimeToWait = 0;
-        [SerializeField]
-        private bool HoldToSkip = true;
+        //[SerializeField]
+        //private bool HoldToSkip = true;
         [SerializeField]
         private bool UseMappedInput = true;
         [SerializeField]

@@ -1,6 +1,7 @@
 ﻿using CommonCore.ObjectActions;
 using CommonCore.RpgGame.World;
 using CommonCore.World;
+using System;
 using UnityEngine;
 
 namespace CommonCore.RpgGame.ObjectActions
@@ -9,6 +10,7 @@ namespace CommonCore.RpgGame.ObjectActions
     /// <summary>
     /// Triggers an action when an actor or player enters
     /// </summary>
+    [Obsolete("Use OnTriggerEnterTrigger instead")]
     public class OnActorEnterTrigger : ActionTrigger
     {
         [Header("On Actor Enter Options")]

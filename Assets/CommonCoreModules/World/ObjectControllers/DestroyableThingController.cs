@@ -10,12 +10,16 @@ namespace CommonCore.World
     /// <summary>
     /// Controller for "destroyable things" like explosive barrels, etc
     /// </summary>
-    public class DestroyableThingController : ThingController, ITakeDamage
+    public class DestroyableThingController : ThingController, ITakeDamage, IAmTargetable
     {
 
         [Header("Destroyable Options"), SerializeField]
         private float MaxHealth = 10;        
         public bool Invincible = false;
+        public bool IsTarget = false;
+        public string Faction;
+        [SerializeField]
+        private float Detectability = 1;
         //public bool Reversible = false;
         [SerializeField, Tooltip("Works the opposite way of DR; incoming damage for a type is multiplied by damage factor")]
         private float[] DamageFactor = null;
@@ -79,6 +83,12 @@ namespace CommonCore.World
         public float Health;
 
         float ITakeDamage.Health => Health;
+
+        bool IAmTargetable.ValidTarget => IsTarget && !IsDead && isActiveAndEnabled;
+
+        string IAmTargetable.Faction => Faction;
+
+        float IAmTargetable.Detectability => Detectability;
 
         private bool IsDead = false;
         private bool ForceDeadState = false;

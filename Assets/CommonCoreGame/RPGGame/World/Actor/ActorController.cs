@@ -13,7 +13,7 @@ namespace CommonCore.RpgGame.World
 {
     //TODO restorable, animation, and eventually a full refactor
     //I say that now, but I bet this will still be mostly the same until, say, Downwarren
-    public class ActorController : BaseController, ITakeDamage
+    public class ActorController : BaseController, ITakeDamage, IAmTargetable
     {
         public string CharacterModelIdOverride; //does nothing lol
 
@@ -63,6 +63,7 @@ namespace CommonCore.RpgGame.World
         public bool Aggressive = false;
         public string Faction = "None";
         public float Detectability = 1.0f;
+        public bool IsTarget = true;
         public bool Defensive = true;
         public bool Infighting = false;
         public bool Relentless = false;
@@ -106,6 +107,12 @@ namespace CommonCore.RpgGame.World
                 return _Tags;
             }
         }
+
+        bool IAmTargetable.ValidTarget => IsTarget && !(CurrentAiState == ActorAiState.Dead) && isActiveAndEnabled;
+
+        string IAmTargetable.Faction => Faction;
+
+        float IAmTargetable.Detectability => Detectability;
 
         public override void Awake()
         {
@@ -558,7 +565,7 @@ namespace CommonCore.RpgGame.World
                     PlayerController pc = playerObj.GetComponent<PlayerController>();
 
                     if((playerObj.transform.position - transform.position).magnitude <= SearchRadius
-                        && UnityEngine.Random.Range(0f, 1f * detectionDifficultyFactor) <= RpgValues.DetectionChance(GameState.Instance.PlayerRpgState, pc.MovementComponent.IsCrouching, pc.MovementComponent.IsRunning))
+                        && UnityEngine.Random.Range(0f, 1f * detectionDifficultyFactor) <= ((IAmTargetable)pc).Detectability)
                     {
                         if(UseLineOfSight)
                         {
@@ -590,21 +597,22 @@ namespace CommonCore.RpgGame.World
                 //new code should be faster if n is large but it may not bear out in practice, and it probably allocs more dedotated wam
                 
                 var colliders = Physics.OverlapSphere(transform.position, SearchRadius, WorldUtils.GetAttackLayerMask());
-                HashSet<ActorController> potentialTargets = new HashSet<ActorController>();
+                HashSet<IAmTargetable> potentialTargets = new HashSet<IAmTargetable>();
 
                 foreach(var collider in colliders)
                 {
-                    var actorController = collider.GetComponent<ActorController>();
-                    if(actorController != null)
+                    var baseController = collider.GetComponent<BaseController>();
+                    if(baseController != null)
                     {
-                        potentialTargets.Add(actorController);
-                        continue;
+                        if(baseController is IAmTargetable iat && iat.ValidTarget)
+                            potentialTargets.Add(iat);
+                        continue; //continue anyway since we've found a base controller and it's either targetable or it's not
                     }
 
                     var hitboxComponent = collider.GetComponent<IHitboxComponent>();
-                    if (hitboxComponent != null && hitboxComponent.ParentController is ActorController hitboxAC)
+                    if (hitboxComponent != null && hitboxComponent.ParentController is IAmTargetable iat2 && iat2.ValidTarget)
                     {
-                        potentialTargets.Add(hitboxAC);
+                        potentialTargets.Add(iat2);
                         continue;
                     }
                 }
@@ -615,8 +623,12 @@ namespace CommonCore.RpgGame.World
 
                 foreach (var potentialTarget in potentialTargets)
                 {
-                    if(RpgWorldUtils.TargetIsAlive(potentialTarget.transform) 
-                        && (potentialTarget.transform.position - transform.position).magnitude <= SearchRadius
+                    BaseController targetController = potentialTarget as BaseController;
+                    if (targetController == null)
+                        continue;
+
+                    if(RpgWorldUtils.TargetIsAlive(targetController.transform) 
+                        && (targetController.transform.position - transform.position).magnitude <= SearchRadius
                         && FactionModel.GetRelation(Faction, potentialTarget.Faction) == FactionRelationStatus.Hostile
                         && !(potentialTarget == this))
                     {                       
@@ -628,11 +640,11 @@ namespace CommonCore.RpgGame.World
                         {
                             //additional check
                             RaycastHit hitinfo;
-                            if (Physics.Raycast(transform.position + new Vector3(0, 1.0f, 0), (potentialTarget.transform.position - transform.position), out hitinfo))
+                            if (Physics.Raycast(transform.position + new Vector3(0, 1.0f, 0), (targetController.transform.position - transform.position), out hitinfo))
                             {
-                                if (hitinfo.collider.gameObject == potentialTarget.gameObject)
+                                if (hitinfo.collider.gameObject == targetController.gameObject)
                                 {
-                                    Target = potentialTarget.transform;
+                                    Target = targetController.transform;
                                     break;
                                 }
                             }
@@ -640,7 +652,7 @@ namespace CommonCore.RpgGame.World
                         else
                         {
                             //otherwise, close enough
-                            Target = potentialTarget.transform;
+                            Target = targetController.transform;
                             break;
                         }
                     }
@@ -657,6 +669,17 @@ namespace CommonCore.RpgGame.World
 
         public void TakeDamage(ActorHitInfo data)
         {
+            if(!data.HarmFriendly)
+            {
+                string hitFaction = data.OriginatorFaction;
+                if(!string.IsNullOrEmpty(hitFaction))
+                {
+                    FactionRelationStatus relation = FactionModel.GetRelation(hitFaction, Faction); //this looks backwards but it's because we're checking if the Bullet is-friendly-to the Actor
+                    if (relation == FactionRelationStatus.Friendly)
+                        return; //no friendly fire
+                }
+            }
+
             //damage model is very stupid right now, we will make it better later
             float dt = data.DamageType < DamageThreshold.Length ? DamageThreshold[(int)data.DamageType] : 0f;
             float dr = data.DamageType < DamageThreshold.Length ? DamageResistance[(int)data.DamageType] : 0f;
@@ -675,7 +698,7 @@ namespace CommonCore.RpgGame.World
             if (CurrentAiState == ActorAiState.Dead) //abort if we're already dead
                 return;
 
-            bool didTakePain = UnityEngine.Random.Range(0f, 1f) < PainChance;
+            bool didTakePain = UnityEngine.Random.Range(0f, 1f) < PainChance; //shouldn't this be weighted by damage?
 
             if (Defensive && data.Originator != null && data.Originator != this)
             {

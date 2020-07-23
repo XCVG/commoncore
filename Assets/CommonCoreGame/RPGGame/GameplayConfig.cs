@@ -18,9 +18,7 @@ namespace CommonCore.RpgGame
         public bool HoldAds { get; set; } = false;
         public bool HitIndicatorsVisual { get; set; } = false;
         public bool HitIndicatorsAudio { get; set; } = false;
-        public bool FullscreenDamageIndicator { get; set; } = true;       
-        public float WorldTimeScaleBias { get; set; } = 1; 
-        
+        public bool FullscreenDamageIndicator { get; set; } = true;    
 
         //difficulty options
         public DifficultyLevel DifficultySetting { get; set; } = DifficultyLevel.Normal;

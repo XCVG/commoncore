@@ -117,7 +117,7 @@ namespace CommonCore.Console
             var property = ConfigState.Instance.GetType().GetProperty(configOption, BindingFlags.Instance | BindingFlags.Public);
             if (property != null)
             {
-                property.SetValue(ConfigState.Instance, TypeUtils.Parse(newValue, property.PropertyType)); //TODO handle enums
+                property.SetValue(ConfigState.Instance, TypeUtils.CoerceValue(newValue, property.PropertyType)); //TODO handle enums
             }
             else
             {
@@ -147,7 +147,7 @@ namespace CommonCore.Console
             {
                 //value exists: coerce the value
                 object value = ConfigState.Instance.CustomConfigVars[customVar];
-                object newValueParsed = TypeUtils.Parse(newValue, value.GetType());
+                object newValueParsed = TypeUtils.CoerceValue(newValue, value.GetType());
                 ConfigState.Instance.CustomConfigVars[customVar] = newValueParsed;
             }
             else
@@ -164,8 +164,44 @@ namespace CommonCore.Console
         private static void SetCustomVar(string customVar, string newValue, string typeName)
         {
             //coerce the value
-            object value = TypeUtils.Parse(newValue, System.Type.GetType(typeName));
+            object value = TypeUtils.CoerceValue(newValue, System.Type.GetType(typeName));
             ConfigState.Instance.CustomConfigVars[customVar] = value;
+        }
+
+        /// <summary>
+        /// Console command. Gets the current graphics quality setting
+        /// </summary>
+        [Command(alias = "GetGraphicsQuality", className = "Config", useClassName = true)]
+        private static void GetGraphicsQuality()
+        {
+            int qualityLevel = QualitySettings.GetQualityLevel();
+            string qualityName = string.Empty;
+            if (qualityLevel < QualitySettings.names.Length)
+                qualityName = QualitySettings.names[qualityLevel];
+
+            ConsoleModule.WriteLine($"Graphics quality: {qualityLevel} ({qualityName})");
+        }
+
+        /// <summary>
+        /// Console command. Sets the graphics quality
+        /// </summary>
+        [Command(alias = "SetGraphicsQuality", className = "Config", useClassName = true)]
+        private static void SetGraphicsQuality(string quality)
+        {
+            int qualityLevel = int.Parse(quality);
+            if(qualityLevel >= QualitySettings.names.Length || qualityLevel < 0)
+            {
+                ConsoleModule.WriteLine($"Can't set graphics quality (level {qualityLevel} is not defined)");
+                return;
+            }
+
+            QualitySettings.SetQualityLevel(qualityLevel, true);
+
+            string qualityName = string.Empty;
+            if (qualityLevel < QualitySettings.names.Length)
+                qualityName = QualitySettings.names[qualityLevel];
+
+            ConsoleModule.WriteLine($"Set graphics quality to: {qualityLevel} ({qualityName})");
         }
 
         /// <summary>

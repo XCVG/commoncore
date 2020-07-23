@@ -1,19 +1,15 @@
-﻿using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using CommonCore.Messaging;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using CommonCore.Messaging;
 
-namespace CommonCore.RpgGame.State
+namespace CommonCore.State
 {
 
     public class CampaignModel
     {
-        //TODO need to flesh this out with accessors
-
         [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
         private Dictionary<string, object> Vars { get; set; } //generic data store
         [JsonProperty]

@@ -15,16 +15,6 @@ namespace CommonCore.State
         // actual instance data
 
         /// <summary>
-        /// [RPGGame] State data of the RPG world (time, weather, etc)
-        /// </summary>
-        public WorldModel WorldState { get; private set; } = new WorldModel();
-
-        /// <summary>
-        /// [RPGGame] State data of the RPG campaign (quests, flags, etc)
-        /// </summary>
-        public CampaignModel CampaignState { get; private set; } = new CampaignModel();
-
-        /// <summary>
         /// [RPGGame] Delayed events that will be checked and executed some time in the future
         /// </summary>
         public List<DelayedEvent> DelayedEvents { get; private set; } = new List<DelayedEvent>();

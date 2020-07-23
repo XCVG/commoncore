@@ -410,7 +410,7 @@ namespace CommonCore
                 {
                     scenes.Add(SceneUtility.GetScenePathByBuildIndex(i));
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     //ignore it, we've gone over or some stupid bullshit
                 }

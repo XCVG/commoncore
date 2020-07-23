@@ -104,62 +104,19 @@ namespace CommonCore.UI
                 //if we're locked out, let the menu be closed but not opened
                 if (!AllowMenu)
                 {
-                    if (MainPanel.activeSelf)
+                    if (IsOpen)
                     {
-                        MainPanel.SetActive(false);
-
-                        if(HandlePause)
-                        {
-                            DoUnpause();
-                        }
-
-                        foreach (Transform child in ContainerPanel.transform)
-                        {
-                            child.gameObject.SetActive(false);
-                        }
-
-                        ClearEphemeral();
+                        Close();
                     }                        
                 }
                 else
                 {
                     //otherwise, flip state
-                    bool newState = !MainPanel.activeSelf;
-                    MainPanel.SetActive(newState);
-
-                    if(HandlePause)
-                    {
-                        if (newState)
-                            DoPause();
-                        else
-                            DoUnpause();
-                    }
-
-                    if(newState && !string.IsNullOrEmpty(DefaultPanel))
-                    {
-                        OnClickSelectButton(DefaultPanel);
-                    }
-                    
-                    if(!newState)
-                    {
-                        foreach (Transform child in ContainerPanel.transform)
-                        {
-                            child.gameObject.SetActive(false);
-                        }
-
-                        ClearEphemeral();
-                    }
-
-                    if(newState)
-                    {
-                        //run scripts
-                        ScriptingModule.CallHooked(ScriptHook.OnIGUIMenuOpen, this);
-                    }
-                    
+                    Toggle();                    
                 }
             }
 
-        }
+        }        
 
         private void DoPause()
         {
@@ -213,5 +170,74 @@ namespace CommonCore.UI
                 return (lockState == null || lockState.Value >= InputLockType.GameOnly) && !GameState.Instance.MenuLocked;
             }
         }
+
+        //new: public manipulation methods
+
+        /// <summary>
+        /// Toggles the ingame menu
+        /// </summary>
+        /// <remarks>This will always succeed even if AllowMenu is false</remarks>
+        public void Toggle()
+        {
+            if (IsOpen)
+                Close();
+            else
+                Open();
+        }
+
+        /// <summary>
+        /// Opens the ingame menu if it is closed
+        /// </summary>
+        /// <remarks>This will always succeed even if AllowMenu is false</remarks>
+        public void Open()
+        {
+            if (IsOpen)
+                return;
+
+            MainPanel.SetActive(true);
+
+            if (HandlePause)
+            {
+                DoPause();
+            }
+
+            if (!string.IsNullOrEmpty(DefaultPanel))
+            {
+                OnClickSelectButton(DefaultPanel);
+            }
+
+            //run scripts
+            ScriptingModule.CallHooked(ScriptHook.OnIGUIMenuOpen, this);
+            
+        }
+
+        /// <summary>
+        /// Closes the ingame menu if it is open
+        /// </summary>
+        /// <remarks>This will always succeed even if AllowMenu is false</remarks>
+        public void Close()
+        {
+            if (!IsOpen)
+                return;
+
+            MainPanel.SetActive(false);
+
+            if (HandlePause)
+            {
+                DoUnpause();
+            }
+
+            foreach (Transform child in ContainerPanel.transform)
+            {
+                child.gameObject.SetActive(false);
+            }
+
+            ClearEphemeral();
+        }
+
+        /// <summary>
+        /// Is the ingame menu open?
+        /// </summary>
+        public bool IsOpen => MainPanel.activeSelf;
     }
 }

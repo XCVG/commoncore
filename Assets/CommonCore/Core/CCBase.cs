@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -23,14 +24,25 @@ namespace CommonCore
         public static ImmutableArray<Type> BaseGameTypes { get; private set; }
 
         /// <summary>
+        /// Whether the game is being initialized (CommonCore starting up)
+        /// </summary>
+        public static bool Initializing { get; private set; }
+
+        /// <summary>
         /// Whether the game has been initialized or not (all modules loaded)
         /// </summary>
         public static bool Initialized { get; private set; }
 
         /// <summary>
+        /// The scene to load after completing initialization
+        /// </summary>
+        public static string LoadSceneAfterInit { get; private set; } = "MainMenuScene";
+
+
+        /// <summary>
         /// Loaded modules
         /// </summary>
-        private static List<CCModule> Modules;
+        private static List<CCModule> Modules = new List<CCModule>();
 
         /// <summary>
         /// Lookup table for modules by type
@@ -38,45 +50,6 @@ namespace CommonCore
         private static Dictionary<Type, CCModule> ModulesByType;
 
         public static ResourceManager ResourceManager { get; private set; }
-        
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        static void OnApplicationStart()
-        {
-            if (!CoreParams.AutoInit) //this also calls the static constructor on CoreParams, btw
-                return;
-
-            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
-            stopwatch.Start();
-
-            Debug.Log("[Core] Initializing CommonCore...");
-
-            CoreParams.SetInitial();
-            CoreParams.LoadOverrides();
-            LoadGameTypes();
-            InitializeResourceManager();
-            HookMonobehaviourEvents();
-            HookQuitEvent();
-            HookSceneEvents();
-            CreateFolders();
-
-            Modules = new List<CCModule>();
-             
-            InitializeModules();
-            SetupModuleLookupTable();
-            ExecuteAllModulesLoaded();
-
-            //mod loading will happen here
-            //ResourceManager.LoadStreamingAssets();
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
-            Initialized = true;
-
-            stopwatch.Stop();
-
-            Debug.Log($"[Core] ...done! ({stopwatch.Elapsed.TotalMilliseconds:F4} ms)");
-        }
 
         /// <summary>
         /// Retrieves a loaded module specified by the type parameter
@@ -111,7 +84,7 @@ namespace CommonCore
 
             if (ModulesByType != null && ModulesByType.Count > 0)
             {
-                if(ModulesByType.TryGetValue(moduleType, out var module))
+                if (ModulesByType.TryGetValue(moduleType, out var module))
                     return module;
             }
 
@@ -141,8 +114,143 @@ namespace CommonCore
             return null;
         }
 
+        //entry point for early startup
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        static void OnApplicationStart()
+        {
+            if(CoreParams.AutoInit && CoreParams.StartupPolicy == StartupPolicy.SynchronousEarly)
+                Startup();
+        }
+
+        //entry point for late startup
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        static void OnApplicationStartLate()
+        {
+            if (Initializing || Initialized)
+                return;
+
+            if (CoreParams.AutoInit)
+            {
+                var currentScene = SceneManager.GetActiveScene();
+                if (currentScene != null && currentScene.name != "InitScene")
+                {
+                    Debug.LogWarning("[Core] Warning: trying to do a late startup from outside InitScene!");
+
+                    if (CoreParams.StartupPolicy == StartupPolicy.Synchronous)
+                        SceneManager.LoadScene(currentScene.name); //this actually reloads the scene the next frame, and since we complete our startup in 1 frame...
+                                                                   //it's hacky as shit but should work for now
+                    else if (CoreParams.StartupPolicy == StartupPolicy.Asynchronous)
+                    {
+                        SceneManager.LoadScene("InitScene");
+                        LoadSceneAfterInit = currentScene.name;
+                    }
+                }
+
+                if (CoreParams.StartupPolicy == StartupPolicy.Synchronous)
+                    Startup();
+                else if (CoreParams.StartupPolicy == StartupPolicy.Asynchronous)
+                    StartupAsync();
+                else
+                    Debug.LogError($"[Core] Fatal error: unknown startup policy \"{CoreParams.StartupPolicy}\"");
+            }
+        }
+        
+        //synchronous startup method
+        public static void Startup()
+        {
+            Initializing = true;
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+
+            Debug.Log("[Core] Starting up CommonCore...");
+            DoInitialSetup();
+
+            InitializeResourceManager();
+
+            var allModules = GetAllModuleTypes();
+            InitializeExplicitModules(allModules);
+            PrintSystemData(); //we wait until the console is loaded so we can see it in the console
+            InitializeModules(allModules);
+            SetupModuleLookupTable();
+            ExecuteAllModulesLoaded();
+
+            //mod loading will happen here
+            //ResourceManager.LoadStreamingAssets();
+            ExecuteAllAddonsLoaded();
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            Initialized = true;
+            Initializing = false;
+
+            stopwatch.Stop();
+
+            Debug.Log($"[Core] ...done! ({stopwatch.Elapsed.TotalMilliseconds:F4} ms)");
+        }        
+
+        //async startup method (not implemented)
+        public static async void StartupAsync()
+        {
+            Initializing = true;
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+
+            Debug.Log("[Core] Starting up CommonCore asynchronously...");
+
+            try
+            {
+                await Task.Yield(); //wait for a scene transition if we had to do that
+
+                DoInitialSetup();
+
+                InitializeResourceManager(); //this will be made async someday I think
+
+                var allModules = GetAllModuleTypes();
+                await InitializeExplicitModulesAsync(allModules);
+                PrintSystemData(); //we wait until the console is loaded so we can see it in the console
+                await InitializeModulesAsync(allModules);
+                SetupModuleLookupTable();
+                ExecuteAllModulesLoaded();
+
+                //mod loading will happen here
+                //ResourceManager.LoadStreamingAssets();
+                ExecuteAllAddonsLoaded();
+
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
+                Initialized = true;
+            }
+            catch(Exception e)
+            {
+                Debug.LogError("[Core] Fatal error");
+                Debug.LogException(e);
+            }
+            finally
+            {
+                stopwatch.Stop();
+                Debug.Log($"[Core] ...done! ({stopwatch.Elapsed.TotalMilliseconds:F4} ms)");
+                Initializing = false;
+            }
+        }
+
+        //sets up CoreParams, loads types, hooks some events and creates folders
+        //TODO we may make some of this async later but for now we won't
+        private static void DoInitialSetup()
+        {
+            CoreParams.SetInitial();
+            CoreParams.LoadOverrides();
+            LoadGameTypes();
+            HookMonobehaviourEvents();
+            HookQuitEvent();
+            HookSceneEvents();
+            CreateFolders();
+        }
+
         private static void InitializeResourceManager()
         {
+            //TODO async?
             CoreUtils.ResourceManager = new LegacyResourceManager(); //TODO remove this
             ResourceManager = new ResourceManager();
         }
@@ -180,39 +288,22 @@ namespace CommonCore
             Debug.Log(sb.ToString());
         }
 
-        private static void InitializeModules()
+        private static List<Type> GetAllModuleTypes()
         {
-            //initialize modules using reflection
-
-            var allModules = AppDomain.CurrentDomain.GetAssemblies()
+            return AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany((assembly) => assembly.GetTypes())
                 .Where((type) => typeof(CCModule).IsAssignableFrom(type))
                 .Where((type) => (!type.IsAbstract && !type.IsGenericTypeDefinition))
-                .Where((type) => null != type.GetConstructor(new Type[0]))                
+                .Where((type) => null != type.GetConstructor(new Type[0]))
                 .ToList();
+        }
 
-            //initialize explicit modules
-            Debug.Log("[Core] Initializing explicit modules!");
-            foreach (string moduleName in CoreParams.ExplicitModules)
-            {
-                Type t = allModules.Find(x => x.Name == moduleName);
-                if(t != null)
-                {
-                    InitializeModule(t);
-                }
-                else
-                    Debug.LogError("[Core] Can't find explicit module " + moduleName);
-            }
-
-            //print system data
-            PrintSystemData(); //we wait until the console is loaded so we can see it in the console
-
-            //sort out our modules
-            var earlyModules = new List<Type>();
-            var normalModules = new List<Type>();
-            var lateModules = new List<Type>();
-
-            foreach(var t in allModules)
+        private static void GetModuleLists(List<Type> allModules, out List<Type> earlyModules, out List<Type> normalModules, out List<Type> lateModules)
+        {
+            earlyModules = new List<Type>();
+            normalModules = new List<Type>();
+            lateModules = new List<Type>();
+            foreach (var t in allModules)
             {
                 if (t.GetCustomAttributes(typeof(CCExplicitModuleAttribute), true).Length > 0)
                     continue;
@@ -220,7 +311,7 @@ namespace CommonCore
                 bool isEarly = t.GetCustomAttributes(typeof(CCEarlyModuleAttribute), true).Length > 0;
                 bool isLate = t.GetCustomAttributes(typeof(CCLateModuleAttribute), true).Length > 0;
 
-                if(isEarly ^ isLate)
+                if (isEarly ^ isLate)
                 {
                     if (isEarly)
                         earlyModules.Add(t);
@@ -235,6 +326,42 @@ namespace CommonCore
                     normalModules.Add(t);
                 }
             }
+        }
+
+        private static void InitializeExplicitModules(List<Type> allModules)
+        {
+            Debug.Log("[Core] Initializing explicit modules!");
+            foreach (string moduleName in CoreParams.ExplicitModules)
+            {
+                Type t = allModules.Find(x => x.Name == moduleName);
+                if (t != null)
+                {
+                    InitializeModule(t);
+                }
+                else
+                    Debug.LogError("[Core] Can't find explicit module " + moduleName);
+            }
+        }
+
+        private static async Task InitializeExplicitModulesAsync(List<Type> allModules)
+        {
+            Debug.Log("[Core] Initializing explicit modules (async)!");
+            foreach (string moduleName in CoreParams.ExplicitModules)
+            {
+                Type t = allModules.Find(x => x.Name == moduleName);
+                if (t != null)
+                {
+                    await InitializeModuleAsync(t);
+                }
+                else
+                    Debug.LogError("[Core] Can't find explicit module " + moduleName);
+            }
+        }
+
+        private static void InitializeModules(List<Type> allModules)
+        {
+            //sort out our modules
+            GetModuleLists(allModules, out List<Type> earlyModules, out List<Type> normalModules, out List<Type> lateModules);
 
             //initialize early modules
             Debug.Log("[Core] Initializing early modules!");
@@ -258,6 +385,33 @@ namespace CommonCore
             }
         }
 
+        private static async Task InitializeModulesAsync(List<Type> allModules)
+        {
+            //sort out our modules
+            GetModuleLists(allModules, out List<Type> earlyModules, out List<Type> normalModules, out List<Type> lateModules);
+
+            //initialize early modules
+            Debug.Log("[Core] Initializing early modules (async)!");
+            foreach (var t in earlyModules)
+            {
+                await InitializeModuleAsync(t);
+            }
+
+            Debug.Log("[Core] Initializing normal modules (async)!");
+            //initialize non-explicit modules
+            foreach (var t in normalModules)
+            {
+                await InitializeModuleAsync(t);
+            }
+
+            Debug.Log("[Core] Initializing late modules (async)!");
+            //initialize late modules
+            foreach (var t in lateModules)
+            {
+                await InitializeModuleAsync(t);
+            }
+        }
+
         private static void InitializeModule(Type moduleType)
         {
             try
@@ -267,8 +421,15 @@ namespace CommonCore
                     Debug.LogWarning("[Core] Attempted to initialize existing module " + moduleType.Name);
                     return;
                 }
-
-                Modules.Add((CCModule)Activator.CreateInstance(moduleType));
+                var module = (CCModule)Activator.CreateInstance(moduleType);
+                if (module is CCAsyncModule aModule)
+                {
+                    if (aModule.CanLoadSynchronously)
+                        aModule.Load();
+                    else
+                        throw new NotSupportedException($"Module \"{module.GetType().Name}\" cannot be loaded synchronously!");
+                }
+                Modules.Add(module);
                 Debug.Log("[Core] Successfully loaded module " + moduleType.Name);
             }
             catch (Exception e)
@@ -276,6 +437,32 @@ namespace CommonCore
                 Debug.LogError("[Core] Failed to load module " + moduleType.Name);
                 Debug.LogException(e);
             }
+        }
+
+        private static async Task InitializeModuleAsync(Type moduleType)
+        {
+            try
+            {
+                if (Modules.Find(m => m.GetType() == moduleType) != null)
+                {
+                    Debug.LogWarning("[Core] Attempted to initialize existing module " + moduleType.Name);
+                    return;
+                }
+                var module = (CCModule)Activator.CreateInstance(moduleType);
+                await Task.Yield();
+                if (module is CCAsyncModule aModule)
+                {
+                    await aModule.LoadAsync();
+                }
+                Modules.Add(module);
+                Debug.Log("[Core] Successfully loaded module " + moduleType.Name);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("[Core] Failed to load module " + moduleType.Name);
+                Debug.LogException(e);
+            }
+            
         }
 
         private static void SetupModuleLookupTable()
@@ -303,6 +490,22 @@ namespace CommonCore
                 catch(Exception e)
                 {
                     Debug.LogError($"[Core] Fatal error in module {m.GetType().Name} during {nameof(ExecuteAllModulesLoaded)}");
+                    Debug.LogException(e);
+                }
+            }
+        }
+
+        private static void ExecuteAllAddonsLoaded()
+        {
+            foreach (var m in Modules)
+            {
+                try
+                {
+                    m.OnAllAddonsLoaded();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"[Core] Fatal error in module {m.GetType().Name} during {nameof(ExecuteAllAddonsLoaded)}");
                     Debug.LogException(e);
                 }
             }

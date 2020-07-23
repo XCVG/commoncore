@@ -67,7 +67,7 @@ namespace CommonCore
                 InitHUD();
 
             //mostly an editor hack
-            if (AutoinitState && !GameState.Instance.InitialLoaded)
+            if (AutoinitState && (!GameState.Exists || !GameState.Instance.InitialLoaded))
             {
                 GameState.LoadInitial();
                 CCBase.OnGameStart();

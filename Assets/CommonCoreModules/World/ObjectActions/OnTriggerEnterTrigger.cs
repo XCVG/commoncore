@@ -9,11 +9,12 @@ namespace CommonCore.ObjectActions
     /// <summary>
     /// Triggers an action when an object enters
     /// </summary>
-    /// <remarks>Can optionally check for the player object</remarks>
+    /// <remarks>Can optionally check for the player object or actor object</remarks>
     public class OnTriggerEnterTrigger : ActionTrigger
     {
         [Header("On Trigger Enter Options")]
         public bool OnPlayerOnly = true;
+        public bool OnActorsOnly = false;
 
         public bool CheckAllCollisions = false;
 
@@ -28,7 +29,11 @@ namespace CommonCore.ObjectActions
                 return;
 
             //reject not-player if we're not allowing not-player
-            if (OnPlayerOnly && other.gameObject == WorldUtils.GetPlayerObject())
+            if (OnPlayerOnly && !other.gameObject.IsPlayer())
+                return;
+
+            //reject non-actors if we're not allowing not-actor
+            if (OnActorsOnly && !other.gameObject.IsActor())
                 return;
 
             //execute special

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace CommonCore
@@ -12,6 +13,7 @@ namespace CommonCore
 
         //other lifecycle events
         public virtual void OnAllModulesLoaded() { }
+        public virtual void OnAllAddonsLoaded() { }
         public virtual void OnGameStart() { }
         public virtual void OnSceneLoaded() { }
         public virtual void OnFrameUpdate() { }
@@ -51,6 +53,19 @@ namespace CommonCore
             Debug.LogException(e);
         }
 
+    }
+
+    public abstract class CCAsyncModule : CCModule
+    {
+        //LoadAsync OR Load will be called, based on the following rules:
+        // during async startup, LoadAsync will always be called
+        // during synchronous startup, Load will be called if and only if CanLoadSynchronously is true 
+        // otherwise, an error will occur
+
+        public abstract bool CanLoadSynchronously { get; }
+
+        public abstract Task LoadAsync();
+        public virtual void Load() { }
     }
 
     public class CCExplicitModuleAttribute : System.Attribute

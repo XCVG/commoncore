@@ -22,7 +22,7 @@ namespace CommonCore
         public static RuntimePlatform Platform { get; private set; } //auto-set
         public static ScriptingImplementation ScriptingBackend { get; private set; } //auto-set
 
-        //*****game version info
+        //*****game version info 
         public static string CompanyName { get; private set; } //auto-set from Unity settings
         public static string GameName { get; private set; } //auto-set from Unity settings
         public static Version GameVersion { get; private set; } //auto-set from Unity settings
@@ -30,18 +30,22 @@ namespace CommonCore
 
         //*****basic config settings
         public static bool AutoInit { get; private set; } = true;
-        public static ImmutableArray<string> ExplicitModules { get; private set; } = new string[] { "DebugModule", "QdmsMessageBus", "ConfigModule", "AsyncModule", "ScriptingModule", "ConsoleModule" }.ToImmutableArray();
+        public static ImmutableArray<string> ExplicitModules { get; private set; } = new string[] { "QdmsMessageBus", "ConfigModule", "DebugModule", "AsyncModule", "ScriptingModule", "ConsoleModule" }.ToImmutableArray();
         private static DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
-        public static ResourceManagerPolicy DefaultResourceManager { get; private set; } = ResourceManagerPolicy.TestBothUseLegacy;
+        public static ResourceManagerPolicy DefaultResourceManager { get; private set; } = ResourceManagerPolicy.UseLegacy;
         public static string PreferredCommandConsole { get; private set; } = "SickDevConsoleImplementation";
+
+        public static StartupPolicy EditorStartupPolicy { get; private set; } = StartupPolicy.SynchronousEarly;
+        public static StartupPolicy PlayerStartupPolicy { get; private set; } = StartupPolicy.Asynchronous;
+
         public static bool UseSeparateEditorConfigFile { get; private set; } = false; //if set, will use config.editor.json while in editor
         private static WindowsPersistentDataPath PersistentDataPathWindows = WindowsPersistentDataPath.Roaming;
         private static bool CorrectWindowsLocalDataPath = false; //if set, use AppData/Local/* instead of AppData/LocalLow/* for LocalDataPath
         private static bool UseGlobalScreenshotFolder = true; //ignored on UWP and probably other platforms
+
         public static bool SetSafeResolutionOnExit { get; private set; } = true;
         public static Vector2Int SafeResolution { get; private set; } = new Vector2Int(1280, 720);
 
-        //*****additional config settings
         public static float DelayedEventPollInterval { get; private set; } = 1.0f;
         //public static bool UseAggressiveLookups { get; private set; } = true; //may bring this back someday if performance is an issue
         public static int ResourceMaxRecurseDepth { get; private set; } = 32;
@@ -60,6 +64,7 @@ namespace CommonCore
         public static string DataPath { get; private set; }
         public static string GameFolderPath { get; private set; }
         public static string PersistentDataPath { get; private set; }
+        public static string SaveBasePath { get; private set; }
         public static string LocalDataPath { get; private set; }
         public static string StreamingAssetsPath { get; private set; }
         public static string ScreenshotsPath { get; private set; }
@@ -93,7 +98,7 @@ namespace CommonCore
         {
             get
             {
-                return PersistentDataPath + Path.DirectorySeparatorChar + "saves";
+                return SaveBasePath + Path.DirectorySeparatorChar + "saves";
             }
         }
 
@@ -101,7 +106,7 @@ namespace CommonCore
         {
             get
             {
-                return PersistentDataPath + Path.DirectorySeparatorChar + "finalsave";
+                return SaveBasePath + Path.DirectorySeparatorChar + "finalsave";
             }
         }
 
@@ -130,7 +135,19 @@ namespace CommonCore
             }
         }
 
-        public static IReadOnlyList<string> CommandLineArgs;
+        public static StartupPolicy StartupPolicy
+        {
+            get
+            {
+#if UNITY_EDITOR
+                return EditorStartupPolicy;
+#else
+                return PlayerStartupPolicy;
+#endif
+            }
+        }
+
+        public static IReadOnlyList<string> CommandLineArgs { get; set; }
 
         /// <summary>
         /// A hack necessary to preset variables so they can be safely accessed across threads
@@ -206,6 +223,8 @@ namespace CommonCore
             //create data folder if it doesn't exist
             if (!Directory.Exists(PersistentDataPath))
                 Directory.CreateDirectory(PersistentDataPath); //failing this is considered fatal
+
+            SaveBasePath = PersistentDataPath; //someday we may have more flexibility
 
             //special handling for ScreenshotPath
 #if UNITY_WSA

@@ -239,17 +239,6 @@ namespace CommonCore
         }
 
         /// <summary>
-        /// Converts a string to a target type, handling enums and other special cases
-        /// </summary>
-        public static object Parse(string value, Type parseType)
-        {
-            if (parseType.IsEnum)
-                return Enum.Parse(parseType, value);
-
-            return Convert.ChangeType(value, parseType);
-        }
-
-        /// <summary>
         /// Converts a string to an int or a float with correct type
         /// </summary>
         /// <remarks>

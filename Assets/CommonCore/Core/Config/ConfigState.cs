@@ -148,6 +148,9 @@ namespace CommonCore.Config
         public bool UseVerboseLogging { get; set; } = true;
         public bool UseCampaignIdentifier { get; set; } = true;
         public float DefaultTimescale { get; set; } = 1;
+        public float WorldTimescale { get; set; } = 1;
+        public float EntityBudget { get; set; } = 1;
+        public float EffectBudget { get; set; } = 1;
 
         //AUDIO CONFIG
         public float MusicVolume { get; set; } = 0.8f;

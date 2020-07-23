@@ -17,6 +17,11 @@ namespace CommonCore.RpgGame.Rpg
         Normal, Impact, Explosive, Energy, Poison, Thermal, Radiation
     }
 
+    public enum DamageEffector
+    {
+        Unspecified, Projectile, Explosion, Melee, Ambient, Internal //matches defaults for now
+    }
+
     //kinda game dependent
     public enum StatType
     {
