@@ -11,6 +11,11 @@ namespace CommonCore.DebugLog
     {
         public DebugModule()
         {
+            
+        }
+
+        public override void OnAllModulesLoaded()
+        {
             FPSCounter.Initialize();
         }
 

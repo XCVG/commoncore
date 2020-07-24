@@ -163,12 +163,11 @@ namespace CommonCore
             stopwatch.Start();
 
             Debug.Log("[Core] Starting up CommonCore...");
-            DoInitialSetup();
-
-            InitializeResourceManager();
+            DoInitialSetup();                        
 
             var allModules = GetAllModuleTypes();
             InitializeExplicitModules(allModules);
+            InitializeResourceManager();
             PrintSystemData(); //we wait until the console is loaded so we can see it in the console
             InitializeModules(allModules);
             SetupModuleLookupTable();
@@ -202,12 +201,11 @@ namespace CommonCore
             {
                 await Task.Yield(); //wait for a scene transition if we had to do that
 
-                DoInitialSetup();
-
-                InitializeResourceManager(); //this will be made async someday I think
+                DoInitialSetup();                
 
                 var allModules = GetAllModuleTypes();
                 await InitializeExplicitModulesAsync(allModules);
+                InitializeResourceManager(); //this will be made async someday I think
                 PrintSystemData(); //we wait until the console is loaded so we can see it in the console
                 await InitializeModulesAsync(allModules);
                 SetupModuleLookupTable();

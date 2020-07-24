@@ -26,8 +26,6 @@ namespace CommonCore.Config
         {
             Instance = this;
 
-            RegisterConfigPanel("GraphicsOptionsPanel", 1000, CoreUtils.LoadResource<GameObject>("UI/GraphicsOptionsPanel"));
-
             ConfigState.Load();
             ConfigState.Save();
         }
@@ -36,6 +34,8 @@ namespace CommonCore.Config
         {
             ConfigState.Save();
             ApplyConfiguration();
+
+            RegisterConfigPanel("GraphicsOptionsPanel", 1000, CoreUtils.LoadResource<GameObject>("UI/GraphicsOptionsPanel"));
         }
 
         public override void Dispose()
