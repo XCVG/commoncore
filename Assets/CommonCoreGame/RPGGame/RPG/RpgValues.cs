@@ -128,6 +128,6 @@ namespace CommonCore.RpgGame.Rpg
         private static Func<CharacterModel, WeaponItemModel, float> GetWeaponDamageFactorImpl { get; set; } = RpgDefaultValues.GetWeaponDamageFactor;
 
         public static float GetWeaponEnergyCostFactor(CharacterModel character, WeaponItemModel itemModel) => GetWeaponEnergyCostFactorImpl(character, itemModel);
-        private static Func<CharacterModel, WeaponItemModel, float> GetWeaponEnergyCostFactorImpl { get; set; } = RpgValues.GetWeaponEnergyCostFactor;
+        private static Func<CharacterModel, WeaponItemModel, float> GetWeaponEnergyCostFactorImpl { get; set; } = RpgDefaultValues.GetWeaponEnergyCostFactor;
     }
 }
