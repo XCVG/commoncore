@@ -693,7 +693,10 @@ namespace CommonCore.RpgGame.World
 
                     if (!string.IsNullOrEmpty(wim.Projectile))
                     {
-                        bullet = WorldUtils.SpawnEffect(wim.Projectile, shootPoint.position + (shootPoint.forward.normalized * 0.25f), shootPoint.rotation.eulerAngles, transform.root);
+                        if (wim.CheckFlag(ItemFlag.WeaponProjectileIsEntity))
+                            bullet = WorldUtils.SpawnEntity(wim.Projectile, null, shootPoint.position + (shootPoint.forward.normalized * 0.25f), shootPoint.rotation, null);
+                        else
+                            bullet = WorldUtils.SpawnEffect(wim.Projectile, shootPoint.position + (shootPoint.forward.normalized * 0.25f), shootPoint.rotation.eulerAngles, transform.root);
                     }
 
                     var bulletRigidbody = bullet.GetComponent<Rigidbody>();

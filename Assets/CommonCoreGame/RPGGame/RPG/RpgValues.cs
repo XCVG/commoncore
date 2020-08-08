@@ -40,6 +40,9 @@ namespace CommonCore.RpgGame.Rpg
         public static float MaxEnergy(CharacterModel characterModel) => MaxEnergyImpl(characterModel);
         private static Func<CharacterModel, float> MaxEnergyImpl { get; set; } = RpgDefaultValues.MaxEnergy;
 
+        public static ShieldParams ShieldParams(CharacterModel characterModel) => ShieldParamsImpl(characterModel);
+        private static Func<CharacterModel, ShieldParams> ShieldParamsImpl { get; set; } = RpgDefaultValues.ShieldParams;
+
         public static int AdjustedBuyPrice(CharacterModel character, float value) => AdjustedBuyPriceImpl(character, value);
         private static Func<CharacterModel, float, int> AdjustedBuyPriceImpl { get; set; } = RpgDefaultValues.AdjustedBuyPrice;
 
@@ -57,6 +60,12 @@ namespace CommonCore.RpgGame.Rpg
         private static Func<float, float, float, float, float> DamageTakenImpl { get; set; } = RpgDefaultValues.DamageTaken;
 
         /// <summary>
+        /// Calculates damage to shields, armor, and character given damage and a character model
+        /// </summary>
+        public static (float damageToShields, float damageToArmor, float damageToCharacter) DamageRatio(float damage, float pierce, CharacterModel character) => DamageRatioImpl(damage, pierce, character);
+        private static Func<float, float, CharacterModel, (float, float, float)> DamageRatioImpl { get; set; } = RpgDefaultValues.DamageRatio;
+
+        /// <summary>
         /// Calculates applied damage given the velocity of a fall
         /// </summary>
         public static float FallDamage(CharacterModel character, Vector3 velocity) => FallDamageImpl(character, velocity);
@@ -64,9 +73,6 @@ namespace CommonCore.RpgGame.Rpg
 
         public static float DetectionChance(CharacterModel character, bool isSneaking, bool isRunning) => DetectionChanceImpl(character, isSneaking, isRunning);
         private static Func<CharacterModel, bool, bool, float> DetectionChanceImpl { get; set; } = RpgDefaultValues.DetectionChance;
-
-
-
 
         //*********************************
         //***** movement calculations *****

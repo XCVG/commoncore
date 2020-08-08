@@ -1,0 +1,41 @@
+{
+  "shieldedarmor": {
+    "model": {
+		"$type": "CommonCore.RpgGame.Rpg.ArmorItemModel, Assembly-CSharp",
+		"DamageResistance": {
+			"Normal": 5.0,
+			"Impact": 6.0,
+			"Explosive": 4.0,
+			"Energy": 3.0,
+			"Thermal": 3.0
+		},
+		"DamageThreshold": {
+			"Normal": 5.0,
+			"Impact": 5.0,
+			"Explosive": 5.0,
+			"Energy": 4.0,
+			"Thermal": 4.0
+		},
+		"Name": "lightarmor",
+		"Weight": 5.0,
+		"MaxCondition": 1.0,
+		"Unique": false,
+		"Essential": false,
+		"WorldModel": "item_lightarmor",
+		"Shields":
+		{
+			"MaxShields": 100.0,
+			"RechargeRate": 50.0,
+			"RechargeDelay": 5.0,
+			"RechargeCancelDamage": 2.0,
+			"LeakRate": 0.1
+		},
+		"Slot": "Body"
+    },
+    "def": {
+    "NiceName": "Shielded Armor",
+    "Image": "lightarmor",
+    "Description": "Identical to Explorer Armor but can generate shields"
+	}
+  }
+}

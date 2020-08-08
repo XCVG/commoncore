@@ -13,6 +13,7 @@ using CommonCore.LockPause;
 using CommonCore.RpgGame.UI;
 using CommonCore.World;
 using CommonCore.DebugLog;
+using CommonCore.UI;
 
 namespace CommonCore.RpgGame.Dialogue
 {
@@ -23,6 +24,10 @@ namespace CommonCore.RpgGame.Dialogue
         public static DialogueFinishedDelegate CurrentCallback { get; set; }
         //public static bool AutoPauseGame { get; set; }
 
+        public bool ApplyTheme = true;
+        public string OverrideTheme;
+
+        public RectTransform ChoicePanel;
         public Text TextTitle;
         public Text TextMain;
         public Image BackgroundImage;
@@ -56,6 +61,8 @@ namespace CommonCore.RpgGame.Dialogue
 
             //if (AutoPauseGame)
             //    LockPauseModule.PauseGame(this.gameObject);
+
+            ApplyThemeToPanel();
 
             var loc = ParseLocation(CurrentDialogue);
 
@@ -95,7 +102,7 @@ namespace CommonCore.RpgGame.Dialogue
         private void PresentNewFrame(Frame f)
         {
             //special handling for blank frames
-            if(f is BlankFrame)
+            if (f is BlankFrame)
             {
                 CurrentFrameObject = f;
                 OnChoiceButtonClick(0);
@@ -105,13 +112,13 @@ namespace CommonCore.RpgGame.Dialogue
             //present music
             if (!string.IsNullOrEmpty(f.Music))
             {
-                if(!(AudioPlayer.Instance.IsMusicSetToPlay(MusicSlot.Cinematic) && AudioPlayer.Instance.GetMusicName(MusicSlot.Cinematic) == f.Music))
+                if (!(AudioPlayer.Instance.IsMusicSetToPlay(MusicSlot.Cinematic) && AudioPlayer.Instance.GetMusicName(MusicSlot.Cinematic) == f.Music))
                 {
                     AudioPlayer.Instance.SetMusic(f.Music, MusicSlot.Cinematic, 1.0f, true, false);
                     AudioPlayer.Instance.StartMusic(MusicSlot.Cinematic);
-                }                
+                }
             }
-            else if(f.Music != null) //null = no change, empty = no music
+            else if (f.Music != null) //null = no change, empty = no music
             {
                 AudioPlayer.Instance.ClearMusic(MusicSlot.Cinematic);
             }
@@ -129,17 +136,17 @@ namespace CommonCore.RpgGame.Dialogue
             //present background
             BackgroundImage.sprite = null;
             BackgroundImage.gameObject.SetActive(false);
-            if(!string.IsNullOrEmpty(f.Background))
+            if (!string.IsNullOrEmpty(f.Background))
             {
                 var sprite = CoreUtils.LoadResource<Sprite>("Dialogue/bg/" + f.Background);
-                if(sprite != null)
+                if (sprite != null)
                 {
                     BackgroundImage.sprite = sprite;
                     BackgroundImage.gameObject.SetActive(true);
                 }
                 else
                 {
-                    if(GameParams.DialogueVerboseLogging)
+                    if (GameParams.DialogueVerboseLogging)
                         CDebug.LogEx($"Couldn't find face sprite Dialogue/bg/{f.Background}", LogLevel.Verbose, this);
                 }
             }
@@ -147,11 +154,11 @@ namespace CommonCore.RpgGame.Dialogue
             //present image
             FaceImage.sprite = null;
             FaceImage.gameObject.SetActive(false);
-            if(!string.IsNullOrEmpty(f.Image))
+            if (!string.IsNullOrEmpty(f.Image))
             {
                 //attempt to present image
                 var sprite = CoreUtils.LoadResource<Sprite>("Dialogue/char/" + f.Image);
-                if(sprite != null)
+                if (sprite != null)
                 {
                     //Debug.Log(sprite.name);
 
@@ -180,7 +187,7 @@ namespace CommonCore.RpgGame.Dialogue
                 }
                 else
                 {
-                    if(GameParams.DialogueVerboseLogging)
+                    if (GameParams.DialogueVerboseLogging)
                         CDebug.LogEx($"Couldn't find face sprite Dialogue/char/{f.Image}", LogLevel.Verbose, this);
                 }
             }
@@ -203,7 +210,7 @@ namespace CommonCore.RpgGame.Dialogue
                     CameraController.Ref()?.Deactivate();
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debug.LogError($"Failed to point camera ({f.CameraDirection})");
                 Debug.LogException(e);
@@ -235,17 +242,17 @@ namespace CommonCore.RpgGame.Dialogue
                     bool showChoice = true;
                     bool lockChoice = false;
 
-                    if(cn.ShowCondition != null)
+                    if (cn.ShowCondition != null)
                     {
                         showChoice = cn.ShowCondition.Evaluate();
                     }
-                    if(cn.HideCondition != null && showChoice)
+                    if (cn.HideCondition != null && showChoice)
                     {
                         showChoice = !cn.HideCondition.Evaluate();
                     }
 
                     //skill checks
-                    if(cn.SkillCheck != null)
+                    if (cn.SkillCheck != null)
                     {
                         bool isPossible = cn.SkillCheck.CheckIfPossible();
 
@@ -260,7 +267,7 @@ namespace CommonCore.RpgGame.Dialogue
                         prependText = $"[{Sub.Replace(cn.SkillCheck.Target, "RPG_AV")} {passValue}] ";
                     }
 
-                    if(showChoice)
+                    if (showChoice)
                     {
                         GameObject choiceGO = Instantiate<GameObject>(ButtonPrefab, ScrollChoiceContent);
                         Button b = choiceGO.GetComponent<Button>();
@@ -270,7 +277,7 @@ namespace CommonCore.RpgGame.Dialogue
                         int idx = i;
                         b.onClick.AddListener(delegate { OnChoiceButtonClick(idx); });
                     }
-                    
+
                 }
             }
             else // if(f is TextFrame)
@@ -284,7 +291,22 @@ namespace CommonCore.RpgGame.Dialogue
                 b.transform.Find("Text").GetComponent<Text>().text = nextText;
             }
 
+            //apply theme
+            ApplyThemeToPanel();
+
             CurrentFrameObject = f;
+        }
+
+        private void ApplyThemeToPanel()
+        {
+            if (ApplyTheme && CoreParams.UIThemeMode == UIThemePolicy.Auto)
+            {
+                var uiModule = CCBase.GetModule<UIModule>();
+                if (!string.IsNullOrEmpty(OverrideTheme))
+                    uiModule.ApplyThemeRecurse(ChoicePanel, uiModule.GetThemeByName(OverrideTheme));
+                else
+                    uiModule.ApplyThemeRecurse(ChoicePanel);
+            }
         }
 
         public void OnChoiceButtonClick(int idx)

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace CommonCore.UI
@@ -10,21 +11,48 @@ namespace CommonCore.UI
     /// <summary>
     /// Module handling UI and theming
     /// </summary>
-    [CCEarlyModule] //needed?
+    [CCEarlyModule]
     public class UIModule : CCModule
     {
-        public static UIModule Instance { get; private set; }
-
         private Dictionary<string, IGUIPanelData> IGUIPanels = new Dictionary<string, IGUIPanelData>();
+        private Dictionary<string, UIThemeAsset> Themes = new Dictionary<string, UIThemeAsset>();
 
-        //TODO theming support
+        //WIP theming support
 
         public UIModule()
         {
-            Instance = this;
-
             //test
             //RegisterIGUIPanel("TestPanel", 0, "Test", CoreUtils.LoadResource<GameObject>("UI/TestPanel"));
+
+            Log($"Theme mode: {CoreParams.UIThemeMode}");
+
+            if (CoreParams.UIThemeMode != UIThemePolicy.Disabled)
+            {
+
+                //load UI themes and set default theme
+                var themes = CoreUtils.LoadResources<UIThemeAsset>("UI/Themes/");
+                foreach (var theme in themes)
+                {
+                    RegisterTheme(theme);
+                }
+
+                if (!string.IsNullOrEmpty(CoreParams.DefaultUITheme))
+                {
+                    if(Themes.TryGetValue(CoreParams.DefaultUITheme, out var defaultTheme))
+                    {
+                        CurrentTheme = defaultTheme;
+                        Log($"Using default theme \"{CoreParams.DefaultUITheme}\"");
+                    }
+                    else
+                    {
+                        LogWarning($"Couldn't find default theme \"{CoreParams.DefaultUITheme}\"");
+                    }
+                }
+                else
+                {
+                    Log("No default theme specified. Themes will not be applied automatically.");
+                }
+            }
         }
 
         /// <summary>
@@ -57,6 +85,98 @@ namespace CommonCore.UI
         /// </summary>
         public IReadOnlyList<KeyValuePair<string, IGUIPanelData>> SortedIGUIPanels => IGUIPanels.OrderByDescending(d => d.Value.Priority).ToArray();
 
+
+        public UIThemeAsset CurrentTheme { get; set; }
+
+        /// <summary>
+        /// Applies the current theme to an element
+        /// </summary>
+        public void ApplyTheme(Transform element)
+        {
+            ApplyTheme(element, CurrentTheme);
+        }
+
+        /// <summary>
+        /// Applies a theme to an element
+        /// </summary>
+        public void ApplyTheme(Transform element, UIThemeAsset theme)
+        {
+            if (CoreParams.UIThemeMode == UIThemePolicy.Disabled || theme == null)
+                return;
+
+            ThemeEngine.ApplyThemeToElement(element, theme);
+        }
+
+        /// <summary>
+        /// Applies the current theme to an element and its children
+        /// </summary>
+        public void ApplyThemeRecurse(Transform root)
+        {
+            ApplyThemeRecurse(root, CurrentTheme);
+        }
+
+        /// <summary>
+        /// Applies a theme to an element and its children
+        /// </summary>
+        public void ApplyThemeRecurse(Transform root, UIThemeAsset theme)
+        {
+            if (CoreParams.UIThemeMode == UIThemePolicy.Disabled || theme == null)
+                return;
+
+            ThemeEngine.ApplyThemeToAll(root, theme);
+        }
+
+        /// <summary>
+        /// Registers a theme
+        /// </summary>
+        public void RegisterTheme(UIThemeAsset theme)
+        {
+            if (CoreParams.UIThemeMode == UIThemePolicy.Disabled)
+                return;
+
+            string name = theme.name;
+
+            if (Themes.ContainsKey(name))
+            {
+                LogWarning($"A theme named \"{name}\" is already registered and will be overwritten!");
+            }
+
+            Themes[name] = theme;
+        }
+
+        /// <summary>
+        /// Gets a registered theme by name
+        /// </summary>
+        public UIThemeAsset GetThemeByName(string name)
+        {
+            if (CoreParams.UIThemeMode == UIThemePolicy.Disabled)
+                return null;
+
+            if (Themes.TryGetValue(name, out var theme))
+                return theme;
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets a list of loaded/registered themes
+        /// </summary>
+        public string GetThemesList()
+        {
+            if (CoreParams.UIThemeMode == UIThemePolicy.Disabled)
+                return "Theme engine is disabled";
+
+            StringBuilder sb = new StringBuilder(32 * Themes.Count);
+
+            foreach(var name in Themes.Keys)
+            {
+                sb.AppendLine(name);
+            }
+
+            return sb.ToString();
+        }
+
+        
     }
 
     

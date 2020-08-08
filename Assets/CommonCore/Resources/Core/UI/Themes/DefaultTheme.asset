@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51162a57277571349b2bb53d98d7d906, type: 3}
+  m_Name: DefaultTheme
+  m_EditorClassIdentifier: 
+  HeadingFont: {fileID: 12800000, guid: caf8659ad98d5a249bc89a3de7afee1f, type: 3}
+  BodyFont: {fileID: 12800000, guid: e8023a35ff1576e438055cbba9882d24, type: 3}
+  MonospaceFont: {fileID: 12800000, guid: e8023a35ff1576e438055cbba9882d24, type: 3}
+  TextColor: {r: 0, g: 0, b: 0, a: 1}
+  TextContrastingColor: {r: 0.89599997, g: 0.89599997, b: 0.89599997, a: 1}
+  Panel: {fileID: 21300000, guid: fd00b1cebef7ee14a8d6f6132d538bdc, type: 3}
+  PanelContrasting: {fileID: 21300000, guid: bf1821c5dd4bef84681afc91f959aba9, type: 3}
+  Frame: {fileID: 21300000, guid: 886bf3ead57328747a85140541cb49b1, type: 3}
+  FrameContrasting: {fileID: 21300000, guid: b7a47d1b6cd98fa49a0ca28911bf5c10, type: 3}
+  Button: {fileID: 21300000, guid: 29a61f690a48a404eb214b9280071cd1, type: 3}
+  ButtonContrasting: {fileID: 21300000, guid: 7428b956a9136d645b8eeb42241f0bd7, type: 3}
+  Slider: {fileID: 21300000, guid: bf1821c5dd4bef84681afc91f959aba9, type: 3}
+  SliderHandle: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  SliderFill: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  Bar: {fileID: 21300000, guid: bf1821c5dd4bef84681afc91f959aba9, type: 3}
+  BarFill: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  RadioButton: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  RadioButtonCheck: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  ToggleButton: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  ToggleButtonCheck: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  ComboBox: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  ComboBoxList: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  ComboBoxArrow: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
+  InputField: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}

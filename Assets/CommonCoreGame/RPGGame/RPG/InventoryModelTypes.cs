@@ -32,7 +32,7 @@ namespace CommonCore.RpgGame.Rpg
     public enum ItemFlag
     {
         Undefined, Unique,
-        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponNeverRandomize, WeaponNeverHarmFriendly, WeaponAlwaysHarmFriendly, MeleeWeaponUsePreciseCasting
+        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponProjectileIsEntity, WeaponNeverRandomize, WeaponNeverHarmFriendly, WeaponAlwaysHarmFriendly, MeleeWeaponUsePreciseCasting
     }
 
     //an actual inventory item that the player has
@@ -41,6 +41,8 @@ namespace CommonCore.RpgGame.Rpg
     {
         //public const int UnstackableQuantity = -1;
 
+        [JsonProperty]
+        public long InstanceUID { get; private set; }
         public int Quantity { get; set; }
         public float Condition { get; set; } //it's here but basically unimplemented
         public bool Equipped { get; set; }
@@ -50,20 +52,39 @@ namespace CommonCore.RpgGame.Rpg
         public Dictionary<string, object> ExtraData { get; private set; } = new Dictionary<string, object>();
 
         [JsonConstructor]
-        internal InventoryItemInstance(InventoryItemModel model, float condition, int quantity, bool equipped)
+        private InventoryItemInstance()
         {
+
+        }
+
+        internal InventoryItemInstance(InventoryItemModel model, long id, float condition, int quantity, bool equipped)
+        {
+            InstanceUID = id;
             ItemModel = model;
             Condition = condition;
             Equipped = equipped;
             Quantity = quantity;
         }
 
-        public InventoryItemInstance(InventoryItemModel model)
+        public InventoryItemInstance(InventoryItemModel model, float condition, int quantity, bool equipped) : this(model, 0, condition, quantity, equipped)
         {
-            ItemModel = model;
-            Condition = model.MaxCondition;
-            Equipped = false;
-            Quantity = 1;
+            var gameState = GameState.Instance;
+            if(gameState != null)
+            {
+                //use GameState id counter
+                InstanceUID = gameState.NextUID;
+            }
+            else
+            {
+                //use Time based id counter
+                byte[] idBytes = BitConverter.GetBytes((ulong)DateTime.UtcNow.Ticks);
+                idBytes[0] = (byte)(CoreUtils.Random.Next(byte.MinValue, byte.MaxValue));
+                InstanceUID = (long)BitConverter.ToUInt64(idBytes, 0);
+            }
+        }
+
+        public InventoryItemInstance(InventoryItemModel model) : this(model, model.MaxCondition, 1, false)
+        {
         }
     }
 
@@ -341,20 +362,26 @@ namespace CommonCore.RpgGame.Rpg
     {
         public readonly Dictionary<DamageType, float> DamageResistance;
         public readonly Dictionary<DamageType, float> DamageThreshold;
+        public readonly ShieldParams Shields;
         public readonly EquipSlot Slot;
 
         public ArmorItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags, string worldModel,
-            Dictionary<DamageType, float> damageResistance, Dictionary<DamageType, float> damageThreshold, EquipSlot slot)
+            Dictionary<DamageType, float> damageResistance, Dictionary<DamageType, float> damageThreshold, ShieldParams shields, EquipSlot slot)
             : base(name, weight, value, maxCondition, hidden, essential, flags, worldModel)
         {
             DamageResistance = new Dictionary<DamageType, float>(damageResistance);
             DamageThreshold = new Dictionary<DamageType, float>(damageThreshold);
+            Shields = shields;
             Slot = slot;
         }
 
         public override string GetStatsString()
         {
             StringBuilder res = new StringBuilder();
+            if(Shields != null && Shields.MaxShields > 0)
+            {
+                res.Append($"\nShields: {Shields.MaxShields:F1} ({Shields.RechargeRate:F1}/s)");
+            }
             foreach(var key in DamageResistance.Keys.Union(DamageThreshold.Keys))
             {
                 float dr = DamageResistance.GetOrDefault(key, 0);

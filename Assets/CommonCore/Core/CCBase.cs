@@ -118,8 +118,17 @@ namespace CommonCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void OnApplicationStart()
         {
-            if(CoreParams.AutoInit && CoreParams.StartupPolicy == StartupPolicy.SynchronousEarly)
-                Startup();
+            if(CoreParams.AutoInit)
+            {
+                if(CoreParams.StartupPolicy == StartupPolicy.SynchronousEarly)
+                    Startup();
+                else if(Application.platform == RuntimePlatform.WebGLPlayer)
+                {
+                    Debug.LogWarning($"Startup type {CoreParams.StartupPolicy} not supported on WebGL, starting up immediately instead!");
+                    Startup();
+                }
+            }
+                
         }
 
         //entry point for late startup

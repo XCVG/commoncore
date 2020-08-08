@@ -15,23 +15,34 @@ namespace CommonCore.UI
 
         [SerializeField]
         private bool LoadPrefab = true;
+        [SerializeField]
+        private string OverridePrefab = null;
+
+        [SerializeField]
+        private bool ApplyTheme = true;
 
         public override void SignalInitialPaint()
         {
             base.SignalInitialPaint();
 
+            GameObject panel = null;
             if(LoadPrefab)
             {
-                var panelPrefab = CoreUtils.LoadResource<GameObject>(PrefabPath);
+                var panelPrefab = CoreUtils.LoadResource<GameObject>(string.IsNullOrEmpty(OverridePrefab) ? PrefabPath : OverridePrefab);
                 if(panelPrefab != null)
                 {
-                    var panel = Instantiate(panelPrefab, transform);
+                    panel = Instantiate(panelPrefab, transform);
                     panel.transform.SetAsFirstSibling();
                 }
                 else
                 {
                     Debug.LogError($"HelpPanelController couldn't find prefab {PrefabPath}");
                 }
+            }
+            
+            if(panel != null && ApplyTheme)
+            {
+                ApplyThemeToElements(panel.transform);
             }
 
         }

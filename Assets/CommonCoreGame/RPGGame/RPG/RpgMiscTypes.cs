@@ -53,7 +53,7 @@ namespace CommonCore.RpgGame.Rpg
 
     public enum EquipSlot
     {
-        None, LeftWeapon, RightWeapon, Body
+        None, LeftWeapon, RightWeapon, Body, ShieldGenerator
     }
 
     //character model will have two of these: base and derived
@@ -61,6 +61,9 @@ namespace CommonCore.RpgGame.Rpg
     {
         public float MaxHealth { get; set; }
         public float MaxEnergy { get; set; }
+
+        public ShieldParams ShieldParams { get; set; }
+
         public Dictionary<DamageType, float> DamageResistance { get; set; }
         public Dictionary<DamageType, float> DamageThreshold { get; set; }
         
@@ -72,6 +75,8 @@ namespace CommonCore.RpgGame.Rpg
 
         public StatsSet()
         {
+            ShieldParams = new ShieldParams();
+
             DamageResistance = new Dictionary<DamageType, float>();
             DamageResistance.SetupFromEnum(default); //we still do this because there's probably old code that relies on it
             DamageThreshold = new Dictionary<DamageType, float>();
@@ -89,6 +94,7 @@ namespace CommonCore.RpgGame.Rpg
         {
             MaxHealth = original.MaxHealth;
             MaxEnergy = original.MaxEnergy;
+            ShieldParams = original.ShieldParams; //okay because ShieldParams is immutable
             DamageResistance = new Dictionary<DamageType, float>(original.DamageResistance);
             DamageThreshold = new Dictionary<DamageType, float>(original.DamageThreshold);
             Stats = new Dictionary<StatType, int>(original.Stats);
@@ -244,11 +250,44 @@ namespace CommonCore.RpgGame.Rpg
         }
     }
 
+    /// <summary>
+    /// Parameter set for shields/barriers (attached to inventory item etc)
+    /// </summary>
+    public class ShieldParams
+    {
+        [JsonProperty]
+        public float MaxShields { get; private set; }
+        [JsonProperty]
+        public float RechargeRate { get; private set; }
+        [JsonProperty]
+        public float RechargeDelay { get; private set; }
+        [JsonProperty]
+        public float RechargeCancelDamage { get; private set; }
+        [JsonProperty]
+        public float LeakRate { get; private set; }
+
+        public ShieldParams()
+        {
+
+        }
+
+        public ShieldParams(float maxShields, float rechargeRate, float rechargeDelay, float rechargeCancelDamage, float leakRate)
+        {
+            MaxShields = maxShields;
+            RechargeRate = rechargeRate;
+            RechargeDelay = rechargeDelay;
+            RechargeCancelDamage = rechargeCancelDamage;
+            LeakRate = leakRate;
+        }
+    }
+
     //base class for permanent and temporary status conditions
     public abstract class Condition
     { 
         public virtual string NiceName { get; protected set; }
         public virtual string Description { get; protected set; }
-        public abstract void Apply(StatsSet original, StatsSet target);
+        public virtual void ApplyToStats(StatsSet original, StatsSet target) { }
+        public virtual void ApplyToSkills(StatsSet original, StatsSet target) { }
+        public virtual void ApplyToDerived(StatsSet original, StatsSet target) { }
     }
 }

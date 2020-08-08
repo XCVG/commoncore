@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace CommonCore.RpgGame.Rpg
 {
@@ -66,6 +67,32 @@ namespace CommonCore.RpgGame.Rpg
                 + characterModel.DerivedStats.Skills[SkillType.AthleticsFleet] * 0.25f);
         }
 
+
+        public static ShieldParams ShieldParams(CharacterModel characterModel)
+        {
+            //try the ShieldGenerator slot first
+            {
+                if (characterModel.IsEquipped(EquipSlot.ShieldGenerator) && characterModel.Equipped[EquipSlot.ShieldGenerator].ItemModel is ArmorItemModel aim)
+                {
+                    if(aim.Shields != null)
+                        return aim.Shields;
+                }
+            }
+
+            //also try the Body slot
+            {
+                if (characterModel.IsEquipped(EquipSlot.Body) && characterModel.Equipped[EquipSlot.Body].ItemModel is ArmorItemModel aim)
+                {
+                    if (aim.Shields != null)
+                        return aim.Shields;
+                }
+            }
+
+            //return new ShieldParams(100f, 100f, 5f, 2f, 0.1f); //for testing
+
+            return new ShieldParams(); //default/none
+        }
+
         public static int AdjustedBuyPrice(CharacterModel character, float value)
         {
             float adjValue = (value * 2.0f)
@@ -116,6 +143,20 @@ namespace CommonCore.RpgGame.Rpg
                 dp *= dRand;
             }
             return d2 + dp;
+        }
+
+        public static (float damageToShields, float damageToArmor, float damageToCharacter) DamageRatio(float damage, float damagePierce, CharacterModel character)
+        {
+            if (character.DerivedStats.ShieldParams.MaxShields == 0 || character.Shields == 0)
+                return (0, damage, damagePierce);
+
+            //keep it simple for now
+            float shields = character.Shields;
+            float leakRate = character.DerivedStats.ShieldParams.LeakRate;
+            float damageToShields = Mathf.Min(shields, damage - (damage * leakRate));
+            float damageToArmor = damage - damageToShields;
+
+            return (damageToShields, damageToArmor, damagePierce);
         }
 
         /// <summary>

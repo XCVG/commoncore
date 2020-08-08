@@ -12,6 +12,8 @@ namespace CommonCore.RpgGame.UI
 
     public class JournalPanelController : PanelController
     {
+        public bool ApplyTheme = true;
+
         public GameObject ItemTemplatePrefab;
         public RectTransform ScrollContent;
 
@@ -57,6 +59,9 @@ namespace CommonCore.RpgGame.UI
                 Button b = itemGO.GetComponent<Button>();
                 string questKey = quest.Key; //captured quest name
                 b.onClick.AddListener(delegate { OnQuestSelected(questKey); }); //scoping is weird here
+
+                if(ApplyTheme)
+                    ApplyThemeToElements(b.transform);
             }
         }
 

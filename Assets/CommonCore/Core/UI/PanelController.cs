@@ -78,5 +78,33 @@ namespace CommonCore.UI
         {
 
         }
+
+        /// <summary>
+        /// Applies theme, looking to parent MenuController for a theme override
+        /// </summary>
+        /// <param name="element"></param>
+        protected void ApplyThemeToElements(Transform element)
+        {
+            var menuController = GetComponentInParent<BaseMenuController>();
+            if (menuController && !menuController.ApplyTheme)
+                return;
+            string overrideTheme = menuController.Ref()?.OverrideTheme;
+            ApplyThemeToElements(element, overrideTheme);
+        }
+
+        /// <summary>
+        /// Applies theme, respecting themeOverride and UIThemeMode
+        /// </summary>
+        protected static void ApplyThemeToElements(Transform root, string themeOverride)
+        {
+            if (CoreParams.UIThemeMode == UIThemePolicy.Auto)
+            {
+                var uiModule = CCBase.GetModule<UIModule>();
+                if (!string.IsNullOrEmpty(themeOverride))
+                    uiModule.ApplyThemeRecurse(root, uiModule.GetThemeByName(themeOverride));
+                else
+                    uiModule.ApplyThemeRecurse(root);
+            }
+        }
     }
 }

@@ -26,6 +26,7 @@ namespace CommonCore.RpgGame.UI
 
         public Slider ShieldSlider;
         public Text ShieldText;
+        public Image ShieldFillArea;
 
         public Slider EnergySlider;
         public Text EnergyText;
@@ -42,20 +43,32 @@ namespace CommonCore.RpgGame.UI
         public Image Crosshair;
         public Image HitIndicator;
         public Image DamageFadeOverlay;
+        public Image ShieldFadeOverlay;
 
         [Header("Options")]
         public float HealthbarFlashTime;
         public Color HealthbarFlashColor;
         public float EnergyBarFlashTime;
         public Color EnergyBarFlashColor;
+        public float ShieldBarFlashTime;
+        public Color ShieldBarFlashColor;
 
         public float HitIndicatorHoldTime;
         public float HitIndicatorFadeTime;
 
+        [Header("Damage Fade")]
         public float DamageFadeMin;
         public float DamageFadeMax;
         public float DamageFadeFactor;
         public float DamageFadeRate;
+        public Color DamageFadeHealthColor = Color.red;
+
+        [Header("Shields Fade")]
+        public float ShieldFadeMin;
+        public float ShieldFadeMax;
+        public float ShieldFadeFactor;
+        public float ShieldFadeRate;
+        public Color ShieldFadeColor = Color.cyan;
 
         //local state is, as it turns out, unavoidable
         private string OverrideTarget = null;
@@ -66,10 +79,14 @@ namespace CommonCore.RpgGame.UI
         private Color? HealthOriginalColor = null;
         private Coroutine HealthFlashCoroutine = null;
 
+        private Color? ShieldOriginalColor = null;
+        private Coroutine ShieldFlashCoroutine = null;
+
         private Color? EnergyOriginalColor = null;
         private Coroutine EnergyFlashCoroutine = null;
 
         private float DamageFadeIntensityTarget = 0;
+        private float ShieldFadeIntensityTarget = 0;
 
         private Coroutine HitIndicatorFlashCoroutine = null;
 
@@ -94,8 +111,9 @@ namespace CommonCore.RpgGame.UI
             
             UpdateStatusDisplays();
             UpdateWeaponDisplay(); //ugly but oh well
-            UpdateDamageFade();
+            UpdateDamageFade();            
             LastFrameHealthFraction = GameState.Instance.PlayerRpgState.HealthFraction;
+            UpdateShieldFade();
         }
 
         protected override bool HandleMessage(QdmsMessage message)
@@ -106,7 +124,7 @@ namespace CommonCore.RpgGame.UI
             }            
             else if(message is ConfigChangedMessage)
             {
-                SetDamageFadeVisibility();
+                SetFadeVisibility();
                 return true;
             }
             else if(message is QdmsKeyValueMessage kvmessage)
@@ -118,6 +136,13 @@ namespace CommonCore.RpgGame.UI
                         break;
                     case "PlayerHasTarget":
                         SetTargetMessage(kvmessage.GetValue<string>("Target"));
+                        break;
+                    case "PlayerTookDamage":
+                        {
+                            float damageToShields = kvmessage.GetValue<float>("DamageToShields");
+                            if (damageToShields > 0)
+                                HandleShieldsHit(damageToShields);
+                        }
                         break;
                     case "RpgBossHealthUpdate":
                         UpdateTargetOverrideHealth(kvmessage.GetValue<string>("Target"), kvmessage.GetValue<float>("Health"));
@@ -145,6 +170,12 @@ namespace CommonCore.RpgGame.UI
                     case "WepReloaded":
                         //WeaponReady = true;
                         UpdateWeaponDisplay();
+                        break;
+                    case "PlayerShieldsRecharging":
+                        HandleShieldsRecharging();
+                        break;
+                    case "PlayerShieldsLost":
+                        HandleShieldsLost();
                         break;
                     case "PlayerChangeView":
                         SetCrosshair(message);
@@ -228,22 +259,53 @@ namespace CommonCore.RpgGame.UI
         private void StartDamageFade(float healthLost)
         {
             //note that healthlost is positive and fractional
+            DamageFadeOverlay.color = new Color(DamageFadeHealthColor.r, DamageFadeHealthColor.g, DamageFadeHealthColor.b, DamageFadeOverlay.color.a);
             DamageFadeIntensityTarget = Mathf.Clamp(DamageFadeFactor * healthLost, DamageFadeMin, DamageFadeMax);
             //Debug.LogWarning("Set DamageFadeIntensityTarget to " + DamageFadeIntensityTarget);
         }
 
-        private void SetDamageFadeVisibility()
+        private void UpdateShieldFade()
+        {
+            if (!ConfigState.Instance.FlashEffects || !ConfigState.Instance.GetGameplayConfig().FullscreenDamageIndicator)
+                return;
+ 
+            Color fadeCurrentColor = ShieldFadeOverlay.color;
+            float fadeCurrentIntensity = fadeCurrentColor.a;
+            if (ShieldFadeIntensityTarget > 0 || (ShieldFadeIntensityTarget == 0 && fadeCurrentIntensity > 0))
+            {
+                //fade toward target
+                float sign = Mathf.Sign(ShieldFadeIntensityTarget - fadeCurrentIntensity);
+                float newIntensity = Mathf.Clamp(fadeCurrentIntensity + sign * ShieldFadeRate * Time.deltaTime, 0, 1);
+                ShieldFadeOverlay.color = new Color(fadeCurrentColor.r, fadeCurrentColor.g, fadeCurrentColor.b, newIntensity);
+
+                //start the fade back
+                if (ShieldFadeIntensityTarget > 0 && newIntensity >= ShieldFadeIntensityTarget)
+                    ShieldFadeIntensityTarget = 0;
+            }
+        }
+
+        private void StartShieldFade(float shieldsLost)
+        {
+            ShieldFadeOverlay.color = new Color(ShieldFadeColor.r, ShieldFadeColor.g, ShieldFadeColor.b, ShieldFadeOverlay.color.a);
+            ShieldFadeIntensityTarget = Mathf.Clamp(ShieldFadeFactor * shieldsLost, ShieldFadeMin, ShieldFadeMax);
+        }
+
+        private void SetFadeVisibility()
         {
             if (!ConfigState.Instance.FlashEffects)
             {
                 Color oldColor = DamageFadeOverlay.color;
                 DamageFadeOverlay.color = new Color(oldColor.r, oldColor.g, oldColor.b, 0);
+
+                Color oldShieldColor = ShieldFadeOverlay.color;
+                ShieldFadeOverlay.color = new Color(oldShieldColor.r, oldShieldColor.g, oldShieldColor.b, 0);
             }
         }
 
         private void UpdateStatusDisplays()
         {
             var player = GameState.Instance.PlayerRpgState;
+
             HealthText.text = Mathf.Max(0, player.Health).ToString("f0");
             if (LastTriggeredHealthFraction.HasValue && LastTriggeredHealthFraction.Value < player.HealthFraction && HealthFlashCoroutine == null)
                 LastTriggeredHealthFraction = player.HealthFraction; //handle healing
@@ -258,9 +320,17 @@ namespace CommonCore.RpgGame.UI
             EnergyText.text = player.Energy.ToString("f0");
             EnergySlider.value = player.EnergyFraction;
 
-            //null out the shields for now
-            ShieldText.text = "";
-            ShieldSlider.value = 0;
+            if (player.DerivedStats.ShieldParams.MaxShields > 0)
+            {
+                ShieldText.text = player.Shields.ToString("f0");
+                ShieldSlider.value = player.ShieldsFraction;
+                //flashing is handled by messages for shields, not the stupid hacky shit health uses
+            }
+            else
+            {
+                ShieldText.text = "";
+                ShieldSlider.value = 0;
+            }
 
             //handle health flashing
             /*
@@ -276,6 +346,36 @@ namespace CommonCore.RpgGame.UI
             }
             TimeSinceLastHealthSample += Time.deltaTime;
             */
+        }
+
+        private void HandleShieldsHit(float damageToShields)
+        {            
+            if(damageToShields > GameParams.DamageFlashThreshold)
+            {
+                //flash the bar, flash the screen
+                FlashShieldBar();
+                StartShieldFade(damageToShields);
+            }
+        }
+
+        private void HandleShieldsLost()
+        {
+            //TODO flash the bar frantically until recharging starts
+            //(probably use a separate coroutine for this)
+        }
+
+        private void HandleShieldsRecharging()
+        {
+            //clear bar flash
+            if(ShieldFlashCoroutine != null)
+            {
+                StopCoroutine(ShieldFlashCoroutine);
+                ShieldFlashCoroutine = null;
+
+                ShieldFillArea.color = ShieldOriginalColor.Value;
+            }
+
+            //TODO clear flashing, highlight bar (?)
         }
 
         private void FlashHitIndicator()
@@ -314,6 +414,56 @@ namespace CommonCore.RpgGame.UI
             HitIndicator.color = new Color(HitIndicator.color.r, HitIndicator.color.g, HitIndicator.color.b, 0);
 
             HitIndicatorFlashCoroutine = null;
+        }
+
+        private void FlashShieldBar()
+        {
+            if (!ShieldOriginalColor.HasValue)
+                ShieldOriginalColor = ShieldFillArea.color;
+
+            if (ShieldFlashCoroutine != null)
+                return;
+
+            ShieldFlashCoroutine = StartCoroutine(FlashShieldBarCoroutine());
+        }
+
+        private IEnumerator FlashShieldBarCoroutine()
+        {
+
+            yield return null;
+
+            float fadeHalfTime = ShieldBarFlashTime / 2f;
+
+            ShieldFillArea.color = ShieldOriginalColor.Value;
+
+            //fade to final color
+            for (float elapsed = 0; elapsed < fadeHalfTime; elapsed += Time.deltaTime)
+            {
+                float ratio = elapsed / fadeHalfTime;
+
+                Color c = Vector4.Lerp(ShieldOriginalColor.Value, ShieldBarFlashColor, ratio);
+                ShieldFillArea.color = c;
+
+                yield return null;
+            }
+
+            ShieldFillArea.color = ShieldBarFlashColor;
+            yield return null;
+
+            //fade back to original color
+
+            for (float elapsed = 0; elapsed < fadeHalfTime; elapsed += Time.deltaTime)
+            {
+                float ratio = elapsed / fadeHalfTime;
+
+                Color c = Vector4.Lerp(ShieldBarFlashColor, ShieldOriginalColor.Value, ratio);
+                ShieldFillArea.color = c;
+
+                yield return null;
+            }
+
+            ShieldFillArea.color = ShieldOriginalColor.Value;
+            ShieldFlashCoroutine = null;
         }
 
         private void FlashHealthBar()

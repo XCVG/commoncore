@@ -180,4 +180,9 @@ Sliding Door (Assets/Resources/DynamicSound/DoorSlide)
 Door Open, Door Close Set (Assets/Resources/DynamicSound/DoorSwing*)
 	https://opengameart.org/content/door-open-door-close-set
 	by Iwan 'qubodup' Gabovitch, licensed CC0/public domain
-	
+
+Shield sounds (Assets/Resources/DynamicSound/Shield*)
+	50 CC0 Sci-Fi SFX
+	https://opengameart.org/content/50-cc0-sci-fi-sfx
+	by rubberduck, licensed CC0/public domain
+

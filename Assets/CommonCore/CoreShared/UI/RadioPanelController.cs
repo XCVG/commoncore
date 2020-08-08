@@ -10,6 +10,9 @@ namespace CommonCore.UI
     public class RadioPanelController : PanelController
     {
         [SerializeField]
+        private bool ApplyTheme = true;
+
+        [SerializeField]
         private RectTransform SelectionPanelContainer = null;
         [SerializeField]
         private RectTransform SubPanelContainer = null;
@@ -29,6 +32,9 @@ namespace CommonCore.UI
                 buttonGO.GetComponent<Button>().onClick.AddListener(() => HandleSelectionButtonPressed(null));
                 buttonGO.name = "ButtonAmbient";
                 buttonGO.GetComponentInChildren<Text>().text = "Ambient";
+
+                if (ApplyTheme)
+                    ApplyThemeToElements(buttonGO.transform);
             }
 
             //create buttons and panels
@@ -41,6 +47,9 @@ namespace CommonCore.UI
                 buttonGO.name = "Button_" + componentName;
                 buttonGO.GetComponentInChildren<Text>().text = musicComponent.NiceName;
 
+                if (ApplyTheme)
+                    ApplyThemeToElements(buttonGO.transform);
+
                 var panelPrefab = musicComponent.PanelPrefab;
                 if (panelPrefab != null)
                 {
@@ -48,6 +57,9 @@ namespace CommonCore.UI
                     GameObject panelGO = Instantiate(panelPrefab, SubPanelContainer);
                     panelGO.SetActive(false);
                     panelGO.name = componentName;
+
+                    if (ApplyTheme)
+                        ApplyThemeToElements(panelGO.transform);
                 }
             }
 
@@ -82,7 +94,7 @@ namespace CommonCore.UI
             AudioPlayer.Instance.SelectUserMusicComponent(target);
 
             SignalPaint();
-        }
+        }       
 
     }
 }

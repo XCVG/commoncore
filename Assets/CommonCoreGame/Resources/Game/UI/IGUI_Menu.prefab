@@ -1845,6 +1845,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HookupUnityEvents: 1
+  ApplyTheme: 1
   SelectionPanelContainer: {fileID: 3335167810929651591}
   SubPanelContainer: {fileID: 8655512640662069195}
   ButtonTemplate: {fileID: 2267544798589925182, guid: 4643d448792d46242ac2b85ddb516c86,
@@ -4934,6 +4935,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HookupUnityEvents: 1
+  ApplyTheme: 1
   ItemTemplatePrefab: {fileID: 1310617950636664, guid: ac41c2e699b6bf543bcbe310bbb5a2a5,
     type: 3}
   ScrollContent: {fileID: 224503330698393200}
@@ -5410,7 +5412,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 114206699985381758}
   m_HandleRect: {fileID: 224293158138026202}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -6108,6 +6110,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HookupUnityEvents: 1
+  ApplyTheme: 1
   ItemTemplatePrefab: {fileID: 1310617950636664, guid: ac41c2e699b6bf543bcbe310bbb5a2a5,
     type: 3}
   ScrollContent: {fileID: 224867603831112370}
@@ -7449,10 +7452,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: e8023a35ff1576e438055cbba9882d24, type: 3}
-    m_FontSize: 18
+    m_FontSize: 16
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 1
+    m_MinSize: 0
     m_MaxSize: 40
     m_Alignment: 0
     m_AlignByGeometry: 0
@@ -8763,6 +8766,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HookupUnityEvents: 1
   LoadPrefab: 1
+  OverridePrefab: 
+  ApplyTheme: 1
 --- !u!1 &6738774601623010040
 GameObject:
   m_ObjectHideFlags: 0

@@ -18,6 +18,8 @@ namespace CommonCore.Scripting
     {
         private static ScriptingModule Instance;
 
+        private ISet<string> PredefinedHooks;
+
         private Dictionary<string, MethodInfo> CallableMethods;
         private Dictionary<ScriptHook, List<MethodInfo>> HookedMethods;
         private Dictionary<string, List<MethodInfo>> NamedHookedMethods;
@@ -25,6 +27,9 @@ namespace CommonCore.Scripting
         public ScriptingModule()
         {
             Instance = this;
+
+            PredefinedHooks = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            PredefinedHooks.SetupFromEnum<ScriptHook>();
 
             FindAllScripts();
         }
@@ -141,6 +146,9 @@ namespace CommonCore.Scripting
                         HookedMethods[hookAttributeTyped.Hook].Add(scriptMethod);
                     if(!string.IsNullOrEmpty(hookAttributeTyped.NamedHook))
                     {
+                        if (PredefinedHooks.Contains(hookAttributeTyped.NamedHook))
+                            LogWarning($"Script {callableName} is set up for named hook \"{hookAttributeTyped.NamedHook}\" which is named similarly to a predefined hook. It will only be called when CallNamedHooked is called, not when CallHooked is called!");
+
                         if(!NamedHookedMethods.TryGetValue(hookAttributeTyped.NamedHook, out var list))
                         {
                             list = new List<MethodInfo>();
@@ -203,6 +211,9 @@ namespace CommonCore.Scripting
 
         private void CallNamedHookedScripts(string hook, ScriptExecutionContext context, params object[] args)
         {
+            if (PredefinedHooks.Contains(hook))
+                LogWarning($"Named hook \"{hook}\" was called, which is named similarly to a predefined hook. Scripts that hook the predefined hook will not be called!");
+
             foreach(var scriptMethod in NamedHookedMethods[hook])
             {
                 try

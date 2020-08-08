@@ -45,7 +45,8 @@ namespace CommonCore.UI
             try
             {
                 var buttonPrefab = CoreUtils.LoadResource<GameObject>("UI/IGUI_MenuButton");
-                foreach (var pkvp in UIModule.Instance.SortedIGUIPanels)
+                var uiModule = CCBase.GetModule<UIModule>();
+                foreach (var pkvp in uiModule.SortedIGUIPanels)
                 {
                     string name = pkvp.Key;
                     var panel = pkvp.Value;

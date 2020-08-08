@@ -25,7 +25,7 @@ namespace CommonCore.Audio
         /// <summary>
         /// Represents a sound that is playing or enqueued to play
         /// </summary>
-        private struct SoundInfo
+        public class SoundInfo //watch that value->reference semantic change break everything
         {
             public AudioClip Clip;
             public AudioSource Source;
@@ -534,7 +534,7 @@ namespace CommonCore.Audio
         /// <param name="volume">The volume to play the sound at</param>
         /// <param name="position">The position to play the sound at (if it is positional)</param>
         /// <returns>A struct that defines the playing sound</returns>
-        private SoundInfo PlaySoundEx(string sound, SoundType type, bool retain, bool ignorePause, bool loop, bool positional, float volume, Vector3 position)
+        public SoundInfo PlaySoundEx(string sound, SoundType type, bool retain, bool ignorePause, bool loop, bool positional, float volume, Vector3 position)
         {
             //get clip
             var clip = Module.GetSound(sound, type);
@@ -558,7 +558,7 @@ namespace CommonCore.Audio
         /// <param name="volume">The volume to play the sound at</param>
         /// <param name="position">The position to play the sound at (if it is positional)</param>
         /// <returns>A struct that defines the playing sound</returns>
-        private SoundInfo PlaySoundEx(AudioClip clip, bool retain, bool ignorePause, bool loop, bool positional, float volume, Vector3 position)
+        public SoundInfo PlaySoundEx(AudioClip clip, bool retain, bool ignorePause, bool loop, bool positional, float volume, Vector3 position)
         {
             //generate object
             GameObject spObject = new GameObject("SoundPlayer");

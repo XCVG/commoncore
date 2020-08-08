@@ -361,7 +361,20 @@ namespace CommonCore
             else
                 return CCBase.ResourceManager.ResourceExists<T>(path, false);
         }
-        
+
+        public static System.Random Random
+        {
+            get
+            {
+                if (_random == null)
+                    _random = new System.Random();
+                return _random;
+
+            }
+        }
+
+        private static System.Random _random;
+
         public static T LoadExternalJson<T>(string path)
         {
             if (!File.Exists(path))

@@ -46,12 +46,15 @@ namespace CommonCore
         public static bool SetSafeResolutionOnExit { get; private set; } = true;
         public static Vector2Int SafeResolution { get; private set; } = new Vector2Int(1280, 720);
 
+        public static UIThemePolicy UIThemeMode { get; private set; } = UIThemePolicy.Auto;
+        public static string DefaultUITheme { get; private set; } = "ThresholdTheme";
+
         public static float DelayedEventPollInterval { get; private set; } = 1.0f;
         //public static bool UseAggressiveLookups { get; private set; } = true; //may bring this back someday if performance is an issue
         public static int ResourceMaxRecurseDepth { get; private set; } = 32;
 
         //*****game config settings
-        public static string InitialScene { get; private set; } = "TestScene";
+        public static string InitialScene { get; private set; } = "PickerScene";
         public static bool UseCampaignIdentifier { get; private set; } = true;
         public static bool UseCampaignStartDate { get; private set; } = true;
         public static bool AllowSaveLoad { get; private set; } = true;

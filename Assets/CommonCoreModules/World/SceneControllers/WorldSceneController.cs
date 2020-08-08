@@ -132,6 +132,9 @@ namespace CommonCore.World
             {
                 try
                 {
+                    if (localState.ContainsKey(rc.gameObject.name))
+                        Debug.LogWarning($"Committed an object with duplicate TID ({rc.gameObject.name})");
+
                     RestorableData rd = rc.Save();
                     if (rc is LocalRestorableComponent || rc is BlankRestorableComponent)
                     {

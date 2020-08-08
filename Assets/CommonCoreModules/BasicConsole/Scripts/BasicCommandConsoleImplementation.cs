@@ -19,7 +19,7 @@ namespace CommonCore.BasicConsole
 
         public BasicCommandConsoleImplementation()
         {
-            var consoleObject = UnityEngine.Object.Instantiate(CoreUtils.LoadResource<GameObject>("Modules/BasicConsole/BasicConsole"));
+            var consoleObject = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Modules/BasicConsole/BasicConsole")); //we use Resources.Load because ResourceManager isn't initialized yet
             Console = consoleObject.GetComponent<BasicConsoleController>();
             Console.SetBaseImplementation(this);
         }

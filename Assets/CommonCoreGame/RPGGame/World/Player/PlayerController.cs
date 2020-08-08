@@ -36,10 +36,12 @@ namespace CommonCore.RpgGame.World
         public Transform TargetPoint;
         public PlayerCameraZoomComponent CameraZoomComponent;
         public PlayerDeathComponent DeathComponent;
+        public PlayerShieldComponent ShieldComponent;
         private QdmsMessageInterface MessageInterface;
 
         [Header("Sounds")]
         public AudioSource PainSound;
+        public float PainSoundThreshold = 0;
         public AudioSource DeathSound;
 
         [Header("Shooting")]
@@ -127,6 +129,11 @@ namespace CommonCore.RpgGame.World
                 DeathComponent = GetComponentInChildren<PlayerDeathComponent>();
             }
 
+            if(!ShieldComponent)
+            {
+                ShieldComponent = GetComponent<PlayerShieldComponent>();
+            }
+
             if(!HUDScript)
             {
                 HUDScript = (RpgHUDController)BaseHUDController.Current; //I would not recommend this cast
@@ -146,7 +153,9 @@ namespace CommonCore.RpgGame.World
             LockPauseModule.CaptureMouse = true;
 
             SetDefaultPlayerView();
-            SetInitialViewModels();            
+            SetInitialViewModels();
+
+            ShieldComponent.Ref()?.HandleLoadStart();
         }
 
         //should be fixedupdate, probably
@@ -166,6 +175,8 @@ namespace CommonCore.RpgGame.World
                 HandleInteraction();
                 //HandleWeapons();
             }
+
+            ShieldComponent.Ref()?.HandleRecharge();
         }
 
         private void SetDefaultPlayerView()
@@ -241,6 +252,11 @@ namespace CommonCore.RpgGame.World
                             }
                                 
                         }                        
+                        break;
+                    case "RpgStatsUpdated":
+                        {
+                            ShieldComponent.Ref()?.SignalEquipmentChanged();
+                        }
                         break;
                 }
             }
@@ -460,23 +476,47 @@ namespace CommonCore.RpgGame.World
             }
 
             CharacterModel playerModel = GameState.Instance.PlayerRpgState;
+        
+            var (damageToShields, damageToArmor, damageToCharacter) = RpgValues.DamageRatio(data.Damage, data.DamagePierce, playerModel);
 
-            //damage model is very stupid right now, we will make it better later
+            float oldShields = playerModel.Shields;
+            playerModel.Shields -= damageToShields;
+
+            if (oldShields > 0 && playerModel.Shields <= 0)
+            {
+                MessageInterface.PushToBus(new QdmsFlagMessage("PlayerShieldsLost"));
+                ShieldComponent.Ref()?.SignalLostShields();
+            }
+
             var (dt, dr) = playerModel.GetDamageThresholdAndResistance(data.DamageType);
-            float damageTaken = RpgValues.DamageTaken(data.Damage, data.DamagePierce, dt, dr);
+            float damageTaken = RpgValues.DamageTaken(damageToArmor, damageToCharacter, dt, dr);
 
             if (data.HitLocation == (int)ActorBodyPart.Head)
                 damageTaken *= 2.0f;
             else if (data.HitLocation == (int)ActorBodyPart.LeftArm || data.HitLocation == (int)ActorBodyPart.LeftLeg || data.HitLocation == (int)ActorBodyPart.RightArm || data.HitLocation == (int)ActorBodyPart.RightLeg)
-                damageTaken *= 0.75f;
-
-            if (damageTaken > 0)
-            {
-                if (PainSound != null && !PainSound.isPlaying)
-                    PainSound.Play();
-            }
+                damageTaken *= 0.75f;          
 
             playerModel.Health -= damageTaken;
+
+            if (damageTaken > PainSoundThreshold)
+            {                
+                if (PainSound != null && !PainSound.isPlaying)
+                    PainSound.Play();                
+            }
+
+            if (damageToShields > 0 || damageTaken > 0)
+            {
+                ShieldComponent.Ref()?.SignalTookDamage(damageToShields, damageTaken);
+
+                var damageValues = new Dictionary<string, object>()
+                {
+                    { "DamageTaken", damageTaken },
+                    { "DamageToShields", damageToShields },
+                    { "DamageToArmor", damageToArmor },
+                    { "DamageToCharacter", damageToCharacter }
+                };
+                MessageInterface.PushToBus(new QdmsKeyValueMessage(damageValues, "PlayerTookDamage"));
+            }
 
         }
 

@@ -58,6 +58,25 @@ namespace CommonCore.RpgGame.Rpg
         private float HealthJsonSavable => Health;
 
         public float HealthFraction { get; set; }
+
+        [JsonIgnore]
+        public float Shields
+        {
+            get
+            {
+                return DerivedStats.ShieldParams.MaxShields * ShieldsFraction;
+            }
+            set
+            {
+                ShieldsFraction = value / DerivedStats.ShieldParams.MaxShields;
+            }
+        }
+
+        [JsonProperty(PropertyName = "Shields")]
+        private float ShieldsJsonSavable => Shields;
+
+        public float ShieldsFraction { get; set; }
+
         public int Experience { get; set; }
         public int Level { get; set; }
 
@@ -70,6 +89,7 @@ namespace CommonCore.RpgGame.Rpg
 
         public List<Condition> Conditions { get; private set; }
 
+        public IEnumerable<Condition> AllConditions => Conditions; //TODO handle conditions from equipped items and conditions from playerflags
 
         public InventoryModel Inventory { get; private set; }
         public Dictionary<EquipSlot, int> AmmoInMagazine { get; set; }
@@ -107,9 +127,9 @@ namespace CommonCore.RpgGame.Rpg
             DerivedStats = new StatsSet(BaseStats);
 
             //apply conditions
-            foreach (Condition c in Conditions)
+            foreach (Condition c in AllConditions)
             {
-                c.Apply(BaseStats, DerivedStats);
+                c.ApplyToStats(BaseStats, DerivedStats);
             }
 
             //apply equipment bonuses (armor basically)
@@ -136,9 +156,26 @@ namespace CommonCore.RpgGame.Rpg
             if (GameParams.UseDerivedSkills)
                 RpgValues.SkillsFromStats(BaseStats, DerivedStats);
 
+            //apply conditions after skills
+            foreach (Condition c in AllConditions)
+            {
+                c.ApplyToSkills(BaseStats, DerivedStats);
+            }
+
             //recalculate max health and energy
             DerivedStats.MaxHealth = RpgValues.MaxHealth(this);
             DerivedStats.MaxEnergy = RpgValues.MaxEnergy(this);
+
+            //recalculate shield parameters
+            DerivedStats.ShieldParams = RpgValues.ShieldParams(this);
+            if (DerivedStats.ShieldParams.MaxShields <= 0)
+                ShieldsFraction = 0;
+
+            //apply conditions late (after deriving values)
+            foreach (Condition c in AllConditions)
+            {
+                c.ApplyToDerived(BaseStats, DerivedStats);
+            }
 
             //apply endurance from difficulty
             float endurance = ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerEndurance;
@@ -146,6 +183,7 @@ namespace CommonCore.RpgGame.Rpg
             DerivedStats.MaxEnergy *= endurance;
         }
 
+        //recalculates stats and informs other systems that stats have been updated
         public void UpdateStats()
         {
             RecalculateStats();

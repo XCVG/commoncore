@@ -388,6 +388,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a256e6ab39a7b142b515b4f5a03380a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ApplyTheme: 1
+  OverrideTheme: 
+  ChoicePanel: {fileID: 224282663724692326}
   TextTitle: {fileID: 114278385775412534}
   TextMain: {fileID: 114874392630423350}
   BackgroundImage: {fileID: 7727830932536124905}
@@ -1419,7 +1422,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 224571233066226738}
   m_Direction: 0
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

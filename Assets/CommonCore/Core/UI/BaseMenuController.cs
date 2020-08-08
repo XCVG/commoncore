@@ -20,7 +20,15 @@ namespace CommonCore.UI
 
         public virtual void Start()
         {
-
+            //do it here or elsewhere
+            if(ApplyTheme && CoreParams.UIThemeMode == UIThemePolicy.Auto)
+            {
+                var uiModule = CCBase.GetModule<UIModule>();
+                if (!string.IsNullOrEmpty(OverrideTheme))
+                    uiModule.ApplyThemeRecurse(transform, uiModule.GetThemeByName(OverrideTheme));
+                else
+                    uiModule.ApplyThemeRecurse(transform);
+            }
         }
 
         public virtual void Update()

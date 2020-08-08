@@ -73,6 +73,25 @@ namespace CommonCore
     }
 
     /// <summary>
+    /// How UI theming should be handled
+    /// </summary>
+    public enum UIThemePolicy
+    {
+        /// <summary>
+        /// Applies UI theme automatically
+        /// </summary>
+        Auto,
+        /// <summary>
+        /// Themes are not automatically applied
+        /// </summary>
+        ExplicitOnly,
+        /// <summary>
+        /// Theme engine is disabled entirely
+        /// </summary>
+        Disabled
+    }
+
+    /// <summary>
     /// Persistent data path to use on Windows platform
     /// </summary>
     /// <remarks>Because the default is stupid</remarks>

@@ -73,7 +73,7 @@ namespace CommonCore.RpgGame.UI
 
         private void PaintConditions()
         {
-            var conditions = GameState.Instance.PlayerRpgState.Conditions;
+            var conditions = GameState.Instance.PlayerRpgState.AllConditions.ToList();
             StringBuilder conditionsSB = new StringBuilder(conditions.Count * 16);
             foreach(var c in conditions)
             {

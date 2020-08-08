@@ -9,8 +9,10 @@ using UnityEngine.UI;
 namespace CommonCore.UI
 {
 
-    public class LoadGamePanelController : PanelController //wait shouldn't this inherit from BasePanelController?
+    public class LoadGamePanelController : PanelController
     {
+        public bool ApplyTheme = true;
+
         public RectTransform ScrollContent;
         public GameObject SaveItemPrefab;
 
@@ -20,7 +22,7 @@ namespace CommonCore.UI
         public Text DetailDate;
         public Text DetailLocation;
         public Button LoadButton;
-
+        
         private SaveGameInfo[] Saves;
         private int SelectedSaveIndex = -1;
 
@@ -71,8 +73,18 @@ namespace CommonCore.UI
 
             Saves = allSaves.ToArray();
 
+            string overrideTheme = null;
+            bool applyTheme = ApplyTheme;
+            if (ApplyTheme)
+            {
+                var menuController = GetComponentInParent<BaseMenuController>();
+                overrideTheme = menuController.Ref()?.OverrideTheme;
+                if(menuController)
+                    applyTheme = menuController.ApplyTheme;
+            }
+
             //inefficient but probably safer
-            for(int i = 0; i < Saves.Length; i++)
+            for (int i = 0; i < Saves.Length; i++)
             {
                 var save = Saves[i];
                 GameObject saveGO = Instantiate<GameObject>(SaveItemPrefab, ScrollContent);
@@ -80,6 +92,10 @@ namespace CommonCore.UI
                 Button b = saveGO.GetComponent<Button>();
                 int lexI = i;
                 b.onClick.AddListener(delegate { OnSaveSelected(lexI, b); }); //scoping is weird here
+                if (applyTheme)
+                {                    
+                    ApplyThemeToElements(saveGO.transform, overrideTheme);
+                }
             }
         }
 

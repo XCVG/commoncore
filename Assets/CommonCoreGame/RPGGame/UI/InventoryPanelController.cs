@@ -14,6 +14,8 @@ namespace CommonCore.RpgGame.UI
 
     public class InventoryPanelController : PanelController
     {
+        public bool ApplyTheme = true;
+
         public GameObject ItemTemplatePrefab;
         public RectTransform ScrollContent;
 
@@ -63,6 +65,8 @@ namespace CommonCore.RpgGame.UI
                 int lexI = i;
                 b.onClick.AddListener(delegate { OnItemSelected(lexI); }); //scoping is weird here
                 ItemLookupTable[i] = item;
+                if(ApplyTheme)
+                    ApplyThemeToElements(b.transform);
             }
         }
 

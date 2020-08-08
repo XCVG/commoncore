@@ -13,6 +13,8 @@ namespace CommonCore.UI
     {
         private const string SubList = "IGUI_SAVE"; //substitution list for strings
 
+        public bool ApplyTheme = true;
+
         public RectTransform ScrollContent;
         public GameObject SaveItemPrefab;
         public InputField SaveNameField;
@@ -95,6 +97,16 @@ namespace CommonCore.UI
             DirectoryInfo saveDInfo = new DirectoryInfo(savePath);
             FileInfo[] savesFInfo = saveDInfo.GetFiles().OrderBy(f => f.CreationTime).Reverse().ToArray();
 
+            string overrideTheme = null;
+            bool applyTheme = ApplyTheme;
+            if (ApplyTheme)
+            {
+                var menuController = GetComponentInParent<BaseMenuController>();
+                overrideTheme = menuController.Ref()?.OverrideTheme;
+                if (menuController)
+                    applyTheme = menuController.ApplyTheme;
+            }
+
             foreach (FileInfo saveFI in savesFInfo)
             {
                 try
@@ -107,7 +119,10 @@ namespace CommonCore.UI
                     saveGO.GetComponentInChildren<Text>().text = saveInfo.NiceName;
                     Button b = saveGO.GetComponent<Button>();
                     b.onClick.AddListener(delegate { OnSaveSelected(Path.GetFileNameWithoutExtension(saveFI.Name), saveInfo, b); });
-
+                    if (applyTheme)
+                    {
+                        ApplyThemeToElements(saveGO.transform, overrideTheme);
+                    }
                 }
                 catch (Exception e)
                 {

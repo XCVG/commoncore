@@ -18,6 +18,8 @@ namespace CommonCore.UI
     /// </summary>
     public class ConfigPanelController : PanelController
     {
+        [Header("Theme")]
+        public bool ApplyTheme = true;
 
         [Header("Containers"), SerializeField]
         private RectTransform PanelContainer = null;
@@ -66,7 +68,13 @@ namespace CommonCore.UI
             {
                 var subpanelGO = Instantiate(subpanel, PanelContainer);
                 subpanelGO.SetActive(true);
+
+                if (ApplyTheme)
+                {
+                    ApplyThemeToElements(subpanelGO.transform);
+                }
             }
+            
         }
 
         public override void SignalPaint()

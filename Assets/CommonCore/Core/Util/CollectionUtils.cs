@@ -110,6 +110,28 @@ namespace CommonCore
         }
 
         /// <summary>
+        /// Filles up a set with all members of an enum as values
+        /// </summary>
+        public static void SetupFromEnum<T>(this ISet<T> set) where T : Enum
+        {
+            foreach(T key in Enum.GetValues(typeof(T)))
+            {
+                set.Add(key);
+            }
+        }
+
+        /// <summary>
+        /// Filles up a set with all names of an enum as values
+        /// </summary>
+        public static void SetupFromEnum<T>(this ISet<string> set) where T : Enum
+        {
+            foreach(string key in Enum.GetNames(typeof(T)))
+            {
+                set.Add(key);
+            }
+        }
+
+        /// <summary>
         /// Shuffles a list in-place
         /// </summary>
         /// <remarks>
