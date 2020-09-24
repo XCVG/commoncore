@@ -54,7 +54,7 @@ namespace CommonCore
         public static int ResourceMaxRecurseDepth { get; private set; } = 32;
 
         //*****game config settings
-        public static string InitialScene { get; private set; } = "PickerScene";
+        public static string InitialScene { get; private set; } = "TestScene";
         public static bool UseCampaignIdentifier { get; private set; } = true;
         public static bool UseCampaignStartDate { get; private set; } = true;
         public static bool AllowSaveLoad { get; private set; } = true;

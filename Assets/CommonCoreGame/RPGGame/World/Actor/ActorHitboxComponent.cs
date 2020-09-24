@@ -56,7 +56,7 @@ namespace CommonCore.RpgGame.World
             var bulletScript = other.GetComponent<IDamageOnHit>();
             if(bulletScript != null)
             {
-                bulletScript.HandleCollision(ParentController, (int)BodyPartOverride, HitMaterialResolved, other.transform.position);
+                bulletScript.HandleCollision(ParentController, this, (int)BodyPartOverride, HitMaterialResolved, other.transform.position, ((IHitboxComponent)this).DamageMultiplier, ((IHitboxComponent)this).AllDamageIsPierce);
             }
 
             /*
@@ -87,7 +87,7 @@ namespace CommonCore.RpgGame.World
                 else
                     hitLocation = collision.transform.position;
 
-                bulletScript.HandleCollision(ParentController, (int)BodyPartOverride, HitMaterialResolved, hitLocation);
+                bulletScript.HandleCollision(ParentController, this, (int)BodyPartOverride, HitMaterialResolved, hitLocation, ((IHitboxComponent)this).DamageMultiplier, ((IHitboxComponent)this).AllDamageIsPierce);
             }
 
             /*

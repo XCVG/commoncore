@@ -217,19 +217,30 @@ namespace CommonCore.RpgGame.World
             if (!Clipping)
                 return;
 
+            //special case: terrain
             if (hit.collider is TerrainCollider)
             {
                 LastGroundNormal = hit.normal;
                 return; //ignore terrain hits
             }
 
-            if(Physics.Raycast(transform.position, Vector3.down, out var raycastHit, 1f, WalkableLayerMask, QueryTriggerInteraction.Ignore))
+            //special case: not terrain, but something we're standing on
+            if (Physics.Raycast(transform.position, Vector3.down, out var raycastHit, 1f, WalkableLayerMask, QueryTriggerInteraction.Ignore))
             {
-                if (hit.collider == raycastHit.collider)
+                if (hit.collider == raycastHit.collider && (hit.collider.attachedRigidbody == null || hit.collider.attachedRigidbody.isKinematic || hit.collider.attachedRigidbody.constraints.HasFlag(RigidbodyConstraints.FreezePosition)))
                 {
                     //Debug.Log(raycastHit.collider.name);
                     LastGroundNormal = hit.normal;
+                    return; //should we do this?
                 }
+            }
+
+            //special case: we just smashed our head into something
+            float playerYMax = CharController.bounds.center.y + CharController.bounds.extents.y;
+            if (hit.point.y >= playerYMax)
+            {
+                Velocity += getVerticalBrakeBounceVector();
+                return;
             }
 
             if (!EnableCollisions || GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoPhysics))
@@ -283,6 +294,14 @@ namespace CommonCore.RpgGame.World
                 Vector3 vecBrake = -vecFlatVelocity.normalized * Mathf.Min(magBrake, vecFlatVelocity.magnitude);
                 return vecBrake;                
             }
+
+            Vector3 getVerticalBrakeBounceVector()
+            {
+                if (Velocity.y > 0)
+                    return new Vector3(0, -Velocity.y, 0);
+
+                return Vector3.zero;
+            }
         }
 
         /// <summary>
@@ -326,6 +345,8 @@ namespace CommonCore.RpgGame.World
 
                 CharController.enabled = true;
                 CharController.detectCollisions = true;
+
+                Velocity = Vector3.zero;
             }
 
             void doNoclipMovement()
@@ -583,7 +604,7 @@ namespace CommonCore.RpgGame.World
                     Velocity += Quaternion.AngleAxis(transform.eulerAngles.y, Vector3.up) * newAddVelocity;
                 }
 
-                if (IsGrounded && (AllowSlopeJumping || !IsOnSlope))
+                if (IsGrounded && (AllowSlopeJumping || !IsOnSlope) && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoJump))
                 {
                     //jumping
                     if (MappedInput.GetButtonDown(DefaultControls.Jump))
@@ -783,7 +804,7 @@ namespace CommonCore.RpgGame.World
         /// <summary>
         /// Sets the crouch state of the player based on IsCrouching
         /// </summary>
-        private void SetCrouchState()
+        private void SetCrouchState(bool instant = false)
         {
 
             if (!CharControllerOriginalHeight.HasValue)
@@ -801,6 +822,8 @@ namespace CommonCore.RpgGame.World
 
                 //PlayerController.CameraRoot.localPosition = new Vector3(CameraRootOriginalLPos.Value.x, CameraRootOriginalLPos.Value.y * CrouchYScale, CameraRootOriginalLPos.Value.z);
                 CrouchTargetHeight = CameraRootOriginalLPos.Value.y * CrouchYScale;
+                if (instant)
+                    setCameraHeight();
                 CrouchSound.Ref()?.Play();
 
                 if (UseCrouchHack)
@@ -818,6 +841,8 @@ namespace CommonCore.RpgGame.World
 
                 //PlayerController.CameraRoot.localPosition = CameraRootOriginalLPos.Value;
                 CrouchTargetHeight = CameraRootOriginalLPos.Value.y;
+                if (instant)
+                    setCameraHeight();
                 CrouchSound.Ref()?.Play();
 
                 if (UseCrouchHack)
@@ -825,11 +850,15 @@ namespace CommonCore.RpgGame.World
                     PlayerController.ModelRoot.transform.localScale = ModelOriginalScale.Value;
                 }
             }
+
+            void setCameraHeight()
+            {
+                Transform cameraRoot = PlayerController.CameraRoot;
+                cameraRoot.localPosition = new Vector3(cameraRoot.localPosition.x, CrouchTargetHeight.Value, cameraRoot.localPosition.z);
+            }
         }
 
-
-
-        private void SetBaseScaleVars()
+        public void SetBaseScaleVars()
         {
             ModelOriginalScale = PlayerController.ModelRoot.transform.localScale;
             CharControllerOriginalHeight = CharController.height;
@@ -853,6 +882,17 @@ namespace CommonCore.RpgGame.World
 
             Velocity += instantaneousVelocity;
             CharController.Move(instantaneousDisplacement);
+        }
+
+        /// <summary>
+        /// Sets the crouch state of the player
+        /// </summary>
+        public void SetCrouchState(bool crouching, bool instant)
+        {
+            bool oldState = IsCrouching;
+            IsCrouching = crouching;
+            if (oldState != IsCrouching)
+                SetCrouchState(instant);
         }
 
 

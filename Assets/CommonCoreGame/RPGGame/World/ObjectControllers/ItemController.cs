@@ -14,8 +14,12 @@ namespace CommonCore.RpgGame.World
     public class ItemController : ThingController
     {
         public GameObject PickupEffect;
+        public string PickupEffectName;
+        public string DestroyEffectName;
         public string ItemId;
         public int ItemQuantity;
+        public bool UseQuantityLimit = false;
+        public bool AlwaysDestroyOnPickup = false;
 
         //we'll set these on the spec_item prefab as a "default"
         //overrides won't work consistently the way it's currently set up but that's okay for now
@@ -32,14 +36,14 @@ namespace CommonCore.RpgGame.World
             if(!UseInteractPickup)
             {
                 //disable interactable (the whole thing is hacky)
-                var iobj = transform.Find("Interactable");
+                var iobj = transform.GetComponentInChildren<InteractableComponent>().Ref()?.gameObject;
                 if (iobj != null)
                     iobj.gameObject.SetActive(false);
             }
             else
             {
                 //set tooltip
-                var iobj = transform.Find("Interactable");
+                var iobj = transform.GetComponentInChildren<InteractableComponent>().Ref()?.gameObject;
                 string itemName = null;
                 var itemDef = InventoryModel.GetDef(ItemId);
                 if (itemDef != null)
@@ -75,12 +79,30 @@ namespace CommonCore.RpgGame.World
                 return;
             }
 
-            GameState.Instance.PlayerRpgState.Inventory.AddItem(ItemId, ItemQuantity);
+            if(UseQuantityLimit)
+            {
+                int remaining = GameState.Instance.PlayerRpgState.Inventory.AddItemsToQuantityLimit(ItemId, ItemQuantity);
+                ItemQuantity = remaining;
+            }
+            else
+            {
+                GameState.Instance.PlayerRpgState.Inventory.AddItem(ItemId, ItemQuantity);
+                ItemQuantity = 0;
+            }
 
-            gameObject.SetActive(false);
+            if(AlwaysDestroyOnPickup || ItemQuantity == 0)
+            {
+                if (!string.IsNullOrEmpty(DestroyEffectName))
+                    WorldUtils.SpawnEffect(DestroyEffectName, transform.position, transform.rotation, null, false);
+
+                gameObject.SetActive(false);
+            }
+            
 
             if (PickupEffect != null)
                 Instantiate(PickupEffect, transform.position, Quaternion.identity, transform.root);
+            if (!string.IsNullOrEmpty(PickupEffectName))
+                WorldUtils.SpawnEffect(PickupEffectName, transform.position, transform.rotation, null, false);
             
         }
 

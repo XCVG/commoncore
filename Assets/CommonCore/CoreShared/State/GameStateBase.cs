@@ -105,6 +105,7 @@ namespace CommonCore.State
             }
 
             instance.Init();
+            instance.SetCampaignStartDate();
             instance.SetCampaignHash();
         }
 

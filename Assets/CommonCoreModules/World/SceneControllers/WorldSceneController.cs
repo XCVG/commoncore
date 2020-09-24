@@ -55,7 +55,7 @@ namespace CommonCore.World
             }
 
             ScriptingModule.CallHooked(ScriptHook.AfterSceneLoad, this);
-            if(AutosaveOnEnter)
+            if(AutosaveOnEnter && MetaState.Instance.TransitionType != SceneTransitionType.LoadGame)
                 SaveUtils.DoAutoSave();
         }
 

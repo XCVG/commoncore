@@ -16,7 +16,7 @@
 			"Energy": 4.0,
 			"Thermal": 4.0
 		},
-		"Name": "lightarmor",
+		"Name": "shieldedarmor",
 		"Weight": 5.0,
 		"MaxCondition": 1.0,
 		"Unique": false,

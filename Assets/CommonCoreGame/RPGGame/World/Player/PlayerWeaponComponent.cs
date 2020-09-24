@@ -750,7 +750,7 @@ namespace CommonCore.RpgGame.World
 
                     //apply spread
                     fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread) * spreadMoveFactor * spreadRpgFactor, Vector3.up) * fireVec;
-                    fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread) * spreadMoveFactor * spreadRpgFactor, Vector3.right) * fireVec;
+                    fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread) * spreadMoveFactor * spreadRpgFactor, transform.right) * fireVec;
                     fireVec = Quaternion.AngleAxis(AccumulatedRecoil * spreadMoveFactor * spreadRpgFactor, -transform.right) * fireVec; //iffy
 
                     bulletRigidbody.velocity = (fireVec * wim.ProjectileVelocity);
@@ -773,17 +773,22 @@ namespace CommonCore.RpgGame.World
                     //pivot the screen with the recoil
                     if (wim.CheckFlag(ItemFlag.WeaponShake))
                     {
+                        float recoilScale = ConfigState.Instance.GetGameplayConfig().RecoilEffectScale;
+
                         //factor in the actual fire vector, but only a little bit
                         Quaternion fireRotation = Quaternion.LookRotation(ViewShakeScript.transform.parent.InverseTransformDirection(fireVec));
-                        Quaternion scaledFireRotation = Quaternion.SlerpUnclamped(Quaternion.identity, fireRotation, RecoilFireVecFactor);                        
+                        Quaternion scaledFireRotation = Quaternion.SlerpUnclamped(Quaternion.identity, fireRotation, RecoilFireVecFactor * recoilScale);
+
+                        //scaledFireRotation = Quaternion.identity;
        
-                        Vector3 rawRecoilAngle = new Vector3(-(IsADS ? wim.ADSRecoilImpulse.Intensity : wim.RecoilImpulse.Intensity), 0, 0);
+                        Vector3 rawRecoilAngle = new Vector3(-(IsADS ? wim.ADSRecoilImpulse.Intensity : wim.RecoilImpulse.Intensity) * recoilScale, 0, 0);
                         Quaternion recoilRotation = Quaternion.Euler(rawRecoilAngle);
 
                         Vector3 recoilAngle = (recoilRotation * scaledFireRotation).eulerAngles;
-                        float recoilScale = ConfigState.Instance.GetGameplayConfig().RecoilEffectScale;
 
-                        ViewShakeScript.Shake(recoilAngle * recoilScale, wim.RecoilImpulse.Time, wim.RecoilImpulse.Violence); //try that and see how terrible it looks
+                        //Debug.Log(recoilAngle.ToString("F2"));
+
+                        ViewShakeScript.Shake(recoilAngle, wim.RecoilImpulse.Time, wim.RecoilImpulse.Violence); //try that and see how terrible it looks
 
                     }
                     

@@ -1,35 +1,38 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-//General purpose light blinking script
-//Attach it to any light and watch the magic happen!
-
-namespace CommonCore.ObjectActions
+namespace CommonCore
 {
 
+    /// <summary>
+    /// General purpose light blinking script. Attach it to any light and watch the magic happen!
+    /// </summary>
     public class LightBlinkScript : MonoBehaviour
     {
 
-        // Maximum intensity to flicker to (default: 1.0/full)
+
+        [Tooltip("Maximum intensity to flicker to (default: 1.0/full)")]
         public float maxIntensity = 1.0f;
-        // Minimum intensity to flicker to (default: 0.0/none)
+        [Tooltip("Minimum intensity to flicker to (default: 0.0/none)")]
         public float minIntensity = 0.0f;
-        // Chance to flicker each tick (default: 0.5/50%)
+        [Tooltip("Chance to flicker each tick (default: 0.5/50%)")]
         public float flickerChance = 0.5f;
-        // Minimum frames between flickers (default: 0/every frame)
+        [Tooltip("Minimum frames between flickers (default: 0/every frame)")]
         public int flickerDelay = 0;
-        // Randomize causes the light to flicker to a random intensity (default: false/off)
+        [Tooltip("Randomize causes the light to flicker to a random intensity (default: false/off)")]
         public bool randomize = false;
 
-        private Light myLight;
+        public Light AttachedLight;
+
         private int framesSinceLast;
 
         void Start()
         {
-            myLight = gameObject.GetComponent<Light>();
-            if (myLight == null)
+            if(AttachedLight == null)
+                AttachedLight = gameObject.GetComponent<Light>();
+            if (AttachedLight == null)
             {
-                Debug.LogWarning(string.Format("LightBlinkScript {0} attached to GameObject {1}({2}) has no light attached!", this.GetInstanceID(), this.gameObject.name, this.gameObject.GetInstanceID()));
+                Debug.LogWarning(string.Format("LightBlinkScript ({0}) attached to GameObject {1}({2}) has no light attached!", this.GetInstanceID(), this.gameObject.name, this.gameObject.GetInstanceID()));
             }
 
             framesSinceLast = 0;
@@ -58,18 +61,18 @@ namespace CommonCore.ObjectActions
                 //if randomize is enabled, flicker to a random intensity between min and max
                 if (randomize)
                 {
-                    myLight.intensity = Random.Range(minIntensity, maxIntensity);
+                    AttachedLight.intensity = Random.Range(minIntensity, maxIntensity);
                 }
                 else
                 {
                     //otherwise, flicker to min or max (whichever this one isn't)
-                    if (myLight.intensity > minIntensity)
+                    if (AttachedLight.intensity > minIntensity)
                     {
-                        myLight.intensity = minIntensity;
+                        AttachedLight.intensity = minIntensity;
                     }
                     else
                     {
-                        myLight.intensity = maxIntensity;
+                        AttachedLight.intensity = maxIntensity;
                     }
                 }
 

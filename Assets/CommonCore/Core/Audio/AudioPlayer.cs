@@ -586,6 +586,40 @@ namespace CommonCore.Audio
         //things like fades and overrides would also be nice
 
         /// <summary>
+        /// Plays music into a specified slot.
+        /// </summary>
+        /// <param name="sound">The music file to play</param>
+        /// <param name="slot">The slot to play music in</param>
+        /// <param name="volume">The volume to play the music at (will be multiplied with global music volume)</param>
+        /// <param name="loop">Whether to loop the music</param>
+        /// <param name="retain">Whether to retain the music across scene loads</param>
+        /// <remarks>
+        /// <para>Equivalent to calling SetMusic followed by StartMusic</para>
+        /// </remarks>
+        public void PlayMusic(string sound, MusicSlot slot, float volume, bool loop, bool retain)
+        {
+            SetMusic(sound, slot, volume, loop, retain);
+            StartMusic(slot);
+        }
+
+        /// <summary>
+        /// Plays music into a specified slot.
+        /// </summary>
+        /// <param name="clip">The music clip to play</param>
+        /// <param name="slot">The slot to play music in</param>
+        /// <param name="volume">The volume to play the music at (will be multiplied with global music volume)</param>
+        /// <param name="loop">Whether to loop the music</param>
+        /// <param name="retain">Whether to retain the music across scene loads</param>
+        /// <remarks>
+        /// <para>Equivalent to calling SetMusic followed by StartMusic</para>
+        /// </remarks>
+        public void PlayMusic(AudioClip clip, MusicSlot slot, float volume, bool loop, bool retain)
+        {
+            SetMusic(clip, slot, volume, loop, retain);
+            StartMusic(slot);
+        }
+
+        /// <summary>
         /// Sets the music in a slot to the specified audio.
         /// </summary>
         /// <param name="sound">The music file to play</param>
@@ -620,7 +654,7 @@ namespace CommonCore.Audio
         /// <remarks>
         /// <para>No longer effects playback state</para>
         /// </remarks>
-        public void SetMusic(AudioClip clip, MusicSlot slot, float volume, bool loop, bool retain) => SetMusic(clip, null, slot, volume, loop, retain);
+        public void SetMusic(AudioClip clip, MusicSlot slot, float volume, bool loop, bool retain) => SetMusic(clip, clip.name, slot, volume, loop, retain);
 
         /// <summary>
         /// Sets the music in a slot to the specified audio.

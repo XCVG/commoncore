@@ -35,6 +35,8 @@ namespace CommonCore.World
 
         public bool IsReadOnly => ((ICollection<string>)Flags).IsReadOnly;
 
+        public void Add<T>(T item) where T : Enum => Add(item.ToString());
+
         public bool Add(string item) => Flags.Add(item);
 
         public void Clear() => Flags.Clear();

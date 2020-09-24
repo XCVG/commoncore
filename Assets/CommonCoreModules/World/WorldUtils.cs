@@ -172,6 +172,54 @@ namespace CommonCore.World
             return foundObjects;
         }
 
+        public static bool IsAlive(this ITakeDamage target)
+        {
+            if (target == null)
+                return false;
+
+            if (target is Component c && !c.gameObject.activeInHierarchy)
+                return false;
+
+            if (target.Health <= 0)
+                return false;
+
+            return true;
+        }
+
+        public static bool IsAlive(this BaseController target)
+        {
+            if (target == null)
+                return false;
+
+            if (!target.gameObject.activeInHierarchy)
+                return false;
+
+            if (target is ITakeDamage itd && itd.Health <= 0)
+                return false;
+
+            return true;
+        }
+
+        public static bool IsAlive(GameObject target)
+        {
+            if (target == null)
+                return false;
+
+            if (!target.gameObject.activeInHierarchy)
+                return false;
+
+            var itd = target.GetComponent<ITakeDamage>();
+            if (itd != null && itd.Health <= 0)
+                return false;
+
+            return true;
+        }
+
+        public static bool IsAlive(Transform target)
+        {
+            return IsAlive(target.gameObject);
+        }
+
         
         /// <summary>
         /// Sets parameters and loads a different scene
@@ -207,7 +255,11 @@ namespace CommonCore.World
 
             var prefab = CoreUtils.LoadResource<GameObject>("Entities/" + formID);
             if (prefab == null)
+            {
+                if (ConfigState.Instance.UseVerboseLogging)
+                    Debug.LogError($"Failed to spawn entity \"{formID}\" because prefab does not exist!");
                 return null;
+            }
 
             var go = UnityEngine.Object.Instantiate(prefab, position, rotation, parent) as GameObject;
             if (string.IsNullOrEmpty(thingID))
@@ -231,7 +283,11 @@ namespace CommonCore.World
 
             var prefab = CoreUtils.LoadResource<GameObject>("Effects/" + effectID);
             if (prefab == null)
+            {
+                if (ConfigState.Instance.UseVerboseLogging)
+                    Debug.LogError($"Failed to spawn effect \"{effectID}\" because prefab does not exist!");
                 return null;
+            }
 
             var go = UnityEngine.Object.Instantiate(prefab, position, rotation, parent) as GameObject;
             go.name = string.Format("{0}_{1}", go.name.Replace("(Clone)", "").Trim(), useUniqueId ? GameState.Instance.NextUID.ToString() : "fx");
@@ -357,8 +413,8 @@ namespace CommonCore.World
             var hits = Physics.RaycastAll(origin, direction, range, GetAttackLayerMask(), QueryTriggerInteraction.Collide);
 
             //no hits, return default
-            if(hits.Length == 0)
-                return new HitInfo(null, null, default, default, default);
+            if (hits.Length == 0)
+                return default;
 
             return GetAttackHit(hits, rejectBullets, useSubHitboxes, originator);
         }
@@ -375,7 +431,7 @@ namespace CommonCore.World
 
             //no hits, return default
             if (hits.Length == 0)
-                return new HitInfo(null, null, default, default, default);
+                return default;
 
             return GetAttackHit(hits, rejectBullets, useSubHitboxes, originator);
         }
@@ -445,7 +501,7 @@ namespace CommonCore.World
                 var actorHitbox = collider.GetComponent<IHitboxComponent>();
                 if (actorHitbox != null)
                     if(hitSelf || actorHitbox.ParentController != originator)
-                        return new HitInfo[] { new HitInfo(actorHitbox.ParentController, actorHitbox, collider.bounds.center, actorHitbox.HitLocationOverride, actorHitbox.HitMaterial) };
+                        return new HitInfo[] { new HitInfo(actorHitbox.ParentController, actorHitbox, collider, collider.bounds.center, actorHitbox.HitLocationOverride, actorHitbox.HitMaterial) };
                     else
                         return new HitInfo[] { };
 
@@ -456,7 +512,7 @@ namespace CommonCore.World
                     if (otherController == null)
                         otherController = collider.GetComponentInParent<BaseController>();
                     if (otherController != null && (hitSelf || otherController != originator))
-                        return new HitInfo[] { new HitInfo(otherController, null, collider.bounds.center, 0, otherController?.HitMaterial ?? 0) };
+                        return new HitInfo[] { new HitInfo(otherController, null, collider, collider.bounds.center, 0, otherController?.HitMaterial ?? 0) };
                 }
 
                 return new HitInfo[] { };
@@ -519,13 +575,13 @@ namespace CommonCore.World
                     foreach(var collider in kvp.Value)
                     {
                         var actorHitbox = collider.GetComponent<IHitboxComponent>();
-                        hitList.Add(new HitInfo(kvp.Key, actorHitbox, collider.bounds.center, actorHitbox?.HitLocationOverride ?? 0, actorHitbox?.HitMaterial ?? kvp.Key.HitMaterial));
+                        hitList.Add(new HitInfo(kvp.Key, actorHitbox, collider, collider.bounds.center, actorHitbox?.HitLocationOverride ?? 0, actorHitbox?.HitMaterial ?? kvp.Key.HitMaterial));
                     }
                 }
                 else
                 {
                     Collider collider = kvp.Value[0];
-                    hitList.Add(new HitInfo(kvp.Key, null, collider.bounds.center, 0, kvp.Key.HitMaterial));
+                    hitList.Add(new HitInfo(kvp.Key, null, collider, collider.bounds.center, 0, kvp.Key.HitMaterial));
                 }
             }
 
@@ -583,12 +639,12 @@ namespace CommonCore.World
 
             //sentinel: we didn't hit anything
             if (closestHit.distance == float.MaxValue)
-                return new HitInfo(null, null, default, default, default);
+                return default;
 
             //try to find an actor hitbox
             var actorHitbox = closestHit.collider.GetComponent<IHitboxComponent>();
             if (actorHitbox != null)
-                return new HitInfo(actorHitbox.ParentController, actorHitbox, closestHit.point, actorHitbox.HitLocationOverride, actorHitbox.HitMaterial);
+                return new HitInfo(actorHitbox.ParentController, actorHitbox, closestHit.collider, closestHit.point, actorHitbox.HitLocationOverride, actorHitbox.HitMaterial);
 
             //try to find a basecontroller
             var otherController = closestHit.collider.GetComponent<BaseController>();
@@ -602,11 +658,11 @@ namespace CommonCore.World
                 {
                     var specificActorHitbox = hit.collider.GetComponent<IHitboxComponent>();
                     if (specificActorHitbox != null && specificActorHitbox.ParentController == otherController)
-                        return new HitInfo(otherController, specificActorHitbox, hit.point, specificActorHitbox.HitLocationOverride, specificActorHitbox.HitMaterial);
+                        return new HitInfo(otherController, specificActorHitbox, hit.collider, hit.point, specificActorHitbox.HitLocationOverride, specificActorHitbox.HitMaterial);
                 }
             }
 
-            return new HitInfo(otherController, null, closestHit.point, 0, otherController?.HitMaterial ?? 0);
+            return new HitInfo(otherController, null, closestHit.collider, closestHit.point, 0, otherController?.HitMaterial ?? 0);
         }
 
 

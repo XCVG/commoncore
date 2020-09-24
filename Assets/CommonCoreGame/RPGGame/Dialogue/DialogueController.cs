@@ -172,7 +172,7 @@ namespace CommonCore.RpgGame.Dialogue
                             FaceImage.rectTransform.sizeDelta = FaceImage.canvas.pixelRect.size;
                             break;
                         case FrameImagePosition.Character:
-                            FaceImage.rectTransform.localPosition = new Vector3(0, 100, 0);
+                            FaceImage.rectTransform.localPosition = new Vector3(0, GameParams.DialogueDrawPortraitHigh ? 140 : 100, 0);
                             FaceImage.rectTransform.sizeDelta = new Vector2(spriteX, spriteY);
                             break;
                         default:

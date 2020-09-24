@@ -54,6 +54,10 @@ namespace CommonCore.RpgGame.World
         {
             FindComponents();
 
+            if(ActorController.ChaseOptimalDistance > 0 && ActorController.ChaseOptimalDistance < AttackRange)
+            {
+                Debug.LogWarning($"[ActorAttackComponent] {ActorController.gameObject.name} has ChaseOptimalDistance set to less than attack range and will never be able to attack!");
+            }
             
         }
 
@@ -207,7 +211,7 @@ namespace CommonCore.RpgGame.World
             }
 
             //show the effect, if applicable            
-            if (AttackEffectPrefab != null)
+            if (!string.IsNullOrEmpty(AttackEffectPrefab))
             {
                 WorldUtils.SpawnEffect(AttackEffectPrefab, shootPos, Vector3.zero, ParentAttackEffect ? (ShootPoint == null ? transform : ShootPoint) : null);
                 //Instantiate(AttackEffectPrefab, shootPos, Quaternion.identity, (ShootPoint == null ? transform : ShootPoint));

@@ -60,14 +60,16 @@ namespace CommonCore.World
     {
         public readonly BaseController Controller;
         public readonly IHitboxComponent Hitbox;
+        public readonly Collider HitCollider;
         public readonly Vector3 HitPoint;
         public readonly int HitLocation;
         public readonly int HitMaterial;
 
-        public HitInfo(BaseController controller, IHitboxComponent hitbox, Vector3 hitPoint, int hitLocation, int hitMaterial)
+        public HitInfo(BaseController controller, IHitboxComponent hitbox, Collider hitCollider, Vector3 hitPoint, int hitLocation, int hitMaterial)
         {
             Controller = controller;
             Hitbox = hitbox;
+            HitCollider = hitCollider;
             HitPoint = hitPoint;
             HitLocation = hitLocation;
             HitMaterial = hitMaterial;

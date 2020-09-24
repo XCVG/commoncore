@@ -105,7 +105,7 @@ namespace CommonCore.State
             StringBuilder sb = new StringBuilder(Vars.Count * 32);
             foreach(var kvp in Vars)
             {
-                sb.AppendFormat("{0}: {1}\n", kvp.Key, kvp.Value);
+                sb.AppendFormat("{0}: {1} ({2})\n", kvp.Key, kvp.Value, kvp.Value.Ref()?.GetType().Name ?? "null");
             }
             return sb.ToString();
         }

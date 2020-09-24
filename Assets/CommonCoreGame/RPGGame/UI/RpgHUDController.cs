@@ -40,6 +40,8 @@ namespace CommonCore.RpgGame.UI
 
         [Header("Misc")]
         public Canvas Canvas;
+        public GameObject HudRoot;
+        public GameObject SubtitlesRoot;
         public Image Crosshair;
         public Image HitIndicator;
         public Image DamageFadeOverlay;
@@ -616,15 +618,28 @@ namespace CommonCore.RpgGame.UI
 
         private void UpdateVisibility()
         {
+            //TODO handle HideHud but also HideSubtitles
+
             if(GameState.Instance.PlayerFlags.Contains(PlayerFlags.HideHud))
             {
-                if (Canvas.enabled)
-                    Canvas.enabled = false;
+                if (HudRoot.activeSelf)
+                    HudRoot.SetActive(false);
             }
             else
             {
-                if (!Canvas.enabled)
-                    Canvas.enabled = true;
+                if (!HudRoot.activeSelf)
+                    HudRoot.SetActive(true);
+            }
+
+            if (GameState.Instance.PlayerFlags.Contains(PlayerFlags.HideSubtitles))
+            {
+                if (SubtitlesRoot.activeSelf)
+                    SubtitlesRoot.SetActive(false);
+            }
+            else
+            {
+                if (!SubtitlesRoot.activeSelf)
+                    SubtitlesRoot.SetActive(true);
             }
         }
 

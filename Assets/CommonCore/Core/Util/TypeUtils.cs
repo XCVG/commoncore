@@ -158,7 +158,7 @@ namespace CommonCore
                 {
                     ParameterInfo pi = mi.GetParameters().FirstOrDefault();
                     return pi != null && pi.ParameterType == fromType;
-                })?.First();
+                })?.FirstOrDefault();
 
             if(conversionMethod == null)
             {
@@ -168,7 +168,7 @@ namespace CommonCore
                 {
                     ParameterInfo pi = mi.GetParameters().FirstOrDefault();
                     return pi != null && pi.ParameterType == fromType;
-                })?.First();
+                })?.FirstOrDefault();
             }
 
             return conversionMethod;
@@ -430,9 +430,12 @@ namespace CommonCore
             if (segments.Length >= 4)
                 revision = parseSingleSegment(segments[3]);
 
-            if (revision > 0)
+            if (minor < 0)
+                minor = 0;
+
+            if (revision >= 0)
                 return new Version(major, minor, build, revision);
-            else if (build > 0)
+            else if (build >= 0)
                 return new Version(major, minor, build);
             else
                 return new Version(major, minor);
@@ -440,7 +443,7 @@ namespace CommonCore
             int parseSingleSegment(string segment)
             {
                 if (string.IsNullOrEmpty(segment))
-                    return 0;
+                    return -1;
 
                 return int.Parse(segment);
             }

@@ -18,8 +18,7 @@ namespace CommonCore.World
 
         public virtual void Start()
         {
-            if (TooltipSprite == null)
-                TooltipSprite = CoreUtils.LoadResource<Sprite>("TouchUI/TUI_UseGeneric");
+            
         }
 
         public abstract void OnActivate(GameObject activator);

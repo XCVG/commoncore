@@ -143,6 +143,7 @@ namespace CommonCore.RpgGame.Rpg
         public readonly float Weight;
         public readonly float Value;
         public readonly float MaxCondition;
+        public readonly int MaxQuantity;
         public readonly bool Hidden;
         public readonly bool Essential;
         public readonly string WorldModel;
@@ -153,12 +154,13 @@ namespace CommonCore.RpgGame.Rpg
 
         public bool Stackable { get; protected set; }
 
-        public InventoryItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags, string worldModel)
+        public InventoryItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, string worldModel)
         {
             Name = name;
             Weight = weight;
             Value = value;
             MaxCondition = maxCondition;
+            MaxQuantity = maxQuantity;
             Hidden = hidden;
             Essential = essential;
             Stackable = false;
@@ -186,8 +188,8 @@ namespace CommonCore.RpgGame.Rpg
 
     public class MiscItemModel : InventoryItemModel
     {
-        public MiscItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags, string worldModel)
-            : base(name, weight, value, maxCondition, hidden, essential, flags, worldModel)
+        public MiscItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, string worldModel)
+            : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, worldModel)
         {
         }
 
@@ -211,10 +213,10 @@ namespace CommonCore.RpgGame.Rpg
         public readonly float LowerTime;
         public readonly float RaiseTime;
 
-        public WeaponItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags,
+        public WeaponItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags,
             float damage, float damagePierce, float damageSpread, float damagePierceSpread,
             DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType, string viewModel, string worldModel, string hitPuff, float lowerTime, float raiseTime)
-            : base(name, weight, value, maxCondition, hidden, essential, flags, worldModel)
+            : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, worldModel)
         {
             Damage = damage;
             DamagePierce = damagePierce;
@@ -266,11 +268,11 @@ namespace CommonCore.RpgGame.Rpg
         public readonly float Rate;
         public readonly float EnergyCost;
 
-        public MeleeWeaponItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags,
+        public MeleeWeaponItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags,
             float damage, float damagePierce, float damageSpread, float damagePierceSpread,
             float reach, float rate, float energyCost, DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType,
             string viewModel, string worldModel, string hitPuff, float lowerTime, float raiseTime) 
-            : base(name, weight, value, maxCondition, hidden, essential, flags, damage, damagePierce, damageSpread, damagePierceSpread, dType, dEffector, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
+            : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, damage, damagePierce, damageSpread, damagePierceSpread, dType, dEffector, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
         {
             Reach = reach;
             Rate = rate;
@@ -313,14 +315,14 @@ namespace CommonCore.RpgGame.Rpg
         public readonly string Projectile;
 
         //it looks like JSON.net is actually using these constructors and the naming of the parameters matters, which is somewhat terrifying
-        public RangedWeaponItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags,
+        public RangedWeaponItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags,
             float damage, float damagePierce, float damageSpread, float damagePierceSpread, float projectileVelocity,
             RangeEnvelope recoil, RangeEnvelope spread, RangeEnvelope adsRecoil, RangeEnvelope adsSpread,
             PulseEnvelope recoilImpulse, PulseEnvelope adsRecoilImpulse,
             float movementSpreadFactor, float movementRecoveryFactor, float crouchSpreadFactor, float crouchRecoveryFactor,
             float fireInterval, int numProjectiles, int magazineSize, float reloadTime,
             AmmoType aType, DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType, string viewModel, string worldModel, string hitPuff, string projectile, float adsZoomFactor, float lowerTime, float raiseTime)
-            : base(name, weight, value, maxCondition, hidden, essential, flags, damage, damagePierce, damageSpread, damagePierceSpread, dType, dEffector, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
+            : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, damage, damagePierce, damageSpread, damagePierceSpread, dType, dEffector, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
         {
             ProjectileVelocity = projectileVelocity;
 
@@ -365,9 +367,9 @@ namespace CommonCore.RpgGame.Rpg
         public readonly ShieldParams Shields;
         public readonly EquipSlot Slot;
 
-        public ArmorItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags, string worldModel,
+        public ArmorItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, string worldModel,
             Dictionary<DamageType, float> damageResistance, Dictionary<DamageType, float> damageThreshold, ShieldParams shields, EquipSlot slot)
-            : base(name, weight, value, maxCondition, hidden, essential, flags, worldModel)
+            : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, worldModel)
         {
             DamageResistance = new Dictionary<DamageType, float>(damageResistance);
             DamageThreshold = new Dictionary<DamageType, float>(damageThreshold);
@@ -402,9 +404,9 @@ namespace CommonCore.RpgGame.Rpg
         public float Amount;
         //TODO conditions, exec script on use, etc
 
-        public AidItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags, string worldModel,
+        public AidItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, string worldModel,
             AidType aType, RestoreType rType, float amount)
-            : base(name, weight, value, maxCondition, hidden, essential, flags, worldModel)
+            : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, worldModel)
         {
             AType = aType;
             RType = rType;
@@ -451,8 +453,8 @@ namespace CommonCore.RpgGame.Rpg
     {
         public readonly MoneyType Type;
 
-        public MoneyItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags, string worldModel, MoneyType type) :
-            base(name, weight, value, maxCondition, hidden, essential, flags, worldModel)
+        public MoneyItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, string worldModel, MoneyType type) :
+            base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, worldModel)
         {
             Type = type;
             Stackable = true;
@@ -468,8 +470,8 @@ namespace CommonCore.RpgGame.Rpg
     {
         public readonly AmmoType Type;
 
-        public AmmoItemModel(string name, float weight, float value, float maxCondition, bool hidden, bool essential, string[] flags, string worldModel, AmmoType type) :
-            base(name, weight, value, maxCondition, hidden, essential, flags, worldModel)
+        public AmmoItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, string worldModel, AmmoType type) :
+            base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, worldModel)
         {
             Type = type;
             Stackable = true;

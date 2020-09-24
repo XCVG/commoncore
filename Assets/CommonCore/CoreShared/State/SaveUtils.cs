@@ -153,11 +153,20 @@ namespace CommonCore.State
         /// <summary>
         /// Creates a quicksave, if allowed to do so, displaying an indicator and suppressing exceptions
         /// </summary>
+        /// <remarks>Defaults to commit=true</remarks>
         public static void DoQuickSave()
+        {
+            DoQuickSave(true);
+        }
+
+        /// <summary>
+        /// Creates a quicksave, if allowed to do so, displaying an indicator and suppressing exceptions
+        /// </summary>
+        public static void DoQuickSave(bool commit)
         {
             try
             {
-                DoQuickSaveEx(false);
+                DoQuickSaveEx(commit, false);
                 ShowSaveIndicator(SaveStatus.Success);
             }
             catch (Exception e)
@@ -180,7 +189,7 @@ namespace CommonCore.State
         /// Creates a quicksave
         /// </summary>
         /// <remarks>Note that this does not display the indicator and can throw exceptions</remarks>
-        public static void DoQuickSaveEx(bool force)
+        public static void DoQuickSaveEx(bool commit, bool force)
         {
 
             if (!CoreParams.AllowSaveLoad)
@@ -271,11 +280,20 @@ namespace CommonCore.State
         /// <summary>
         /// Creates an autosave, if allowed to do so, displaying an indicator and suppressing exceptions
         /// </summary>
+        /// <remarks>Defaults to commit=false</remarks>
         public static void DoAutoSave()
+        {
+            DoAutoSave(false);
+        }
+
+        /// <summary>
+        /// Creates an autosave, if allowed to do so, displaying an indicator and suppressing exceptions
+        /// </summary>
+        public static void DoAutoSave(bool commit)
         {
             try
             {
-                DoAutoSaveEx(false);
+                DoAutoSaveEx(commit, false);
 
                 ShowSaveIndicator(SaveStatus.Success);
 
@@ -300,7 +318,7 @@ namespace CommonCore.State
         /// Creates an autosave
         /// </summary>
         /// <remarks>Note that this does not display the indicator and can throw exceptions</remarks>
-        public static void DoAutoSaveEx(bool force)
+        public static void DoAutoSaveEx(bool commit, bool force)
         {
             if (!CoreParams.AllowSaveLoad)
             {
@@ -347,7 +365,7 @@ namespace CommonCore.State
 
             //save this autosave
             string newSaveName = $"a_{campaignId}_{highestSaveId + 1}.json";
-            SharedUtils.SaveGame(newSaveName, false, false);
+            SharedUtils.SaveGame(newSaveName, commit, false);
 
             //remove old autosaves
             //this I think is the broken part

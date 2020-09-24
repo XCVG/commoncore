@@ -58,7 +58,7 @@ namespace CommonCore.World
             var bulletScript = other.GetComponent<IDamageOnHit>();
             if (bulletScript != null)
             {
-                bulletScript.HandleCollision(ParentController, HitLocationOverride, HitMaterial, other.transform.position);
+                bulletScript.HandleCollision(ParentController, this, HitLocationOverride, HitMaterial, other.transform.position, DamageMultiplier, AllDamageIsPierce);
             }
         }
 
@@ -75,7 +75,7 @@ namespace CommonCore.World
                 else
                     hitLocation = collision.transform.position;
 
-                bulletScript.HandleCollision(ParentController, HitLocationOverride, HitMaterial, hitLocation);
+                bulletScript.HandleCollision(ParentController, this, HitLocationOverride, HitMaterial, hitLocation, DamageMultiplier, AllDamageIsPierce);
             }
         }
     }

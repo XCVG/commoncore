@@ -38,7 +38,7 @@ namespace CommonCore.UI
 
                 if (!string.IsNullOrEmpty(CoreParams.DefaultUITheme))
                 {
-                    if(Themes.TryGetValue(CoreParams.DefaultUITheme, out var defaultTheme))
+                    if (Themes.TryGetValue(CoreParams.DefaultUITheme, out var defaultTheme))
                     {
                         CurrentTheme = defaultTheme;
                         Log($"Using default theme \"{CoreParams.DefaultUITheme}\"");
@@ -101,8 +101,17 @@ namespace CommonCore.UI
         /// </summary>
         public void ApplyTheme(Transform element, UIThemeAsset theme)
         {
-            if (CoreParams.UIThemeMode == UIThemePolicy.Disabled || theme == null)
+            if (CoreParams.UIThemeMode == UIThemePolicy.Disabled)
+            {
+                LogWarning($"Can't apply theme to element because theme engine is disabled!");
                 return;
+            }
+
+            if (theme == null)
+            {
+                LogWarning($"Can't apply theme to element because theme is null!");
+                return;
+            }
 
             ThemeEngine.ApplyThemeToElement(element, theme);
         }
@@ -120,8 +129,17 @@ namespace CommonCore.UI
         /// </summary>
         public void ApplyThemeRecurse(Transform root, UIThemeAsset theme)
         {
-            if (CoreParams.UIThemeMode == UIThemePolicy.Disabled || theme == null)
+            if (CoreParams.UIThemeMode == UIThemePolicy.Disabled)
+            {
+                LogWarning($"Can't apply theme to element because theme engine is disabled!");
                 return;
+            }
+
+            if (theme == null)
+            {
+                LogWarning($"Can't apply theme to element because theme is null!");
+                return;
+            }
 
             ThemeEngine.ApplyThemeToAll(root, theme);
         }
@@ -168,12 +186,28 @@ namespace CommonCore.UI
 
             StringBuilder sb = new StringBuilder(32 * Themes.Count);
 
-            foreach(var name in Themes.Keys)
+            foreach (var name in Themes.Keys)
             {
                 sb.AppendLine(name);
             }
 
             return sb.ToString();
+        }
+
+        public IEnumerable<string> EnumerateThemeNames()
+        {
+            if (CoreParams.UIThemeMode == UIThemePolicy.Disabled)
+                throw new InvalidOperationException();
+
+            return Themes.Keys.ToArray();
+        }
+
+        public IEnumerable<UIThemeAsset> EnumerateThemes()
+        {
+            if (CoreParams.UIThemeMode == UIThemePolicy.Disabled)
+                throw new InvalidOperationException();
+
+            return Themes.Values.ToArray();
         }
 
         

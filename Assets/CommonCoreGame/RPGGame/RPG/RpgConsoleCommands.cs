@@ -161,7 +161,7 @@ namespace CommonCore.RpgGame.Rpg
         [Command(className = "Player")]
         static void ListItems()
         {
-            var items = GameState.Instance.PlayerRpgState.Inventory.GetItemsListActual();
+            var items = GameState.Instance.PlayerRpgState.Inventory.EnumerateItems();
             foreach(var item in items)
             {
                 ConsoleModule.WriteLine(item.ToString());

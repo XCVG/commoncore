@@ -18,6 +18,7 @@ namespace CommonCore
         public static bool UseDialoguePositionInheritance { get; private set; } = true; //Katana does not inherit the position property from the dialogue scene
         public static bool DialogueDefaultToThisScene { get; private set; } = true; //if set, non-fully-qualified scene.frame paths will be interpreted as this.* rather than *.default (latter is Katana style)
         public static bool DialogueAlwaysExecuteFrameMicroscript { get; private set; } = true; //if set, will always execute the top-level microscript of a frame even on choice frames
+        public static bool DialogueDrawPortraitHigh { get; private set; } = true; //if set, will draw portrait images fully above rather than above/behind dialogue panel
         public static bool DialogueVerboseLogging { get; private set; } = false;
 
         public static bool UseCustomLeveling { get; private set; } = true;

@@ -7,6 +7,6 @@ namespace CommonCore.World
     /// </summary>
     interface IDamageOnHit
     {
-        void HandleCollision(BaseController hitObjectController, int hitLocation, int hitMaterial, Vector3? hitCoords); //will be called by the hitbox component
+        void HandleCollision(BaseController hitObjectController, IHitboxComponent hitbox, int hitLocation, int hitMaterial, Vector3? hitCoords, float damageMultiplier, bool allDamageIsPierce);
     }
 }

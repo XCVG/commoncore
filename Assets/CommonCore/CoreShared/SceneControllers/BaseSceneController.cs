@@ -25,9 +25,9 @@ namespace CommonCore
 
         public string HudOverride = null;
 
-        public static BaseSceneController Current { get; protected set; }
+        public static BaseSceneController Current { get; protected set; } //not redundant; the utility methods actually use this if possible
 
-        public Dictionary<string, System.Object> LocalStore { get; protected set; }
+        public Dictionary<string, object> LocalStore { get; protected set; } = new Dictionary<string, object>();
 
         protected QdmsMessageInterface MessageInterface;
 
@@ -89,7 +89,7 @@ namespace CommonCore
             if (!DeferAfterSceneLoadToSubclass)
                 ScriptingModule.CallHooked(ScriptHook.AfterSceneLoad, this);
 
-            if (!DeferEnterAutosaveToSubclass && AutosaveOnEnter)
+            if (!DeferEnterAutosaveToSubclass && AutosaveOnEnter && MetaState.Instance.TransitionType != SceneTransitionType.LoadGame)
                 SaveUtils.DoAutoSave();
         }
 

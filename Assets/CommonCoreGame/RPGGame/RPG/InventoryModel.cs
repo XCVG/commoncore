@@ -56,14 +56,14 @@ namespace CommonCore.RpgGame.Rpg
                 CDebug.LogEx("Autocreating item models!", LogLevel.Verbose, null);
                 foreach (AmmoType at in Enum.GetValues(typeof(AmmoType)))
                 {
-                    AmmoItemModel aim = new AmmoItemModel(at.ToString(), 0, 1, 1, false, false, null, null, at);
+                    AmmoItemModel aim = new AmmoItemModel(at.ToString(), 0, 1, 1, 0, false, false, null, null, at);
                     Models.Add(at.ToString(), aim);
                     LoadItemCount++;
                 }
                 
                 foreach(MoneyType mt in Enum.GetValues(typeof(MoneyType)))
                 {
-                    MoneyItemModel mim = new MoneyItemModel(mt.ToString(), 0, 1, 1, false, false, null, null, mt);
+                    MoneyItemModel mim = new MoneyItemModel(mt.ToString(), 0, 1, 1, 0, false, false, null, null, mt);
                     Models.Add(mt.ToString(), mim);
                     LoadItemCount++;
                 }
@@ -193,8 +193,8 @@ namespace CommonCore.RpgGame.Rpg
                 return EquipSlot.RightWeapon;
             else if (item is MeleeWeaponItemModel)
                 return EquipSlot.RightWeapon;
-            else if (item is ArmorItemModel)
-                return EquipSlot.Body;
+            else if (item is ArmorItemModel aim)
+                return aim.Slot;
             else
                 return EquipSlot.None;
         }
@@ -226,6 +226,11 @@ namespace CommonCore.RpgGame.Rpg
             return Items;
         }
 
+        public IEnumerable<InventoryItemInstance> EnumerateItems()
+        {
+            return GetItemsListActual();
+        }
+
         //like the old deprecated GetItem but better defined
         //finds all instances of a specified item model in this inventory
         public InventoryItemInstance[] FindItem(string item)
@@ -239,6 +244,20 @@ namespace CommonCore.RpgGame.Rpg
             }
 
             return items.ToArray();
+        }
+
+        private InventoryItemInstance FindFirstItem(string item)
+        {
+            InventoryItemInstance instance = null;
+            foreach (InventoryItemInstance i in Items)
+            {
+                if (i.ItemModel.Name == item)
+                {
+                    instance = i;
+                    break;
+                }
+            }
+            return instance;
         }
 
         public bool RemoveItem(InventoryItemInstance item)
@@ -355,36 +374,123 @@ namespace CommonCore.RpgGame.Rpg
             return foundModel;
         }
 
+        /// <summary>
+        /// Adds a stacked item up to the quantity limit.
+        /// </summary>
+        /// <remarks>
+        /// <para>Will create or return a new item instance and modify the one passed in</para>
+        /// </remarks>
+        /// <returns>The instance of the item actually in the inventory</returns>
+        public InventoryItemInstance AddItemsToQuantityLimit(InventoryItemInstance item)
+        {
+            if(!item.ItemModel.Stackable)
+            {
+                throw new InvalidOperationException("Stackable items cannot be added with this API, use AddItemIfPossible instead!");
+            }
+
+            InventoryItemInstance instance = FindFirstItem(item.ItemModel.Name);
+            if (instance == null)
+            {
+                instance = new InventoryItemInstance(item.ItemModel);
+                Items.Add(instance);
+                instance.Quantity = Math.Min(item.Quantity, item.ItemModel.MaxQuantity);
+
+                int quantityRemaining = item.Quantity - instance.Quantity;
+                item.Quantity = quantityRemaining;
+            }
+            else
+            {
+                int quantityToAdd = Math.Min(item.Quantity, item.ItemModel.MaxQuantity - instance.Quantity);
+                instance.Quantity += quantityToAdd;
+                int quantityRemaining = item.Quantity - quantityToAdd;
+                item.Quantity = quantityRemaining;
+            }
+
+            return instance;
+
+        }
+
+        /// <summary>
+        /// Adds a non-stackable item if it is possible to do so while respecting quantity limits
+        /// </summary>
+        public bool AddItemIfPossible(InventoryItemInstance item)
+        {
+            if (item.ItemModel.Stackable)
+            {
+                throw new InvalidOperationException("Stackable items cannot be added with this API, use AddItemsToQuantityLimit instead!");                
+            }
+
+            if (item.ItemModel.MaxQuantity <= 0)
+            {
+                AddItem(item);
+                return true;
+            }
+
+            int numItem = CountItem(item.ItemModel.Name);
+            if(numItem < item.ItemModel.MaxQuantity)
+            {
+                AddItem(item);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Adds an item up to the quantity limit.
+        /// </summary>
+        /// <returns>The quantity remaining after adding the item</returns>
+        public int AddItemsToQuantityLimit(string item, int quantity)
+        {
+            AddItem(item, quantity, true, out var quantityRemaining);
+            return quantityRemaining;
+        }
+
+        /// <summary>
+        /// Adds item directly. Does not enforce stacking or quantity limits.
+        /// </summary>
         public void AddItem(InventoryItemInstance item)
         {
             Items.Add(item);
         }
 
+        /// <summary>
+        /// Adds a quantity of an item, stacking but not enforcing quantity limits
+        /// </summary>
         public void AddItem(string item, int quantity)
         {
+            AddItem(item, quantity, false, out _);
+
+        }
+
+        private void AddItem(string item, int quantity, bool enforceQuantityLimit, out int quantityRemaining)
+        {
+            quantityRemaining = 0;
+
             if (quantity <= 0)
                 return;
 
             InventoryItemModel mdl = Models[item];
 
-            if(mdl.Stackable)
+            enforceQuantityLimit &= mdl.MaxQuantity > 0;
+
+            if(enforceQuantityLimit)
             {
-                InventoryItemInstance instance = null;
-                foreach(InventoryItemInstance i in Items)
-                {
-                    if(i.ItemModel.Name == mdl.Name)
-                    {
-                        instance = i;
-                        break;
-                    }
-                }
-                if(instance == null)
+                int quantityToAdd = Math.Min(quantity, mdl.MaxQuantity);
+                quantityRemaining = quantity - quantityToAdd;
+                quantity = quantityToAdd;
+            }
+
+            if (mdl.Stackable)
+            {
+                InventoryItemInstance instance = FindFirstItem(mdl.Name);
+                if (instance == null)
                 {
                     instance = new InventoryItemInstance(mdl);
                     Items.Add(instance);
                     instance.Quantity = 0;
                 }
-                
+
                 instance.Quantity += quantity;
             }
             else
@@ -394,7 +500,6 @@ namespace CommonCore.RpgGame.Rpg
                     Items.Add(new InventoryItemInstance(mdl));
                 }
             }
-
         }
 
     }

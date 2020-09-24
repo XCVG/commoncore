@@ -232,6 +232,17 @@ namespace CommonCore.RpgGame.Rpg
             QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgChangeWeapon", "Slot", slot));
         }
 
+        public InventoryItemInstance UnequipItem(EquipSlot slot)
+        {
+            if (slot != EquipSlot.None && Equipped.TryGetValue(slot, out var item) && item != null)
+            {
+                UnequipItem(item);
+                return item;
+            }
+
+            return null;
+        }
+
         public void UnequipItem(InventoryItemInstance item)
         {
             UnequipItem(item, true);
@@ -294,6 +305,10 @@ namespace CommonCore.RpgGame.Rpg
 
                     if (!propagate.HasValue)
                         UpdateStats();
+                }
+                else if(firstPart == "ExtraData")
+                {
+                    ExtraData[secondPart] = value;
                 }
             }
             else
@@ -358,6 +373,13 @@ namespace CommonCore.RpgGame.Rpg
                     if (!propagate.HasValue)
                         UpdateStats();
                 }
+                else if (firstPart == "ExtraData")
+                {
+                    if (ExtraData.ContainsKey(secondPart))
+                        ExtraData[secondPart] = TypeUtils.AddValuesDynamic(ExtraData[secondPart], value, true);
+                    else
+                        ExtraData[secondPart] = value;
+                }
             }
             else
             {
@@ -414,6 +436,10 @@ namespace CommonCore.RpgGame.Rpg
                     }
 
                     return found;
+                }
+                else if (firstPart == "ExtraData")
+                {
+                    return ExtraData[secondPart];
                 }
             }
             else

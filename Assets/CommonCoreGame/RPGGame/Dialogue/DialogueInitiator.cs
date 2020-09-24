@@ -21,7 +21,7 @@ namespace CommonCore.RpgGame.Dialogue
             DialogueController.CurrentDialogue = dialogue;
             DialogueController.CurrentCallback = callback;
             var prefab = CoreUtils.LoadResource<GameObject>("UI/DialogueSystem");
-            var go = GameObject.Instantiate<GameObject>(prefab, CoreUtils.GetWorldRoot());
+            var go = GameObject.Instantiate<GameObject>(prefab, CoreUtils.GetUIRoot());
             if (pause)
                 LockPauseModule.PauseGame(PauseLockType.All, go);
 

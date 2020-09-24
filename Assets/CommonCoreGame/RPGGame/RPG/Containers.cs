@@ -13,6 +13,10 @@ namespace CommonCore.RpgGame.Rpg
 
         [JsonProperty]
         private List<InventoryItemInstance> Items;
+        [JsonProperty]
+        public bool EnforceQuantityLimits { get; set; } //note this enforces quantity limits _on the player_, not on the container
+        [JsonProperty]
+        public bool TakeOnly { get; set; }
 
         public ContainerModel()
         {
@@ -233,10 +237,14 @@ namespace CommonCore.RpgGame.Rpg
     public class SerializableContainerModel
     {
         public SerializableItemInstance[] Items;
+        public bool EnforceQuantityLimits;
+        public bool TakeOnly;
 
         public static ContainerModel MakeContainerModel(SerializableContainerModel sContainerModel)
         {
             ContainerModel rContainerModel = new ContainerModel();
+            rContainerModel.EnforceQuantityLimits = sContainerModel.EnforceQuantityLimits;
+            rContainerModel.TakeOnly = sContainerModel.TakeOnly;
 
             foreach(SerializableItemInstance sItemInstance in sContainerModel.Items)
             {
@@ -264,6 +272,8 @@ namespace CommonCore.RpgGame.Rpg
             }
             var sContainerModel = new SerializableContainerModel();
             sContainerModel.Items = sItems;
+            sContainerModel.EnforceQuantityLimits = rContainerModel.EnforceQuantityLimits;
+            sContainerModel.TakeOnly = rContainerModel.TakeOnly;
             return sContainerModel;
         }
     }

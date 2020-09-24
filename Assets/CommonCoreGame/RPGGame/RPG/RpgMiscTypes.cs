@@ -35,7 +35,7 @@ namespace CommonCore.RpgGame.Rpg
 
     public enum PlayerFlags
     {
-        Invulnerable, Immortal, NoTarget, NoFallDamage, NoClip, NoInteract, NoAttack, NoWeapons, NoPhysics, Frozen, TotallyFrozen, HideHud, Invisible, NoDropItems
+        Invulnerable, Immortal, NoTarget, NoFallDamage, NoClip, NoInteract, NoAttack, NoWeapons, NoPhysics, Frozen, TotallyFrozen, HideHud, HideSubtitles, Invisible, NoDropItems, NoJump
     }
 
     //mostly game dependent

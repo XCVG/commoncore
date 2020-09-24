@@ -1,8 +1,10 @@
 ﻿using CommonCore.Messaging;
 using CommonCore.World;
+using CommonCore.ObjectActions;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace CommonCore.World
 {
@@ -14,22 +16,34 @@ namespace CommonCore.World
         //TODO clean this up a bit
 
         private const float DefaultProbeDist = 10f;
-        private const int BulletLayer = 9; //9=bullet, TODO find a better way of doing this
+        //private const int BulletLayer = 9; //9=bullet, TODO find a better way of doing this
 
+        [Header("Mechanics")]
         public ActorHitInfo HitInfo;
-        public float StayTime = 0;
-        public float MaxDist = 10000f;
-        public float FakeGravity = 0;
-
+        public string HitPuffOverride;
+        public ActionSpecialEvent HitSpecial;
         public bool FiredByPlayer = false;
+
+        [Header("Dynamics")]
+        public float StayTime = 0;
+        [FormerlySerializedAs("MaxDist"), Tooltip("Maximum distance from world origin")]
+        public float MaxDistFromOrigin = 10000f;
+        public float MaxDistToTravel = 0;
+        public float FakeGravity = 0;
+        public Vector3 Origin;       
+        public bool EnableRaycasting = true;
+        public bool EnableCollision = true;
 
         private Rigidbody Rigidbody;
         private float Elapsed;
 
+
         void Start()
         {
-            gameObject.layer = BulletLayer;
+            gameObject.layer = LayerMask.NameToLayer("Bullet");
             Rigidbody = GetComponent<Rigidbody>();
+
+            Origin = transform.position;
 
             Update(); //seems legit
         }
@@ -41,6 +55,8 @@ namespace CommonCore.World
             {
                 Rigidbody.AddForce(Physics.gravity * FakeGravity * Time.fixedDeltaTime, ForceMode.Acceleration);
             }
+
+            
         }
 
         private void Update()
@@ -57,46 +73,72 @@ namespace CommonCore.World
                 }
             }
 
-            if (transform.position.magnitude > MaxDist)
+            //distance travel check
+            if(MaxDistToTravel > 0)
+            {
+                float distance = (Origin - transform.position).magnitude;
+                if(distance > MaxDistToTravel)
+                {
+                    Destroy(this.gameObject);
+                }
+            }
+
+            if (MaxDistFromOrigin >= 0 && transform.position.magnitude > MaxDistFromOrigin)
             {
                 //Debug.Log($"Destroying {name} because it's really far away");
                 Destroy(this.gameObject);
             }
 
-            //raycast
-            bool hasRigidbody = Rigidbody != null;
-            Vector3 forward = hasRigidbody ? Rigidbody.velocity.normalized : transform.forward;
-            float maxDistance = hasRigidbody ? Rigidbody.velocity.magnitude / 30f : DefaultProbeDist;
-            //var hits = Physics.RaycastAll(transform.position, forward, maxDistance, RaycastLayerMask, QueryTriggerInteraction.Collide);
-
-            //find closest hit
-            //var (otherController, hitPoint, hitLocation, hitMaterial) = GetClosestHit(hits);
-            var hit = WorldUtils.RaycastAttackHit(transform.position, forward, maxDistance, true, true, null);
-
-            if (hit.Controller != null && hit.Controller != HitInfo.Originator)
+            if (EnableRaycasting)
             {
-                //Debug.Log("Bullet hit " + otherController.name + " via raycast!");
 
-                float damageMultiplier;
-                bool allDamageIsPierce;
-                if (hit.Hitbox != null)
-                {
-                    //Debug.Log((hit.Hitbox as MonoBehaviour)?.name);
-                    damageMultiplier = hit.Hitbox.DamageMultiplier;
-                    allDamageIsPierce = hit.Hitbox.AllDamageIsPierce;
-                }
-                else
-                {
-                    damageMultiplier = 1;
-                    allDamageIsPierce = false;
-                }
+                //raycast
+                bool hasRigidbody = Rigidbody != null;
+                Vector3 forward = hasRigidbody ? Rigidbody.velocity.normalized : transform.forward;
+                float maxDistance = hasRigidbody ? Rigidbody.velocity.magnitude / 30f : DefaultProbeDist;
+                //var hits = Physics.RaycastAll(transform.position, forward, maxDistance, RaycastLayerMask, QueryTriggerInteraction.Collide);
 
-                HandleCollision(hit.Controller, hit.HitLocation, hit.HitMaterial, hit.HitPoint, damageMultiplier, allDamageIsPierce);
+                //find closest hit
+                //var (otherController, hitPoint, hitLocation, hitMaterial) = GetClosestHit(hits);
+                var hit = WorldUtils.RaycastAttackHit(transform.position, forward, maxDistance, true, true, null);
+
+                if (hit.Controller != null && hit.Controller != HitInfo.Originator)
+                {
+                    //Debug.Log("Bullet hit " + hit.Controller.name + " via raycast!");
+
+                    float damageMultiplier;
+                    bool allDamageIsPierce;
+                    if (hit.Hitbox != null)
+                    {
+                        //Debug.Log((hit.Hitbox as MonoBehaviour)?.name);
+                        damageMultiplier = hit.Hitbox.DamageMultiplier;
+                        allDamageIsPierce = hit.Hitbox.AllDamageIsPierce;
+                    }
+                    else
+                    {
+                        damageMultiplier = 1;
+                        allDamageIsPierce = false;
+                    }
+
+                    HandleHit(hit.Controller, hit.Hitbox, hit.HitLocation, hit.HitMaterial, hit.HitPoint, damageMultiplier, allDamageIsPierce);
+                }
+                else if(hit.Controller == null && hit.HitCollider != null)
+                {
+                    var hitMaterial = hit.HitMaterial;
+                    var colliderHitMaterial = hit.HitCollider.gameObject.GetComponent<ColliderHitMaterial>();
+                    if (colliderHitMaterial != null)
+                        hitMaterial = colliderHitMaterial.Material;
+
+                    HandleHit(null, null, hit.HitLocation, hitMaterial, hit.HitPoint, 1, false);
+                }
             }
         }
 
         void OnCollisionEnter(Collision collision)
         {
+            if (!EnableCollision)
+                return;
+
             //Debug.Log("Bullet hit " + collision.transform.name);
 
             var ahc = collision.gameObject.GetComponent<IHitboxComponent>();
@@ -118,13 +160,19 @@ namespace CommonCore.World
             if (colliderHitMaterial != null)
                 hitMaterial = colliderHitMaterial.Material;
 
-            HandleCollision(otherController, 0, hitMaterial, null);
-        }
-        public void HandleCollision(BaseController otherController, int hitLocation, int hitmaterial, Vector3? positionOverride) => HandleCollision(otherController, hitLocation, hitmaterial, positionOverride, 1, false);
+            //Debug.Log($"Contact points: {collision.contactCount} | First contact point: {(collision.contactCount > 0 ? collision.GetContact(0).point.ToString("F2") : null)} ");
 
-        public void HandleCollision(BaseController otherController, int hitLocation, int hitmaterial, Vector3? positionOverride, float damageMultiplier, bool allDamageIsPierce)
+            Vector3? positionOverride = null;
+            if (collision.contactCount > 0)
+                positionOverride = collision.GetContact(0).point;
+
+            HandleHit(otherController, null, 0, hitMaterial, positionOverride, 1, false);
+        }
+        //public void HandleCollision(BaseController otherController, int hitLocation, int hitmaterial, Vector3? positionOverride) => HandleCollision(otherController, null, hitLocation, hitmaterial, positionOverride, 1, false);
+
+        private void HandleHit(BaseController otherController, IHitboxComponent hitbox, int hitLocation, int hitmaterial, Vector3? positionOverride, float damageMultiplier, bool allDamageIsPierce)
         {
-            //Debug.Log($"{name} hit {otherController?.name}");
+            //Debug.Log($"HandleHit called ({otherController})");
 
             if (gameObject == null)
                 return; //don't double it up
@@ -162,14 +210,37 @@ namespace CommonCore.World
             }
 
             if (HitInfo.HitCoords == null)
-                HitInfo.HitCoords = transform.position;
+            {
+                if (positionOverride == null)
+                    HitInfo.HitCoords = transform.position;
+                else
+                    HitInfo.HitCoords = positionOverride;
+                //Debug.Log($"HitCoords set to {HitInfo.HitCoords}");
+            }
 
             if (hitmaterial > 0)
                 HitInfo.HitMaterial = hitmaterial;
 
-            HitPuffScript.SpawnHitPuff(HitInfo);
+            if (!string.IsNullOrEmpty(HitPuffOverride))
+                HitPuffScript.SpawnHitPuff(HitPuffOverride, HitInfo.HitCoords.Value, HitInfo.HitMaterial);
+            else
+                HitPuffScript.SpawnHitPuff(HitInfo);
+
+            if (HitSpecial != null)
+                HitSpecial.Invoke(new ActionInvokerData() { Activator = HitInfo.Originator });
 
             Destroy(this.gameObject);
+        }
+
+        void IDamageOnHit.HandleCollision(BaseController otherController, IHitboxComponent hitbox, int hitLocation, int hitmaterial, Vector3? positionOverride, float damageMultiplier, bool allDamageIsPierce)
+        {
+            //Debug.Log($"{name} hit {otherController?.name}");
+
+            if (!EnableCollision)
+                return;
+
+            HandleHit(otherController, hitbox, hitLocation, hitmaterial, positionOverride, damageMultiplier, allDamageIsPierce);
+
         }
 
     }

@@ -139,6 +139,14 @@ namespace CommonCore.UI
             CoreUtils.Quit();
         }
 
+        public void CloseCurrentPanel()
+        {
+            if (CurrentPanel != null)
+                CurrentPanel.SetActive(false);
+
+            CurrentPanel = null;
+        }
+
         public void HandleCommandLineArgs()
         {
             

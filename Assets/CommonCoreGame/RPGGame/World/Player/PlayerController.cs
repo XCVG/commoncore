@@ -136,7 +136,7 @@ namespace CommonCore.RpgGame.World
 
             if(!HUDScript)
             {
-                HUDScript = (RpgHUDController)BaseHUDController.Current; //I would not recommend this cast
+                HUDScript = BaseHUDController.Current.Ref() as RpgHUDController;
             }
             
             if(!HUDScript && AutoinitHud)
@@ -145,7 +145,9 @@ namespace CommonCore.RpgGame.World
                 if (EventSystem.current == null)
                     Instantiate(CoreUtils.LoadResource<GameObject>("UI/DefaultEventSystem"));
 
-                HUDScript = (RpgHUDController)BaseHUDController.Current;
+                HUDScript = BaseHUDController.Current.Ref() as RpgHUDController;
+                if (HUDScript == null)
+                    Debug.LogError("[PlayerController] Failed to initialize HUD properly");
             }
 
             MessageInterface = new QdmsMessageInterface(gameObject);

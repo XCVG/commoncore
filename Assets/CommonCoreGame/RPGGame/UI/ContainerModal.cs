@@ -247,6 +247,11 @@ namespace CommonCore.RpgGame.UI
             else if (Selected == SelectedState.Inventory && IsShop)
                 transferButtonText.text = "Sell >";
 
+            if(Selected == SelectedState.Inventory && Container.TakeOnly)
+            {
+                TransferButton.interactable = false;
+            }
+
             if(IsShop && Selected == SelectedState.Container)
             {
                 int adjValue = RpgValues.AdjustedBuyPrice(GameState.Instance.PlayerRpgState, itemModel.Value);
@@ -271,7 +276,7 @@ namespace CommonCore.RpgGame.UI
         public void OnClickTransfer()
         {
             //immediate fail conditions
-            if(Selected == SelectedState.None || SelectedItem == null)
+            if(Selected == SelectedState.None || SelectedItem == null || (Selected == SelectedState.Inventory && Container.TakeOnly))
             {
                 return;
             }
@@ -346,15 +351,32 @@ namespace CommonCore.RpgGame.UI
             else if(Selected == SelectedState.Container)
             {
                 //transfer item to inventory
-                if (!SelectedItem.ItemModel.Stackable)
+                if (Container.EnforceQuantityLimits)
                 {
-                    Inventory.AddItem(SelectedItem);
-                    Container.TakeItem(SelectedItem);
+                    if (!SelectedItem.ItemModel.Stackable)
+                    {
+                        Inventory.AddItemsToQuantityLimit(SelectedItem);
+                        if(SelectedItem.Quantity == 0)
+                            Container.TakeItem(SelectedItem);
+                    }
+                    else
+                    {
+                        int remaining = Inventory.AddItemsToQuantityLimit(SelectedItem.ItemModel.Name, quantity);
+                        Container.TakeItem(SelectedItem, quantity - remaining);
+                    }
                 }
                 else
                 {
-                    Inventory.AddItem(SelectedItem.ItemModel.Name, quantity);
-                    Container.TakeItem(SelectedItem, quantity);
+                    if (!SelectedItem.ItemModel.Stackable)
+                    {
+                        Inventory.AddItem(SelectedItem);
+                        Container.TakeItem(SelectedItem);
+                    }
+                    else
+                    {
+                        Inventory.AddItem(SelectedItem.ItemModel.Name, quantity);
+                        Container.TakeItem(SelectedItem, quantity);
+                    }
                 }
             }
 
