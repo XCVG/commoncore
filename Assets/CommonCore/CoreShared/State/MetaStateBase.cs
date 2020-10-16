@@ -124,6 +124,21 @@ namespace CommonCore.State
             }
         }
 
+        public void IntentsRemoveInvalid()
+        {
+            int numRemoved = 0;
+            for (int i = Intents.Count - 1; i >= 0; i--)
+            {
+                if (!Intents[i].Valid)
+                {
+                    Intents.RemoveAt(i);
+                    numRemoved++;
+                }
+            }
+
+            Debug.Log($"Removed {numRemoved} invalidated intents");
+        }
+
         //Actual instance data (shared across game types)
 
         /// <summary>

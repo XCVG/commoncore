@@ -44,8 +44,10 @@ namespace CommonCore.World
             if(AutoRestore)
             {
                 MetaState.Instance.IntentsExecutePreload();
+                MetaState.Instance.IntentsRemoveInvalid();
                 Restore();
                 MetaState.Instance.IntentsExecutePostload();
+                MetaState.Instance.IntentsRemoveInvalid();
             }
 
             if (!string.IsNullOrEmpty(SetMusic))

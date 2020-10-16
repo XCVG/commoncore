@@ -589,7 +589,7 @@ namespace CommonCore.ResourceManagement
 
             throw new NotImplementedException();
 #else
-            var eftMethod = GetType().GetMethod("ExistsForType", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).MakeGenericMethod(type);
+            var eftMethod = GetType().GetMethod("ExploreForType", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).MakeGenericMethod(type); //should be ExistsForType?
             eftMethod.Invoke(this, null);
 
             var list = ResourceHandleLists[type];
@@ -724,7 +724,7 @@ namespace CommonCore.ResourceManagement
 
         protected ResourceHandle()
         {
-            HandleID = ResourceManager.NextResourceHandleID; // I don't like this backwards dependency but I don't hate it enough to remove it yet
+            HandleID = CCBase.ResourceManager.NextResourceHandleID; // I don't like this backwards dependency but I don't hate it enough to remove it yet
         }
     }
 
@@ -834,11 +834,6 @@ namespace CommonCore.ResourceManagement
 
     public class AssetBundleResourceHandle<T> : ResourceHandle<T> where T : UnityEngine.Object
     {
-        public override T Resource => throw new NotImplementedException();
-    }
-
-    public class StreamingResourceHandle<T> : ResourceHandle<T> where T : UnityEngine.Object
-    {
         public override T Resource
         {
             get
@@ -850,31 +845,98 @@ namespace CommonCore.ResourceManagement
             }
         }
 
-        public string Path { get; private set; } //path is relative to StreamingAssets
         private T _Resource;
 
-        public StreamingResourceHandle(string path): this(path, ResourcePriority.Streaming)
+        private AssetBundle AssetBundle;
+        private string AssetName;
+
+        public AssetBundleResourceHandle(T resource, string bundledName, AssetBundle bundle, ResourcePriority priority)
+        {
+            AssetBundle = bundle;
+            AssetName = bundledName;
+            _Resource = Resource;
+        }
+
+        public bool Load()
+        {
+            //_Resource = AssetBundle.LoadAsset<T>(AssetName);
+            _Resource = (T)ResourceManager.LoadAssetFromBundle(AssetName, AssetBundle);
+
+            return _Resource != null;
+        }
+
+        public async Task<bool> LoadAsync()
+        {
+            /*
+            var bundleLoadRequest = AssetBundle.LoadAssetAsync<T>(AssetName);
+
+            while (!bundleLoadRequest.isDone)
+                await Task.Yield();
+
+            _Resource = (T)bundleLoadRequest.asset;
+            */
+            _Resource = (T)await ResourceManager.LoadAssetFromBundleAsync(AssetName, AssetBundle);
+
+            return _Resource != null;
+        }
+    }
+
+    public class FileResourceHandle<T> : ResourceHandle<T> where T : UnityEngine.Object
+    {
+        //need to handle the possible case where assets _must_ be preloaded
+
+        public override T Resource
+        {
+            get
+            {
+                if (_Resource == null)
+                    Load();
+
+                return _Resource;
+            }
+        }
+
+        public string Path { get; private set; } //path is relative to StreamingAssets TODO fix this
+        //do we also need to know our logical path?
+        private T _Resource;
+
+        //initial import settings if applicable
+        private IResourceImporter Importer = null;
+
+        public FileResourceHandle(string path): this(path, ResourcePriority.Streaming)
         {
 
         }
 
-        public StreamingResourceHandle(string path, ResourcePriority priority)
+        public FileResourceHandle(string path, ResourcePriority priority)
         {
             Path = path;
             Priority = priority;
+        }
+
+        public FileResourceHandle(T resource, string path, ResourcePriority priority)
+        {
+            Path = path;
+            Priority = priority;
+            _Resource = resource;
+        }
+
+        public FileResourceHandle(T resource, string path, ResourcePriority priority, ResourceLoadContext initialLoadContext) : this(resource, path, priority)
+        {
+            Importer = initialLoadContext.ResourceImporter;
         }
 
         //should we reload or ignore if already loaded?
 
         public bool Load()
         {
-            _Resource = ResourceLoader.LoadFromFile<T>(System.IO.Path.Combine(CoreParams.StreamingAssetsPath, Path));
+            _Resource = (T)CCBase.ResourceManager.ResourceLoader.LoadTyped(Path, new ResourceLoadContext() { TargetPath = null, ResourceManager = CCBase.ResourceManager, ResourceLoader = CCBase.ResourceManager.ResourceLoader, AttemptingSyncLoad = true, ResourceImporter = Importer, ResourceType = typeof(T)}); //do we need to know our own target path?
             return _Resource != null;
         }
 
         public async Task<bool> LoadAsync()
         {
-            _Resource = await ResourceLoader.LoadFromFileAsync<T>(System.IO.Path.Combine(CoreParams.StreamingAssetsPath, Path));
+            _Resource = (T)await CCBase.ResourceManager.ResourceLoader.LoadTypedAsync(Path, new ResourceLoadContext() { TargetPath = null, ResourceManager = CCBase.ResourceManager, ResourceLoader = CCBase.ResourceManager.ResourceLoader, AttemptingSyncLoad = false, ResourceImporter = Importer, ResourceType = typeof(T) });
             return _Resource != null;
         }
     }

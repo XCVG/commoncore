@@ -13,6 +13,7 @@ namespace CommonCore
 
         //other lifecycle events
         public virtual void OnAllModulesLoaded() { }
+        public virtual void OnAddonLoaded(AddonLoadData data) { }
         public virtual void OnAllAddonsLoaded() { }
         public virtual void OnGameStart() { }
         public virtual void OnSceneLoaded() { }
@@ -82,4 +83,5 @@ namespace CommonCore
     {
 
     }
+
 }

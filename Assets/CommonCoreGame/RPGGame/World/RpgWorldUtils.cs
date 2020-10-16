@@ -42,6 +42,8 @@ namespace CommonCore.RpgGame.World
         public static void ChangeScene(string scene, string spawnPoint, Vector3 position, Vector3 rotation, bool skipLoading, string objectOverride)
         {
             //MetaState.Instance.LoadingScreenPropOverride = objectOverride;
+            if(!string.IsNullOrEmpty(objectOverride))
+                MetaState.Instance.Intents.Add(new LoadingScreenPropIntent(objectOverride));
             WorldUtils.ChangeScene(scene, spawnPoint, position, rotation, skipLoading);
         }
 

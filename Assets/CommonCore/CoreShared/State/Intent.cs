@@ -5,6 +5,8 @@ namespace CommonCore.State
     //Intents are created by one scene and executed on the next or on the loading screen
     public abstract class Intent
     {
+        public virtual bool Valid { get; protected set; } = true;
+
         public virtual void LoadingExecute() { }
 
         public virtual void PreloadExecute() { }

@@ -43,30 +43,50 @@ namespace CommonCore.RpgGame.Rpg
             try
             {
                 TextAsset ta = CoreUtils.LoadResource<TextAsset>("Data/RPGDefs/factions");
-                var newFactions = CoreUtils.LoadJson<Dictionary<string, Dictionary<string, FactionRelationStatus>>>(ta.text);
-
-                foreach(var row in newFactions)
-                {
-                    if(FactionTable.ContainsKey(row.Key))
-                    {
-                        var destRow = FactionTable[row.Key];
-                        foreach(var entry in row.Value)
-                        {
-                            destRow[entry.Key] = entry.Value;
-                        }
-                    }
-                    else
-                    {
-                        FactionTable.Add(row.Key, row.Value);
-                    }
-                }
+                LoadFactionDataFromAsset(ta);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debug.LogError("Failed to load faction defs!");
                 Debug.LogError(e);
             }
         }
+
+        internal static void LoadFromAddon(AddonLoadData data)
+        {
+            if(data.LoadedResources != null && data.LoadedResources.Count > 0)
+            {
+                if(data.LoadedResources.TryGetValue("Data/RPGDefs/factions", out var rh))
+                {
+                    if(rh.Resource is TextAsset ta)
+                    {
+                        LoadFactionDataFromAsset(ta);
+                        Debug.Log("Loaded faction data from addon!");
+                    }
+                }
+            }
+        }
+
+        private static void LoadFactionDataFromAsset(TextAsset ta)
+        {
+            var newFactions = CoreUtils.LoadJson<Dictionary<string, Dictionary<string, FactionRelationStatus>>>(ta.text);
+
+            foreach (var row in newFactions)
+            {
+                if (FactionTable.ContainsKey(row.Key))
+                {
+                    var destRow = FactionTable[row.Key];
+                    foreach (var entry in row.Value)
+                    {
+                        destRow[entry.Key] = entry.Value;
+                    }
+                }
+                else
+                {
+                    FactionTable.Add(row.Key, row.Value);
+                }
+            }
+        }        
 
         public static FactionRelationStatus GetRelation(string self, string target)
         {

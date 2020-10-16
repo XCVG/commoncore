@@ -50,6 +50,7 @@ namespace CommonCore
         private static Dictionary<Type, CCModule> ModulesByType;
 
         public static ResourceManager ResourceManager { get; private set; }
+        public static AddonManager AddonManager { get; private set; }
 
         /// <summary>
         /// Retrieves a loaded module specified by the type parameter
@@ -182,8 +183,9 @@ namespace CommonCore
             SetupModuleLookupTable();
             ExecuteAllModulesLoaded();
 
-            //mod loading will happen here
-            //ResourceManager.LoadStreamingAssets();
+            //mod loading can't happen synchronously
+            AddonManager.WarnIfUnsupported();
+            AddonManager.WarnOnSyncLoad();
             ExecuteAllAddonsLoaded();
 
             GC.Collect();
@@ -221,7 +223,9 @@ namespace CommonCore
                 ExecuteAllModulesLoaded();
 
                 //mod loading will happen here
-                //ResourceManager.LoadStreamingAssets();
+                AddonManager.WarnIfUnsupported();
+                await AddonManager.LoadStreamingAssetsAsync(ExecuteAddonLoaded);
+                await AddonManager.LoadAddonsAsync(ExecuteAddonLoaded);
                 ExecuteAllAddonsLoaded();
 
                 GC.Collect();
@@ -260,6 +264,7 @@ namespace CommonCore
             //TODO async?
             CoreUtils.ResourceManager = new LegacyResourceManager(); //TODO remove this
             ResourceManager = new ResourceManager();
+            AddonManager = new AddonManager();
         }
 
         private static void LoadGameTypes()
@@ -497,6 +502,22 @@ namespace CommonCore
                 catch(Exception e)
                 {
                     Debug.LogError($"[Core] Fatal error in module {m.GetType().Name} during {nameof(ExecuteAllModulesLoaded)}");
+                    Debug.LogException(e);
+                }
+            }
+        }
+
+        private static void ExecuteAddonLoaded(AddonLoadData data)
+        {
+            foreach (var m in Modules)
+            {
+                try
+                {
+                    m.OnAddonLoaded(data);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"[Core] Fatal error in module {m.GetType().Name} during {nameof(ExecuteAddonLoaded)}");
                     Debug.LogException(e);
                 }
             }

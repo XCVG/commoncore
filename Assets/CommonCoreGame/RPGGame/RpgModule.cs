@@ -23,13 +23,19 @@ namespace CommonCore.RpgGame
         {
             LoadGameParams();
 
-            LoadFactionModels();
-            LoadCharacterModels();
-            LoadInventoryModels();
-            LoadQuestModels();
+            FactionModel.Load();
+            InventoryModel.Load();
+            QuestModel.Load();
 
             //install gameplay config panel
             ConfigModule.Instance.RegisterConfigPanel("GameplayOptionsPanel", 500, CoreUtils.LoadResource<GameObject>("UI/GameplayOptionsPanel"));
+        }
+
+        public override void OnAddonLoaded(AddonLoadData data)
+        {
+            FactionModel.LoadFromAddon(data);
+            InventoryModel.LoadFromAddon(data);
+            QuestModel.LoadFromAddon(data);
         }
 
         private void LoadGameParams()
@@ -51,25 +57,6 @@ namespace CommonCore.RpgGame
             }
         }
 
-        private void LoadFactionModels()
-        {
-            FactionModel.Load();
-        }
-
-        private void LoadCharacterModels()
-        {
-            //TODO set this up
-        }
-
-        private void LoadInventoryModels()
-        {
-            InventoryModel.Load();           
-        }
-
-        private void LoadQuestModels()
-        {
-            QuestModel.Load();
-        }
 
     }
 }

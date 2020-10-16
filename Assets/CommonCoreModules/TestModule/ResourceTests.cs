@@ -97,7 +97,7 @@ namespace CommonCore.TestModule
                 var rtasset = new TextAsset("RUNTIME");
                 rtasset.name = "ResourceTest";
 
-                rm.AddRuntimeResource("Test/ResourceTest", rtasset, ResourcePriority.Explicit);
+                rm.AddResource("Test/ResourceTest", rtasset, ResourcePriority.Explicit);
 
                 string rstring = rm.GetResource<TextAsset>("Test/ResourceTest", false).text;
                 if (rstring == "RUNTIME")
@@ -182,7 +182,7 @@ namespace CommonCore.TestModule
             Texture2D injectedTex;
             {
                 injectedTex = new Texture2D(128, 128, TextureFormat.RGBA32, false);
-                rm.AddRuntimeResource("Modules/TestModule/TypeTest/texture", injectedTex, ResourcePriority.Explicit);
+                rm.AddResource("Modules/TestModule/TypeTest/texture", injectedTex, ResourcePriority.Explicit);
             }
 
             //test GetResource after inject (if we ask for Texture, we should get our injected Texture2D)
@@ -213,10 +213,10 @@ namespace CommonCore.TestModule
             //inject a Texture2D and a RenderTexture
             {
                 injectedTex2D = new Texture2D(128, 128, TextureFormat.RGBA32, false);
-                rm.AddRuntimeResource("Modules/TestModule/TypeTest/texture2", injectedTex2D, ResourcePriority.Explicit);
+                rm.AddResource("Modules/TestModule/TypeTest/texture2", injectedTex2D, ResourcePriority.Explicit);
 
                 injectedTexRender = new RenderTexture(64, 64, 16, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
-                rm.AddRuntimeResource("Modules/TestModule/TypeTest/texture2", injectedTexRender, ResourcePriority.Explicit);
+                rm.AddResource("Modules/TestModule/TypeTest/texture2", injectedTexRender, ResourcePriority.Explicit);
             }
 
             //test GetResourceVariants after inject (non exact type)
@@ -246,7 +246,7 @@ namespace CommonCore.TestModule
                 //not a great test but it'll do for now
 
                 var injectedTexRender2 = new RenderTexture(64, 64, 16, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
-                rm.AddRuntimeResource("Modules/TestModule/TypeTest/texture3", injectedTexRender2, ResourcePriority.Explicit);
+                rm.AddResource("Modules/TestModule/TypeTest/texture3", injectedTexRender2, ResourcePriority.Explicit);
 
                 Texture[] texArray = rm.GetResources<Texture>("Modules/TestModule/TypeTest", false);
 

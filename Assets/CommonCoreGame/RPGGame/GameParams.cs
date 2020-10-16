@@ -34,6 +34,7 @@ namespace CommonCore
         public static bool AutoQuestNotifications { get; private set; } = true;
 
         public static bool AllowItemDropOutsideWorldScene { get; private set; } = false;
+        public static bool AutocreateInventoryModels { get; private set; } = true; //if set, autocreates models for ammo and money
 
         public static bool ShowImpossibleSkillChecks { get; private set; } = true;
         public static bool AttemptImpossibleSkillChecks { get; private set; } = true;

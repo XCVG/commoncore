@@ -430,6 +430,9 @@ namespace CommonCore
 
             }
 
+            if(CCBase.AddonManager != null)
+                scenes.AddRange(CCBase.AddonManager.EnumerateAddonScenePaths());
+
             return scenes.ToArray();
 
         }

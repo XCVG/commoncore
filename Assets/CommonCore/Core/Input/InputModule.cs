@@ -34,21 +34,48 @@ namespace CommonCore.Input
             //let's do this late in case mappers rely on other modules
 
             //find all mappers and set them in MappedInput
-            var mapperTypes = CCBase.BaseGameTypes
-                .Where(t => typeof(InputMapper).IsAssignableFrom(t))
-                .Where(t => !t.IsAbstract)
-                .Where(t => t != typeof(NullInputMapper))
-                .ToArray();
+            IEnumerable<Type> types = CCBase.BaseGameTypes;
+            LoadMappersFromTypes(types);
+
+            //attempt to set configured or default mapper
+            EnableSelectedMapper();
+        }
+
+        public override void OnAddonLoaded(AddonLoadData data)
+        {
+            if(data.LoadedAssemblies != null && data.LoadedAssemblies.Count > 0)
+            {
+                var types = data.LoadedAssemblies.SelectMany(a => a.GetTypes());
+                LoadMappersFromTypes(types);
+                EnableSelectedMapper();
+            }
+        }
+
+        private void LoadMappersFromTypes(IEnumerable<Type> types)
+        {
+            var mapperTypes = types
+                            .Where(t => typeof(InputMapper).IsAssignableFrom(t))
+                            .Where(t => !t.IsAbstract)
+                            .Where(t => t != typeof(NullInputMapper))
+                            .ToArray();
             foreach (Type t in mapperTypes)
             {
                 MappedInput.Mappers.Add(t.Name, t);
             }
 
-            Log("Mappers: " + mapperTypes.ToNiceString());
+            if(mapperTypes.Count() > 0)
+                Log("Loaded mappers: " + mapperTypes.ToNiceString());
+        }
 
-            //attempt to set configured or default mapper
+        private void EnableSelectedMapper()
+        {
             try
             {
+                if(!string.IsNullOrEmpty(ConfigState.Instance.InputMapper) && MappedInput.GetCurrentMapper()?.GetType()?.Name == ConfigState.Instance.InputMapper)
+                {
+                    return;
+                }
+
                 if (!string.IsNullOrEmpty(ConfigState.Instance.InputMapper) && MappedInput.Mappers.ContainsKey(ConfigState.Instance.InputMapper))
                 {
                     Log("Setting configured mapper " + ConfigState.Instance.InputMapper);

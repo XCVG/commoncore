@@ -1,26 +1,56 @@
-﻿using CommonCore.Console;
+﻿using CommonCore.Config;
+using CommonCore.Console;
 using CommonCore.DebugLog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 
 namespace CommonCore.RpgGame.Dialogue
 {
 
+    /// <summary>
+    /// Module that handles loading
+    /// </summary>
     public class DialogueModule : CCModule
     {
-        private static DialogueModule Instance;
+        //why is this separate from RPGModule? Probably a legacy of Garlic Gang to be honest
+
+        //private static DialogueModule Instance;
 
         private Dictionary<string, DialogueScene> LoadedDialogues;
         private Dictionary<string, Monologue> LoadedMonologues;
 
         public DialogueModule()
         {
-            Instance = this;
+            //Instance = this;
             LoadedDialogues = new Dictionary<string, DialogueScene>();
             LoadedMonologues = new Dictionary<string, Monologue>();
             LoadAll();
+        }
+
+        public override void OnAddonLoaded(AddonLoadData data)
+        {
+            if (CoreParams.LoadPolicy != DataLoadPolicy.OnStart)
+                return;
+
+            if (data.LoadedResources != null && data.LoadedResources.Count > 0)
+            {
+                var dialogueAssets = data.LoadedResources
+                    .Where(kvp => kvp.Key.StartsWith("Data/Dialogue/"))
+                    .Where(kvp => kvp.Value.Resource.Ref() != null)
+                    .Where(kvp => kvp.Value.Resource is TextAsset)
+                    .Select(kvp => (TextAsset)kvp.Value.Resource);
+
+                var monologueAssets = data.LoadedResources
+                    .Where(kvp => kvp.Key.StartsWith("Data/Monologue/"))
+                    .Where(kvp => kvp.Value.Resource.Ref() != null)
+                    .Where(kvp => kvp.Value.Resource is TextAsset)
+                    .Select(kvp => (TextAsset)kvp.Value.Resource);
+
+                LoadFromTextAssets(dialogueAssets, monologueAssets);
+            }
         }
 
         private void LoadAll()
@@ -28,30 +58,37 @@ namespace CommonCore.RpgGame.Dialogue
             if (CoreParams.LoadPolicy != DataLoadPolicy.OnStart)
                 return;
 
+            TextAsset[] tas = CoreUtils.LoadResources<TextAsset>("Data/Dialogue/");
+            TextAsset[] tasm = CoreUtils.LoadResources<TextAsset>("Data/Monologue/");
+            LoadFromTextAssets(tas, tasm);
+        }
+
+        private void LoadFromTextAssets(IEnumerable<TextAsset> dialogueAssets, IEnumerable<TextAsset> monologueAssets)
+        {
             int dialoguesLoaded = 0, monologuesLoaded = 0;
 
-            TextAsset[] tas = CoreUtils.LoadResources<TextAsset>("Data/Dialogue/");
-            foreach(var ta in tas)
+            foreach (var ta in dialogueAssets)
             {
                 try
                 {
-                    LoadedDialogues.Add(ta.name, DialogueParser.LoadDialogueFromString(ta.name, ta.text));
-                    CDebug.LogEx("Loaded dialogue " + ta.name, LogLevel.Verbose, this);
+                    LoadedDialogues[ta.name] = DialogueParser.LoadDialogueFromString(ta.name, ta.text);
+                    if(ConfigState.Instance.UseVerboseLogging)
+                        CDebug.LogEx("Loaded dialogue " + ta.name, LogLevel.Verbose, this);
                     dialoguesLoaded++;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Debug.LogException(e);
                 }
             }
 
-            TextAsset[] tasm = CoreUtils.LoadResources<TextAsset>("Data/Monologue/");
-            foreach (var ta in tasm)
+            foreach (var ta in monologueAssets)
             {
                 try
                 {
-                    LoadedMonologues.Add(ta.name, MonologueParser.LoadMonologueFromString(ta.text));
-                    CDebug.LogEx("Loaded monologue " + ta.name, LogLevel.Verbose, this);
+                    LoadedMonologues[ta.name] = MonologueParser.LoadMonologueFromString(ta.text);
+                    if (ConfigState.Instance.UseVerboseLogging)
+                        CDebug.LogEx("Loaded monologue " + ta.name, LogLevel.Verbose, this);
                     monologuesLoaded++;
                 }
                 catch (Exception e)
@@ -63,42 +100,98 @@ namespace CommonCore.RpgGame.Dialogue
             Log($"Loaded {dialoguesLoaded} dialogues, {monologuesLoaded} monologues");
         }
 
-        public override void Dispose()
-        {
-            base.Dispose();
+        /// <summary>
+        /// Checks if a dialogue exists
+        /// </summary>
+        public bool HasDialogue(string name) => LoadedDialogues.ContainsKey(name);
 
-            Instance = null;
-        }
-
-        internal static DialogueScene GetDialogue(string name)
+        /// <summary>
+        /// Gets a dialogue by name
+        /// </summary>
+        public DialogueScene GetDialogue(string name)
         {
             DialogueScene ds;
-            if(!Instance.LoadedDialogues.TryGetValue(name, out ds))
+            if (!LoadedDialogues.TryGetValue(name, out ds))
             {
                 ds = DialogueParser.LoadDialogue(name);
-                Instance.LoadedDialogues.Add(name, ds);
-                CDebug.LogEx("Loaded new dialogue " + name, LogLevel.Verbose, Instance);
+                LoadedDialogues.Add(name, ds);
+                CDebug.LogEx("Loaded new dialogue " + name, LogLevel.Verbose, this);
             }
             return ds;
         }
 
-        internal static Monologue GetMonologue(string name)
+        /// <summary>
+        /// Adds a dialogue, optionally overwriting
+        /// </summary>
+        public void AddDialogue(string name, DialogueScene dialogue, bool overwrite = true)
+        {
+            if(overwrite || !LoadedDialogues.ContainsKey(name))
+            {
+                LoadedDialogues[name] = dialogue;
+            }
+            else
+            {
+                throw new InvalidOperationException("A dialogue by that name already exists");
+            }
+        }
+
+        /// <summary>
+        /// Returns an enumerable collection of all dialogues
+        /// </summary>
+        public IEnumerable<KeyValuePair<string, DialogueScene>> EnumerateDialogues()
+        {
+            return LoadedDialogues.ToArray();
+        }
+
+        /// <summary>
+        /// Checks if a monologue exists
+        /// </summary>
+        public bool HasMonologue(string name) => LoadedMonologues.ContainsKey(name);
+
+        /// <summary>
+        /// Gets a monologue by name
+        /// </summary>
+        public Monologue GetMonologue(string name)
         {
             Monologue m;
-            if(!Instance.LoadedMonologues.TryGetValue(name, out m))
+            if (!LoadedMonologues.TryGetValue(name, out m))
             {
                 m = MonologueParser.LoadMonologue(name);
-                Instance.LoadedMonologues.Add(name, m);
-                CDebug.LogEx("Loaded new monologue " + name, LogLevel.Verbose, Instance);
+                LoadedMonologues.Add(name, m);
+                CDebug.LogEx("Loaded new monologue " + name, LogLevel.Verbose, this);
             }
             return m;
+        }
+
+        /// <summary>
+        /// Adds a monologue, optionally overwriting
+        /// </summary>
+        public void AddMonologue(string name, Monologue monologue, bool overwrite = true)
+        {
+            if (overwrite || !LoadedMonologues.ContainsKey(name))
+            {
+                LoadedMonologues[name] = monologue;
+            }
+            else
+            {
+                throw new InvalidOperationException("A monologue by that name already exists");
+            }
+        }
+
+        /// <summary>
+        /// Returns an enumerable collection of all monologues
+        /// </summary>
+        public IEnumerable<KeyValuePair<string, Monologue>> EnumerateMonologues()
+        {
+            return LoadedMonologues.ToArray();
         }
 
         [Command(alias = "ListAll", className = "Dialogue")]
         static void ListAllDialogues()
         {
-            StringBuilder sb = new StringBuilder(Instance.LoadedDialogues.Count * 80);
-            foreach (var dialogue in Instance.LoadedDialogues.Keys)
+            var dialogueModule = CCBase.GetModule<DialogueModule>();
+            StringBuilder sb = new StringBuilder(dialogueModule.LoadedDialogues.Count * 80);
+            foreach (var dialogue in dialogueModule.LoadedDialogues.Keys)
                 sb.AppendLine(dialogue);
             ConsoleModule.WriteLine(sb.ToString());
         }
@@ -106,8 +199,9 @@ namespace CommonCore.RpgGame.Dialogue
         [Command(alias = "ListAll", className = "Monologue")]
         static void ListAllMonologues()
         {
-            StringBuilder sb = new StringBuilder(Instance.LoadedMonologues.Count * 80);
-            foreach (var monologue in Instance.LoadedMonologues.Keys)
+            var dialogueModule = CCBase.GetModule<DialogueModule>();
+            StringBuilder sb = new StringBuilder(dialogueModule.LoadedMonologues.Count * 80);
+            foreach (var monologue in dialogueModule.LoadedMonologues.Keys)
                 sb.AppendLine(monologue);
             ConsoleModule.WriteLine(sb.ToString());
         }

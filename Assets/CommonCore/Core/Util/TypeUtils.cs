@@ -485,6 +485,36 @@ namespace CommonCore
         }
 
         /// <summary>
+        /// Creates a Delegate from a MethodInfo
+        /// </summary>
+        /// <param name="methodInfo">The MethodInfo representing the method to make a delegate for</param>
+        /// <returns>A Delegate created from the MethodInfo</returns>
+        /// <remarks>Currently only supports static methods</remarks>
+        public static Delegate CreateDelegate(MethodInfo methodInfo)
+        {
+            Func<Type[], Type> getType;
+            var isAction = methodInfo.ReturnType.Equals((typeof(void)));
+            var types = methodInfo.GetParameters().Select(p => p.ParameterType);
+
+            if (isAction)
+            {
+                getType = Expression.GetActionType;
+            }
+            else
+            {
+                getType = Expression.GetFuncType;
+                types = types.Concat(new[] { methodInfo.ReturnType });
+            }
+
+            if (methodInfo.IsStatic)
+            {
+                return Delegate.CreateDelegate(getType(types.ToArray()), methodInfo);
+            }
+
+            throw new ArgumentException("Method must be static!", "methodInfo");
+        }
+
+        /// <summary>
         /// Converts a string to Title Case
         /// </summary>
         /// <remarks>Some limitations may apply</remarks>

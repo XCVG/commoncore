@@ -145,12 +145,16 @@ namespace CommonCore.Config
         //actual config data here (WIP)
 
         //SYSTEM CONFIG
-        public bool UseVerboseLogging { get; set; } = true;
+        public bool UseVerboseLogging { get; set; } = true;        
         public bool UseCampaignIdentifier { get; set; } = true;
         public float DefaultTimescale { get; set; } = 1;
         public float WorldTimescale { get; set; } = 1;
         public float EntityBudget { get; set; } = 1;
         public float EffectBudget { get; set; } = 1;
+
+        //ADDON CONFIG
+        public bool LoadAddons { get; set; } = true;
+        public List<string> AddonsToLoad { get; private set; } = new List<string>();
 
         //AUDIO CONFIG
         public float MusicVolume { get; set; } = 0.8f;

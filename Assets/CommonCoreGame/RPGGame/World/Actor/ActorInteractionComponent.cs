@@ -116,7 +116,7 @@ namespace CommonCore.RpgGame.World
                     special.Execute(data);
                     break;
                 case ActorInteractionType.AmbientMonologue:
-                    string msg = DialogueModule.GetMonologue(target).GetLineRandom(); //VERY inefficient, will fix later
+                    string msg = CCBase.GetModule<DialogueModule>().GetMonologue(target).GetLineRandom(); //VERY inefficient, will fix later
                     //QdmsMessageBus.Instance.PushBroadcast(new HUDPushMessage(msg));//also a very temporary display
                     QdmsMessageBus.Instance.PushBroadcast(new SubtitleMessage(msg, 5.0f, true, -1));
                     //and we need to rework Monologue and implement an audio manager before we can do speech

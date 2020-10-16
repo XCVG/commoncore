@@ -7,7 +7,7 @@ using CommonCore.State;
 
 namespace CommonCore.RpgGame.Dialogue
 {
-    internal class DialogueScene
+    public class DialogueScene
     {
         public Dictionary<string, Frame> Frames { get; private set; }
         public string Default;
@@ -21,12 +21,12 @@ namespace CommonCore.RpgGame.Dialogue
         }
     }
 
-    internal enum FrameType
+    public enum FrameType
     {
         ChoiceFrame, TextFrame
     }
 
-    internal class ChoiceNode
+    public class ChoiceNode
     {
         public readonly string Text;
         public readonly string Next;
@@ -94,7 +94,7 @@ namespace CommonCore.RpgGame.Dialogue
 
     }
 
-    internal class SkillCheckNode
+    public class SkillCheckNode
     {
         public readonly SkillCheckType CheckType;
         public readonly SkillCheckComparison ComparisonType;
@@ -257,27 +257,27 @@ namespace CommonCore.RpgGame.Dialogue
         
     }
 
-    internal enum SkillCheckComparison
+    public enum SkillCheckComparison
     {
         GreaterEqual, Greater, Less, Equal, LessEqual
     }
 
-    internal enum SkillCheckType
+    public enum SkillCheckType
     {
         Unspecified, Hard, Soft
     }
 
-    internal enum SkillCheckTarget
+    public enum SkillCheckTarget
     {
         Skill, Stat, ActorValue
     }
 
-    internal enum FrameImagePosition
+    public enum FrameImagePosition
     {
         Center, Fill, Character, Battler
     }
 
-    internal class Frame
+    public class Frame
     {
         public readonly string Background;
         public readonly string Image;        
@@ -333,7 +333,7 @@ namespace CommonCore.RpgGame.Dialogue
         }
     }
 
-    internal class BlankFrame : Frame
+    public class BlankFrame : Frame
     {
         public BlankFrame(string background, string image, string next, string music, string nameText, string text, string nextText, string cameraDir, FrameImagePosition imagePosition, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript)
             : base(background, image, next, music, nameText, text, nextText, cameraDir, imagePosition, nextConditional, nextMicroscript)
@@ -342,7 +342,7 @@ namespace CommonCore.RpgGame.Dialogue
         }
     }
 
-    internal class TextFrame : Frame
+    public class TextFrame : Frame
     {
         public TextFrame(string background, string image, string next, string music, string nameText, string text, string nextText, string cameraDir, FrameImagePosition imagePosition, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript)
             : base(background, image, next, music, nameText, text, nextText, cameraDir, imagePosition, nextConditional, nextMicroscript)
@@ -351,7 +351,7 @@ namespace CommonCore.RpgGame.Dialogue
         }
     }
 
-    internal class ChoiceFrame: Frame
+    public class ChoiceFrame: Frame
     {
         public readonly ChoiceNode[] Choices;
 
@@ -364,7 +364,7 @@ namespace CommonCore.RpgGame.Dialogue
 
 
 
-    internal class ConditionNode
+    public class ConditionNode
     {
         public readonly string Next;
         public readonly Conditional[] Conditions;

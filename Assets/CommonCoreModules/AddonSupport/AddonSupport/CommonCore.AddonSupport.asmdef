@@ -1,0 +1,14 @@
+{
+    "name": "CommonCore.AddonSupport",
+    "references": [
+        "CommonCore.Core"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": []
+}

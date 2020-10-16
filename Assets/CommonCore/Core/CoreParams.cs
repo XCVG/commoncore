@@ -32,11 +32,13 @@ namespace CommonCore
         public static bool AutoInit { get; private set; } = true;
         public static ImmutableArray<string> ExplicitModules { get; private set; } = new string[] { "QdmsMessageBus", "ConfigModule", "DebugModule", "AsyncModule", "ScriptingModule", "ConsoleModule" }.ToImmutableArray();
         private static DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
-        public static ResourceManagerPolicy DefaultResourceManager { get; private set; } = ResourceManagerPolicy.UseLegacy;
+        public static ResourceManagerPolicy DefaultResourceManager { get; private set; } = ResourceManagerPolicy.UseNew;
         public static string PreferredCommandConsole { get; private set; } = "SickDevConsoleImplementation";
 
-        public static StartupPolicy EditorStartupPolicy { get; private set; } = StartupPolicy.SynchronousEarly;
+        public static StartupPolicy EditorStartupPolicy { get; private set; } = StartupPolicy.Asynchronous;
         public static StartupPolicy PlayerStartupPolicy { get; private set; } = StartupPolicy.Asynchronous;
+
+        public static bool LoadAddons { get; private set; } = true; //if set, will allow loading addons if configured in ConfigState
 
         public static bool UseSeparateEditorConfigFile { get; private set; } = false; //if set, will use config.editor.json while in editor
         private static WindowsPersistentDataPath PersistentDataPathWindows = WindowsPersistentDataPath.Roaming;

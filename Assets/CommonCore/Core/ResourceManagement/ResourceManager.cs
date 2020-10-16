@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace CommonCore.ResourceManagement
@@ -13,8 +14,10 @@ namespace CommonCore.ResourceManagement
     /// </summary>
     public class ResourceManager
     {
-        public static int NextResourceHandleID => ++CurrentResourceHandleID;
-        private static int CurrentResourceHandleID = 0;
+        public ResourceLoader ResourceLoader { get; private set; }
+
+        public int NextResourceHandleID => ++CurrentResourceHandleID;
+        private int CurrentResourceHandleID = 0;
 
         private Dictionary<string, ResourceObject> ResourceObjectCache = new Dictionary<string, ResourceObject>();
 
@@ -22,17 +25,10 @@ namespace CommonCore.ResourceManagement
 
         public ResourceManager()
         {
-
+            ResourceLoader = new ResourceLoader();
         }
 
-        public void LoadStreamingAssets()
-        {
-            //TODO implement this
-            //nop for now
-
-            //mount StreamingAssets/elocal at Streaming/
-            //overlay StreamingAsssets/expand over existing assets
-        }
+        //TODO get handle (instead of resource) variants
 
         /// <summary>
         /// Gets a resource
@@ -122,28 +118,105 @@ namespace CommonCore.ResourceManagement
         }
         
         //WIP AddResourceX methods
-
-        public void AddRuntimeResource<T>(string path, T resource, ResourcePriority priority) where T : UnityEngine.Object
+        public ResourceHandle AddResource(string path, UnityEngine.Object resource, ResourcePriority priority)
         {
             var ro = RetrieveResourceObject(path);
-            ro.AddResourceHandle(new RuntimeResourceHandle<T>(resource, priority));
+            var handleType = typeof(RuntimeResourceHandle<>).MakeGenericType(resource.GetType());
+            var rh = (ResourceHandle)Activator.CreateInstance(handleType, resource, priority);
+            ro.AddResourceHandle(rh, resource.GetType());
+            return rh;
         }
 
-        public void AddStreamingResource(string path, string assetPath, ResourcePriority priority)
+        public ResourceHandle<T> AddResource<T>(string path, T resource, ResourcePriority priority) where T : UnityEngine.Object //I think this is the only one that'll work on IL2CPP
+        {
+            var ro = RetrieveResourceObject(path);
+            var rh = new RuntimeResourceHandle<T>(resource, priority);
+            ro.AddResourceHandle(rh);
+            return rh;
+        }
+
+        public ResourceHandle AddResourceFromAssetBundle(string targetPath, string bundledName, AssetBundle bundle, ResourcePriority priority)
+        {
+            //var resource = bundle.LoadAsset(bundledName);
+            var resource = LoadAssetFromBundle(bundledName, bundle);
+            Type resourceType = resource.GetType();
+
+            var handleType = typeof(AssetBundleResourceHandle<>).MakeGenericType(resourceType);
+            var rh = (ResourceHandle)Activator.CreateInstance(handleType, resource, bundledName, bundle, priority);
+
+            var ro = RetrieveResourceObject(targetPath);
+            ro.AddResourceHandle(rh, resource.GetType());
+            return rh;
+        }
+
+        public async Task<ResourceHandle> AddResourceFromAssetBundleAsync(string targetPath, string bundledName, AssetBundle bundle, ResourcePriority priority)
+        {
+            /*
+            var bundleLoadRequest = bundle.LoadAssetAsync(bundledName);
+
+            while (!bundleLoadRequest.isDone)
+                await Task.Yield();
+
+            var resource = bundleLoadRequest.asset;
+            */
+            var resource = await LoadAssetFromBundleAsync(bundledName, bundle);
+
+            Type resourceType = resource.GetType();
+
+            var handleType = typeof(AssetBundleResourceHandle<>).MakeGenericType(resourceType);
+            var rh = (ResourceHandle)Activator.CreateInstance(handleType, resource, bundledName, bundle, priority);
+
+            var ro = RetrieveResourceObject(targetPath);
+            ro.AddResourceHandle(rh, resource.GetType());
+            return rh;
+        }
+
+        
+
+        public ResourceHandle AddResourceFromFile(string targetPath, string filePath, ResourcePriority priority)
+        {
+            ResourceLoadContext context = new ResourceLoadContext() { AttemptingSyncLoad = true, ResourceManager = this, ResourceLoader = ResourceLoader, TargetPath = targetPath };
+            var resource = ResourceLoader.Load(filePath, context);
+
+            var ro = RetrieveResourceObject(targetPath);
+            var handleType = typeof(FileResourceHandle<>).MakeGenericType(context.ResourceType);
+            var rh = (ResourceHandle)Activator.CreateInstance(handleType, resource, filePath, priority, context);
+            ro.AddResourceHandle(rh, resource.GetType());
+            return rh;
+        }
+
+        public async Task<ResourceHandle> AddResourceFromFileAsync(string targetPath, string filePath, ResourcePriority priority)
+        {
+            ResourceLoadContext context = new ResourceLoadContext() { AttemptingSyncLoad = false, ResourceManager = this, ResourceLoader = ResourceLoader, TargetPath = targetPath };
+            var resource = await ResourceLoader.LoadAsync(filePath, context);
+
+            var ro = RetrieveResourceObject(targetPath);
+            var handleType = typeof(FileResourceHandle<>).MakeGenericType(context.ResourceType);
+            var rh = (ResourceHandle)Activator.CreateInstance(handleType, resource, filePath, priority, context);
+            ro.AddResourceHandle(rh, resource.GetType());
+            return rh;
+        }
+
+
+        //these two are probably junk
+        //needs to be renamed, needs to not use StreamingAssets, needs to at least give the option to preload
+        [Obsolete]
+        public void AddStreamingResource(string path, string assetPath, ResourcePriority priority) //logical path, physical path...
         {
             //will probably fail on IL2CPP but I don't think failure is guaranteed
-            var type = ResourceLoader.DetermineResourceType(Path.Combine(CoreParams.StreamingAssetsPath, assetPath));
-            var handleType = typeof(StreamingResourceHandle<>).MakeGenericType(type);
-            ResourceHandle resourceHandle = (ResourceHandle)Activator.CreateInstance(handleType, assetPath, priority);
+            var type = ResourceLoader.DetermineResourceType(Path.Combine(CoreParams.StreamingAssetsPath, assetPath), new ResourceLoadContext() { TargetPath = path, ResourceManager = this, ResourceLoader = ResourceLoader});
+            var handleType = typeof(FileResourceHandle<>).MakeGenericType(type);
+            ResourceHandle resourceHandle = (ResourceHandle)Activator.CreateInstance(handleType, Path.Combine(CoreParams.StreamingAssetsPath, assetPath), priority);
 
             var ro = RetrieveResourceObject(path);
             ro.AddResourceHandle(resourceHandle, type);
         }
 
+        [Obsolete]
         public void AddStreamingResource<T>(string path, string assetPath, ResourcePriority priority) where T : UnityEngine.Object
         {
             var ro = RetrieveResourceObject(path);
-            ro.AddResourceHandle(new StreamingResourceHandle<T>(assetPath, priority));
+            ro.AddResourceHandle(new FileResourceHandle<T>(Path.Combine(CoreParams.StreamingAssetsPath, assetPath), priority));
         }
 
         //gets a resource folder from the dictionary if it exists, creates it if it does not
@@ -267,6 +340,62 @@ namespace CommonCore.ResourceManagement
             }
 
             return resourceDictionary.Values.Select(l => l.ToArray()).ToArray();
+        }
+
+        //don't really have a better place to put these yet
+
+        /// <summary>
+        /// Loads an object from an asset bundle, special-casing sprites and other subasset edge cases
+        /// </summary>
+        public static UnityEngine.Object LoadAssetFromBundle(string bundledName, AssetBundle bundle)
+        {
+            var asset = bundle.LoadAsset(bundledName);
+            Type assetType = asset.GetType();
+
+            if (assetType == typeof(Texture2D)) //could be a sprite!
+            {
+                var spriteAssets = bundle.LoadAssetWithSubAssets<Sprite>(bundledName);
+                if (spriteAssets != null && spriteAssets.Length > 0)
+                    return spriteAssets[0];
+
+                //var subassets = bundle.LoadAssetWithSubAssets(bundledName);
+
+                //foreach(var subasset in subassets)
+                //    if(subasset is Sprite)
+                //        return subasset;
+            }
+
+            return asset;
+        }
+
+        /// <summary>
+        /// Loads an object from an asset bundle, special-casing sprites and other subasset edge cases (asynchronous version)
+        /// </summary>
+        public static async Task<UnityEngine.Object> LoadAssetFromBundleAsync(string bundledName, AssetBundle bundle)
+        {
+            var bundleLoadRequest = bundle.LoadAssetAsync(bundledName);
+
+            while (!bundleLoadRequest.isDone)
+                await Task.Yield();
+
+            var asset = bundleLoadRequest.asset;
+            Type assetType = asset.GetType();
+
+            if (assetType == typeof(Texture2D)) //could be a sprite!
+            {
+                var bundleLoadRequest2 = bundle.LoadAssetWithSubAssetsAsync<Sprite>(bundledName);
+
+                while (!bundleLoadRequest2.isDone)
+                    await Task.Yield();
+
+                var spriteAssets = bundleLoadRequest2.allAssets;
+                if (spriteAssets != null && spriteAssets.Length > 0)
+                    return spriteAssets[0];
+
+                //will that work?
+            }
+
+            return asset;
         }
 
     }

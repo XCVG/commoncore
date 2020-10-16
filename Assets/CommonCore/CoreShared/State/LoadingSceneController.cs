@@ -39,6 +39,7 @@ namespace CommonCore.State
                 if (MetaState.Instance.TransitionType == SceneTransitionType.ChangeScene)
                 {
                     MetaState.Instance.IntentsExecuteLoading();
+                    MetaState.Instance.IntentsRemoveInvalid();
                     //we are merely changing scenes, go straight to loading the next scene
                     GameState.Instance.CurrentScene = MetaState.Instance.NextScene;
                     ScriptingModule.CallHooked(ScriptHook.OnSceneTransition, this);

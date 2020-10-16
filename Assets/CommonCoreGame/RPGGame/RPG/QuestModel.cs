@@ -28,6 +28,21 @@ namespace CommonCore.RpgGame.Rpg
             CDebug.LogEx(string.Format("Loaded quests ({0} defs, {1} errors)", Defs.Count, LoadErrorCount), LogLevel.Message, null);
         }
 
+        internal static void LoadFromAddon(AddonLoadData data)
+        {
+            if (data.LoadedResources != null && data.LoadedResources.Count > 0)
+            {
+                var questAssets = data.LoadedResources
+                    .Where(kvp => kvp.Key.StartsWith("Data/Quests/"))
+                    .Where(kvp => kvp.Value.Resource is TextAsset)
+                    .Select(kvp => (TextAsset)kvp.Value.Resource);
+
+                LoadDefsFromAssets(questAssets, out var defCount, out var loadErrorCount);
+
+                CDebug.LogEx(string.Format("Loaded quests from addon ({0} defs, {1} errors)", defCount, loadErrorCount), LogLevel.Message, null);
+            }
+        }
+
         private static void LoadLegacy()
         {
             //load quest defs from RPGDefs/rpg_quests.json
@@ -49,7 +64,7 @@ namespace CommonCore.RpgGame.Rpg
                 LoadErrorCount++;
             }
 
-        }
+        }        
 
         private static void LoadAll()
         {
@@ -57,7 +72,16 @@ namespace CommonCore.RpgGame.Rpg
             CDebug.LogEx("Loading new style quest defs!", LogLevel.Verbose, null);
 
             TextAsset[] tas = CoreUtils.LoadResources<TextAsset>("Data/Quests/");
-            foreach (TextAsset ta in tas)
+            LoadDefsFromAssets(tas, out _, out var loadErrorCount);
+            LoadErrorCount += loadErrorCount;
+        }
+
+        private static void LoadDefsFromAssets(IEnumerable<TextAsset> questAssets, out int defCount, out int loadErrorCount)
+        {
+            defCount = 0;
+            loadErrorCount = 0;
+
+            foreach (TextAsset ta in questAssets)
             {
                 try
                 {
@@ -75,23 +99,58 @@ namespace CommonCore.RpgGame.Rpg
                             {
                                 TypeNameHandling = TypeNameHandling.Auto
                             });
+                            defCount++;
                         }
                     }
                 }
                 catch (Exception e)
                 {
                     CDebug.LogEx(e.ToString(), LogLevel.Verbose, null);
-                    LoadErrorCount++;
+                    loadErrorCount++;
                 }
             }
         }
 
+        /// <summary>
+        /// Checks if a quest definition exists
+        /// </summary>
+        public static bool HasDef(string name)
+        {
+            return Defs.ContainsKey(name);
+        }
+
+        /// <summary>
+        /// Gets a quest definition
+        /// </summary>
         public static QuestDef GetDef(string name)
         {
             if (!Defs.ContainsKey(name))
                 return null;
 
             return Defs[name];
+        }
+
+        /// <summary>
+        /// Adds a quest definition, optionally overwriting
+        /// </summary>
+        public static void AddDef(string name, QuestDef def, bool overwrite = true)
+        {
+            if (overwrite || !Defs.ContainsKey(name))
+            {
+                Defs[name] = def;
+            }
+            else
+            {
+                throw new InvalidOperationException("A quest definition by that name already exists");
+            }
+        }
+
+        /// <summary>
+        /// Returns an enumerable collection of all quest definitions
+        /// </summary>
+        public static IEnumerable<KeyValuePair<string, QuestDef>> EnumerateDefs()
+        {
+            return Defs.ToArray();
         }
 
         /// <summary>
@@ -110,6 +169,9 @@ namespace CommonCore.RpgGame.Rpg
             return name;
         }
 
+        /// <summary>
+        /// Gets a nicely formatted list of quest definitions
+        /// </summary>
         public static string GetDefsList()
         {
             StringBuilder sb = new StringBuilder(Defs.Count * 64);

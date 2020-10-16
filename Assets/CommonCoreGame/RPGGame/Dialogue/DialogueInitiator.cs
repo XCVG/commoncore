@@ -55,7 +55,7 @@ namespace CommonCore.RpgGame.Dialogue
         [Command(alias = "Test", className = "Monologue")]
         static void TestMonologue(string monologue)
         {
-            Monologue m = DialogueModule.GetMonologue(monologue);
+            Monologue m = CCBase.GetModule<DialogueModule>().GetMonologue(monologue);
             ConsoleModule.WriteLine(m.GetLineRandom());
         }
 

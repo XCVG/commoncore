@@ -34,6 +34,22 @@ namespace CommonCore.Scripting
             FindAllScripts();
         }
 
+        public override void OnAddonLoaded(AddonLoadData data)
+        {
+            if(data.LoadedAssemblies != null && data.LoadedAssemblies.Count > 0)
+            {
+                System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+                sw.Start();
+
+                IEnumerable<Type> types = data.LoadedAssemblies.SelectMany(a => a.GetTypes());
+                int loadedScripts = LoadScriptsFromTypes(types);
+
+                sw.Stop();
+
+                Log(string.Format("Loaded {1} scripts from addon in {0:f2} ms ({2} total callable scripts)", sw.ElapsedMilliseconds, loadedScripts, CallableMethods.Count));
+            }
+        }
+
         public override void OnAllModulesLoaded()
         {
             CallHooked(ScriptHook.AfterModulesLoaded, null);
@@ -79,26 +95,37 @@ namespace CommonCore.Scripting
 
         private void FindAllScripts()
         {
-            Assembly[] assems = AppDomain.CurrentDomain.GetAssemblies();
-
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
-
-            var methods = CCBase.BaseGameTypes
-                    .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static))
-                    .Where(m => !m.IsAbstract)
-                    .Where(m => m.GetCustomAttributes(typeof(CCScriptAttribute), false).Length > 0)
-                    .ToArray();
 
             CallableMethods = new Dictionary<string, MethodInfo>();
             HookedMethods = SetupHookedMethodsDictionary();
             NamedHookedMethods = new Dictionary<string, List<MethodInfo>>();
 
+            IEnumerable<Type> types = CCBase.BaseGameTypes;
+            int loadedScripts = LoadScriptsFromTypes(types);
+
+            sw.Stop();
+
+            Log(string.Format("Loaded {1} scripts in {0:f2} ms ({2} total callable scripts)", sw.ElapsedMilliseconds, loadedScripts, CallableMethods.Count));
+
+        }
+
+        private int LoadScriptsFromTypes(IEnumerable<Type> types)
+        {
+            var methods = types
+                                .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static))
+                                .Where(m => !m.IsAbstract)
+                                .Where(m => m.GetCustomAttributes(typeof(CCScriptAttribute), false).Length > 0)
+                                .ToArray();
+
+            int loadedScripts = 0;
             foreach (var m in methods)
             {
                 try
                 {
                     RegisterScript(m);
+                    loadedScripts++;
                 }
                 catch (Exception e)
                 {
@@ -108,10 +135,7 @@ namespace CommonCore.Scripting
 
             }
 
-            sw.Stop();
-
-            Log(string.Format("Loaded {1} scripts in {0:f2} ms", sw.ElapsedMilliseconds, CallableMethods.Count));
-
+            return loadedScripts;
         }
 
         private static Dictionary<ScriptHook, List<MethodInfo>> SetupHookedMethodsDictionary()

@@ -164,4 +164,5 @@ namespace CommonCore
         /// </summary>
         WinRTDotNET = 2
     }
+    
 }

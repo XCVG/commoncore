@@ -13,13 +13,17 @@ using UnityEngine;
 namespace CommonCore.RpgGame.Rpg
 {
 
+    /// <summary>
+    /// A model representing a character's inventory. Inventory item models and definitions are also handled here.
+    /// </summary>
     public class InventoryModel
     {
-        const bool AutocreateModels = true;
+        //combining both responsibilities here was a mistake but I'd have to rip out a lot to fix it at this point... maybe for 3.x or 4.x
 
         private static Dictionary<string, InventoryItemModel> Models;
         private static Dictionary<string, InventoryItemDef> Defs;
 
+        //this is maximum jank
         private static int LoadErrorCount;
         private static int LoadItemCount;
         private static int LoadDefCount;
@@ -38,20 +42,40 @@ namespace CommonCore.RpgGame.Rpg
             LoadItemCount = 0;
             LoadDefCount = 0;
 
-            LoadAllModels();
-            LoadAllNew();
+            LoadAutocreateModels();
+            LoadInventoryModels();
 
             CDebug.LogEx(string.Format("Loaded inventory ({0} items, {1} defs, {2} errors)", LoadItemCount, LoadDefCount, LoadErrorCount), LoadErrorCount > 0 ? LogLevel.Error : LogLevel.Message, null);
         }
 
         /// <summary>
+        /// Loads inventory models and defs from an addon
+        /// </summary>
+        /// <param name="data"></param>
+        internal static void LoadFromAddon(AddonLoadData data)
+        {
+            LoadErrorCount = 0;
+            LoadItemCount = 0;
+            LoadDefCount = 0;
+
+            var assets = data.LoadedResources
+                .Where(kvp => kvp.Key.StartsWith("Data/Items/"))
+                .Where(kvp => kvp.Value.Resource is TextAsset)
+                .Select(kvp => (TextAsset)kvp.Value.Resource);
+
+            LoadInventoryModelsFromAssets(assets);
+
+            CDebug.LogEx(string.Format("Loaded inventory from addon ({0} items, {1} defs, {2} errors)", LoadItemCount, LoadDefCount, LoadErrorCount), LoadErrorCount > 0 ? LogLevel.Error : LogLevel.Message, null);
+        }
+
+        /// <summary>
         /// Actually loads auto models if applicable; old rpg_items.json is no longer supported
         /// </summary>
-        private static void LoadAllModels()
+        private static void LoadAutocreateModels()
         {
 
             //first autocreate models (if enabled)
-            if(AutocreateModels)
+            if(GameParams.AutocreateInventoryModels)
             {
                 CDebug.LogEx("Autocreating item models!", LogLevel.Verbose, null);
                 foreach (AmmoType at in Enum.GetValues(typeof(AmmoType)))
@@ -74,25 +98,30 @@ namespace CommonCore.RpgGame.Rpg
         /// <summary>
         /// Loads all inventory item models from individual files (new style)
         /// </summary>
-        private static void LoadAllNew()
+        private static void LoadInventoryModels()
         {
             //load new model/def/etc file-per-item entries
             //we've turned our data structures sideways pretty much
             //we could add more try/catch and make this absolutely bulletproof but I feel it isn't necessary
             TextAsset[] tas = CoreUtils.LoadResources<TextAsset>("Data/Items/");
-            foreach(TextAsset ta in tas)
+            LoadInventoryModelsFromAssets(tas);
+        }
+
+        private static void LoadInventoryModelsFromAssets(IEnumerable<TextAsset> inventoryAssets)
+        {
+            foreach (TextAsset ta in inventoryAssets)
             {
                 try
                 {
                     JObject outerJObject = JObject.Parse(ta.text); //this contains one or more items
-                    foreach(JProperty itemJProperty in outerJObject.Properties())
+                    foreach (JProperty itemJProperty in outerJObject.Properties())
                     {
                         string itemName = itemJProperty.Name;
                         JToken itemJToken = itemJProperty.Value;
 
                         //parse model and def
                         JToken modelJToken = itemJToken["model"];
-                        if(modelJToken != null)
+                        if (modelJToken != null)
                         {
                             var model = JsonConvert.DeserializeObject<InventoryItemModel>(modelJToken.ToString(), new JsonSerializerSettings
                             {
@@ -104,7 +133,7 @@ namespace CommonCore.RpgGame.Rpg
                         }
 
                         JToken defJToken = itemJToken["def"];
-                        if(defJToken != null)
+                        if (defJToken != null)
                         {
                             Defs[itemName] = JsonConvert.DeserializeObject<InventoryItemDef>(defJToken.ToString(), new JsonSerializerSettings
                             {
@@ -114,7 +143,7 @@ namespace CommonCore.RpgGame.Rpg
                         }
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     CDebug.LogEx(e.ToString(), LogLevel.Verbose, null);
                     LoadErrorCount++;
@@ -122,6 +151,17 @@ namespace CommonCore.RpgGame.Rpg
             }
         }
 
+        /// <summary>
+        /// Checks if an inventory item model exists
+        /// </summary>
+        public static bool HasModel(string name)
+        {
+            return Models.ContainsKey(name);
+        }
+
+        /// <summary>
+        /// Gets an inventory item model by name
+        /// </summary>
         public static InventoryItemModel GetModel(string name)
         {
             if (!Models.ContainsKey(name))
@@ -130,12 +170,72 @@ namespace CommonCore.RpgGame.Rpg
             return Models[name];
         }
 
+        /// <summary>
+        /// Adds an inventory item model
+        /// </summary>
+        public static void AddModel(InventoryItemModel model, bool overwrite = false)
+        {
+            string name = model.Name;
+
+            if(overwrite || !Models.ContainsKey(name))
+            {
+                Models[name] = model;
+            }
+            else
+            {
+                throw new InvalidOperationException("A model by that name already exists");
+            }
+        }
+        
+        /// <summary>
+        /// Returns an enumerable collection of inventory item models
+        /// </summary>
+        public static IEnumerable<InventoryItemModel> EnumerateModels()
+        {
+            //note we don't have to return KeyValuePair because InventoryItemModel contains the name
+            return Models.Values.ToArray();
+        }
+
+        /// <summary>
+        /// Checks if an inventory item definition exists
+        /// </summary>
+        public static bool HasDef(string name)
+        {
+            return Defs.ContainsKey(name);
+        }
+
+        /// <summary>
+        /// Gets an inventory item definition by name
+        /// </summary>
         public static InventoryItemDef GetDef(string name)
         {
             if (!Defs.ContainsKey(name))
                 return null;
 
             return Defs[name];
+        }
+
+        /// <summary>
+        /// Adds an inventory item definition
+        /// </summary>
+        public static void AddDef(string name, InventoryItemDef def, bool overwrite = false)
+        {
+            if (overwrite || !Defs.ContainsKey(name))
+            {
+                Defs[name] = def;
+            }
+            else
+            {
+                throw new InvalidOperationException("A definition by that name already exists");
+            }
+        }
+
+        /// <summary>
+        /// Returns an enumerable collection of inventory item definitions
+        /// </summary>
+        public static IEnumerable<KeyValuePair<string, InventoryItemDef>> EnumerateDefs()
+        {
+            return Defs.ToArray();
         }
 
         /// <summary>
@@ -198,6 +298,8 @@ namespace CommonCore.RpgGame.Rpg
             else
                 return EquipSlot.None;
         }
+
+        //actually inventory model stuff begins here
 
         [JsonProperty]
         private List<InventoryItemInstance> Items;

@@ -6,6 +6,7 @@ using UnityEngine;
 using CommonCore.DebugLog;
 using System.Linq;
 using CommonCore.Console;
+using CommonCore.Config;
 
 namespace CommonCore.StringSub
 {
@@ -30,14 +31,52 @@ namespace CommonCore.StringSub
             LoadLists();
             LoadSubbers();
 
-            Log("StringSub: Finished loading!");
+            Log("Finished loading!");
+        }
+
+        public override void OnAddonLoaded(AddonLoadData data)
+        {
+            //load lists from AddonData
+            if(data.LoadedResources != null && data.LoadedResources.Count > 0)
+            {
+                int numFiles = 0;
+                var stringListKeys = data.LoadedResources.Keys
+                    .Where(k => k.StartsWith("Data/Strings/"));
+                foreach(string key in stringListKeys)
+                {
+                    var rh = data.LoadedResources[key];
+                    if (rh.Resource is TextAsset ta)
+                    {
+                        try
+                        {
+                            LoadListFromTextAsset(ta);
+                            numFiles++;
+                        }
+                        catch (Exception e)
+                        {
+                            LogError("Error loading string file: " + ta.name);
+                            LogException(e);
+                        }
+                    }
+                }
+
+                string statusString = string.Format("({0} new files, {1} total lists)", numFiles, Strings.Count);
+                Log("Loaded lists " + statusString);
+            }
+
+            //load subbers from AddonData
+            if (data.LoadedAssemblies != null && data.LoadedAssemblies.Count > 0)
+            {
+                var subberTypes = data.LoadedAssemblies.SelectMany(a => a.GetTypes())
+                    .Where((type) => type.GetInterfaces().Contains(typeof(IStringSubber)));
+                LoadSubbersFromTypes(subberTypes);
+            }
         }
 
         private void LoadLists()
         {
             //load all substitution lists
-
-            //TODO switch over to CoreUtils.LoadResourcesVariants
+          
             TextAsset[][] textAssetArrays = CoreUtils.LoadResourcesVariants<TextAsset>("Data/Strings/");
             int numFiles = 0;
 
@@ -47,25 +86,7 @@ namespace CommonCore.StringSub
                 {
                     try
                     {
-                        var lists = CoreUtils.LoadJson<Dictionary<string, Dictionary<string, string>>>(ta.text);
-                        foreach (var list in lists)
-                        {
-                            //merge new lists onto old
-                            if (Strings.ContainsKey(list.Key))
-                            {
-                                //list already exists, need to merge
-                                var oldList = Strings[list.Key];
-                                foreach (var item in list.Value)
-                                {
-                                    oldList[item.Key] = item.Value;
-                                }
-                            }
-                            else
-                            {
-                                //list doesn't exist, can just add
-                                Strings.Add(list.Key, list.Value);
-                            }
-                        }
+                        LoadListFromTextAsset(ta);
                         numFiles++;
                     }
                     catch (Exception e)
@@ -77,8 +98,31 @@ namespace CommonCore.StringSub
                 
             }
 
-            string statusString = string.Format("({0} files, {1} lists)", numFiles, Strings.Count);
-            Log("StringSub: Loaded lists " + statusString);
+            string statusString = string.Format("({0} new files, {1} total lists)", numFiles, Strings.Count);
+            Log("Loaded lists " + statusString);
+        }
+
+        private void LoadListFromTextAsset(TextAsset ta)
+        {
+            var lists = CoreUtils.LoadJson<Dictionary<string, Dictionary<string, string>>>(ta.text);
+            foreach (var list in lists)
+            {
+                //merge new lists onto old
+                if (Strings.ContainsKey(list.Key))
+                {
+                    //list already exists, need to merge
+                    var oldList = Strings[list.Key];
+                    foreach (var item in list.Value)
+                    {
+                        oldList[item.Key] = item.Value;
+                    }
+                }
+                else
+                {
+                    //list doesn't exist, can just add
+                    Strings.Add(list.Key, list.Value);
+                }
+            }
         }
 
         private void LoadSubbers()
@@ -87,14 +131,23 @@ namespace CommonCore.StringSub
                 .Where((type) => type.GetInterfaces().Contains(typeof(IStringSubber)))
                 .ToArray();
 
-            foreach(Type subberType in subberTypes)
+            LoadSubbersFromTypes(subberTypes);
+
+        }
+
+        private void LoadSubbersFromTypes(IEnumerable<Type> subberTypes)
+        {
+            List<IStringSubber> newSubbers = new List<IStringSubber>();
+
+            foreach (Type subberType in subberTypes)
             {
                 try
                 {
                     IStringSubber subber = (IStringSubber)Activator.CreateInstance(subberType);
                     Subbers.Add(subber);
+                    newSubbers.Add(subber);
 
-                    foreach(string pattern in subber.MatchPatterns)
+                    foreach (string pattern in subber.MatchPatterns)
                     {
                         if (SubMap.ContainsKey(pattern))
                             LogWarning(string.Format("StringSub: pattern \"{0}\" from {1} already registered by {2}", pattern, subber.GetType().Name, SubMap[pattern].Method.DeclaringType.Name));
@@ -102,14 +155,15 @@ namespace CommonCore.StringSub
                         SubMap[pattern] = subber.Substitute;
                     }
                 }
-                catch(Exception)
+                catch (Exception e)
                 {
-                    LogError("StringSub: Failed to load subber " + subberType.Name);
+                    LogError("Failed to load subber " + subberType.Name);
+                    LogException(e);
                 }
             }
 
-            Log("StringSub: Loaded subbers " + Subbers.Select(s => s.GetType().Name).ToNiceString());
-
+            if(newSubbers.Count > 0)
+                Log("Loaded subbers " + newSubbers.Select(s => s.GetType().Name).ToNiceString());
         }
 
         internal string GetString(string baseString, string listName, bool suppressWarnings, bool ignoreKeyCase)

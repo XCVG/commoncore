@@ -82,8 +82,10 @@ namespace CommonCore
             if (!DeferInitialRestoreToSubclass && AutoRestore)
             {
                 MetaState.Instance.IntentsExecutePreload();
+                MetaState.Instance.IntentsRemoveInvalid();
                 Restore();
                 MetaState.Instance.IntentsExecutePostload();
+                MetaState.Instance.IntentsRemoveInvalid();
             }
 
             if (!DeferAfterSceneLoadToSubclass)

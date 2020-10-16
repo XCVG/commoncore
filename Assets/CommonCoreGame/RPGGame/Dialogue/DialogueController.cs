@@ -87,7 +87,7 @@ namespace CommonCore.RpgGame.Dialogue
 
         private void LoadScene(string scene)
         {
-            CurrentScene = DialogueModule.GetDialogue(scene);
+            CurrentScene = CCBase.GetModule<DialogueModule>().GetDialogue(scene);
             CurrentSceneName = scene;
         }
 

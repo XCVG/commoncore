@@ -12,7 +12,7 @@ namespace CommonCore.RpgGame.Dialogue
     /// <summary>
     /// Parser for dialogue JSON files
     /// </summary>
-    internal static class DialogueParser
+    public static class DialogueParser
     {
 
         //TODO split out non-dialogue parsing from the DIALOGUE parser
