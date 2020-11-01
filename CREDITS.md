@@ -1,6 +1,6 @@
 # Additional assets not included in repository
 
-While Ascension III makes use of many external third-party assets, the base library and demo/example project no longer require these.
+While CommonCore makes use of many external third-party assets, the base library and demo/example project no longer require these.
 
 Most dependencies are included. A few of them are pulled in automatically as Unity packages:
 
@@ -116,13 +116,9 @@ Demo Rifle (Assets/Objects/OpenSource/rifle)
 	
 ## Sounds
 
-Footsteps (Assets/Shared/Sounds/Footsteps)
+Footsteps (Assets/Resources/DynamicSound/Steps*)
 	TinyWorlds - Different steps on wood, stone, leaves, gravel, and mud [CC0]
 	https://opengameart.org/content/different-steps-on-wood-stone-leaves-gravel-and-mud
-	
-Player Voice (Assets/Shared/Sounds/Bolt)
-	AderuMoro - Fighting Game grunts - young female.wav [CC-BY]
-	https://freesound.org/people/AderuMoro/sounds/213295/
 	
 Hits (Assets/Resources/DynamicSound/Hit* except as noted below)
 	Iwan 'qubodup' Gabovitch - Impact [CC0]
@@ -152,12 +148,12 @@ Crossbow Draw (Assets/Resources/DynamicSound/CrossbowDraw)
 	InspectorJ - Bodyboard, Stretch, A.wav [CC-BY]
 	https://freesound.org/people/InspectorJ/sounds/401648/
 	
-Pistol reload sounds (DemoReload)
+Pistol reload sounds (Assets/Resources/DynamicSound/DemoRifleReload)
 	sampled from Glock 19 Handgun Pistol Slide Cocking Sounds
 	https://freesound.org/people/jacklmurr27/sounds/393734/
 	by jacklmurr27, licensed CC0/Public Domain
 	
-Pistol fire sound (DemoFire)
+Pistol fire sound (Assets/Resources/DynamicSound/DemoRifleFire)
 	Small pistol gunshot indoors
 	https://freesound.org/people/acidsnowflake/sounds/402789/
 	by acidsnowflake, licensed CC0/Public Domain
