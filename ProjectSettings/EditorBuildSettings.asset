@@ -20,9 +20,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/CommonCore/Scenes/ExampleScene.unity
     guid: 88e8ec212f116c54b8544ea5c7ced22c
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/Scenes/Other/TestScene.unity
     guid: 0b340932fb43bfa4b86dd20ee1c3e91e
