@@ -2452,14 +2452,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EditorFormID: npc_engineer
+  EntityTags: []
   HitMaterial: 0
-  CharacterModelIdOverride: 
   InteractComponent: {fileID: 114050656289375220}
   TargetPoint: {fileID: 0}
   AnimationComponent: {fileID: 7945359267271504913}
   MovementComponent: {fileID: 1507877242329607482}
   AttackComponent: {fileID: 8629407898697718035}
   InteractionComponent: {fileID: 8046596381759845665}
+  AudioComponent: {fileID: 0}
   BaseAiState: 2
   CurrentAiState: 2
   LockAiState: 0
@@ -2469,20 +2470,29 @@ MonoBehaviour:
   Invincible: 0
   DieImmediately: 0
   DestroyOnDeath: 1
-  DamageResistance:
-  - 5
-  - 5
-  - 5
-  - 5
-  - 5
-  - 5
-  DamageThreshold:
-  - 5
-  - 5
-  - 5
-  - 5
-  - 5
-  - 5
+  DisableCollidersOnDeath: 0
+  DisableHitboxesOnDeath: 0
+  DamageResistance: []
+  DamageThreshold: []
+  DamageResistances:
+  - DamageType: 0
+    DamageResistance: 5
+    DamageThreshold: 5
+  - DamageType: 1
+    DamageResistance: 5
+    DamageThreshold: 5
+  - DamageType: 2
+    DamageResistance: 5
+    DamageThreshold: 5
+  - DamageType: 3
+    DamageResistance: 5
+    DamageThreshold: 5
+  - DamageType: 4
+    DamageResistance: 5
+    DamageThreshold: 5
+  - DamageType: 5
+    DamageResistance: 5
+    DamageThreshold: 5
   OnDeathSpecial: {fileID: 0}
   FeelPain: 1
   PainChance: 0.5
@@ -2491,12 +2501,14 @@ MonoBehaviour:
   Aggressive: 1
   Faction: Neutral
   Detectability: 1
+  IsTarget: 1
   Defensive: 1
   Infighting: 0
   Relentless: 0
   UseLineOfSight: 0
   SearchRadius: 25
   SearchInterval: 70
+  ChaseOptimalDistance: 0
   DisableInteractionOnHit: 0
   GrantXpOnDeath: 100
   RunOnChase: 1
@@ -2534,9 +2546,12 @@ MonoBehaviour:
   DeadInteractionTarget: 
   DeadInteractionSpecial: {fileID: 0}
   InteractionDisabledByHit: 0
+  DisableTooltip: 0
   TooltipOverride: The Mechanic
   CorpseItems:
     Items: []
+    EnforceQuantityLimits: 0
+    TakeOnly: 0
 --- !u!114 &8629407898697718035
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2551,6 +2566,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ActorController: {fileID: 114886002833580368}
   UseMelee: 1
+  UseSuicide: 0
+  AutoDamageEffector: 1
+  FriendlyFire: 0
   AttackRange: 5
   AttackStateWarmup: 1
   AttackStateDelay: 2
@@ -2561,12 +2579,20 @@ MonoBehaviour:
     Damage: 15
     DamagePierce: 5
     DamageType: 0
+    DamageEffector: 0
+    HarmFriendly: 0
     HitLocation: 0
     HitMaterial: 0
     Originator: {fileID: 0}
+    OriginatorFaction: 
     HitPuff: 
+    HitFlags: 0
+    ExtraHitFlags: 0
+  AttackRandomFactor: 0
+  AttackHitFlags: 
   BulletPrefab: TestBullet
   AttackEffectPrefab: TestGunEffect
+  ParentAttackEffect: 1
   AttackSound: {fileID: 0}
   ShootPoint: {fileID: 4034012939267662}
   AttackAnimationOverride: 
@@ -3266,11 +3292,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec63a36b837b8174783edee12a929664, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AnimController: {fileID: 95898923526475470}
   ActorController: {fileID: 114886002833580368}
-  AttackAnimationOverride: 
   CurrentAnimState: 0
   LockAnimState: 0
+  AnimController: {fileID: 95898923526475470}
+  AttackAnimationOverride: 
 --- !u!1 &1883964725162524
 GameObject:
   m_ObjectHideFlags: 0
@@ -3754,3 +3780,6 @@ MonoBehaviour:
   ParentController: {fileID: 0}
   HitLocationOverride: 2
   HitMaterialOverride: 0
+  DamageMultiplier: 1
+  AllDamageIsPierce: 0
+  AlwaysApplyMultiplier: 1

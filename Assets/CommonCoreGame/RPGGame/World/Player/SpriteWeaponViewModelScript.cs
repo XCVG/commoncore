@@ -22,6 +22,8 @@ namespace CommonCore.RpgGame.World
         private bool LoopIdle = true;        
         [SerializeField]
         private bool AutoTransition = true; //automatically go from fire->idle, raise->idle, reload->idle, etc
+        [SerializeField]
+        private bool HandleCrosshair = false;
 
         [SerializeField, Header("Movebob Options")]
         private bool AllowMovebob = true;
@@ -73,6 +75,8 @@ namespace CommonCore.RpgGame.World
         private float TimeInFrame;
 
         private bool MovebobCriticalError;
+
+        public override bool ViewHandlesCrosshair => HandleCrosshair;
 
         protected override void Start()
         {
@@ -158,7 +162,7 @@ namespace CommonCore.RpgGame.World
 
         public override (string, float) GetHandAnimation(ViewModelState newState, ViewModelHandednessState handedness)
         {
-            return ("Hidden", -1); //always hide hands
+            return (HandsHidden, -1); //always hide hands
         }
 
         public override void SetState(ViewModelState newState, ViewModelHandednessState handedness, float timeScale)

@@ -53,7 +53,7 @@ namespace CommonCore.AddonSupport
 
                 gameObject.SetActive(false);
 
-                Type controllerType = CCBase.BaseGameTypes
+                Type controllerType = CoreUtils.GetLoadedTypes()
                     .Where(t => t.Name == SceneControllerClass)
                     //.Where(t => t.Name.EndsWith(SceneControllerClass))
                     .Single();

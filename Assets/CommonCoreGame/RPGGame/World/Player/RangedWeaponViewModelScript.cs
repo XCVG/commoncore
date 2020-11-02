@@ -19,6 +19,8 @@ namespace CommonCore.RpgGame.World
         private bool CenterModelInAds = true;
         [SerializeField, Tooltip("Will have no effect if ADS enter/leave animations work")]
         private float ADSTransitionTime = 0.1f;
+        [SerializeField]
+        private bool HandleCrosshair = false;
 
         //separate into another component?
         [Header("Hand Animations")]
@@ -51,6 +53,8 @@ namespace CommonCore.RpgGame.World
         private Vector3 ModelDefaultPosition; //in local space
         private Quaternion ModelDefaultRotation; //in local space
         private bool InADS;
+
+        public override bool ViewHandlesCrosshair => HandleCrosshair;
 
         protected override void Start()
         {

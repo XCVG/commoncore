@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonCore.World;
+using System;
 using System.Reflection;
 using UnityEngine;
 
@@ -52,18 +53,20 @@ namespace CommonCore.RpgGame.Rpg
         public static void SkillsFromStats(StatsSet baseStats, StatsSet derivedStats) => SkillsFromStatsImpl(baseStats, derivedStats);
         private static Action<StatsSet, StatsSet> SkillsFromStatsImpl { get; set; } = RpgDefaultValues.SkillsFromStats;
 
+        //both the damage methods below need to be reworked/replaced to handle flags among other things
+
         /// <summary>
         /// Calculates applied damage given input damage and resistance
         /// </summary>
-        public static float DamageTaken(float damage, float pierce, float threshold, float resistance) //this is a dumb spot and we will move it later
-=> DamageTakenImpl(damage, pierce, threshold, resistance);
-        private static Func<float, float, float, float, float> DamageTakenImpl { get; set; } = RpgDefaultValues.DamageTaken;
+        public static float DamageTaken(ActorHitInfo hitInfo, float threshold, float resistance) //this is a dumb spot and we will move it later
+=> DamageTakenImpl(hitInfo, threshold, resistance);
+        private static Func<ActorHitInfo, float, float, float> DamageTakenImpl { get; set; } = RpgDefaultValues.DamageTaken;
 
         /// <summary>
         /// Calculates damage to shields, armor, and character given damage and a character model
         /// </summary>
-        public static (float damageToShields, float damageToArmor, float damageToCharacter) DamageRatio(float damage, float pierce, CharacterModel character) => DamageRatioImpl(damage, pierce, character);
-        private static Func<float, float, CharacterModel, (float, float, float)> DamageRatioImpl { get; set; } = RpgDefaultValues.DamageRatio;
+        public static (float damageToShields, float damageToArmor, float damageToCharacter) DamageRatio(ActorHitInfo hitInfo, CharacterModel character) => DamageRatioImpl(hitInfo, character);
+        private static Func<ActorHitInfo, CharacterModel, (float, float, float)> DamageRatioImpl { get; set; } = RpgDefaultValues.DamageRatio;
 
         /// <summary>
         /// Calculates applied damage given the velocity of a fall

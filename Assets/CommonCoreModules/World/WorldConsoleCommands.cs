@@ -207,6 +207,10 @@ namespace CommonCore.World
                 //name, form id
                 sb.AppendFormat("TID: {0} | FID: {1} \n", SelectedObject.name, SelectedObject.GetComponent<BaseController>().Ref()?.FormID ?? "N/A");
 
+                //tags etc
+                sb.AppendFormat("Unity Tag: {0} | Unity Layer: {1} | Entity tags: {2} \n", SelectedObject.tag, SelectedObject.layer, 
+                    SelectedObject.GetComponent<BaseController>().Ref()?.Tags?.ToNiceString() ?? "N/A");
+
                 //coords
                 sb.AppendFormat("Location: ({0:f2},{1:f2},{2:f2})\n", SelectedObject.transform.position.x, SelectedObject.transform.position.y, SelectedObject.transform.position.z);
 

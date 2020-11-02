@@ -12,5 +12,6 @@
         int HitMaterial { get; }
         float DamageMultiplier { get; }
         bool AllDamageIsPierce { get; }
+        bool AlwaysApplyMultiplier { get; }
     }
 }

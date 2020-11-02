@@ -1,6 +1,7 @@
 ﻿using CommonCore.Messaging;
 using CommonCore.UI;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -82,6 +83,11 @@ namespace CommonCore.Console
             Log("Console module unloaded!");
         }
 
+        public override void OnAddonLoaded(AddonLoadData data)
+        {
+            AddCommandsFromAddon(data);
+        }
+
         /// <summary>
         /// Register a command with the command parser
         /// </summary>
@@ -125,6 +131,19 @@ namespace CommonCore.Console
             Instance.Console.WriteLineEx(text, type, context);
         }
 
+        private void AddCommandsFromAddon(AddonLoadData data)
+        {
+            if (data == null || data.LoadedAssemblies == null || data.LoadedAssemblies.Count == 0)
+                return;
+
+            IEnumerable<MethodInfo> commands = data.LoadedAssemblies.SelectMany(a => a.GetTypes())
+                .SelectMany(t => t.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+                .Where(m => m.GetCustomAttributes(typeof(CommandAttribute), false).Length > 0)
+                .ToArray();
+
+            AddCommands(commands);
+        }
+
         private void AddCommands()
         {
             //DevConsole.singleton.AddCommand(new ActionCommand(Quit) { useClassName = false });
@@ -132,14 +151,19 @@ namespace CommonCore.Console
 
             //this is pretty tightly coupled still but we'll fix that soon enough
 
-            var allCommands = CCBase.BaseGameTypes
+            MethodInfo[] allCommands = CCBase.BaseGameTypes
                 .SelectMany(t => t.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
                 .Where(m => m.GetCustomAttributes(typeof(CommandAttribute), false).Length > 0)
                 .ToArray();
 
-            Log($"Registering {allCommands.Length} console commands!");
+            AddCommands(allCommands);
+        }
+        
+        private void AddCommands(IEnumerable<MethodInfo> commands)
+        {
+            int numCommands = 0;
 
-            foreach(var command in allCommands)
+            foreach (var command in commands)
             {
                 //Debug.Log(command.Name);
 
@@ -147,14 +171,18 @@ namespace CommonCore.Console
                 {
                     CommandAttribute commandAttr = (CommandAttribute)command.GetCustomAttributes(typeof(CommandAttribute), false)[0];
                     Console.AddCommand(command, commandAttr.useClassName, commandAttr.alias, commandAttr.className, commandAttr.description);
+                    numCommands++;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     LogError("Failed to add command " + command.Name);
                     LogException(e);
                 }
+
             }
-        }               
+
+            Log($"Registered {numCommands} console commands!");
+        }
 
         /// <summary>
         /// Provides integration between the console system and messaging system

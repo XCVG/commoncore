@@ -409,6 +409,22 @@ namespace CommonCore
             });
         }
 
+
+        /// <summary>
+        /// Gets "relevant" types: relevant types from CCBase.BaseGameTypes plus all addon loaded types (ie excluding framework types)
+        /// </summary>
+        /// <returns>A list of "relevant" types</returns>
+        public static IEnumerable<Type> GetLoadedTypes()
+        {
+            IEnumerable<Type> baseTypes = CCBase.BaseGameTypes;
+            if (!CoreParams.LoadAddons)
+                return baseTypes;
+
+            IEnumerable<Type> addonTypes = CCBase.AddonManager.EnumerateAddonAssemblies().SelectMany(a => a.GetTypes());
+
+            return baseTypes.Concat(addonTypes);
+        }
+
         /// <summary>
         /// Gets a list of scenes (by name) in the game
         /// </summary>

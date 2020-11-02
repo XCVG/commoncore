@@ -52,6 +52,8 @@ namespace CommonCore.RpgGame.World
         [SerializeField]
         private float OffhandKickDamage = 10f; //TODO move to stats and stuff
         [SerializeField]
+        private BuiltinHitFlags[] OffhandKickFlags;
+        [SerializeField]
         private float OffhandKickDelay = 1f;
         [SerializeField]
         private float OffhandKickForce = 1000f;
@@ -265,6 +267,7 @@ namespace CommonCore.RpgGame.World
                         //swap the viewmodel, begin animation
                         ClearViewModel(EquipSlot.RightWeapon);
                         SetViewModel(EquipSlot.RightWeapon);
+                        HandleCrosshair();
 
                         var wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel as WeaponItemModel;
                                                 
@@ -605,7 +608,7 @@ namespace CommonCore.RpgGame.World
                 {
                     bool harmFriendly = wim.HarmFriendly ?? GameParams.UseFriendlyFire;
 
-                    hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, (int)wim.DType, (int)wim.Effector, harmFriendly, hitLocation, hitMaterial, PlayerController, PredefinedFaction.Player.ToString(), wim.HitPuff, hitPoint);
+                    hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, (int)wim.DType, (int)wim.Effector, harmFriendly, hitLocation, hitMaterial, PlayerController, PredefinedFaction.Player.ToString(), wim.HitPuff, hitPoint, wim.GetHitFlags());
 
                     if (otherController is ITakeDamage itd)
                     {
@@ -709,7 +712,7 @@ namespace CommonCore.RpgGame.World
                     bool useRandomPierce = wim.DamagePierceSpread > 0 && !wim.CheckFlag(ItemFlag.WeaponNeverRandomize);
                     float randomizedDamage = useRandomDamage ? Mathf.Max(Mathf.Min(1, wim.Damage), wim.Damage + UnityEngine.Random.Range(-wim.DamageSpread, wim.DamageSpread)) : wim.Damage;
                     float randomizedPierce = useRandomPierce ? Mathf.Max(Mathf.Min(1, wim.DamagePierce), wim.DamagePierce + UnityEngine.Random.Range(-wim.DamagePierceSpread, wim.DamagePierceSpread)) : wim.DamagePierce;
-                    bulletScript.HitInfo = new ActorHitInfo(randomizedDamage * damageRpgFactor * damageDifficultyFactor, randomizedPierce * damageRpgFactor * damageDifficultyFactor, (int)wim.DType, (int)wim.Effector, harmFriendly, (int)ActorBodyPart.Unspecified, (int)DefaultHitMaterials.Unspecified, PlayerController, PredefinedFaction.Player.ToString(), wim.HitPuff, null);
+                    bulletScript.HitInfo = new ActorHitInfo(randomizedDamage * damageRpgFactor * damageDifficultyFactor, randomizedPierce * damageRpgFactor * damageDifficultyFactor, (int)wim.DType, (int)wim.Effector, harmFriendly, (int)ActorBodyPart.Unspecified, (int)DefaultHitMaterials.Unspecified, PlayerController, PredefinedFaction.Player.ToString(), wim.HitPuff, null, wim.GetHitFlags());
                     //Debug.Log(wim.Effector);
                     //Debug.Log($"damage: {bulletScript.HitInfo.Damage:F2} | pierce: {bulletScript.HitInfo.DamagePierce:F2}");
                     bulletScript.FiredByPlayer = true;
@@ -947,6 +950,7 @@ namespace CommonCore.RpgGame.World
                     {
                         ClearViewModel(EquipSlot.RightWeapon);
                         SetViewModel(EquipSlot.RightWeapon);
+                        HandleCrosshair();
 
                         if (RightViewModel != null)
                         {
@@ -963,6 +967,7 @@ namespace CommonCore.RpgGame.World
                     {                        
                         ClearViewModel(EquipSlot.RightWeapon);
                         SetViewModel(EquipSlot.RightWeapon);
+                        HandleCrosshair();
                         OldWeaponLowerTime = wim.LowerTime;
 
                         if (RightViewModel != null)
@@ -1020,7 +1025,7 @@ namespace CommonCore.RpgGame.World
                 }
             }
 
-            HandleCrosshair();
+            //HandleCrosshair();
 
             if (TransitionState == WeaponTransitionState.None)
             {
@@ -1114,7 +1119,11 @@ namespace CommonCore.RpgGame.World
 
         private void HandleCrosshair()
         {
-            if (GameState.Instance.PlayerRpgState.Equipped.TryGetValue(EquipSlot.RightWeapon, out var weaponItem))
+            if(RightViewModel != null && RightViewModel.ViewHandlesCrosshair)
+            {
+                QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("HudDisableCrosshair"));
+            }
+            else if (GameState.Instance.PlayerRpgState.Equipped.TryGetValue(EquipSlot.RightWeapon, out var weaponItem))
             {
                 WeaponItemModel rwim = weaponItem.ItemModel as WeaponItemModel;
                 var gameplayConfig = ConfigState.Instance.GetGameplayConfig();
@@ -1171,7 +1180,7 @@ namespace CommonCore.RpgGame.World
                     if (itd != null)
                     {
                         float damageMultiplier = RpgValues.GetKickDamageFactor(player) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerStrength; //from stats and difficulty
-                        var hitInfo = new ActorHitInfo(OffhandKickDamage * damageMultiplier, 0, (int)DamageType.Impact, (int)DamageEffector.Melee, GameParams.UseFriendlyFire, (int)hitLocation, (int)hitMaterial, PlayerController, PredefinedFaction.Player.ToString(), OffhandKickPuff, hitPoint);
+                        var hitInfo = new ActorHitInfo(OffhandKickDamage * damageMultiplier, 0, (int)DamageType.Impact, (int)DamageEffector.Melee, GameParams.UseFriendlyFire, (int)hitLocation, (int)hitMaterial, PlayerController, PredefinedFaction.Player.ToString(), OffhandKickPuff, hitPoint, TypeUtils.FlagsFromCollection(OffhandKickFlags));
                         itd.TakeDamage(hitInfo);
                         if(!string.IsNullOrEmpty(OffhandKickPuff))
                             HitPuffScript.SpawnHitPuff(hitInfo);

@@ -1,5 +1,6 @@
 ﻿using CommonCore.Audio;
 using CommonCore.ObjectActions;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,7 +23,7 @@ namespace CommonCore.World
         private float Detectability = 1;
         //public bool Reversible = false;
         [SerializeField, Tooltip("Works the opposite way of DR; incoming damage for a type is multiplied by damage factor")]
-        private float[] DamageFactor = null;
+        private DamageFactorNode[] DamageFactors;
         [SerializeField]
         private bool DisableCollidersOnDeath = false;
         [SerializeField]
@@ -233,23 +234,40 @@ namespace CommonCore.World
             LastDamageDealer = data.Originator;
 
             float damage = data.Damage + data.DamagePierce;
-            if (DamageFactor != null && DamageFactor.Length > data.DamageType)
-                damage *= DamageFactor[data.DamageType];
+
+            if(DamageFactors != null && DamageFactors.Length > 0)
+            {
+                foreach(var dfac in DamageFactors) //no you can't eat here
+                {
+                    if(dfac.DamageType == data.DamageType)
+                    {
+                        damage *= dfac.DamageFactor;
+                        break;
+                    }
+                }
+            }
 
             if (!Invincible)
                 Health -= damage;
 
-            if(UsePainState && Health > 0 && !ForceDeadState && !IsDead && damage > PainThreshold)
+            if(UsePainState && Health > 0 && !ForceDeadState && !IsDead && (damage > PainThreshold || data.HitFlags.HasFlag(BuiltinHitFlags.AlwaysPain)) && !data.HitFlags.HasFlag(BuiltinHitFlags.NoPain))
             {
                 //do pain calculation
-                bool didTakePain = false;
-                if(UseRelativePainCalculation)
+                bool didTakePain;
+                if (data.HitFlags.HasFlag(BuiltinHitFlags.AlwaysPain))
                 {
-                    didTakePain = UnityEngine.Random.Range(PainThreshold, PainChance) < damage;
+                    didTakePain = true;
                 }
                 else
                 {
-                    didTakePain = UnityEngine.Random.Range(0f, 1f) < PainChance;
+                    if (UseRelativePainCalculation)
+                    {
+                        didTakePain = UnityEngine.Random.Range(PainThreshold, PainChance) < damage;
+                    }
+                    else
+                    {
+                        didTakePain = UnityEngine.Random.Range(0f, 1f) < PainChance;
+                    }
                 }
 
                 if (didTakePain)
@@ -306,6 +324,13 @@ namespace CommonCore.World
         {
             public bool IsDead;
             public float Health;
+        }
+
+        [Serializable]
+        private struct DamageFactorNode
+        {
+            public int DamageType;
+            public float DamageFactor;
         }
     }
 

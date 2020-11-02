@@ -28,6 +28,7 @@ namespace CommonCore.RpgGame.World
         int IHitboxComponent.HitMaterial => HitMaterialResolved;
         float IHitboxComponent.DamageMultiplier => 1;
         bool IHitboxComponent.AllDamageIsPierce => false;
+        bool IHitboxComponent.AlwaysApplyMultiplier => false;
 
         void Start()
         {

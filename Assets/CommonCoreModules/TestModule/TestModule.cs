@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using CommonCore.DebugLog;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -46,6 +47,8 @@ namespace CommonCore.TestModule
         public override void OnAllModulesLoaded()
         {
             Log("Test module: all modules loaded!");
+
+            //DebugUtils.TextWrite(CoreUtils.GetLoadedTypes().ToNiceString(), "types");
         }
 
         public override void OnAddonLoaded(AddonLoadData data)
@@ -67,6 +70,8 @@ namespace CommonCore.TestModule
         public override void OnAllAddonsLoaded()
         {
             Log("Test module: all addons loaded!");
+
+            //DebugUtils.TextWrite(CoreUtils.GetLoadedTypes().ToNiceString(), "types");
         }
 
     }

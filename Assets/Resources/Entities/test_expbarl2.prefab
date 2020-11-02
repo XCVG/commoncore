@@ -61,6 +61,9 @@ MonoBehaviour:
   ParentController: {fileID: 112210147765199205}
   HitLocationOverride: 0
   HitMaterialOverride: 0
+  DamageMultiplier: 1
+  AllDamageIsPierce: 0
+  AlwaysApplyMultiplier: 1
 --- !u!1 &112210146385096918
 GameObject:
   m_ObjectHideFlags: 0
@@ -424,14 +427,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EditorFormID: test_expbarl2
+  EntityTags: []
   HitMaterial: 0
   MaxHealth: 100
   Invincible: 0
-  Reversible: 0
-  DamageFactor: []
+  IsTarget: 0
+  Faction: 
+  Detectability: 1
+  DamageFactors:
+  - DamageType: 1
+    DamageFactor: 0.5
+  - DamageType: 2
+    DamageFactor: 3
   DisableCollidersOnDeath: 1
   DeactivateOnDeath: 0
   DestroyOnDeath: 0
+  DeathSpecial: {fileID: 0}
+  RepeatDeathSpecial: 0
   UsePainState: 1
   PainChance: 0.5
   PainThreshold: 5

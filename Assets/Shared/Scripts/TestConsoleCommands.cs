@@ -1,10 +1,14 @@
 ﻿using CommonCore;
+using CommonCore.Async;
+using CommonCore.Audio;
 using CommonCore.DebugLog;
+using CommonCore.LockPause;
 using CommonCore.State;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
@@ -42,6 +46,64 @@ public static class TestConsoleCommands
         }
 
         DebugUtils.JsonWrite(allQSettings, "qualitysettings");
+    }
+
+    [Command]
+    public static void TestWeakReferencePauseLock()
+    {
+        AsyncUtils.RunWithExceptionHandling(async () =>
+        {
+            object lockObject = new object();
+            WeakReference untypedWeakReference = new WeakReference(lockObject);
+            LockPauseModule.PauseGame(PauseLockType.AllowMenu, untypedWeakReference);
+            Debug.Log("Untyped lock added!");
+
+            await Task.Delay(3000);
+            AsyncUtils.ThrowIfEditorStopped();
+
+            lockObject = null;
+            GC.Collect();
+
+            Debug.Log("Untyped lock released!");
+
+            await Task.Yield();
+            AsyncUtils.ThrowIfEditorStopped();
+
+            LockPauseModule.ForceCleanLocks();
+
+            Debug.Log("Locks cleaned!");
+
+            await Task.Delay(5000);
+            AsyncUtils.ThrowIfEditorStopped();
+
+            IEnumerable typedLockObject = new string[] { "lol", "hi" };
+            WeakReference<IEnumerable> typedWeakReference = new WeakReference<IEnumerable>(typedLockObject);
+
+            LockPauseModule.PauseGame(PauseLockType.AllowMenu, typedWeakReference);
+            Debug.Log("Typed lock added!");
+
+            await Task.Delay(3000);
+            AsyncUtils.ThrowIfEditorStopped();
+
+            typedLockObject = null;
+            GC.Collect();
+
+            Debug.Log("Typed lock released!");
+
+            await Task.Yield();
+            AsyncUtils.ThrowIfEditorStopped();
+
+            LockPauseModule.ForceCleanLocks();
+
+            Debug.Log("Locks cleaned!");
+        });
+    }
+
+    [Command]
+    public static void TestPlayMusic()
+    {
+        var audioPlayer = CCBase.GetModule<AudioModule>().AudioPlayer;
+        audioPlayer.PlayMusic("menu", MusicSlot.Override, 1.0f, true, false);
     }
 
 }

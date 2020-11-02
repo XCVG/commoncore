@@ -31,6 +31,8 @@ namespace CommonCore.RpgGame.World
         public float AttackSpread = 0.25f;
         public float BulletSpeed = 100;
         public ActorHitInfo AttackHit;
+        public float AttackRandomFactor = 0;
+        public BuiltinHitFlags[] AttackHitFlags;
         public string BulletPrefab;
         public string AttackEffectPrefab;
         public bool ParentAttackEffect = true;
@@ -141,10 +143,12 @@ namespace CommonCore.RpgGame.World
                 
                 Vector3 shootVec = (aimPoint - shootPos).normalized; //I screwed this up the first time
 
-                var modHit = AttackHit;
+                float randomFactor = Mathf.Max(0, 1 + UnityEngine.Random.Range(-AttackRandomFactor, AttackRandomFactor));
+
+                var modHit = new ActorHitInfo(AttackHit);
                 var gameplayConfig = ConfigState.Instance.GetGameplayConfig();
-                modHit.Damage *= gameplayConfig.Difficulty.ActorStrength;
-                modHit.DamagePierce *= gameplayConfig.Difficulty.ActorStrength;
+                modHit.Damage *= gameplayConfig.Difficulty.ActorStrength * randomFactor;
+                modHit.DamagePierce *= gameplayConfig.Difficulty.ActorStrength * randomFactor;
                 modHit.Originator = ActorController;
                 if (FriendlyFire == FriendlyFireMode.Always)
                     modHit.HarmFriendly = true;
@@ -153,7 +157,9 @@ namespace CommonCore.RpgGame.World
                 else
                     modHit.HarmFriendly = GameParams.UseFriendlyFire;
                 if (string.IsNullOrEmpty(modHit.OriginatorFaction))
-                    modHit.OriginatorFaction = ActorController.Faction;               
+                    modHit.OriginatorFaction = ActorController.Faction;
+
+                modHit.HitFlags = TypeUtils.FlagsFromCollection(AttackHitFlags);
 
                 if (UseMelee)
                 {

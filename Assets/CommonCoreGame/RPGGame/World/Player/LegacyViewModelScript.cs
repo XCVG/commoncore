@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ namespace CommonCore.RpgGame.World
     /// <summary>
     /// Weapon view model script for legacy animation sets (ie from before we separated out weapon components)
     /// </summary>
+    [Obsolete] //I can't think of a good reason to actually use this anymore
     public class LegacyViewModelScript : WeaponViewModelScript
     {
         
@@ -158,7 +160,7 @@ namespace CommonCore.RpgGame.World
             }
             */
 
-            return ("Hidden", -1);
+            return (HandsHidden, -1);
         }
     }
 }

@@ -411,6 +411,52 @@ namespace CommonCore
         }
 
         /// <summary>
+        /// Gets a flags-enum value from a collection of enum values
+        /// </summary>
+        public static T FlagsFromCollection<T>(IEnumerable<T> collection) where T : struct, Enum
+        {
+            if(CoreParams.IsDebug)
+            {
+                if (typeof(T).GetCustomAttribute<FlagsAttribute>() == null)
+                    Debug.LogWarning($"Enum type \"{typeof(T).Name}\" appears to not be a flags enum");
+            }
+
+            if (collection == null)
+                return default;
+
+            int flags = 0;
+
+            foreach (T flag in collection)
+                flags |= (int)(object)flag;
+
+            return (T)(object)flags;
+        }
+
+        /// <summary>
+        /// Gets a flags-enum value from a collection of strings
+        /// </summary>
+        public static T FlagsFromCollection<T>(IEnumerable<string> collection) where T : struct, Enum
+        {
+            if (CoreParams.IsDebug)
+            {
+                if (typeof(T).GetCustomAttribute<FlagsAttribute>() == null)
+                    Debug.LogWarning($"Enum type \"{typeof(T).Name}\" appears to not be a flags enum");
+            }
+
+            if (collection == null)
+                return default;
+
+            int flags = 0;
+
+            foreach (string flagString in collection)
+            {
+                flags |= (int)Enum.Parse(typeof(T), flagString);
+            }
+
+            return (T)(object)flags;
+        }
+
+        /// <summary>
         /// Parses a string to a Version object
         /// </summary>
         public static Version ParseVersion(string version)

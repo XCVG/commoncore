@@ -194,133 +194,133 @@ namespace GameUI
             switch (key)
             {
                 case "Melee":
-                    NewStats.Skills[SkillType.Melee] += 3;
-                    NewStats.Skills[SkillType.MeleeAlacrity] += 3;
-                    NewStats.Skills[SkillType.MeleePrecision] += 3;
-                    NewStats.Skills[SkillType.MeleeBrawn] += 3;
+                    NewStats.Skills[SkillType.Melee] += 2;
+                    NewStats.Skills[SkillType.MeleeAlacrity] += 2;
+                    NewStats.Skills[SkillType.MeleePrecision] += 2;
+                    NewStats.Skills[SkillType.MeleeBrawn] += 2;
                     break;
                 case "Alacrity":
-                    NewStats.Skills[SkillType.Melee] += 3;
-                    NewStats.Skills[SkillType.MeleeAlacrity] += 7;
+                    NewStats.Skills[SkillType.Melee] += 2;
+                    NewStats.Skills[SkillType.MeleeAlacrity] += 3;
                     NewStats.Skills[SkillType.MeleePrecision] += 1;
                     NewStats.Skills[SkillType.MeleeBrawn] += 1;
                     break;
                 case "Precision":
-                    NewStats.Skills[SkillType.Melee] += 3;
+                    NewStats.Skills[SkillType.Melee] += 2;
                     NewStats.Skills[SkillType.MeleeAlacrity] += 1;
-                    NewStats.Skills[SkillType.MeleePrecision] += 7;
+                    NewStats.Skills[SkillType.MeleePrecision] += 3;
                     NewStats.Skills[SkillType.MeleeBrawn] += 1;
                     break;
                 case "Brawn":
-                    NewStats.Skills[SkillType.Melee] += 3;
+                    NewStats.Skills[SkillType.Melee] += 2;
                     NewStats.Skills[SkillType.MeleeAlacrity] += 1;
                     NewStats.Skills[SkillType.MeleePrecision] += 1;
-                    NewStats.Skills[SkillType.MeleeBrawn] += 7;
+                    NewStats.Skills[SkillType.MeleeBrawn] += 3;
                     break;
 
                 case "Archery":
-                    NewStats.Skills[SkillType.Archery] += 4;
-                    NewStats.Skills[SkillType.ArcheryDraw] += 4;
-                    NewStats.Skills[SkillType.ArcherySteady] += 4;
+                    NewStats.Skills[SkillType.Archery] += 2;
+                    NewStats.Skills[SkillType.ArcheryDraw] += 2;
+                    NewStats.Skills[SkillType.ArcherySteady] += 2;
                     break;
                 case "Draw":
-                    NewStats.Skills[SkillType.Archery] += 4;
-                    NewStats.Skills[SkillType.ArcheryDraw] += 7;
+                    NewStats.Skills[SkillType.Archery] += 2;
+                    NewStats.Skills[SkillType.ArcheryDraw] += 4;
                     NewStats.Skills[SkillType.ArcherySteady] += 1;
                     break;
                 case "Steady":
-                    NewStats.Skills[SkillType.Archery] += 4;
+                    NewStats.Skills[SkillType.Archery] += 2;
                     NewStats.Skills[SkillType.ArcheryDraw] += 1;
-                    NewStats.Skills[SkillType.ArcherySteady] += 7;
+                    NewStats.Skills[SkillType.ArcherySteady] += 4;
                     break;
 
                 case "Guns":
-                    NewStats.Skills[SkillType.Guns] += 4;
-                    NewStats.Skills[SkillType.GunsAccuracy] += 4;
-                    NewStats.Skills[SkillType.GunsRapidity] += 4;
+                    NewStats.Skills[SkillType.Guns] += 2;
+                    NewStats.Skills[SkillType.GunsAccuracy] += 2;
+                    NewStats.Skills[SkillType.GunsRapidity] += 2;
                     break;
                 case "Accuracy":
-                    NewStats.Skills[SkillType.Guns] += 4;
-                    NewStats.Skills[SkillType.GunsAccuracy] += 7;
+                    NewStats.Skills[SkillType.Guns] += 2;
+                    NewStats.Skills[SkillType.GunsAccuracy] += 4;
                     NewStats.Skills[SkillType.GunsRapidity] += 1;
                     break;
                 case "Rapidity":
-                    NewStats.Skills[SkillType.Guns] += 4;
+                    NewStats.Skills[SkillType.Guns] += 2;
                     NewStats.Skills[SkillType.GunsAccuracy] += 1;
-                    NewStats.Skills[SkillType.GunsRapidity] += 7;
+                    NewStats.Skills[SkillType.GunsRapidity] += 4;
                     break;
 
                 case "Athletics":
-                    NewStats.Skills[SkillType.Athletics] += 4;
-                    NewStats.Skills[SkillType.AthleticsFurtive] += 4;
-                    NewStats.Skills[SkillType.AthleticsFleet] += 4;
+                    NewStats.Skills[SkillType.Athletics] += 2;
+                    NewStats.Skills[SkillType.AthleticsFurtive] += 2;
+                    NewStats.Skills[SkillType.AthleticsFleet] += 2;
                     break;
                 case "Furtive":
-                    NewStats.Skills[SkillType.Athletics] += 4;
-                    NewStats.Skills[SkillType.AthleticsFurtive] += 7;
+                    NewStats.Skills[SkillType.Athletics] += 2;
+                    NewStats.Skills[SkillType.AthleticsFurtive] += 4;
                     NewStats.Skills[SkillType.AthleticsFleet] += 1;
                     break;
                 case "Fleet":
-                    NewStats.Skills[SkillType.Athletics] += 4;
+                    NewStats.Skills[SkillType.Athletics] += 2;
                     NewStats.Skills[SkillType.AthleticsFurtive] += 1;
-                    NewStats.Skills[SkillType.AthleticsFleet] += 7;
+                    NewStats.Skills[SkillType.AthleticsFleet] += 4;
                     break;
 
                 case "Magic":
-                    NewStats.Skills[SkillType.Magic] += 3;
-                    NewStats.Skills[SkillType.MagicForce] += 3;
-                    NewStats.Skills[SkillType.MagicElemental] += 3;
-                    NewStats.Skills[SkillType.MagicDark] += 3;
+                    NewStats.Skills[SkillType.Magic] += 2;
+                    NewStats.Skills[SkillType.MagicForce] += 2;
+                    NewStats.Skills[SkillType.MagicElemental] += 2;
+                    NewStats.Skills[SkillType.MagicDark] += 1;
                     break;
                 case "Force":
-                    NewStats.Skills[SkillType.Magic] += 3;
-                    NewStats.Skills[SkillType.MagicForce] += 7;
+                    NewStats.Skills[SkillType.Magic] += 2;
+                    NewStats.Skills[SkillType.MagicForce] += 3;
                     NewStats.Skills[SkillType.MagicElemental] += 1;
                     NewStats.Skills[SkillType.MagicDark] += 1;
                     break;
                 case "Elemental":
-                    NewStats.Skills[SkillType.Magic] += 3;
+                    NewStats.Skills[SkillType.Magic] += 2;
                     NewStats.Skills[SkillType.MagicForce] += 1;
-                    NewStats.Skills[SkillType.MagicElemental] += 7;
+                    NewStats.Skills[SkillType.MagicElemental] += 3;
                     NewStats.Skills[SkillType.MagicDark] += 1;
                     break;
                 case "Dark":
-                    NewStats.Skills[SkillType.Magic] += 3;
+                    NewStats.Skills[SkillType.Magic] += 2;
                     NewStats.Skills[SkillType.MagicForce] += 1;
                     NewStats.Skills[SkillType.MagicElemental] += 1;
-                    NewStats.Skills[SkillType.MagicDark] += 7;
+                    NewStats.Skills[SkillType.MagicDark] += 3;
                     break;
 
                 case "Social":
-                    NewStats.Skills[SkillType.Social] += 4;
-                    NewStats.Skills[SkillType.SocialExchange] += 4;
-                    NewStats.Skills[SkillType.SocialLeverage] += 4;
+                    NewStats.Skills[SkillType.Social] += 2;
+                    NewStats.Skills[SkillType.SocialExchange] += 2;
+                    NewStats.Skills[SkillType.SocialLeverage] += 2;
                     break;
                 case "Exchange":
-                    NewStats.Skills[SkillType.Social] += 4;
-                    NewStats.Skills[SkillType.SocialExchange] += 7;
+                    NewStats.Skills[SkillType.Social] += 2;
+                    NewStats.Skills[SkillType.SocialExchange] += 3;
                     NewStats.Skills[SkillType.SocialLeverage] += 1;
                     break;
                 case "Leverage":
-                    NewStats.Skills[SkillType.Social] += 4;
+                    NewStats.Skills[SkillType.Social] += 2;
                     NewStats.Skills[SkillType.SocialExchange] += 1;
-                    NewStats.Skills[SkillType.SocialLeverage] += 7;
+                    NewStats.Skills[SkillType.SocialLeverage] += 3;
                     break;
 
                 case "Security":
-                    NewStats.Skills[SkillType.Security] += 4;
-                    NewStats.Skills[SkillType.SecurityMechanisms] += 4;
-                    NewStats.Skills[SkillType.SecurityComputers] += 4;
+                    NewStats.Skills[SkillType.Security] += 2;
+                    NewStats.Skills[SkillType.SecurityMechanisms] += 2;
+                    NewStats.Skills[SkillType.SecurityComputers] += 2;
                     break;
                 case "Mechanisms":
-                    NewStats.Skills[SkillType.Security] += 4;
-                    NewStats.Skills[SkillType.SecurityMechanisms] += 7;
+                    NewStats.Skills[SkillType.Security] += 2;
+                    NewStats.Skills[SkillType.SecurityMechanisms] += 4;
                     NewStats.Skills[SkillType.SecurityComputers] += 1;
                     break;
                 case "Computers":
-                    NewStats.Skills[SkillType.Security] += 4;
+                    NewStats.Skills[SkillType.Security] += 2;
                     NewStats.Skills[SkillType.SecurityMechanisms] += 1;
-                    NewStats.Skills[SkillType.SecurityComputers] += 7;
+                    NewStats.Skills[SkillType.SecurityComputers] += 4;
                     break;
 
                 default:

@@ -136,7 +136,7 @@ namespace CommonCore.RpgGame.World
 
             if(!HUDScript)
             {
-                HUDScript = BaseHUDController.Current.Ref() as RpgHUDController;
+                HUDScript = SharedUtils.TryGetHudController() as RpgHUDController;
             }
             
             if(!HUDScript && AutoinitHud)
@@ -145,7 +145,7 @@ namespace CommonCore.RpgGame.World
                 if (EventSystem.current == null)
                     Instantiate(CoreUtils.LoadResource<GameObject>("UI/DefaultEventSystem"));
 
-                HUDScript = BaseHUDController.Current.Ref() as RpgHUDController;
+                HUDScript = SharedUtils.TryGetHudController() as RpgHUDController;
                 if (HUDScript == null)
                     Debug.LogError("[PlayerController] Failed to initialize HUD properly");
             }
@@ -479,7 +479,7 @@ namespace CommonCore.RpgGame.World
 
             CharacterModel playerModel = GameState.Instance.PlayerRpgState;
         
-            var (damageToShields, damageToArmor, damageToCharacter) = RpgValues.DamageRatio(data.Damage, data.DamagePierce, playerModel);
+            var (damageToShields, damageToArmor, damageToCharacter) = RpgValues.DamageRatio(data, playerModel);
 
             float oldShields = playerModel.Shields;
             playerModel.Shields -= damageToShields;
@@ -491,12 +491,18 @@ namespace CommonCore.RpgGame.World
             }
 
             var (dt, dr) = playerModel.GetDamageThresholdAndResistance(data.DamageType);
-            float damageTaken = RpgValues.DamageTaken(damageToArmor, damageToCharacter, dt, dr);
+            data.Damage = damageToArmor;
+            data.DamagePierce = damageToCharacter;
+            float damageTaken = RpgValues.DamageTaken(data, dt, dr);
 
-            if (data.HitLocation == (int)ActorBodyPart.Head)
-                damageTaken *= 2.0f;
-            else if (data.HitLocation == (int)ActorBodyPart.LeftArm || data.HitLocation == (int)ActorBodyPart.LeftLeg || data.HitLocation == (int)ActorBodyPart.RightArm || data.HitLocation == (int)ActorBodyPart.RightLeg)
-                damageTaken *= 0.75f;          
+            //do we consider this in the hitboxes already? (answer is no)
+            if (!data.HitFlags.HasFlag(BuiltinHitFlags.IgnoreHitLocation))
+            {
+                if (data.HitLocation == (int)ActorBodyPart.Head)
+                    damageTaken *= 2.0f;
+                else if (data.HitLocation == (int)ActorBodyPart.LeftArm || data.HitLocation == (int)ActorBodyPart.LeftLeg || data.HitLocation == (int)ActorBodyPart.RightArm || data.HitLocation == (int)ActorBodyPart.RightLeg)
+                    damageTaken *= 0.75f;
+            }
 
             playerModel.Health -= damageTaken;
 

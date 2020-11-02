@@ -134,6 +134,22 @@ namespace CommonCore.World
             }
         }
 
+        void OnTriggerEnter(Collider other)
+        {
+            if (!EnableCollision)
+                return;
+
+            var ahc = other.GetComponent<IHitboxComponent>();
+            if (ahc != null)
+            {
+                //we'll let the other component handle the collision...
+
+                return; //...but we won't destroy this one 
+            }
+
+            HandleCollisionHit(other.gameObject, null);
+        }
+
         void OnCollisionEnter(Collision collision)
         {
             if (!EnableCollision)
@@ -149,26 +165,30 @@ namespace CommonCore.World
                 return; //...but we won't destroy this one 
             }
 
-            var otherController = collision.gameObject.GetComponent<BaseController>();
+            Vector3? positionOverride = null;
+            if (collision.contactCount > 0)
+                positionOverride = collision.GetContact(0).point;
+
+            HandleCollisionHit(collision.gameObject, positionOverride);
+        }
+
+        private void HandleCollisionHit(GameObject otherObject, Vector3? positionOverride)
+        {
+            var otherController = otherObject.GetComponent<BaseController>();
             if (otherController == null)
-                otherController = collision.gameObject.GetComponentInParent<BaseController>();
+                otherController = otherObject.GetComponentInParent<BaseController>();
 
             int hitMaterial = otherController?.HitMaterial ?? 0;
 
             //handle ColliderHitMaterial component
-            var colliderHitMaterial = collision.gameObject.GetComponent<ColliderHitMaterial>();
+            var colliderHitMaterial = otherObject.GetComponent<ColliderHitMaterial>();
             if (colliderHitMaterial != null)
                 hitMaterial = colliderHitMaterial.Material;
 
             //Debug.Log($"Contact points: {collision.contactCount} | First contact point: {(collision.contactCount > 0 ? collision.GetContact(0).point.ToString("F2") : null)} ");
 
-            Vector3? positionOverride = null;
-            if (collision.contactCount > 0)
-                positionOverride = collision.GetContact(0).point;
-
             HandleHit(otherController, null, 0, hitMaterial, positionOverride, 1, false);
         }
-        //public void HandleCollision(BaseController otherController, int hitLocation, int hitmaterial, Vector3? positionOverride) => HandleCollision(otherController, null, hitLocation, hitmaterial, positionOverride, 1, false);
 
         private void HandleHit(BaseController otherController, IHitboxComponent hitbox, int hitLocation, int hitmaterial, Vector3? positionOverride, float damageMultiplier, bool allDamageIsPierce)
         {
@@ -176,6 +196,12 @@ namespace CommonCore.World
 
             if (gameObject == null)
                 return; //don't double it up
+
+            if(HitInfo.HitFlags.HasFlag(BuiltinHitFlags.IgnoreHitLocation))
+            {
+                if (!(hitbox != null && hitbox.AlwaysApplyMultiplier))
+                    damageMultiplier = 1;
+            }
 
             if (otherController != null)
             {

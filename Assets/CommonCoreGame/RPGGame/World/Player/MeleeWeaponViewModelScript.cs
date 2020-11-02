@@ -12,6 +12,8 @@ namespace CommonCore.RpgGame.World
         private MeleeWeaponViewModelMode Mode = MeleeWeaponViewModelMode.None;
         [SerializeField]
         private bool ShowHands = false;
+        [SerializeField]
+        private bool HandleCrosshair = false;
 
         [Header("Hand Animations"), SerializeField, Tooltip("Will be ignored if ShowHands is false")]
         public MeleeWeaponViewModelAnimations HandAnimations = default;
@@ -41,6 +43,8 @@ namespace CommonCore.RpgGame.World
 
         private WeaponHandModelScript HandModel { get { if (_handModel == null) _handModel = WeaponComponent.HandModel; return _handModel; } }
         private WeaponHandModelScript _handModel;
+
+        public override bool ViewHandlesCrosshair => HandleCrosshair;
 
         protected override void Start()
         {
@@ -93,7 +97,7 @@ namespace CommonCore.RpgGame.World
         public override (string, float) GetHandAnimation(ViewModelState newState, ViewModelHandednessState handedness)
         {           
             if (!ShowHands)
-                return ("Hidden", -1f);
+                return (HandsHidden, -1f);
 
             switch (newState)
             {

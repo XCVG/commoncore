@@ -21,6 +21,8 @@ namespace CommonCore.World
         private float DamageMultiplier = 1;
         [SerializeField, Tooltip("Damage will be added to DamagePierce and zeroed. Use to simulate unarmored parts")]
         private bool AllDamageIsPierce = false;
+        [SerializeField, Tooltip("Applies DamageMultiplier even if the hit has IgnoreHitLocation flag")]
+        private bool AlwaysApplyMultiplier = true;
 
         //uses the parent controller's hit material if this doesn't have an override
         private int HitMaterial => HitMaterialOverride == 0 ? ParentController.HitMaterial : HitMaterialOverride;
@@ -31,6 +33,7 @@ namespace CommonCore.World
         int IHitboxComponent.HitMaterial => HitMaterial;
         float IHitboxComponent.DamageMultiplier => DamageMultiplier;
         bool IHitboxComponent.AllDamageIsPierce => AllDamageIsPierce;
+        bool IHitboxComponent.AlwaysApplyMultiplier => AlwaysApplyMultiplier;
 
         void Start()
         {

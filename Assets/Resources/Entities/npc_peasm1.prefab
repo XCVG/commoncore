@@ -711,14 +711,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EditorFormID: npc_peasm1
+  EntityTags: []
   HitMaterial: 6
-  CharacterModelIdOverride: 
   InteractComponent: {fileID: 0}
   TargetPoint: {fileID: 0}
   AnimationComponent: {fileID: 4626595113204975631}
   MovementComponent: {fileID: 3773561789347209187}
   AttackComponent: {fileID: 8154708937929883162}
   InteractionComponent: {fileID: 2576290300525660690}
+  AudioComponent: {fileID: 0}
   BaseAiState: 0
   CurrentAiState: 2
   LockAiState: 0
@@ -728,20 +729,11 @@ MonoBehaviour:
   Invincible: 0
   DieImmediately: 0
   DestroyOnDeath: 0
-  DamageResistance:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  DamageThreshold:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
+  DisableCollidersOnDeath: 0
+  DisableHitboxesOnDeath: 0
+  DamageResistance: []
+  DamageThreshold: []
+  DamageResistances: []
   OnDeathSpecial: {fileID: 0}
   FeelPain: 1
   PainChance: 0.5
@@ -750,12 +742,14 @@ MonoBehaviour:
   Aggressive: 0
   Faction: Neutral
   Detectability: 1
+  IsTarget: 1
   Defensive: 1
   Infighting: 0
   Relentless: 0
   UseLineOfSight: 0
   SearchRadius: 25
   SearchInterval: 70
+  ChaseOptimalDistance: 0
   DisableInteractionOnHit: 1
   GrantXpOnDeath: 50
   RunOnChase: 1
@@ -793,9 +787,12 @@ MonoBehaviour:
   DeadInteractionTarget: 
   DeadInteractionSpecial: {fileID: 0}
   InteractionDisabledByHit: 0
+  DisableTooltip: 0
   TooltipOverride: 
   CorpseItems:
     Items: []
+    EnforceQuantityLimits: 0
+    TakeOnly: 0
 --- !u!114 &8154708937929883162
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -810,6 +807,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ActorController: {fileID: 114160393828224520}
   UseMelee: 1
+  UseSuicide: 0
+  AutoDamageEffector: 1
+  FriendlyFire: 0
   AttackRange: 1.2
   AttackStateWarmup: 0
   AttackStateDelay: 1
@@ -820,12 +820,20 @@ MonoBehaviour:
     Damage: 10
     DamagePierce: 0
     DamageType: 0
+    DamageEffector: 0
+    HarmFriendly: 0
     HitLocation: 0
     HitMaterial: 0
     Originator: {fileID: 0}
+    OriginatorFaction: 
     HitPuff: 
+    HitFlags: 0
+    ExtraHitFlags: 0
+  AttackRandomFactor: 0
+  AttackHitFlags: 
   BulletPrefab: 
   AttackEffectPrefab: 
+  ParentAttackEffect: 1
   AttackSound: {fileID: 0}
   ShootPoint: {fileID: 0}
   AttackAnimationOverride: 
@@ -2030,11 +2038,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec63a36b837b8174783edee12a929664, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AnimController: {fileID: 95496705373911770}
   ActorController: {fileID: 114160393828224520}
-  AttackAnimationOverride: 
   CurrentAnimState: 0
   LockAnimState: 0
+  AnimController: {fileID: 95496705373911770}
+  AttackAnimationOverride: 
 --- !u!1 &1660413597538758
 GameObject:
   m_ObjectHideFlags: 0
@@ -3085,6 +3093,9 @@ MonoBehaviour:
   ParentController: {fileID: 114160393828224520}
   HitLocationOverride: 2
   HitMaterialOverride: 0
+  DamageMultiplier: 1
+  AllDamageIsPierce: 0
+  AlwaysApplyMultiplier: 1
 --- !u!1 &2157141011675274455
 GameObject:
   m_ObjectHideFlags: 0

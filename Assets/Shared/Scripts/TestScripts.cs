@@ -4,6 +4,7 @@ using UnityEngine;
 using CommonCore.Scripting;
 using CommonCore.State;
 using System.Globalization;
+using CommonCore;
 
 public static class TestScripts
 {
@@ -33,5 +34,11 @@ public static class TestScripts
     public static void PrintLocale()
     {
         Debug.Log("Current culture: " + CultureInfo.CurrentCulture);
+    }
+
+    [CCScript(ClassName = "Test", Name = "PrintColoredText")]
+    public static void PrintColoredText()
+    {
+        Subtitle.Show("<color=blue>Blue text!</color>\n<color=red>Red text!</color>", 5f, true);
     }
 }

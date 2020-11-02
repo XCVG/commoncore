@@ -52,10 +52,7 @@ namespace CommonCore.RpgGame.World
         public bool DestroyOnDeath = false;
         public bool DisableCollidersOnDeath = false;
         public bool DisableHitboxesOnDeath = false;
-        [Tooltip("Normal, Impact, Explosive, Energy, Poison, Thermnal")] //these might be absolutely fucked now
-        public float[] DamageResistance = { 0, 0, 0, 0, 0, 0};
-        [Tooltip("Normal, Impact, Explosive, Energy, Poison, Thermnal")]
-        public float[] DamageThreshold = { 0, 0, 0, 0, 0, 0 };
+        public DamageResistanceNode[] DamageResistances = null;
         public ActionSpecial OnDeathSpecial;
         public bool FeelPain = true;
         public float PainChance = 0.5f;
@@ -751,15 +748,26 @@ namespace CommonCore.RpgGame.World
                     return;
             }
 
-            //damage model is very stupid right now, we will make it better later
-            float dt = data.DamageType < DamageThreshold.Length ? DamageThreshold[(int)data.DamageType] : 0f;
-            float dr = data.DamageType < DamageThreshold.Length ? DamageResistance[(int)data.DamageType] : 0f;
-            float damageTaken = RpgValues.DamageTaken(data.Damage, data.DamagePierce, dt, dr);
+            //new way of doing dr/dt
+            float dt = 0, dr = 0;
+            foreach(var dNode in DamageResistances)
+            {
+                if((int)dNode.DamageType == data.DamageType)
+                {
+                    dt = dNode.DamageThreshold;
+                    dr = dNode.DamageResistance;
+                }
+            }
 
-            if (data.HitLocation == (int)ActorBodyPart.Head)
-                damageTaken *= 2.0f;
-            else if (data.HitLocation == (int)ActorBodyPart.LeftArm || data.HitLocation == (int)ActorBodyPart.LeftLeg || data.HitLocation == (int)ActorBodyPart.RightArm || data.HitLocation == (int)ActorBodyPart.RightLeg)
-                damageTaken *= 0.75f;
+            float damageTaken = RpgValues.DamageTaken(data, dt, dr);
+
+            if (!data.HitFlags.HasFlag(BuiltinHitFlags.IgnoreHitLocation))
+            {
+                if (data.HitLocation == (int)ActorBodyPart.Head)
+                    damageTaken *= 2.0f; //do we want more flexibility here?
+                else if (data.HitLocation == (int)ActorBodyPart.LeftArm || data.HitLocation == (int)ActorBodyPart.LeftLeg || data.HitLocation == (int)ActorBodyPart.RightArm || data.HitLocation == (int)ActorBodyPart.RightLeg)
+                    damageTaken *= 0.75f;
+            }
 
             damageTaken *= (1f / ConfigState.Instance.GetGameplayConfig().Difficulty.ActorStrength);
 
@@ -769,9 +777,9 @@ namespace CommonCore.RpgGame.World
             if (CurrentAiState == ActorAiState.Dead) //abort if we're already dead
                 return;
 
-            bool didTakePain = UnityEngine.Random.Range(0f, 1f) < PainChance; //shouldn't this be weighted by damage?
+            bool didTakePain = (data.HitFlags.HasFlag(BuiltinHitFlags.AlwaysPain) || UnityEngine.Random.Range(0f, 1f) < PainChance) && !data.HitFlags.HasFlag(BuiltinHitFlags.NoPain); //shouldn't this be weighted by damage?
 
-            if (Defensive && data.Originator != null && data.Originator != this)
+            if (Defensive && data.Originator != null && data.Originator != this && !data.HitFlags.HasFlag(BuiltinHitFlags.NeverAlert))
             {
                 FactionRelationStatus relation = FactionRelationStatus.Neutral;
                 if (data.Originator is PlayerController)

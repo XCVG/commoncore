@@ -49,7 +49,8 @@ namespace CommonCore.RpgGame.World
         static void Kill()
         {
             var ac = WorldConsoleCommands.SelectedObject.GetComponent<ActorController>();
-            ac.Health = 0;
+            //ac.Health = 0;
+            ac.Kill();
         }
 
         [Command]

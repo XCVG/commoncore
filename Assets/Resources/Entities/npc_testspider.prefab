@@ -2104,14 +2104,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EditorFormID: npc_testspider
+  EntityTags: []
   HitMaterial: 0
-  CharacterModelIdOverride: 
   InteractComponent: {fileID: 114617734609497678}
   TargetPoint: {fileID: 0}
   AnimationComponent: {fileID: 2454450528566267448}
   MovementComponent: {fileID: 4686881414460589033}
   AttackComponent: {fileID: 2570606474059766486}
   InteractionComponent: {fileID: 2277365034900726677}
+  AudioComponent: {fileID: 0}
   BaseAiState: 2
   CurrentAiState: 2
   LockAiState: 0
@@ -2121,20 +2122,11 @@ MonoBehaviour:
   Invincible: 0
   DieImmediately: 0
   DestroyOnDeath: 0
-  DamageResistance:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  DamageThreshold:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
+  DisableCollidersOnDeath: 0
+  DisableHitboxesOnDeath: 0
+  DamageResistance: []
+  DamageThreshold: []
+  DamageResistances: []
   OnDeathSpecial: {fileID: 0}
   FeelPain: 0
   PainChance: 0.5
@@ -2143,12 +2135,14 @@ MonoBehaviour:
   Aggressive: 1
   Faction: Monster
   Detectability: 1
+  IsTarget: 1
   Defensive: 1
   Infighting: 0
   Relentless: 0
   UseLineOfSight: 0
   SearchRadius: 25
   SearchInterval: 35
+  ChaseOptimalDistance: 0
   DisableInteractionOnHit: 1
   GrantXpOnDeath: 30
   RunOnChase: 1
@@ -2186,12 +2180,15 @@ MonoBehaviour:
   DeadInteractionTarget: 
   DeadInteractionSpecial: {fileID: 0}
   InteractionDisabledByHit: 0
+  DisableTooltip: 0
   TooltipOverride: Spider
   CorpseItems:
     Items:
     - Quantity: 5
       Condition: 0
       ItemModel: Gold
+    EnforceQuantityLimits: 0
+    TakeOnly: 0
 --- !u!114 &2570606474059766486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2206,6 +2203,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ActorController: {fileID: 114041014958377300}
   UseMelee: 1
+  UseSuicide: 0
+  AutoDamageEffector: 1
+  FriendlyFire: 0
   AttackRange: 1.5
   AttackStateWarmup: 0
   AttackStateDelay: 2
@@ -2216,12 +2216,20 @@ MonoBehaviour:
     Damage: 10
     DamagePierce: 1
     DamageType: 0
+    DamageEffector: 0
+    HarmFriendly: 0
     HitLocation: 0
     HitMaterial: 0
     Originator: {fileID: 0}
+    OriginatorFaction: 
     HitPuff: 
+    HitFlags: 0
+    ExtraHitFlags: 0
+  AttackRandomFactor: 0
+  AttackHitFlags: 
   BulletPrefab: 
   AttackEffectPrefab: 
+  ParentAttackEffect: 1
   AttackSound: {fileID: 0}
   ShootPoint: {fileID: 0}
   AttackAnimationOverride: 
@@ -2316,11 +2324,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec63a36b837b8174783edee12a929664, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AnimController: {fileID: 95739414101498982}
   ActorController: {fileID: 114041014958377300}
-  AttackAnimationOverride: attack
   CurrentAnimState: 3
   LockAnimState: 0
+  AnimController: {fileID: 95739414101498982}
+  AttackAnimationOverride: attack
 --- !u!1 &1861269284676826
 GameObject:
   m_ObjectHideFlags: 0

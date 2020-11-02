@@ -1,4 +1,5 @@
 ﻿using CommonCore.State;
+using CommonCore.World;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -31,8 +32,18 @@ namespace CommonCore.RpgGame.Rpg
 
     public enum ItemFlag
     {
-        Undefined, Unique,
-        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponProjectileIsEntity, WeaponNeverRandomize, WeaponNeverHarmFriendly, WeaponAlwaysHarmFriendly, MeleeWeaponUsePreciseCasting
+        Undefined,
+
+        Unique,
+
+        //weapon flags 
+        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponProjectileIsEntity, WeaponNeverRandomize, WeaponNeverHarmFriendly, WeaponAlwaysHarmFriendly,
+
+        //weapon flags (translated to HitFlags)
+        WeaponPierceConsiderShields, WeaponPierceConsiderArmor, WeaponIgnoreShields, WeaponIgnoreArmor, WeaponNeverAlert, WeaponNeverBlockable, WeaponNoPain, WeaponAlwaysPain, WeaponIgnoreHitLocation,
+
+        //melee-specific weapon flags
+        MeleeWeaponUsePreciseCasting
     }
 
     //an actual inventory item that the player has
@@ -259,6 +270,40 @@ namespace CommonCore.RpgGame.Rpg
 
                 return null;
             }
+        }
+
+        public BuiltinHitFlags GetHitFlags()
+        {
+            BuiltinHitFlags flags = BuiltinHitFlags.None;
+
+            if (CheckFlag(ItemFlag.WeaponPierceConsiderShields))
+                flags |= BuiltinHitFlags.PierceConsiderShields;
+
+            if (CheckFlag(ItemFlag.WeaponPierceConsiderArmor))
+                flags |= BuiltinHitFlags.PierceConsiderArmor;
+
+            if (CheckFlag(ItemFlag.WeaponIgnoreShields))
+                flags |= BuiltinHitFlags.IgnoreShields;
+
+            if (CheckFlag(ItemFlag.WeaponIgnoreArmor))
+                flags |= BuiltinHitFlags.IgnoreArmor;
+
+            if (CheckFlag(ItemFlag.WeaponNeverAlert))
+                flags |= BuiltinHitFlags.NeverAlert;
+
+            if (CheckFlag(ItemFlag.WeaponNeverBlockable))
+                flags |= BuiltinHitFlags.NeverBlockable;
+
+            if (CheckFlag(ItemFlag.WeaponNoPain))
+                flags |= BuiltinHitFlags.NoPain;
+
+            if (CheckFlag(ItemFlag.WeaponAlwaysPain))
+                flags |= BuiltinHitFlags.AlwaysPain;
+
+            if (CheckFlag(ItemFlag.WeaponIgnoreHitLocation))
+                flags |= BuiltinHitFlags.IgnoreHitLocation;
+
+            return flags;
         }
     }
 

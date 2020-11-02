@@ -2056,6 +2056,16 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 114041014958377300, guid: 736e85abde1d1dd429259631c3f6dd98,
+        type: 3}
+      propertyPath: EntityTags.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114041014958377300, guid: 736e85abde1d1dd429259631c3f6dd98,
+        type: 3}
+      propertyPath: EntityTags.Array.data[0]
+      value: TestSpider
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 736e85abde1d1dd429259631c3f6dd98, type: 3}
 --- !u!1 &864381914

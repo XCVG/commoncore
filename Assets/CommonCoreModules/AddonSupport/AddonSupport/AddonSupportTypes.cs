@@ -49,6 +49,7 @@ namespace CommonCore.AddonSupport
         public bool MatchParameterTypes { get; set; } = false;
         public bool CoerceInputTypes { get; set; } = false;
         public Type OutputType { get; set; } = null;
+        public bool UseAddonTypes { get; set; } = false;
     }
 
     internal class ProxyUtils
@@ -85,7 +86,13 @@ namespace CommonCore.AddonSupport
             if (args == null)
                 args = new object[0];
 
-            Type type = CCBase.BaseGameTypes
+            IEnumerable<Type> types;
+            if (options.UseAddonTypes)
+                types = CoreUtils.GetLoadedTypes();
+            else
+                types = CCBase.BaseGameTypes;
+
+            Type type = types
                 .Where(t => t.FullName == typeName)
                 .Single();
 

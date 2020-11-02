@@ -39,6 +39,7 @@ namespace CommonCore
 
         public List<Assembly> LoadedAssemblies { get; private set; } = new List<Assembly>();
         public Dictionary<string, ResourceHandle> LoadedResources { get; private set; } = new Dictionary<string, ResourceHandle>();
+        public List<string> LoadedScenes { get; private set; } = new List<string>();
 
         //references
         public AddonManager AddonManager { get; set; }

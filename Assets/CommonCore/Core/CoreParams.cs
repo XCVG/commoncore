@@ -48,7 +48,7 @@ namespace CommonCore
         public static bool SetSafeResolutionOnExit { get; private set; } = true;
         public static Vector2Int SafeResolution { get; private set; } = new Vector2Int(1280, 720);
 
-        public static UIThemePolicy UIThemeMode { get; private set; } = UIThemePolicy.Auto;
+        public static UIThemePolicy UIThemeMode { get; private set; } = UIThemePolicy.ExplicitOnly;
         public static string DefaultUITheme { get; private set; } = "ThresholdTheme";
 
         public static float DelayedEventPollInterval { get; private set; } = 1.0f;

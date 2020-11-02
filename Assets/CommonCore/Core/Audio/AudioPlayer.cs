@@ -211,7 +211,9 @@ namespace CommonCore.Audio
 
         public void HandleGameEnd()
         {
-            StopMusic(MusicSlot.User); //just this for now
+            //disable/release user music component
+            SelectUserMusicComponent(null);
+            return;
         }
 
         private void HandleMusicChanged()
@@ -654,7 +656,7 @@ namespace CommonCore.Audio
         /// <remarks>
         /// <para>No longer effects playback state</para>
         /// </remarks>
-        public void SetMusic(AudioClip clip, MusicSlot slot, float volume, bool loop, bool retain) => SetMusic(clip, clip.name, slot, volume, loop, retain);
+        public void SetMusic(AudioClip clip, MusicSlot slot, float volume, bool loop, bool retain) => SetMusic(clip, clip.Ref()?.name, slot, volume, loop, retain);
 
         /// <summary>
         /// Sets the music in a slot to the specified audio.

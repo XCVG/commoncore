@@ -2126,6 +2126,7 @@ MonoBehaviour:
   OffhandKickPoint: {fileID: 4916345796375513965}
   OffhandKickRange: 1.5
   OffhandKickDamage: 10
+  OffhandKickFlags: 
   OffhandKickDelay: 1
   OffhandKickForce: 1000
   OffhandKickSound: {fileID: 8488413906761084787}

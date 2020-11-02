@@ -27,6 +27,7 @@ namespace CommonCore
         public static PlayerViewType DefaultPlayerView { get; private set; } = PlayerViewType.PreferFirst;
 
         public static bool UseFallDamage { get; private set; } = true;
+        [Obsolete]
         public static bool UseRandomDamage { get; private set; } = true;
         public static bool UseFriendlyFire { get; private set; } = true; //note that this can be overridden by player weapons and actor attack components
         public static float DamageFlashThreshold { get; private set; } = 0.01f; //very small because health is reported as a fraction

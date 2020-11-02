@@ -237,13 +237,18 @@ namespace CommonCore.StringSub
 
         internal string GetMacro(string sequence)
         {
-            // l:*:* : Lookup (string substitution) List:String
             // general format is *:* where the first part is where to search
             // can add parameters with | but parsing this is deferred to the subbers
 
             string result = "?ERROR?";
             try
             {
+                //hack to handle preserving Unity-compatible rich text color tags
+                if(sequence.StartsWith("color", StringComparison.Ordinal))
+                {
+                    return $"<{sequence}>";
+                }
+
                 string[] sequenceParts = sequence.Split(':');
 
                 switch (sequenceParts[0])
@@ -255,7 +260,11 @@ namespace CommonCore.StringSub
                         result = ">";
                         break;
                     case "l":
+                        // l:*:* : Lookup (string substitution) List:String
                         result = GetString(sequenceParts[2], sequenceParts[1], false, false);
+                        break;
+                    case "/color":
+                        result = "</color>"; //special handling for color closing tag
                         break;
                     case "strong":
                         result = "<b>"; //handling dialogue written for proper html

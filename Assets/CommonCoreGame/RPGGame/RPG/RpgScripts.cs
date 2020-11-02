@@ -33,7 +33,7 @@ namespace CommonCore.RpgGame
         [CCScript(ClassName = "SessionFlags", Name = "NoFlag", NeverPassExecutionContext = true)]
         public static bool NoSessionFlag(string sessionFlag)
         {
-            return MetaState.Instance.SessionFlags.Contains(sessionFlag);
+            return !MetaState.Instance.SessionFlags.Contains(sessionFlag);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CommonCore.State;
+using CommonCore.UI;
 using System;
 using System.IO;
 using UnityEngine;
@@ -159,6 +160,45 @@ namespace CommonCore
 
             throw new NullReferenceException(); //not having a scene controller is fatal
         }
-        
+
+        /// <summary>
+        /// Gets the HUD controller (returns null on fail)
+        /// </summary>
+        public static BaseHUDController TryGetHudController()
+        {
+            if (BaseHUDController.Current != null)
+                return BaseHUDController.Current;
+
+            // try searching UIRoot
+            var uiRoot = CoreUtils.GetUIRoot();
+            if(uiRoot != null)
+            {
+                foreach(Transform t in uiRoot)
+                {
+                    BaseHUDController bhc = t.GetComponent<BaseHUDController>();
+                    if (bhc != null)
+                        return bhc;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the HUD controller (throws on fail)
+        /// </summary>
+        public static BaseHUDController GetHudController()
+        {
+            BaseHUDController bhc = TryGetHudController();
+
+            if (bhc != null)
+                return bhc;
+
+            //still couldn't find it, throw an error
+            Debug.LogError("Couldn't find HudController");
+
+            throw new NullReferenceException(); //not having a scene controller is fatal
+        }
+
     }
 }

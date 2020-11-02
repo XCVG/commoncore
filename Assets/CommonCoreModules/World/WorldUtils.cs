@@ -451,7 +451,7 @@ namespace CommonCore.World
                 if (!(hit.Controller is ITakeDamage itd))
                     continue;
 
-                var ahi = new ActorHitInfo(actorHitInfo.Damage, actorHitInfo.DamagePierce, actorHitInfo.DamageType, actorHitInfo.DamageEffector, damageFriendly, hit.HitLocation, hit.HitMaterial, actorHitInfo.Originator, actorHitInfo.OriginatorFaction, actorHitInfo.HitPuff, hit.HitPoint);
+                var ahi = new ActorHitInfo(actorHitInfo);
 
                 if (useFalloff)
                 {

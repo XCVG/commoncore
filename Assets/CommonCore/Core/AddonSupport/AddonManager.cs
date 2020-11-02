@@ -66,6 +66,11 @@ namespace CommonCore
             return LoadedScenes.ToArray();
         }
 
+        public IEnumerable<Assembly> EnumerateAddonAssemblies()
+        {
+            return LoadedAddons.Select(kvp => kvp.Value.LoadedAssemblies).SelectMany(x => x);
+        }
+
         public bool CanLoadAddons => CoreParams.ScriptingBackend == ScriptingImplementation.Mono2x && CoreParams.Platform != RuntimePlatform.WebGLPlayer;
 
         public void WarnOnSyncLoad()
@@ -273,6 +278,11 @@ namespace CommonCore
 
         }
 
+        public void RegisterLoadedScenes(AddonLoadContext context)
+        {
+            LoadedScenes.UnionWith(context.LoadedScenes);
+        }
+
         private async Task LoadResourcesInFolderRecurseAsync(AddonLoadContext context, string folderPath, string targetPath)
         {
             if (!Directory.Exists(folderPath))
@@ -362,7 +372,7 @@ namespace CommonCore
 
             if(scenes != null && scenes.Length > 0)
             {
-                LoadedScenes.UnionWith(scenes);
+                context.LoadedScenes.AddRange(scenes);                
             }
             
             var names = assetBundle.GetAllAssetNames();

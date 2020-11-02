@@ -68,8 +68,7 @@ namespace CommonCore.UI
             //set music
             if (!string.IsNullOrEmpty(Music))
             {
-                AudioPlayer.Instance.SetMusic(Music, MusicSlot.Ambient, MusicVolume, LoopMusic, false);
-                AudioPlayer.Instance.StartMusic(MusicSlot.Ambient);
+                AudioPlayer.Instance.PlayMusic(Music, MusicSlot.Cinematic, MusicVolume, LoopMusic, false);
             }
 
             //set background

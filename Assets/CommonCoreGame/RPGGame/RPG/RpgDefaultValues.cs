@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonCore.World;
+using System;
 using UnityEngine;
 
 namespace CommonCore.RpgGame.Rpg
@@ -17,14 +18,14 @@ namespace CommonCore.RpgGame.Rpg
         public static int PotentialPointsForLevel(int newLevel, CharacterModel character)
         {
             return (2
-                + character.BaseStats.Stats[StatType.Erudition]
-                + (int)(0.5f * (float)character.BaseStats.Stats[StatType.Intuition])
+                + (int)(0.5f * (float)character.BaseStats.Stats[StatType.Erudition])
+                + (int)(0.25f * (float)character.BaseStats.Stats[StatType.Intuition])
                 );
         }
 
         public static int SkillGainForPoints(int points)
         {
-            return points * 10;
+            return points * 3;
         }
 
         public static int LevelsForExperience(CharacterModel character)
@@ -128,33 +129,68 @@ namespace CommonCore.RpgGame.Rpg
         }
 
         /// <summary>
-        /// Calculates applied damage given input damage and resistance
+        /// Calculates applied damage given hitinfo and armor values
         /// </summary>
-        public static float DamageTaken(float damage, float pierce, float threshold, float resistance) //this is a dumb spot and we will move it later
+        public static float DamageTaken(ActorHitInfo hitInfo, float threshold, float resistance)
         {
+            float damage = hitInfo.Damage;
+            float damagePierce = hitInfo.DamagePierce;
+
+            if (hitInfo.HitFlags.HasFlag(BuiltinHitFlags.IgnoreArmor))
+                return damage + damagePierce;
+
+            if(hitInfo.HitFlags.HasFlag(BuiltinHitFlags.PierceConsiderArmor))
+            {
+                damage += damagePierce;
+                damagePierce = 0;
+            }
+
             float d1 = damage * ((100f - Mathf.Min(resistance, 99f)) / 100f);
             float dt = Mathf.Max(0, threshold); //threshold-pierce
             float d2 = Mathf.Max(d1 - dt, damage * 0.1f);
-            float dp = pierce;
-            if (GameParams.UseRandomDamage)
-            {
-                float dRand = UnityEngine.Random.Range(0.75f, 1.25f);
-                d2 *= dRand;
-                dp *= dRand;
-            }
+
+            float dp = damagePierce;
+
             return d2 + dp;
         }
 
-        public static (float damageToShields, float damageToArmor, float damageToCharacter) DamageRatio(float damage, float damagePierce, CharacterModel character)
+        public static (float damageToShields, float damageToArmor, float damageToCharacter) DamageRatio(ActorHitInfo hitInfo, CharacterModel character)
         {
-            if (character.DerivedStats.ShieldParams.MaxShields == 0 || character.Shields == 0)
+            //for now we'll keep returning all 3 values but we'll probably combine the functionality of DamageTaken into this as well and just spit out "damage to shields" and "raw damage"
+
+            float damage = hitInfo.Damage;
+            float damagePierce = hitInfo.DamagePierce;
+
+            if (character.DerivedStats.ShieldParams.MaxShields == 0 || character.Shields == 0 || hitInfo.HitFlags.HasFlag(BuiltinHitFlags.IgnoreShields))
+            {
+                if (hitInfo.HitFlags.HasFlag(BuiltinHitFlags.PierceConsiderArmor))
+                {
+                    damage += damagePierce;
+                    damagePierce = 0;
+                }
+
                 return (0, damage, damagePierce);
+            }
 
             //keep it simple for now
             float shields = character.Shields;
             float leakRate = character.DerivedStats.ShieldParams.LeakRate;
-            float damageToShields = Mathf.Min(shields, damage - (damage * leakRate));
+            float damageToShieldsFromPierce = 0;
+
+            if (hitInfo.HitFlags.HasFlag(BuiltinHitFlags.PierceConsiderShields))
+            {
+                damageToShieldsFromPierce = Mathf.Min(shields, damagePierce - (damagePierce * leakRate));
+                damagePierce -= damageToShieldsFromPierce;
+            }
+
+            float damageToShields = Mathf.Min(Mathf.Max(0, shields - damageToShieldsFromPierce), (damage - (damage * leakRate)));
             float damageToArmor = damage - damageToShields;
+
+            if (hitInfo.HitFlags.HasFlag(BuiltinHitFlags.PierceConsiderArmor))
+            {
+                damageToArmor += damagePierce;
+                damagePierce = 0;
+            }
 
             return (damageToShields, damageToArmor, damagePierce);
         }

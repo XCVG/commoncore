@@ -1,5 +1,6 @@
 ﻿using CommonCore.Messaging;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CommonCore.World
@@ -102,14 +103,34 @@ namespace CommonCore.World
         public string OriginatorFaction;
         public string HitPuff;
         public Vector3? HitCoords; //I'm no longer 100% sure this should be nullable
+        public BuiltinHitFlags HitFlags;
 
-        [Obsolete]
-        public ActorHitInfo(float damage, float damagePierce, int dtype, int hitlocation, int hitmaterial, BaseController originator)
-            : this(damage, damagePierce, dtype, 0, true, hitlocation, hitmaterial, originator, null, null, null)
+        public int ExtraHitFlags;
+        public IDictionary<string, object> ExtraData;
+
+        public ActorHitInfo(ActorHitInfo original)
         {
+            Damage = original.Damage;
+            DamagePierce = original.DamagePierce;
+            DamageType = original.DamageType;
+            DamageEffector = original.DamageEffector;
+            HarmFriendly = original.HarmFriendly;
+            HitLocation = original.HitLocation;
+            HitMaterial = original.HitMaterial;
+            Originator = original.Originator;
+            OriginatorFaction = original.OriginatorFaction;
+            HitPuff = original.HitPuff;
+            HitCoords = original.HitCoords;
+            HitFlags = original.HitFlags;
+            ExtraHitFlags = original.ExtraHitFlags;
+
+            if (original.ExtraData != null)
+                ExtraData = new Dictionary<string, object>(original.ExtraData);
+            else
+                ExtraData = null;
         }
 
-        public ActorHitInfo(float damage, float damagePierce, int damageType, int damageEffector, bool harmFriendly, int hitlocation, int hitmaterial, BaseController originator, string originatorFaction, string hitPuff, Vector3? hitCoords)
+        public ActorHitInfo(float damage, float damagePierce, int damageType, int damageEffector, bool harmFriendly, int hitlocation, int hitmaterial, BaseController originator, string originatorFaction, string hitPuff, Vector3? hitCoords, BuiltinHitFlags hitFlags)
         {
             Damage = damage;
             DamagePierce = damagePierce;
@@ -122,7 +143,29 @@ namespace CommonCore.World
             OriginatorFaction = originatorFaction;
             HitPuff = hitPuff;
             HitCoords = hitCoords;
-        }
+            HitFlags = hitFlags;
+            ExtraHitFlags = 0;
+
+            ExtraData = null;
+        }        
+    }
+
+    /// <summary>
+    /// Builtin hit flags
+    /// </summary>
+    [Flags]
+    public enum BuiltinHitFlags
+    {
+        None = 0,
+        PierceConsiderShields = 1,
+        PierceConsiderArmor = 2,
+        IgnoreShields = 4,
+        IgnoreArmor = 8,
+        NeverAlert = 16,
+        NeverBlockable = 32,
+        NoPain = 64,
+        AlwaysPain = 128,
+        IgnoreHitLocation = 256
     }
 
     /// <summary>
