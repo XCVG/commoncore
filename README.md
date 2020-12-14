@@ -1,5 +1,5 @@
 # CommonCore RPG Libraries for Unity
-### Version 2.0.0rc1
+### Version 2.0.1
 ### For Unity 2018.4+
 
 ## Introduction
