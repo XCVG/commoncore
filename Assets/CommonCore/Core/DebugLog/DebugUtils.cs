@@ -56,6 +56,7 @@ namespace CommonCore.DebugLog
                     Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
                 File.WriteAllText(filePath, jsonData);
+                CDebug.LogEx($"Wrote object {o.Ref()?.GetType().Name} to file {name}", LogLevel.Message, null);
             }
             catch(Exception e)
             {
@@ -77,6 +78,7 @@ namespace CommonCore.DebugLog
                     Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
                 File.WriteAllText(filePath, s, Encoding.UTF8);
+                CDebug.LogEx($"Wrote text to file {name}", LogLevel.Message, null);
             }
             catch (Exception e)
             {
@@ -98,6 +100,7 @@ namespace CommonCore.DebugLog
                     Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
                 File.WriteAllBytes(filePath, b);
+                CDebug.LogEx($"Wrote binary data to file {name}", LogLevel.Message, null);
             }
             catch (Exception e)
             {

@@ -92,7 +92,7 @@ namespace CommonCore.UI
             bool closeUsingMainMenuController(MainMenuController mmc)
             {
                 var parentPanel = getPanelController();
-                if (parentPanel != null && parentPanel == mmc.CurrentPanel)
+                if (parentPanel != null && parentPanel.gameObject == mmc.CurrentPanel)
                 {
                     mmc.CloseCurrentPanel();
                     return true;

@@ -15,7 +15,7 @@ namespace CommonCore
     {
 
         //*****system version info
-        public static Version VersionCode { get; private set; } = new Version(2, 0, 0); //2.0.0
+        public static Version VersionCode { get; private set; } = new Version(2, 0, 1); //2.0.0
         public static string VersionName { get; private set; } = "Balmora"; //start with A, locations from RPGs
         public static Version UnityVersion { get; private set; } //auto-set
         public static string UnityVersionName { get; private set; } //auto-set

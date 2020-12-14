@@ -35,13 +35,15 @@ namespace CommonCore.World
 
         public bool IsReadOnly => ((ICollection<string>)Flags).IsReadOnly;
 
-        public void Add<T>(T item) where T : Enum => Add(item.ToString());
+        public void Add<T>(T item) where T : struct, Enum => Add(item.ToString());
 
         public bool Add(string item) => Flags.Add(item);
 
         public void Clear() => Flags.Clear();
 
         public bool Contains(string item) => Flags.Contains(item);
+
+        public bool Contains<T>(T item) where T : struct, Enum => Flags.Contains(item.ToString());
 
         public void CopyTo(string[] array, int arrayIndex) => Flags.CopyTo(array, arrayIndex);
 
@@ -62,6 +64,8 @@ namespace CommonCore.World
         public bool Overlaps(IEnumerable<string> other) => Flags.Overlaps(other);
 
         public bool Remove(string item) => Flags.Remove(item);
+
+        public bool Remove<T>(T item) where T : struct, Enum => Flags.Remove(item.ToString());
 
         public bool SetEquals(IEnumerable<string> other) => Flags.SetEquals(other);
 

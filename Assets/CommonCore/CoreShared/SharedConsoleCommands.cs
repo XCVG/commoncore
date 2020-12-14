@@ -155,7 +155,10 @@ public static class SharedConsoleCommands
     [Command]
     static void Reload()
     {
-        SharedUtils.ChangeScene(SceneManager.GetActiveScene().name);
+        if (GameState.Exists)
+            SharedUtils.ChangeScene(SceneManager.GetActiveScene().name);
+        else
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     /// <summary>

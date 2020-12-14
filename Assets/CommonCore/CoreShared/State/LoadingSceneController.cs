@@ -1,4 +1,5 @@
-﻿using CommonCore.Scripting;
+﻿using CommonCore.Config;
+using CommonCore.Scripting;
 using CommonCore.UI;
 using System;
 using System.Collections;
@@ -73,11 +74,15 @@ namespace CommonCore.State
                         MetaState.Instance.NextScene = "MainMenuScene";                    
                     StartCoroutine(LoadNextSceneAsync());
                 }
-                //TODO move endgame into here
+
             }
             catch(Exception e)
             {
                 //pokemon exception handling
+
+                Debug.LogError($"Error loading scene ({e.GetType().Name})");
+                if (ConfigState.Instance.UseVerboseLogging)
+                    Debug.LogException(e);                
                 Modal.PushConfirmModal(string.Format("{0}\n{1}", e.ToString(), e.StackTrace), "Error loading scene", "Exit", "Return", null, OnErrorConfirmed);
             }            
 
