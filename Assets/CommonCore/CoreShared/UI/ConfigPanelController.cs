@@ -230,7 +230,7 @@ namespace CommonCore.UI
         private void OnConfirmed(ModalStatusCode status, string tag)
         {
             string sceneName = SceneManager.GetActiveScene().name;
-            if(sceneName == "MainMenuScene")
+            if(sceneName == CoreParams.MainMenuScene)
                 SceneManager.LoadScene(sceneName);
             else
                 PaintValues();

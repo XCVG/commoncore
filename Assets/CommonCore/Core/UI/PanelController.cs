@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using CommonCore.LockPause;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -106,5 +107,7 @@ namespace CommonCore.UI
                     uiModule.ApplyThemeRecurse(root);
             }
         }
+
+        protected bool AllowGameStateInteraction => (LockPauseModule.GetPauseLockState() ?? PauseLockType.AllowMenu) >= PauseLockType.AllowMenu;
     }
 }

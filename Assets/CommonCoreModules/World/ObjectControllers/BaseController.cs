@@ -14,7 +14,11 @@ namespace CommonCore.World
         [SerializeField]
         protected string[] EntityTags;
 
+        public bool HandleRestorableExtraData = false;
+
         public int HitMaterial = 0;
+
+        protected virtual bool DeferRestorableExtraDataToSubclass => false;
 
         public virtual HashSet<string> Tags
         {
@@ -59,21 +63,34 @@ namespace CommonCore.World
 
         }
 
-        //TODO rename GetExtraData and SetExtraData to Commit and Restore ?
-
-        //save/restore methods
+        //commit/restore methods
         //probably should have used properties but oh well
-        public virtual Dictionary<string, System.Object> GetExtraData()
+        public virtual Dictionary<string, object> CommitEntityData()
         {
-            return null;
+            var data = new Dictionary<string, object>();
+
+            if(HandleRestorableExtraData && !DeferRestorableExtraDataToSubclass)
+            {
+                foreach (IHaveRestorableExtraData component in GetComponentsInChildren<IHaveRestorableExtraData>(true))
+                    component.CommitExtraData(data);
+            }
+
+            return data;
+        }        
+        public virtual void RestoreEntityData(Dictionary<string, object> data)
+        {
+            if (HandleRestorableExtraData && !DeferRestorableExtraDataToSubclass)
+            {
+                foreach (IHaveRestorableExtraData component in GetComponentsInChildren<IHaveRestorableExtraData>(true))
+                    component.RestoreExtraData(data);
+            }
+
+            return;
         }
+
         public virtual bool GetVisibility()
         {
             return true;
-        }
-        public virtual void SetExtraData(Dictionary<string, System.Object> data)
-        {
-            return;
         }
         public virtual void SetVisibility(bool visible)
         {

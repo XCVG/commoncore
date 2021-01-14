@@ -88,6 +88,7 @@ namespace CommonCore.RpgGame.World
         private bool PendingADSExit;
         private WeaponTransitionState TransitionState;
         private float OldWeaponLowerTime; //need to save this because we lose the item model before transition
+        private bool OldWeaponNoLowerAnimation;
 
         //offhand kick
         private float TimeToNextKick;
@@ -260,9 +261,10 @@ namespace CommonCore.RpgGame.World
             {
                 //Debug.Log("hit transition state handling");
 
-                if(TransitionState == WeaponTransitionState.Lowering)
-                {                    
-                    if(GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.RightWeapon))
+                if(TransitionState == WeaponTransitionState.Lowering) 
+                {
+                    //lowering is done at this point, raise the next weapon
+                    if (GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.RightWeapon))
                     {
                         //swap the viewmodel, begin animation
                         ClearViewModel(EquipSlot.RightWeapon);
@@ -273,8 +275,15 @@ namespace CommonCore.RpgGame.World
                                                 
                         if (RightViewModel != null)
                         {
-                            RightViewModel.SetState(ViewModelState.Raise, ViewModelHandednessState.TwoHanded, 1);
-                            Hands.SetState(ViewModelState.Raise, RightViewModel, ViewModelHandednessState.TwoHanded, 1);
+                            if (wim is DummyWeaponItemModel && !wim.CheckFlag(ItemFlag.DummyWeaponUseViewModelRaiseLower))
+                            {
+                                //nop; we will handle it ourselves, or not use it at all
+                            }
+                            else
+                            {
+                                RightViewModel.SetState(ViewModelState.Raise, ViewModelHandednessState.TwoHanded, 1);
+                                Hands.SetState(ViewModelState.Raise, RightViewModel, ViewModelHandednessState.TwoHanded, 1);
+                            }
                         }
                         else
                         {
@@ -302,15 +311,24 @@ namespace CommonCore.RpgGame.World
                     //raising done, switch to idle
                     if (GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.RightWeapon))
                     {
+                        var wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel as WeaponItemModel;
+
                         if (RightViewModel != null)
                         {
-                            RightViewModel.SetState(ViewModelState.Idle, ViewModelHandednessState.TwoHanded, 1);
-                            Hands.SetState(ViewModelState.Idle, RightViewModel, ViewModelHandednessState.TwoHanded, 1);
+                            if (wim is DummyWeaponItemModel && !wim.CheckFlag(ItemFlag.DummyWeaponUseViewModelRaiseLower))
+                            {
+                                //nop; we will handle it ourselves, or not use it at all
+                            }
+                            else
+                            {
+                                RightViewModel.SetState(ViewModelState.Idle, ViewModelHandednessState.TwoHanded, 1);
+                                Hands.SetState(ViewModelState.Idle, RightViewModel, ViewModelHandednessState.TwoHanded, 1);
+                            }
                         }
                         else
                             Hands.SetState(ViewModelState.Idle, null, ViewModelHandednessState.TwoHanded, 1);
 
-                        OldWeaponLowerTime = ((WeaponItemModel)GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel).LowerTime;
+                        OldWeaponLowerTime = wim.LowerTime;                        
                     }
                     else
                     {
@@ -318,6 +336,7 @@ namespace CommonCore.RpgGame.World
                             Hands.SetState(ViewModelState.Idle, FallbackViewModel, ViewModelHandednessState.TwoHanded, 1);
 
                         OldWeaponLowerTime = FallbackWeapon?.LowerTime ?? 0;
+                        OldWeaponNoLowerAnimation = false;
                     }
                     TransitionState = WeaponTransitionState.None;
                     return;
@@ -369,66 +388,73 @@ namespace CommonCore.RpgGame.World
 
                 WeaponItemModel weaponModel = GameState.Instance.PlayerRpgState.Equipped.GetOrDefault(EquipSlot.RightWeapon, null)?.ItemModel as WeaponItemModel;
 
-                if (MappedInput.GetButtonDown(DefaultControls.Fire))
+                if (weaponModel is DummyWeaponItemModel)
                 {
-                    //-if left weapon equipped, fire that weapon, otherwise,
-                    //-if fallback weapon exists, fire that weapon
-                                       
-                    if (rightEquipped)
-                    {
-                        //fire right weapon
-                        if (weaponModel is RangedWeaponItemModel)
-                            DoRangedAttack(EquipSlot.RightWeapon);
-                        else
-                            DoMeleeAttack(EquipSlot.RightWeapon);
-                    }
-                    else if(!string.IsNullOrEmpty(FallbackItemModel))
-                    {
-                        if(FallbackWeapon != null)
-                        {
-                            DoMeleeAttack(EquipSlot.None);
-                        }
-                        //else nop, no fallback defined
-                    }
+                    //nop
                 }
-                else if (MappedInput.GetButtonDown(DefaultControls.Reload))
+                else
                 {
-                    DoReload();
-                }
-                else if(ConfigState.Instance.GetGameplayConfig().HoldAds && weaponModel != null && weaponModel.CheckFlag(ItemFlag.WeaponHasADS))
-                {
-                    //handle ADS (hold variant)
-                    if(!PendingADSExit && !IsReloading)
+
+                    if (MappedInput.GetButtonDown(DefaultControls.Fire))
                     {
-                        bool adsButtonHeld = MappedInput.GetButton(DefaultControls.AltFire);
-                        if(adsButtonHeld && !IsADS && !PlayerController.MovementComponent.IsRunning)
+                        //-if left weapon equipped, fire that weapon, otherwise,
+                        //-if fallback weapon exists, fire that weapon
+
+                        if (rightEquipped)
                         {
-                            ToggleADS(); //enter ADS
+                            //fire right weapon
+                            if (weaponModel is RangedWeaponItemModel)
+                                DoRangedAttack(EquipSlot.RightWeapon);
+                            else
+                                DoMeleeAttack(EquipSlot.RightWeapon);
                         }
-                        else if(!adsButtonHeld && IsADS)
+                        else if (!string.IsNullOrEmpty(FallbackItemModel))
                         {
-                            ToggleADS(); //exit ADS
-                        }
-                    }
-                }
-                else if (MappedInput.GetButtonDown(DefaultControls.AltFire))
-                {
-                    //handle ADS
-                    //TODO eventually altfire
-                    
-                    if(!PendingADSExit && !PlayerController.MovementComponent.IsRunning)
-                    {                        
-                        if(rightEquipped)
-                        {
-                            var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel;
-                            if (rightWeaponModel.CheckFlag(ItemFlag.WeaponHasADS))
+                            if (FallbackWeapon != null)
                             {
-                                ToggleADS();
+                                DoMeleeAttack(EquipSlot.None);
+                            }
+                            //else nop, no fallback defined
+                        }
+                    }
+                    else if (MappedInput.GetButtonDown(DefaultControls.Reload))
+                    {
+                        DoReload();
+                    }
+                    else if (ConfigState.Instance.GetGameplayConfig().HoldAds && weaponModel != null && weaponModel.CheckFlag(ItemFlag.WeaponHasADS))
+                    {
+                        //handle ADS (hold variant)
+                        if (!PendingADSExit && !IsReloading)
+                        {
+                            bool adsButtonHeld = MappedInput.GetButton(DefaultControls.AltFire);
+                            if (adsButtonHeld && !IsADS && !PlayerController.MovementComponent.IsRunning)
+                            {
+                                ToggleADS(); //enter ADS
+                            }
+                            else if (!adsButtonHeld && IsADS)
+                            {
+                                ToggleADS(); //exit ADS
                             }
                         }
-                    }                    
+                    }
+                    else if (MappedInput.GetButtonDown(DefaultControls.AltFire))
+                    {
+                        //handle ADS
+                        //TODO eventually altfire
+
+                        if (!PendingADSExit && !PlayerController.MovementComponent.IsRunning)
+                        {
+                            if (rightEquipped)
+                            {
+                                var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel;
+                                if (rightWeaponModel.CheckFlag(ItemFlag.WeaponHasADS))
+                                {
+                                    ToggleADS();
+                                }
+                            }
+                        }
+                    }
                 }
-                
 
             }
 
@@ -439,7 +465,7 @@ namespace CommonCore.RpgGame.World
                 {
                     bool rightEquipped = GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.RightWeapon);
                     var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel;
-                    if (rightEquipped && rightWeaponModel.CheckFlag(ItemFlag.WeaponHasADS))
+                    if (rightEquipped && !(rightWeaponModel is DummyWeaponItemModel) && rightWeaponModel.CheckFlag(ItemFlag.WeaponHasADS))
                     {
                         ToggleADS();
                     }
@@ -736,20 +762,25 @@ namespace CommonCore.RpgGame.World
 
                     //bend bullets if autoaim is enabled
                     var autoaim = ConfigState.Instance.GetGameplayConfig().AimAssist;
-                    if(autoaim != AimAssistState.Off)
+                    Transform intendedTarget = null;
+                    //if(autoaim != AimAssistState.Off)
                     {
                         //we "probe" to see if we would have hit anyway, and don't correct if we did
                         var probeHit = WorldUtils.RaycastAttackHit(shootPoint.position, shootPoint.forward, AutoaimCastRange * 1.25f, true, false, PlayerController);
-                        if (probeHit.Controller == null)
+                        if (probeHit.Controller == null && autoaim != AimAssistState.Off)
                         {
                             float castSize = autoaim == AimAssistState.Strong ? AutoaimStrongCastSize : AutoaimWeakCastSize;
                             var autoaimHit = WorldUtils.SpherecastAttackHit(shootPoint.position, shootPoint.forward, castSize * 0.5f, AutoaimCastRange, true, false, PlayerController);
                             if (autoaimHit.Controller != null)
                             {
                                 fireVec = (autoaimHit.HitPoint - shootPoint.position).normalized;
+                                intendedTarget = autoaimHit.Controller.transform;
                             }
                         }
+                        else
+                            intendedTarget = probeHit.Controller.Ref()?.transform;
                     }
+                    bulletScript.Target = intendedTarget;
 
                     //apply spread
                     fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread) * spreadMoveFactor * spreadRpgFactor, Vector3.up) * fireVec;
@@ -934,7 +965,8 @@ namespace CommonCore.RpgGame.World
                     if (TransitionState == WeaponTransitionState.Lowering) //guard. Do we need one for Raising as well?
                     {
                         //Debug.Log("lowering hack guard");
-                        OldWeaponLowerTime = 0; //this forces it to clear the viewmodel also
+                        OldWeaponLowerTime = 0; //this forces it to clear the viewmodel 
+                        //OldWeaponNoLowerAnimation = false;
                     }
 
                     //Debug.Log(OldWeaponLowerTime);
@@ -954,8 +986,15 @@ namespace CommonCore.RpgGame.World
 
                         if (RightViewModel != null)
                         {
-                            RightViewModel.SetState(ViewModelState.Raise, ViewModelHandednessState.TwoHanded, 1);
-                            Hands.SetState(ViewModelState.Raise, RightViewModel, ViewModelHandednessState.TwoHanded, 1);
+                            if (wim is DummyWeaponItemModel && !wim.CheckFlag(ItemFlag.DummyWeaponUseViewModelRaiseLower))
+                            {
+                                //nop; we will handle it ourselves, or not use it at all
+                            }
+                            else
+                            {
+                                RightViewModel.SetState(ViewModelState.Raise, ViewModelHandednessState.TwoHanded, 1);
+                                Hands.SetState(ViewModelState.Raise, RightViewModel, ViewModelHandednessState.TwoHanded, 1);
+                            }
                         }
                         else
                             Hands.SetState(ViewModelState.Idle, null, ViewModelHandednessState.TwoHanded, 1);
@@ -969,13 +1008,25 @@ namespace CommonCore.RpgGame.World
                         SetViewModel(EquipSlot.RightWeapon);
                         HandleCrosshair();
                         OldWeaponLowerTime = wim.LowerTime;
+                        OldWeaponNoLowerAnimation = wim is DummyWeaponItemModel && !wim.CheckFlag(ItemFlag.DummyWeaponUseViewModelRaiseLower);
 
                         if (RightViewModel != null)
-                            RightViewModel.SetState(ViewModelState.Idle, ViewModelHandednessState.TwoHanded, 1);
+                        {
+                            if (wim is DummyWeaponItemModel && !wim.CheckFlag(ItemFlag.DummyWeaponUseViewModelRaiseLower))
+                            {
+                                //nop; we will handle it ourselves, or not use it at all
+                            }
+                            else
+                            {
+                                RightViewModel.SetState(ViewModelState.Idle, ViewModelHandednessState.TwoHanded, 1);
+                            }
+                            //hands.setstate?
+                        }
 
                         TransitionState = WeaponTransitionState.None;
                     }
 
+                    OldWeaponNoLowerAnimation = wim is DummyWeaponItemModel && !wim.CheckFlag(ItemFlag.DummyWeaponUseViewModelRaiseLower);
                 }
                 else
                 {
@@ -1003,6 +1054,8 @@ namespace CommonCore.RpgGame.World
                         ClearViewModel(EquipSlot.RightWeapon);
                         TransitionState = WeaponTransitionState.None;
                     }
+
+                    OldWeaponNoLowerAnimation = false;
                 }
             }
             else if (slot == EquipSlot.LeftWeapon)
@@ -1039,12 +1092,28 @@ namespace CommonCore.RpgGame.World
 
             void lowerWeapon()
             {
-                if(RightViewModel != null)
+                if (GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.RightWeapon))
                 {
-                    RightViewModel.SetState(ViewModelState.Lower, ViewModelHandednessState.TwoHanded, 1);
-                    Hands.SetState(ViewModelState.Lower, RightViewModel, ViewModelHandednessState.TwoHanded, 1);
+                    if (RightViewModel != null)
+                    {
+                        //issues:
+                        //we want to skip this if our old 
+                        if (OldWeaponNoLowerAnimation)
+                        {
+
+                        }
+                        else
+                        {
+                            RightViewModel.SetState(ViewModelState.Lower, ViewModelHandednessState.TwoHanded, 1);
+                            Hands.SetState(ViewModelState.Lower, RightViewModel, ViewModelHandednessState.TwoHanded, 1);
+                        }
+                    }
+                    else
+                    {
+                        Hands.SetState(ViewModelState.Lower, null, ViewModelHandednessState.TwoHanded, 1);
+                    }
                 }
-                else if(FallbackViewModel != null)
+                else if (FallbackViewModel != null)
                 {
                     Hands.SetState(ViewModelState.Lower, FallbackViewModel, ViewModelHandednessState.TwoHanded, 1);
                 }

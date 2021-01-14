@@ -33,7 +33,7 @@ namespace CommonCore.RpgGame.World
         {
             FindComponents();
 
-            SetAnimationForced(CurrentAnimState);
+            SetAnimationForced(CurrentAnimState, null);
         }
 
 
@@ -47,19 +47,25 @@ namespace CommonCore.RpgGame.World
 
         }
 
-        public virtual void SetAnimation(ActorAnimState state)
+        public void SetAnimation(ActorAnimState state) => SetAnimation(state, null);
+
+        public virtual void SetAnimation(ActorAnimState state, object args)
         {
             if (LockAnimState)
                 return;
 
             CurrentAnimState = state;
 
-            SetAnimationForced(state);
+            SetAnimationForced(state, args);
         }
 
-        public abstract void SetAnimationForced(ActorAnimState state);
+        public void SetAnimationForced(ActorAnimState state) => SetAnimationForced(state, null);
 
-        public abstract void SetAnimationForced(string stateName);
+        public abstract void SetAnimationForced(ActorAnimState state, object args);
+
+        public void SetAnimationForced(string stateName) => SetAnimationForced(stateName, null);
+
+        public abstract void SetAnimationForced(string stateName, object args);
 
     }
 }

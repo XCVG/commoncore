@@ -8,6 +8,7 @@ using CommonCore.RpgGame.Rpg;
 using CommonCore.LockPause;
 using CommonCore.UI;
 using CommonCore.StringSub;
+using System.Linq;
 
 namespace CommonCore.RpgGame.UI
 {
@@ -59,7 +60,7 @@ namespace CommonCore.RpgGame.UI
             base.Start();
 
             LockPauseModule.LockControls(InputLockType.GameOnly, this);
-            LockPauseModule.PauseGame(PauseLockType.All, this);
+            LockPauseModule.PauseGame(PauseLockType.All, this); //this is kinda hacky but eh
 
             ClearState();
             PaintAll();
@@ -124,7 +125,7 @@ namespace CommonCore.RpgGame.UI
             string moneyTypeName = Enum.GetNames(typeof(MoneyType))[0];
 
             //player/inventory list
-            var inventoryList = Inventory.GetItemsListActual();
+            var inventoryList = Inventory.EnumerateItems().ToList();
             for (int i = 0; i < inventoryList.Count; i++)
             {
                 var item = inventoryList[i];

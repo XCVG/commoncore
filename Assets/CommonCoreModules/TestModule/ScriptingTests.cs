@@ -147,7 +147,7 @@ namespace CommonCore.TestModule
         [CCScript, CCScriptHook(Hook = ScriptHook.OnPlayerSpawn)]
         private static void OnPlayerSpawn(ScriptExecutionContext context, GameObject player)
         {
-            Debug.Log($"OnPlayerSpawn\n{context}");
+            Debug.Log($"OnPlayerSpawn\n{context} (player: {player})");
         }
 
         [CCScript, CCScriptHook(Hook = ScriptHook.OnGameOver)]
@@ -172,6 +172,18 @@ namespace CommonCore.TestModule
         private static void OnIGUIMenuOpen(ScriptExecutionContext context)
         {
             Debug.Log($"OnIGUIMenuOpen\n{context}");
+        }
+
+        [CCScript, CCScriptHook(Hook = ScriptHook.AfterAddonLoaded)]
+        private static void AfterAddonLoaded(ScriptExecutionContext context, AddonLoadData data)
+        {
+            Debug.Log($"AfterAddonLoaded\n{context} (data: {data})");
+        }
+
+        [CCScript, CCScriptHook(Hook = ScriptHook.OnLoadingSceneOpen)]
+        private static void OnLoadingSceneOpen(ScriptExecutionContext context)
+        {
+            Debug.Log($"OnLoadingSceneOpen\n{context}");
         }
 
         [CCScript(ClassName = "Test", Name = "HookOrExplicit"), CCScriptHook(Hook = ScriptHook.AfterSceneLoad, AllowExplicitCalls = true)]

@@ -15,7 +15,7 @@ namespace CommonCore
     {
 
         //*****system version info
-        public static Version VersionCode { get; private set; } = new Version(2, 0, 1); //2.0.0
+        public static Version VersionCode { get; private set; } = new Version(2, 0, 1); //2.0.1
         public static string VersionName { get; private set; } = "Balmora"; //start with A, locations from RPGs
         public static Version UnityVersion { get; private set; } //auto-set
         public static string UnityVersionName { get; private set; } //auto-set
@@ -26,7 +26,7 @@ namespace CommonCore
         public static string CompanyName { get; private set; } //auto-set from Unity settings
         public static string GameName { get; private set; } //auto-set from Unity settings
         public static Version GameVersion { get; private set; } //auto-set from Unity settings
-        public static string GameVersionName { get; private set; } = "Test";
+        public static string GameVersionName { get; private set; } = "Frangis Demo Development";
 
         //*****basic config settings
         public static bool AutoInit { get; private set; } = true;
@@ -48,15 +48,21 @@ namespace CommonCore
         public static bool SetSafeResolutionOnExit { get; private set; } = true;
         public static Vector2Int SafeResolution { get; private set; } = new Vector2Int(1280, 720);
 
-        public static UIThemePolicy UIThemeMode { get; private set; } = UIThemePolicy.ExplicitOnly;
+        public static UIThemePolicy UIThemeMode { get; private set; } = UIThemePolicy.Auto;
         public static string DefaultUITheme { get; private set; } = "ThresholdTheme";
 
         public static float DelayedEventPollInterval { get; private set; } = 1.0f;
         //public static bool UseAggressiveLookups { get; private set; } = true; //may bring this back someday if performance is an issue
         public static int ResourceMaxRecurseDepth { get; private set; } = 32;
 
-        //*****game config settings
-        public static string InitialScene { get; private set; } = "TestScene";
+        //*****scene settings        
+        public static string MainMenuScene { get; private set; } = "MainMenuScene";
+        public static string LoadingScene { get; private set; } = "LoadingScene";
+        public static string InitialScene { get; private set; } = "PickerScene";
+        public static string GameOverScene { get; private set; } = "GameOverScene";
+
+
+        //*****game config settings       
         public static bool UseCampaignIdentifier { get; private set; } = true;
         public static bool UseCampaignStartDate { get; private set; } = true;
         public static bool AllowSaveLoad { get; private set; } = true;
@@ -153,6 +159,11 @@ namespace CommonCore
         }
 
         public static IReadOnlyList<string> CommandLineArgs { get; set; }
+
+        public static JsonSerializerSettings DefaultJsonSerializerSettings => new JsonSerializerSettings() {
+            Converters = CCJsonConverters.Defaults.Converters,
+            TypeNameHandling = TypeNameHandling.Auto
+        };
 
         /// <summary>
         /// A hack necessary to preset variables so they can be safely accessed across threads

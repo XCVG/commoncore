@@ -53,11 +53,22 @@ namespace CommonCore.RpgGame.World
         public bool DisableCollidersOnDeath = false;
         public bool DisableHitboxesOnDeath = false;
         public DamageResistanceNode[] DamageResistances = null;
-        public ActionSpecial OnDeathSpecial;
+        public ActionSpecial OnDeathSpecial;        
+        public string DefaultHitPuff = "DefaultHitPuff";
+        [Tooltip("If positive, intepret is multiplier of maxhealth. If negative, interpret as absolute value")]
+        public float ExtremeDeathThreshold = 1;
+
+        [Header("Pain")]
         public bool FeelPain = true;
+        [Tooltip("Chance to enter pain state at zero damage")]
         public float PainChance = 0.5f;
         public float PainWaitTime = 1.0f;
-        public string DefaultHitPuff = "DefaultHitPuff";
+        public float PainMaxChance = 0.9f; //prevents stunlocking
+        [Tooltip("Amount of damage at or above where pain will always be MaxChance")]
+        public float PainGuaranteeThreshold = 0;
+        [Tooltip("If set, PainGuaranteeThreshold will be treated as a multiplier on MaxHealth")]
+        public bool PainGuaranteeRelative = false;
+        public bool PainStateAllowRestart = false;
 
         [Header("Aggression")]
         public bool Aggressive = false;
@@ -73,7 +84,7 @@ namespace CommonCore.RpgGame.World
         [Tooltip("If this is larger than max attack range, the actor will not be able to attack!")]
         public float ChaseOptimalDistance = 0;
         public bool DisableInteractionOnHit = true;
-        private bool BeenHit = false;
+        
 
         [Header("Interaction")] //TODO move this out into ActorInteractionComponent
         public int GrantXpOnDeath;
@@ -92,9 +103,14 @@ namespace CommonCore.RpgGame.World
 
         private QdmsMessageInterface MessageInterface;
 
-        public Func<ActorHitInfo, ActorHitInfo?> DamageHandler = null;
-
+        //handlers
+        public Func<ActorHitInfo, ActorDamageHandlerResult> DamageHandler = null;
         public Func<Transform> TargetPicker = null;
+
+        public bool BeenHit { get; protected set; } = false;
+        public ActorHitInfo? LastHit { get; protected set; } = null;
+        public float LastHitDamage { get; protected set; } = 0;
+        public bool WasExtremeDeath { get; protected set; } = false;
 
         float ITakeDamage.Health => Health;
 
@@ -234,7 +250,8 @@ namespace CommonCore.RpgGame.World
             if (LockAiState)
                 return;
 
-            LastAiState = CurrentAiState;
+            if(newState != CurrentAiState)
+                LastAiState = CurrentAiState;
 
             ExitState(CurrentAiState); //good place or no?
 
@@ -248,45 +265,56 @@ namespace CommonCore.RpgGame.World
                     MovementComponent.AbortMove();
                     break;
                 case ActorAiState.Dead:
-                    if (CurrentAiState == ActorAiState.Dead) //fix for glitchy looking behaviour
-                        break;
-
-                    MovementComponent.AbortMove();
-                    MovementComponent.HandleDeath();
-                    if (DieImmediately)
-                        AnimationComponent.Ref()?.SetAnimation(ActorAnimState.Dead);
-                    else
-                        AnimationComponent.Ref()?.SetAnimation(ActorAnimState.Dying);
-
-                    AudioComponent.Ref()?.StopLivingSounds();
-                    AudioComponent.Ref()?.PlayDeathSound();
-
-                    if(InteractionComponent != null)
-                        InteractionComponent.InteractionDisabledByHit = false;
-
-                    if (DestroyOnDeath)
-                        this.gameObject.SetActive(false); //actually destroying the object breaks saving
-
-                    if (OnDeathSpecial != null)
-                        OnDeathSpecial.Execute(new ActionInvokerData { Activator = this });
-
-                    if (DisableHitboxesOnDeath)
                     {
-                        var hitboxComponents = GetComponentsInChildren<IHitboxComponent>(true);
-                        foreach (var hitboxComponent in hitboxComponents)
-                            if (hitboxComponent is MonoBehaviour mb) //IHitboxComponent does not actually imply MonoBehaviour
-                                mb.gameObject.SetActive(false);
+                        if (CurrentAiState == ActorAiState.Dead) //fix for glitchy looking behaviour
+                            break;
+
+                        MovementComponent.AbortMove();
+                        MovementComponent.HandleDeath();
+                        var deathStateArgs = new DeathStateActorAnimationArgs() { DamageEffector = LastHit?.DamageEffector ?? 0, DamageType = LastHit?.DamageType ?? 0, ExtremeDeath = WasExtremeDeath, HitLocation = LastHit?.HitLocation ?? 0, HitMaterial = LastHit?.HitMaterial ?? 0 };
+                        if (DieImmediately)
+                            AnimationComponent.Ref()?.SetAnimation(ActorAnimState.Dead, deathStateArgs);
+                        else
+                            AnimationComponent.Ref()?.SetAnimation(ActorAnimState.Dying, deathStateArgs);
+
+                        AudioComponent.Ref()?.StopLivingSounds();
+                        if(WasExtremeDeath)
+                            AudioComponent.Ref()?.PlayExtremeDeathSound();
+                        else
+                            AudioComponent.Ref()?.PlayDeathSound();
+
+                        if (InteractionComponent != null)
+                            InteractionComponent.InteractionDisabledByHit = false;
+
+                        if (DestroyOnDeath)
+                            this.gameObject.SetActive(false); //actually destroying the object breaks saving
+
+                        if (OnDeathSpecial != null)
+                            OnDeathSpecial.Execute(new ActionInvokerData { Activator = this });
+
+                        if (DisableHitboxesOnDeath)
+                        {
+                            var hitboxComponents = GetComponentsInChildren<IHitboxComponent>(true);
+                            foreach (var hitboxComponent in hitboxComponents)
+                                if (hitboxComponent is MonoBehaviour mb) //IHitboxComponent does not actually imply MonoBehaviour
+                                    mb.gameObject.SetActive(false);
+                        }
+
+                        if (DisableCollidersOnDeath)
+                        {
+                            var colliders = GetComponentsInChildren<Collider>(true);
+                            foreach (var collider in colliders)
+                                collider.enabled = false;
+                        }
+
+                        if (
+                            (   (LastHit != null && LastHit.Value.Originator != null && LastHit.Value.Originator is PlayerController)
+                                || (Target != null && Target.GetComponent<PlayerController>())
+                            )
+                            && GrantXpOnDeath > 0
+                           )
+                            GameState.Instance.PlayerRpgState.GrantXPScaled(GrantXpOnDeath);
                     }
-
-                    if (DisableCollidersOnDeath)
-                    {
-                        var colliders = GetComponentsInChildren<Collider>(true);
-                        foreach (var collider in colliders)
-                            collider.enabled = false;
-                    }                    
-
-                    if (Target != null && Target.GetComponent<PlayerController>() && GrantXpOnDeath > 0) //what the fuck
-                        GameState.Instance.PlayerRpgState.GrantXPScaled(GrantXpOnDeath);
                     break;
                 case ActorAiState.Wandering:
                     Target = null;
@@ -370,6 +398,9 @@ namespace CommonCore.RpgGame.World
                         var d = transform.position + ((Target.position - transform.position).normalized * -(1 + Mathf.Abs(MovementComponent.TargetThreshold)));
                         MovementComponent.SetDestination(d);
                     }                    
+                    break;
+                case ActorAiState.ScriptedAction:
+                    //nop
                     break;
                 default:
                     break;
@@ -609,7 +640,7 @@ namespace CommonCore.RpgGame.World
             var detectionDifficultyFactor = 1f / gameplayConfig.Difficulty.ActorPerception;
 
             //check player first since it's (relatively) cheap
-            if (FactionModel.GetRelation(Faction, "Player") == FactionRelationStatus.Hostile && !MetaState.Instance.SessionFlags.Contains("NoTarget") && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoTarget))
+            if (GameState.Instance.FactionState.GetRelation(Faction, "Player") == FactionRelationStatus.Hostile && !MetaState.Instance.SessionFlags.Contains("NoTarget") && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoTarget))
             {
                 var playerObj = WorldUtils.GetPlayerObject();
                 if(playerObj != null && RpgWorldUtils.TargetIsAlive(playerObj.transform))
@@ -676,7 +707,7 @@ namespace CommonCore.RpgGame.World
 
                     if(RpgWorldUtils.TargetIsAlive(targetController.transform) 
                         && (targetController.transform.position - transform.position).magnitude <= SearchRadius
-                        && FactionModel.GetRelation(Faction, potentialTarget.Faction) == FactionRelationStatus.Hostile
+                        && GameState.Instance.FactionState.GetRelation(Faction, potentialTarget.Faction) == FactionRelationStatus.Hostile
                         && !(potentialTarget == this))
                     {                       
                         //roll some dice
@@ -728,67 +759,139 @@ namespace CommonCore.RpgGame.World
 
         public void TakeDamage(ActorHitInfo data)
         {
-            if(!data.HarmFriendly)
+            LastHit = null;
+            LastHitDamage = 0;
+
+            if (!data.HarmFriendly)
             {
                 string hitFaction = data.OriginatorFaction;
                 if(!string.IsNullOrEmpty(hitFaction))
                 {
-                    FactionRelationStatus relation = FactionModel.GetRelation(hitFaction, Faction); //this looks backwards but it's because we're checking if the Bullet is-friendly-to the Actor
+                    FactionRelationStatus relation = GameState.Instance.FactionState.GetRelation(hitFaction, Faction); //this looks backwards but it's because we're checking if the Bullet is-friendly-to the Actor
                     if (relation == FactionRelationStatus.Friendly)
                         return; //no friendly fire
                 }
             }
 
+            ActorDamageHandlerResult? damageHandlerResult = null;
             if (DamageHandler != null)
             {
-                var hitOut = DamageHandler(data);
-                if (hitOut.HasValue)
-                    data = hitOut.Value;
+                damageHandlerResult = DamageHandler(data);
+                if (damageHandlerResult.Value.HitInfo.HasValue)
+                    data = damageHandlerResult.Value.HitInfo.Value;
                 else
                     return;
             }
 
-            //new way of doing dr/dt
-            float dt = 0, dr = 0;
-            foreach(var dNode in DamageResistances)
+            LastHit = data;
+
+            float damageTaken;
+            if(damageHandlerResult?.DamageTaken != null)
             {
-                if((int)dNode.DamageType == data.DamageType)
+                damageTaken = damageHandlerResult.Value.DamageTaken.Value;
+            }
+            else
+            {
+                //new way of doing dr/dt
+                float dt = 0, dr = 0;
+                foreach (var dNode in DamageResistances)
                 {
-                    dt = dNode.DamageThreshold;
-                    dr = dNode.DamageResistance;
+                    if ((int)dNode.DamageType == data.DamageType)
+                    {
+                        dt = dNode.DamageThreshold;
+                        dr = dNode.DamageResistance;
+                    }
+                }
+
+                damageTaken = RpgValues.DamageTaken(data, dt, dr);
+
+                if (!data.HitFlags.HasFlag(BuiltinHitFlags.IgnoreHitLocation))
+                {
+                    if (data.HitLocation == (int)ActorBodyPart.Head)
+                        damageTaken *= 2.0f; //do we want more flexibility here?
+                    else if (data.HitLocation == (int)ActorBodyPart.LeftArm || data.HitLocation == (int)ActorBodyPart.LeftLeg || data.HitLocation == (int)ActorBodyPart.RightArm || data.HitLocation == (int)ActorBodyPart.RightLeg)
+                        damageTaken *= 0.75f;
+                }
+
+                damageTaken *= (1f / ConfigState.Instance.GetGameplayConfig().Difficulty.ActorStrength);
+            }
+
+            if (!Invincible)
+            {
+                LastHitDamage = damageTaken;
+                Health -= damageTaken;
+            }
+
+            //handle extreme death
+            if (damageHandlerResult?.ExtremeDeath != null)
+            {
+                WasExtremeDeath = damageHandlerResult.Value.ExtremeDeath.Value;
+            }
+            else
+            {
+                if (data.HitFlags.HasFlag(BuiltinHitFlags.AlwaysExtremeDeath))
+                {
+                    WasExtremeDeath = true;
+                }
+                else if (data.HitFlags.HasFlag(BuiltinHitFlags.NeverExtremeDeath))
+                {
+                    WasExtremeDeath = false;
+                }
+                else
+                {
+                    if(ExtremeDeathThreshold > 0)
+                    {
+                        //interpret as -(maxhealth * threshold)
+                        WasExtremeDeath = Health < (-(MaxHealth * ExtremeDeathThreshold));
+                    }
+                    else if(ExtremeDeathThreshold < 0)
+                    {
+                        //interpret as absolute value
+                        WasExtremeDeath = Health < ExtremeDeathThreshold;
+                    }
+                    else
+                    {
+                        //ExtremeDeathThreshold == 0, no extreme death
+                        WasExtremeDeath = false;
+                    }
                 }
             }
 
-            float damageTaken = RpgValues.DamageTaken(data, dt, dr);
+            //TODO do we force into death state here?
 
-            if (!data.HitFlags.HasFlag(BuiltinHitFlags.IgnoreHitLocation))
-            {
-                if (data.HitLocation == (int)ActorBodyPart.Head)
-                    damageTaken *= 2.0f; //do we want more flexibility here?
-                else if (data.HitLocation == (int)ActorBodyPart.LeftArm || data.HitLocation == (int)ActorBodyPart.LeftLeg || data.HitLocation == (int)ActorBodyPart.RightArm || data.HitLocation == (int)ActorBodyPart.RightLeg)
-                    damageTaken *= 0.75f;
-            }
-
-            damageTaken *= (1f / ConfigState.Instance.GetGameplayConfig().Difficulty.ActorStrength);
-
-            if (!Invincible)
-                Health -= damageTaken;
-
+            //TODO consider moving this, but probably wait until we start thinking about abuse of corpses
             if (CurrentAiState == ActorAiState.Dead) //abort if we're already dead
                 return;
 
-            bool didTakePain = (data.HitFlags.HasFlag(BuiltinHitFlags.AlwaysPain) || UnityEngine.Random.Range(0f, 1f) < PainChance) && !data.HitFlags.HasFlag(BuiltinHitFlags.NoPain); //shouldn't this be weighted by damage?
+            bool didTakePain;
+
+            if (damageHandlerResult?.TookPain != null)
+            {
+                didTakePain = damageHandlerResult.Value.TookPain.Value;
+            }
+            else
+            {
+                float derivedPainChance = PainChance;
+                if (PainGuaranteeThreshold != 0)
+                {
+                    float damageForMaxPain = Mathf.Abs(PainGuaranteeRelative ? (PainGuaranteeThreshold * MaxHealth) : PainGuaranteeThreshold);
+                    derivedPainChance = MathUtils.ScaleRange(damageTaken, 0, damageForMaxPain, PainChance, 1);
+                }
+                derivedPainChance = Mathf.Min(derivedPainChance, PainMaxChance);
+
+                didTakePain = (data.HitFlags.HasFlag(BuiltinHitFlags.AlwaysPain) || UnityEngine.Random.Range(0f, 1f) < derivedPainChance) && !data.HitFlags.HasFlag(BuiltinHitFlags.NoPain); //TODO shouldn't this be weighted by damage?
+            }
 
             if (Defensive && data.Originator != null && data.Originator != this && !data.HitFlags.HasFlag(BuiltinHitFlags.NeverAlert))
             {
                 FactionRelationStatus relation = FactionRelationStatus.Neutral;
                 if (data.Originator is PlayerController)
                 {
-                    relation = FactionModel.GetRelation(Faction, "Player");
+                    relation = GameState.Instance.FactionState.GetRelation(Faction, "Player");
                 }
                 else if (data.Originator is ActorController)
                 {
-                    relation = FactionModel.GetRelation(Faction, ((ActorController)data.Originator).Faction);
+                    relation = GameState.Instance.FactionState.GetRelation(Faction, ((ActorController)data.Originator).Faction);
                 }
 
                 if (relation != FactionRelationStatus.Friendly || Infighting)
@@ -800,16 +903,18 @@ namespace CommonCore.RpgGame.World
                         InteractionComponent.InteractionDisabledByHit = true;
 
                     if (FeelPain && didTakePain)
-                        if (CurrentAiState != ActorAiState.Hurting)
+                    {
+                        if (PainStateAllowRestart || CurrentAiState != ActorAiState.Hurting)
                             EnterState(ActorAiState.Hurting);
-                        else
-                            EnterState(ActorAiState.Chasing);
+                    }
+                    else
+                        EnterState(ActorAiState.Chasing);
                 }
-                else if (CurrentAiState != ActorAiState.Hurting)
+                else if (PainStateAllowRestart || CurrentAiState != ActorAiState.Hurting)
                     EnterState(ActorAiState.Hurting);
 
             }
-            else if (FeelPain && didTakePain && CurrentAiState != ActorAiState.Hurting)
+            else if (FeelPain && didTakePain && (PainStateAllowRestart || CurrentAiState != ActorAiState.Hurting))
                 EnterState(ActorAiState.Hurting);
         }
 
@@ -828,11 +933,37 @@ namespace CommonCore.RpgGame.World
             Health = 0;
         }
 
+        public void Raise()
+        {
+            //more logic because we don't execute resurrect on entering idle state
+
+            gameObject.SetActive(true);
+            Health = MaxHealth;
+            MovementComponent.HandleRaise();
+
+            if (DisableHitboxesOnDeath)
+            {
+                var hitboxComponents = GetComponentsInChildren<IHitboxComponent>(true);
+                foreach (var hitboxComponent in hitboxComponents)
+                    if (hitboxComponent is MonoBehaviour mb) //IHitboxComponent does not actually imply MonoBehaviour according to C#
+                        mb.gameObject.SetActive(true);
+            }
+
+            if (DisableCollidersOnDeath)
+            {
+                var colliders = GetComponentsInChildren<Collider>(true);
+                foreach (var collider in colliders)
+                    collider.enabled = true;
+            }
+
+            EnterState(BaseAiState);
+        }
+
         //these are both done stupidly and could probably be done through reflection instead but for now...
 
-        public override Dictionary<string, object> GetExtraData()
+        public override Dictionary<string, object> CommitEntityData()
         {
-            Dictionary<string, object> extraData = new Dictionary<string, object>();
+            Dictionary<string, object> extraData = base.CommitEntityData();
 
             var actorData = new ActorExtraData();
 
@@ -849,6 +980,16 @@ namespace CommonCore.RpgGame.World
             actorData.Health = Health;
             actorData.BeenHit = BeenHit;
 
+            if (LastHit.HasValue)
+            {
+                var modLastHit = LastHit.Value;
+                modLastHit.Originator = null; //hack because this breaks saves and we don't need it for death handling anyway
+                actorData.LastHit = modLastHit;
+            }
+            actorData.LastHitDamage = LastHitDamage;
+            actorData.WasExtremeDeath = WasExtremeDeath;
+
+            MovementComponent.BeforeCommit(extraData);
             actorData.IsRunning = MovementComponent.IsRunning;
 
             if (InteractionComponent != null)
@@ -864,8 +1005,9 @@ namespace CommonCore.RpgGame.World
             return extraData;
         }
 
-        public override void SetExtraData(Dictionary<string, object> data)
+        public override void RestoreEntityData(Dictionary<string, object> data)
         {
+            base.RestoreEntityData(data);
 
             if(data.ContainsKey("Actor"))
             {
@@ -888,6 +1030,11 @@ namespace CommonCore.RpgGame.World
                     Health = actorData.Health;
                     BeenHit = actorData.BeenHit;
 
+                    LastHit = actorData.LastHit;
+                    LastHitDamage = actorData.LastHitDamage;
+                    WasExtremeDeath = actorData.WasExtremeDeath;
+
+                    MovementComponent.BeforeRestore(data);
                     MovementComponent.MovementTarget = actorData.AltTarget;
                     MovementComponent.IsRunning = actorData.IsRunning;
                     if (CurrentAiState == ActorAiState.Dead)

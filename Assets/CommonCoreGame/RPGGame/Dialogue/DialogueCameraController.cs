@@ -49,7 +49,11 @@ namespace CommonCore.RpgGame.Dialogue
             }
             else if(targetString.StartsWith("FaceTarget", StringComparison.OrdinalIgnoreCase))
             {
-                string tid = targetString.Substring(targetString.IndexOf(':') + 1);
+                string tid;
+                if (targetString.IndexOf(':') >= 0)
+                    tid = targetString.Substring(targetString.IndexOf(':') + 1);
+                else
+                    tid = DialogueController.CurrentTarget; //"face current target"
 
                 //face target
                 Transform t = WorldUtils.FindObjectByTID(tid).transform;

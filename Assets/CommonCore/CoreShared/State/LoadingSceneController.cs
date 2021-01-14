@@ -50,6 +50,7 @@ namespace CommonCore.State
                 {
                     //we are loading a game, so load the game data and then load the next scene (which is part of save data)
                     GameState.DeserializeFromFile(CoreParams.SavePath + Path.DirectorySeparatorChar + MetaState.Instance.LoadSave);
+                    PersistState.Instance.LastCampaignIdentifier = GameState.Instance.CampaignIdentifier;
                     MetaState.Instance.NextScene = GameState.Instance.CurrentScene;
                     ScriptingModule.CallHooked(ScriptHook.OnGameLoad, this);
                     StartCoroutine(LoadNextSceneAsync());
@@ -61,6 +62,7 @@ namespace CommonCore.State
                     if(string.IsNullOrEmpty(MetaState.Instance.NextScene))
                         MetaState.Instance.NextScene = CoreParams.InitialScene;                    
                     GameState.LoadInitial();
+                    PersistState.Instance.LastCampaignIdentifier = GameState.Instance.CampaignIdentifier;
                     GameState.Instance.CurrentScene = MetaState.Instance.NextScene;
                     CCBase.OnGameStart();
                     StartCoroutine(LoadNextSceneAsync());
@@ -71,7 +73,7 @@ namespace CommonCore.State
                     GameState.Clear();
                     MetaState.Instance.Clear();
                     if (string.IsNullOrEmpty(MetaState.Instance.NextScene))
-                        MetaState.Instance.NextScene = "MainMenuScene";                    
+                        MetaState.Instance.NextScene = CoreParams.MainMenuScene;                    
                     StartCoroutine(LoadNextSceneAsync());
                 }
 
@@ -87,7 +89,9 @@ namespace CommonCore.State
             }            
 
             //clear certain metagamestate on use
-            MetaState.Instance.SkipLoadingScreen = false;		
+            MetaState.Instance.SkipLoadingScreen = false;
+
+            ScriptingModule.CallHooked(ScriptHook.OnLoadingSceneOpen, this);
 	    }
 
         /// <summary>
@@ -121,12 +125,12 @@ namespace CommonCore.State
                 GameState.Clear();
                 MetaState.Reset();
                 GC.Collect();
-                SceneManager.LoadScene("MainMenuScene");
+                SceneManager.LoadScene(CoreParams.MainMenuScene);
             }
             else
             {
                 MetaState.Instance.NextScene = MetaState.Instance.PreviousScene;
-                SceneManager.LoadScene("LoadingScene");
+                SceneManager.LoadScene(CoreParams.LoadingScene);
             }
         }
 

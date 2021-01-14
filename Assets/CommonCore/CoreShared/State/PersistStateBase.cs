@@ -64,5 +64,10 @@ namespace CommonCore.State
         /// If this is the first time the game has been run
         /// </summary>
         public bool IsFirstRun { get; set; } = true;
+
+        /// <summary>
+        /// Campaign Identifier of the last played game
+        /// </summary>
+        public string LastCampaignIdentifier { get; set; } = null;
     }
 }

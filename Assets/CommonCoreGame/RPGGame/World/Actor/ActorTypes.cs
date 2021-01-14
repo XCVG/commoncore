@@ -18,7 +18,7 @@ namespace CommonCore.RpgGame.World
 
     public enum ActorAiState
     {
-        Idle, Dead, Wandering, Chasing, Hurting, Attacking, Covering, Fleeing, ScriptedMoveTo, ScriptedHalt
+        Idle, Dead, Wandering, Chasing, Hurting, Attacking, Covering, Fleeing, ScriptedMoveTo, ScriptedAction
     }
 
     public enum ActorBodyPart
@@ -49,9 +49,31 @@ namespace CommonCore.RpgGame.World
         //interaction
         public bool InteractionForceDisabled { get; set; }
 
+        //extended hit info
+        public ActorHitInfo? LastHit { get; set; }
+        public float LastHitDamage { get; set; }
+        public bool WasExtremeDeath { get; set; }
+
         public ActorExtraData()
         {
 
         }
+    }
+
+    public struct ActorDamageHandlerResult
+    {
+        public ActorHitInfo? HitInfo; //if this is null, we consider damage fully handled and exit immediately
+        public float? DamageTaken; //if this has a value, bypass default dt/dr, location etc handling and apply immediately
+        public bool? ExtremeDeath; //if this has a value, bypass default extreme death handling and use this
+        public bool? TookPain; //if this has a value, bypass default pain handling and use this
+    }
+
+    public struct DeathStateActorAnimationArgs
+    {
+        public bool ExtremeDeath;
+        public int DamageType;
+        public int DamageEffector;
+        public int HitLocation;
+        public int HitMaterial;
     }
 }

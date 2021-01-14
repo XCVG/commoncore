@@ -50,7 +50,9 @@ namespace CommonCore.RpgGame.World
         {
             //TODO handle this properly
 
-            return state.ToString(); //for now
+            //return state.ToString(); //for now
+
+            return WeaponViewModelScript.HandsHidden; //if we have no ViewModel, we should not have hands either
         }
 
         public (Vector3 position, Quaternion rotation) HandBoneTransform => (HandBonePoint.position, HandBonePoint.rotation);

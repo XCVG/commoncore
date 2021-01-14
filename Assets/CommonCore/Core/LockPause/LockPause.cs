@@ -315,7 +315,7 @@ namespace CommonCore.LockPause
 
         public static PauseLock PauseGame(object token)
         {
-            return PauseGame(PauseLockType.AllowMenu, token);
+            return PauseGame(PauseLockType.All, token);
         }
 
         public static PauseLock PauseGame(PauseLockType type, object token)
@@ -377,12 +377,34 @@ namespace CommonCore.LockPause
 
     public enum InputLockType
     {
-        All, GameOnly, MoveOnly
+        /// <summary>
+        /// Locks out all input
+        /// </summary>
+        All,
+        /// <summary>
+        /// Locks out game, allows menu and cutscene actions
+        /// </summary>
+        GameOnly,
+        /// <summary>
+        /// Locks out movement, allows all other actions
+        /// </summary>
+        MoveOnly
     }
 
     public enum PauseLockType
     {
-        All, AllowMenu
+        /// <summary>
+        /// Pauses game entirely
+        /// </summary>
+        All,
+        /// <summary>
+        /// Pauses game but allows cutscenes to continue (locks out menu interaction that modifies game state)
+        /// </summary>
+        AllowCutscene,
+        /// <summary>
+        /// Pauses game but allows menu interaction (including menu interaction that modifies game state)
+        /// </summary>
+        AllowMenu
     }
 
     public class InputLock

@@ -98,7 +98,13 @@ namespace CommonCore.RpgGame.Rpg
         [Command]
         static void ListFactions()
         {
-            ConsoleModule.WriteLine(FactionModel.GetFactionsList());
+            ConsoleModule.WriteLine(GameState.Instance.FactionState.EnumerateFactions().ToNiceString());
+        }
+
+        [Command(className = "Factions", alias = "ListRelations", useClassName = true)]
+        static void ListFactionRelations()
+        {
+            ConsoleModule.WriteLine(GameState.Instance.FactionState.EnumerateRelations().ToNiceString((x) => $"{x.self}->{x.target} : {x.relation}"));
         }
 
         //***** MapMarker manipulation

@@ -55,7 +55,7 @@ namespace CommonCore.World
 
             //save extra data
             if (controller)
-                data.ExtraData = controller.GetExtraData();
+                data.ExtraData = controller.CommitEntityData();
 
             return data;
         }
@@ -111,7 +111,7 @@ namespace CommonCore.World
 
             //restore extradata
             if (controller)
-                controller.SetExtraData(data.ExtraData);
+                controller.RestoreEntityData(data.ExtraData);
 
         }
     }

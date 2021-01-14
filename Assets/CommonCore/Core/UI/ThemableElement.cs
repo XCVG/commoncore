@@ -22,7 +22,7 @@ namespace CommonCore.UI
         [Serializable]
         public enum ThemableElementColor
         {
-            Auto, Normal, Contrasting
+            Auto, Normal, Contrasting, None
         }
 
         [Serializable]

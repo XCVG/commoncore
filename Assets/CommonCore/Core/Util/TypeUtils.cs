@@ -175,11 +175,24 @@ namespace CommonCore
         }
 
         /// <summary>
+        /// Coerces a value of some type into a value of the target type. User defined conversions are used if they exist
+        /// </summary>
+        public static object CoerceValue(object value, Type targetType) => CoerceValue(value, targetType, true);
+
+        /// <summary>
         /// Coerces a value of some type into a value of the target type
         /// </summary>
-        public static object CoerceValue(object value, Type targetType)
+        public static object CoerceValue(object value, Type targetType, bool allowUserDefinedConversions)
         {
-            Type valueType = value.GetType();
+            Type valueType = value?.GetType();
+
+            Type nullableType = Nullable.GetUnderlyingType(targetType);
+            if (nullableType != null)
+            {
+                targetType = nullableType;
+                if (value == null || targetType.IsAssignableFrom(valueType))
+                    return value;
+            }
 
             if (value == null)
             {
@@ -192,18 +205,13 @@ namespace CommonCore
             if (targetType.IsAssignableFrom(valueType))
                 return value;
 
-            Type nullableType = Nullable.GetUnderlyingType(targetType);
-            if (nullableType != null)
+            if (allowUserDefinedConversions)
             {
-                targetType = nullableType;
-                if (targetType.IsAssignableFrom(valueType))
-                    return value;
-            }
-
-            MethodInfo conversionMethod = GetUserDefinedConversion(valueType, targetType); //should we only allow implicit conversions?
-            if(conversionMethod != null)
-            {
-                return conversionMethod.Invoke(null, new object[] { value });
+                MethodInfo conversionMethod = GetUserDefinedConversion(valueType, targetType); //should we only allow implicit conversions?
+                if (conversionMethod != null)
+                {
+                    return conversionMethod.Invoke(null, new object[] { value });
+                }
             }
 
             if (targetType.IsEnum && value is string stringValue)
@@ -216,15 +224,23 @@ namespace CommonCore
                 return Enum.ToObject(targetType, value);
             }
 
-            return Convert.ChangeType(value, targetType);
+            return Convert.ChangeType(value, targetType); //note that this will attempt to parse
+        }
+
+        /// <summary>
+        /// Coerces a value of some type into a value of the target type. User defined conversions are used if they exist
+        /// </summary>
+        public static T CoerceValue<T>(object value)
+        {
+            return (T)CoerceValue(value, typeof(T));
         }
 
         /// <summary>
         /// Coerces a value of some type into a value of the target type
         /// </summary>
-        public static T CoerceValue<T>(object value)
+        public static T CoerceValue<T>(object value, bool allowUserDefinedConversions)
         {
-            return (T)CoerceValue(value, typeof(T));
+            return (T)CoerceValue(value, typeof(T), allowUserDefinedConversions);
         }
 
         /// <summary>
@@ -410,6 +426,8 @@ namespace CommonCore
 
         }
 
+        //these BREAK HORRIBLY if the backing type is not int
+
         /// <summary>
         /// Gets a flags-enum value from a collection of enum values
         /// </summary>
@@ -454,6 +472,66 @@ namespace CommonCore
             }
 
             return (T)(object)flags;
+        }
+
+        /// <summary>
+        /// Converts in a bitwise way from one integral type to another, truncating or zero-extending as needed
+        /// </summary>
+        /// <remarks></remarks>
+        public static object ConvertBits(object source, Type targetType)
+        {
+            //should work https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/numeric-conversions
+
+            //we want the source to be unsigned to avoid sign-extension
+            ulong sourceBits;
+
+            //here we cast signed to unsigned of the same width to avoid sign extension when going to 64 bits
+            switch (Type.GetTypeCode(source.GetType()))
+            {
+                case TypeCode.Boolean:
+                    throw new NotImplementedException(); //it's doable but I haven't done it yet
+                case TypeCode.Char:
+                    sourceBits = unchecked((ulong)(ushort)(short)source);
+                    break;
+                case TypeCode.SByte:
+                    sourceBits = unchecked((ulong)(byte)source);
+                    break;
+                case TypeCode.Int16:
+                    sourceBits = unchecked((ulong)(ushort)source);
+                    break;
+                case TypeCode.Int32:
+                    sourceBits = unchecked((ulong)(uint)source);
+                    break;
+                default:
+                    sourceBits = unchecked((ulong)source);
+                    break;
+            }
+
+            switch (Type.GetTypeCode(targetType))
+            {
+                case TypeCode.Boolean:
+                    throw new NotImplementedException(); //it's doable but I haven't done it yet
+                case TypeCode.Char:
+                    return unchecked((char)(short)sourceBits);
+                case TypeCode.Byte:
+                    return unchecked((byte)sourceBits);
+                case TypeCode.SByte:
+                    return unchecked((sbyte)sourceBits);
+                case TypeCode.UInt16:
+                    return unchecked((ushort)sourceBits);
+                case TypeCode.UInt32:
+                    return unchecked((uint)sourceBits);
+                case TypeCode.UInt64:
+                    return sourceBits;
+                case TypeCode.Int16:
+                    return unchecked((short)sourceBits);
+                case TypeCode.Int32:
+                    return unchecked((int)sourceBits);
+                case TypeCode.Int64:
+                    return unchecked((long)sourceBits);
+                default:
+                    throw new ArgumentException();
+            }
         }
 
         /// <summary>

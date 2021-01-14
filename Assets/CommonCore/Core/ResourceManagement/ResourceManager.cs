@@ -284,35 +284,6 @@ namespace CommonCore.ResourceManagement
         }
 
         /// <summary>
-        /// Transforms ResourcesVariants result into something suitable for DataResources
-        /// </summary>
-        /// <remarks>
-        /// <para>Note that the result won't be identical, but it should be compatible with a sane loading routine</para>
-        /// <para>Slow</para>
-        /// </remarks>
-        public static T[][] ResourcesVariantsToDataResources<T>(T[][] variantsResourcesArrays)
-        {
-            //basically we need to turn it "sideways", but it's complicated by being jagged
-            List<List<T>> resourceLists = new List<List<T>>();
-
-            for(int resIdx = 0; resIdx < variantsResourcesArrays.Length; resIdx++)
-            {
-                T[] variantResourceArray = variantsResourcesArrays[resIdx];
-                for(int varIdx = 0; varIdx < variantResourceArray.Length; varIdx++)
-                {
-                    if(resourceLists.Count <= varIdx)
-                    {
-                        resourceLists.Add(new List<T>());
-                    }
-
-                    resourceLists[varIdx].Add(variantResourceArray[varIdx]);
-                }
-            }
-
-            return resourceLists.Select(l => l.ToArray()).ToArray();
-        }
-
-        /// <summary>
         /// Transforms DataResources result into something suitable for ResourcesVariants
         /// </summary>
         /// <remarks>

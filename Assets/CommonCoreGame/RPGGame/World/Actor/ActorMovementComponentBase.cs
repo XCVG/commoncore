@@ -1,4 +1,5 @@
 ﻿using CommonCore.Config;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -30,6 +31,9 @@ namespace CommonCore.RpgGame.World
             if (ActorController == null)
                 ActorController = GetComponent<ActorController>();
         }
+
+        public virtual void BeforeRestore(Dictionary<string, object> data) { }
+        public virtual void BeforeCommit(Dictionary<string, object> data) { }
 
         protected virtual void Start()
         {
@@ -66,6 +70,11 @@ namespace CommonCore.RpgGame.World
         /// Handles the actor dying
         /// </summary>
         public virtual void HandleDeath() { }
+
+        /// <summary>
+        /// Handles the actor resurrecting
+        /// </summary>
+        public virtual void HandleRaise() { }
 
         /// <summary>
         /// Handles a difficulty change (if necessary)

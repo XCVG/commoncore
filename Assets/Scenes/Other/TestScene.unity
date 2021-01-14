@@ -1610,6 +1610,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EditorFormID: debug_ball
   EntityTags: []
+  HandleRestorableExtraData: 0
   HitMaterial: 0
 --- !u!54 &681029983
 Rigidbody:
@@ -3359,13 +3360,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EditorFormID: spec_container
   EntityTags: []
+  HandleRestorableExtraData: 0
   HitMaterial: 0
   LocalContainer:
     Items:
-    - Quantity: 1
+    - InstanceUID: 0
+      Quantity: 1
       Condition: 1
       ItemModel: medkit
-    - Quantity: 8
+    - InstanceUID: 0
+      Quantity: 8
       Condition: 1
       ItemModel: Acp45
     EnforceQuantityLimits: 0
@@ -4419,6 +4423,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EditorFormID: spec_container
   EntityTags: []
+  HandleRestorableExtraData: 0
   HitMaterial: 0
   LocalContainer:
     Items: []
@@ -5393,6 +5398,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EditorFormID: test_facing
   EntityTags: []
+  HandleRestorableExtraData: 0
   HitMaterial: 0
 --- !u!114 &1047013200950817356
 MonoBehaviour:

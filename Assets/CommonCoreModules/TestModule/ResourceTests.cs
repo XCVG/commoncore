@@ -5,6 +5,7 @@ using UnityEngine;
 using CommonCore.Scripting;
 using System.Linq;
 using CommonCore.ResourceManagement;
+using CommonCore.Config;
 
 namespace CommonCore.TestModule
 {
@@ -15,6 +16,13 @@ namespace CommonCore.TestModule
     public static class ResourceTests
     {
         [CCScript, CCScriptHook(AllowExplicitCalls = false, Hook = ScriptHook.AfterModulesLoaded)]
+        private static void TriggerTest()
+        {
+            if (ConfigState.Instance.HasCustomFlag("RunTests"))
+                TestResourceManagement();
+        }
+
+        [Command(alias = "Run", className = "ResourceManagementTest", useClassName = true)]
         private static void TestResourceManagement()
         {
             //WIP test resource manager
@@ -22,10 +30,6 @@ namespace CommonCore.TestModule
             //some crude unit-ish testing
 
             var rm = CCBase.ResourceManager;
-
-            //tbh this is mostly so I can find the output
-            if (CoreParams.DefaultResourceManager == ResourceManagerPolicy.UseLegacy || CoreParams.DefaultResourceManager == ResourceManagerPolicy.TestBothUseLegacy)
-                Debug.LogWarning($"[ResourceTests] New resource manager will be tested, however, it will not be used ingame (CoreParams.DefaultResourceManager={CoreParams.DefaultResourceManager.ToString()})");
 
             //test default
             {

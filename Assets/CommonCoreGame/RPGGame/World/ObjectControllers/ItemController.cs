@@ -115,14 +115,15 @@ namespace CommonCore.RpgGame.World
         }
 
         //persistence
-        public override void SetExtraData(Dictionary<string, object> data)
+        public override void RestoreEntityData(Dictionary<string, object> data)
         {
+            base.RestoreEntityData(data);
             ItemId = (string)data["ItemId"];
             ItemQuantity = Convert.ToInt32(data["ItemQuantity"]);
         }
-        public override Dictionary<string, object> GetExtraData()
+        public override Dictionary<string, object> CommitEntityData()
         {
-            var data = new Dictionary<string, object>();
+            var data = base.CommitEntityData();
 
             data.Add("ItemId", ItemId);
             data.Add("ItemQuantity", ItemQuantity);

@@ -30,7 +30,7 @@ namespace CommonCore
             MetaState.Instance.NextScene = sceneOverride;
             MetaState.Instance.TransitionType = SceneTransitionType.NewGame;
             //GC.Collect();            
-            SceneManager.LoadScene("LoadingScene");            
+            SceneManager.LoadScene(CoreParams.LoadingScene);            
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace CommonCore
         public static void ShowGameOver()
         {
             MetaState.Instance.NextScene = SceneManager.GetActiveScene().name; //in case we need it...
-            SceneManager.LoadScene("GameOverScene");
+            SceneManager.LoadScene(CoreParams.GameOverScene);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace CommonCore
             MetaState.Instance.TransitionType = SceneTransitionType.EndGame;
             //GC.Collect();
             TryGetSceneController().Ref()?.ExitScene();
-            SceneManager.LoadScene("LoadingScene");
+            SceneManager.LoadScene(CoreParams.LoadingScene);
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace CommonCore
 
             TryGetSceneController().Ref()?.ExitScene(); //run scene exit routine if a scene controller exists
 
-            SceneManager.LoadScene("LoadingScene"); //TODO put loading scene name somewhere            
+            SceneManager.LoadScene(CoreParams.LoadingScene); //TODO put loading scene name somewhere            
             
         }
 
@@ -103,7 +103,7 @@ namespace CommonCore
             mgs.LoadSave = saveName;
             mgs.TransitionType = SceneTransitionType.LoadGame;
 
-            SceneManager.LoadScene("LoadingScene");
+            SceneManager.LoadScene(CoreParams.LoadingScene);
         }
 
         /// <summary>

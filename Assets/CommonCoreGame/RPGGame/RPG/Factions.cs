@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CommonCore.DebugLog;
+using CommonCore.State;
+using Newtonsoft.Json;
 
 namespace CommonCore.RpgGame.Rpg
 {
@@ -19,22 +21,30 @@ namespace CommonCore.RpgGame.Rpg
 
     public class FactionModel
     {
+        //this is hacky as fuck because we decided to make FactionModel part of GameState in 3.x
+
         //relationships are defined as self->target
-        private static Dictionary<string, Dictionary<string, FactionRelationStatus>> FactionTable;
+        [JsonProperty]
+        private Dictionary<string, Dictionary<string, FactionRelationStatus>> FactionTable;
+
+        [JsonIgnore]
+        public static FactionModel BaseModel { get; private set; }
 
         internal static void Load()
         {
-            FactionTable = new Dictionary<string, Dictionary<string, FactionRelationStatus>>();
+            BaseModel = new FactionModel();
+
+            BaseModel.FactionTable = new Dictionary<string, Dictionary<string, FactionRelationStatus>>();
 
             //load predefined factions
             //difference between None and Neutral is that Monsters will attack Neutral
             //None is a true non-alignment, whereas Neutral is meant for non-hostile NPCs and such
-            FactionTable.Add("None", new Dictionary<string, FactionRelationStatus>());
-            FactionTable.Add("Player", new Dictionary<string, FactionRelationStatus>() {
+            BaseModel.FactionTable.Add("None", new Dictionary<string, FactionRelationStatus>());
+            BaseModel.FactionTable.Add("Player", new Dictionary<string, FactionRelationStatus>() {
                 { "Monster", FactionRelationStatus.Hostile}
             });
-            FactionTable.Add("Neutral", new Dictionary<string, FactionRelationStatus>());
-            FactionTable.Add("Monster", new Dictionary<string, FactionRelationStatus>() {
+            BaseModel.FactionTable.Add("Neutral", new Dictionary<string, FactionRelationStatus>());
+            BaseModel.FactionTable.Add("Monster", new Dictionary<string, FactionRelationStatus>() {
                 { "Neutral", FactionRelationStatus.Hostile },
                 { "Player", FactionRelationStatus.Hostile }
             });
@@ -50,7 +60,7 @@ namespace CommonCore.RpgGame.Rpg
                 Debug.LogError("Failed to load faction defs!");
                 Debug.LogError(e);
             }
-        }
+        }        
 
         internal static void LoadFromAddon(AddonLoadData data)
         {
@@ -73,9 +83,9 @@ namespace CommonCore.RpgGame.Rpg
 
             foreach (var row in newFactions)
             {
-                if (FactionTable.ContainsKey(row.Key))
+                if (BaseModel.FactionTable.ContainsKey(row.Key))
                 {
-                    var destRow = FactionTable[row.Key];
+                    var destRow = BaseModel.FactionTable[row.Key];
                     foreach (var entry in row.Value)
                     {
                         destRow[entry.Key] = entry.Value;
@@ -83,12 +93,32 @@ namespace CommonCore.RpgGame.Rpg
                 }
                 else
                 {
-                    FactionTable.Add(row.Key, row.Value);
+                    BaseModel.FactionTable.Add(row.Key, row.Value);
                 }
             }
-        }        
+        }
 
-        public static FactionRelationStatus GetRelation(string self, string target)
+        public static FactionModel CloneFactionModel(FactionModel original)
+        {
+            FactionModel newModel = new FactionModel();
+
+            newModel.FactionTable = new Dictionary<string, Dictionary<string, FactionRelationStatus>>();
+
+            //deep copy faction model
+            foreach(var outerKvp in original.FactionTable)
+            {
+                Dictionary<string, FactionRelationStatus> outerValue = new Dictionary<string, FactionRelationStatus>();
+                foreach(var innerKvp in outerKvp.Value)
+                {
+                    outerValue.Add(innerKvp.Key, innerKvp.Value);
+                }
+                newModel.FactionTable.Add(outerKvp.Key, outerValue);
+            }
+
+            return newModel;
+        }           
+
+        public FactionRelationStatus GetRelation(string self, string target)
         {
             //a few simple rules:
             // -factions are always friendly with themselvs
@@ -106,8 +136,8 @@ namespace CommonCore.RpgGame.Rpg
             if (self == "Chaotic" || target == "Chaotic")
                 return FactionRelationStatus.Hostile;
 
-            var selfEntry = FactionTable.GetOrDefault(self);
-            if(selfEntry != null)
+            var selfEntry = FactionTable?.GetOrDefault(self);
+            if (selfEntry != null)
             {
                 return selfEntry.GetOrDefault(target, FactionRelationStatus.Neutral);
             }
@@ -118,31 +148,50 @@ namespace CommonCore.RpgGame.Rpg
             }
         }
 
-        public static string GetFactionsList()
+        public void SetRelation(string self, string target, FactionRelationStatus relation)
         {
-            StringBuilder sb = new StringBuilder(FactionTable.Count * 100);
+            if (self == target)
+                throw new ArgumentException("cannot set a relation when self == target");
 
-            foreach(var row in FactionTable)
+            var selfEntry = FactionTable?.GetOrDefault(self);
+            if(selfEntry == null)
             {
-                sb.AppendLine(FactionTableRowToString(row));
+                selfEntry = new Dictionary<string, FactionRelationStatus>();
+                FactionTable[self] = selfEntry;
             }
 
-            return sb.ToString();
+            selfEntry[target] = relation;
         }
 
-        private static string FactionTableRowToString(KeyValuePair<string, Dictionary<string, FactionRelationStatus>> row)
+        public IEnumerable<string> EnumerateFactions()
         {
-            StringBuilder sb = new StringBuilder(row.Key.Length * 32);
+            HashSet<string> factions = new HashSet<string>();
 
-            sb.AppendFormat("{0} : ", row.Key);
-
-            foreach(var entry in row.Value)
+            foreach (var outerKvp in FactionTable)
             {
-                sb.AppendFormat("[{0}: {1}] ", entry.Key, entry.Value.ToString());
+                factions.Add(outerKvp.Key);
+                foreach (var innerKvp in outerKvp.Value)
+                {
+                    factions.Add(innerKvp.Key);
+                }
             }
 
-            return sb.ToString();
+            return factions;
         }
+
+        public IEnumerable<(string self, string target, FactionRelationStatus relation)> EnumerateRelations()
+        {
+            List<(string self, string target, FactionRelationStatus relation)> relations = new List<(string self, string target, FactionRelationStatus relation)>();
+            foreach (var outerKvp in FactionTable)
+            {
+                string self = outerKvp.Key;
+                foreach(var innerKvp in outerKvp.Value)
+                {
+                    relations.Add((self, innerKvp.Key, innerKvp.Value));
+                }
+            }
+            return relations;
+        }        
     }
 
 }

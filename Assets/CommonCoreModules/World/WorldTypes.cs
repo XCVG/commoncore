@@ -154,18 +154,20 @@ namespace CommonCore.World
     /// Builtin hit flags
     /// </summary>
     [Flags]
-    public enum BuiltinHitFlags
+    public enum BuiltinHitFlags : int
     {
         None = 0,
-        PierceConsiderShields = 1,
-        PierceConsiderArmor = 2,
-        IgnoreShields = 4,
-        IgnoreArmor = 8,
-        NeverAlert = 16,
-        NeverBlockable = 32,
-        NoPain = 64,
-        AlwaysPain = 128,
-        IgnoreHitLocation = 256
+        PierceConsiderShields = 1 << 0,
+        PierceConsiderArmor = 1 << 1,
+        IgnoreShields = 1 << 2,
+        IgnoreArmor = 1 << 3,
+        NeverAlert = 1 << 4,
+        NeverBlockable = 1 << 5,
+        NoPain = 1 << 6,
+        AlwaysPain = 1 << 7,
+        IgnoreHitLocation = 1 << 8,
+        AlwaysExtremeDeath = 1 << 9,
+        NeverExtremeDeath = 1 << 10
     }
 
     /// <summary>

@@ -48,15 +48,17 @@ namespace CommonCore.RpgGame.World
 
         //persistence
         //should be fixed now
-        public override void SetExtraData(Dictionary<string, object> data) //this either isn't called or doesn't work
+        public override void RestoreEntityData(Dictionary<string, object> data) //this either isn't called or doesn't work
         {
+            base.RestoreEntityData(data);
+
             if (UseLocalContainer && UsePersistentContainer)
                 MyContainer = SerializableContainerModel.MakeContainerModel((SerializableContainerModel)data["Container"]);
         }
 
-        public override Dictionary<string, object> GetExtraData() //this works
+        public override Dictionary<string, object> CommitEntityData() //this works
         {
-            var data = new Dictionary<string, object>();
+            var data = base.CommitEntityData();
 
             if (UseLocalContainer && UsePersistentContainer)
                 data.Add("Container", SerializableContainerModel.MakeSerializableContainerModel(MyContainer));

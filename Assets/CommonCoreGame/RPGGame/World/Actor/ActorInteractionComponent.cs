@@ -122,7 +122,7 @@ namespace CommonCore.RpgGame.World
                     //and we need to rework Monologue and implement an audio manager before we can do speech
                     break;
                 case ActorInteractionType.Dialogue:
-                    DialogueInitiator.InitiateDialogue(target, true, null);
+                    DialogueInitiator.InitiateDialogue(target, true, null, ActorController.gameObject.name);
                     break;
                 case ActorInteractionType.Script:
                     ScriptingModule.Call(target, new ScriptExecutionContext() { Caller = this, Activator = data.Activator.gameObject }, new object[] { });

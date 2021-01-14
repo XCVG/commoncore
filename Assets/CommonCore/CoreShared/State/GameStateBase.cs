@@ -66,11 +66,7 @@ namespace CommonCore.State
         {
             return JsonConvert.SerializeObject(Instance,
                 Formatting.Indented,
-                new JsonSerializerSettings
-                {
-                    Converters = CCJsonConverters.Defaults.Converters,
-                    TypeNameHandling = TypeNameHandling.Auto
-                });
+                CoreParams.DefaultJsonSerializerSettings);
         }
 
         /// <summary>
@@ -87,11 +83,7 @@ namespace CommonCore.State
         public static void Deserialize(string data)
         {
             instance = JsonConvert.DeserializeObject<GameState>(data,
-            new JsonSerializerSettings
-            {
-                Converters = CCJsonConverters.Defaults.Converters,
-                TypeNameHandling = TypeNameHandling.Auto
-            });
+            CoreParams.DefaultJsonSerializerSettings);
         }
 
         /// <summary>

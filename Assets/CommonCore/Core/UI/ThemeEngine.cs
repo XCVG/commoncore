@@ -103,6 +103,8 @@ namespace CommonCore.UI
 
                 if (themableComponent.ElementColor == ThemableElement.ThemableElementColor.Auto)
                     elementColorClass = DetermineElementColorClass(element, elementClass);
+                else if (themableComponent.ElementColor == ThemableElement.ThemableElementColor.None)
+                    elementColorClass = ElementColorClass.None;
                 else
                     elementColorClass = themableComponent.ElementColor == ThemableElement.ThemableElementColor.Contrasting ? ElementColorClass.Contrasting : ElementColorClass.Normal;
 
@@ -235,7 +237,8 @@ namespace CommonCore.UI
                 case ElementClass.InputField:
                     return false;
                 default:
-                    Debug.LogWarning($"[ThemeEngine] Unknown element class {elementClass}");
+                    if (ConfigState.Instance.UseVerboseLogging && !ConfigState.Instance.SuppressThemeWarnings)
+                        Debug.LogWarning($"[ThemeEngine] Unknown element class {elementClass}");
                     return true;
             }
         }
@@ -493,7 +496,7 @@ namespace CommonCore.UI
                         //nop
                         break;
                     default:
-                        if (ConfigState.Instance.UseVerboseLogging)
+                        if (ConfigState.Instance.UseVerboseLogging && !ConfigState.Instance.SuppressThemeWarnings)
                             Debug.LogWarning($"[ThemeEngine] Failed to apply theme to element \"{element.name}\" (unknown class)");
                         break;
                 }
@@ -534,6 +537,7 @@ namespace CommonCore.UI
     public enum ElementColorClass
     {
         Normal,
-        Contrasting
+        Contrasting,
+        None
     }
 }

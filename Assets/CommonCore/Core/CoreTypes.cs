@@ -40,14 +40,6 @@ namespace CommonCore
         /// </summary>
         UseLegacy,
         /// <summary>
-        /// Use legacy resource manager but test both
-        /// </summary>
-        TestBothUseLegacy,
-        /// <summary>
-        /// Use new resource manager but test both
-        /// </summary>
-        TestBothUseNew,
-        /// <summary>
         /// Use new resource manager only
         /// </summary>
         UseNew
@@ -163,6 +155,6 @@ namespace CommonCore
         /// Microsoft's .NET runtime (UWP, deprecated)
         /// </summary>
         WinRTDotNET = 2
-    }
+    }    
     
 }

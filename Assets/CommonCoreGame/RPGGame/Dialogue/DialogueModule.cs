@@ -19,6 +19,8 @@ namespace CommonCore.RpgGame.Dialogue
 
         //private static DialogueModule Instance;
 
+        public static readonly string DynamicDialogueName = "_dynamicPreload";
+
         private Dictionary<string, DialogueScene> LoadedDialogues;
         private Dictionary<string, Monologue> LoadedMonologues;
 
@@ -131,8 +133,27 @@ namespace CommonCore.RpgGame.Dialogue
             }
             else
             {
-                throw new InvalidOperationException("A dialogue by that name already exists");
+                throw new InvalidOperationException($"A dialogue called {name} already exists");
             }
+        }
+
+        /// <summary>
+        /// Removes a dialogue
+        /// </summary>
+        public bool RemoveDialogue(string name)
+        {
+            return LoadedDialogues.Remove(name);
+        }
+
+        /// <summary>
+        /// Removes a dialogue
+        /// </summary>
+        public bool RemoveDialogue(DialogueScene dialogue)
+        {
+            var key = LoadedDialogues.GetKeyForValue(dialogue);
+            if (!string.IsNullOrEmpty(key))
+                return LoadedDialogues.Remove(key);
+            return false;
         }
 
         /// <summary>
@@ -176,6 +197,25 @@ namespace CommonCore.RpgGame.Dialogue
             {
                 throw new InvalidOperationException("A monologue by that name already exists");
             }
+        }
+
+        /// <summary>
+        /// Removes a monologue
+        /// </summary>
+        public bool RemoveMonologue(string name)
+        {
+            return LoadedMonologues.Remove(name);
+        }
+
+        /// <summary>
+        /// Removes a monologue
+        /// </summary>
+        public bool RemoveMonologue(Monologue monologue)
+        {
+            var key = LoadedMonologues.GetKeyForValue(monologue);
+            if (!string.IsNullOrEmpty(key))
+                return LoadedMonologues.Remove(key);
+            return false;
         }
 
         /// <summary>

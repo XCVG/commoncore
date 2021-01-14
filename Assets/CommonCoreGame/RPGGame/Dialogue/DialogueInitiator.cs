@@ -16,40 +16,59 @@ namespace CommonCore.RpgGame.Dialogue
         /// <summary>
         /// Initiates dialogue, optionally running a callback method on completion
         /// </summary>
-        public static void InitiateDialogue(string dialogue, bool pause, DialogueFinishedDelegate callback)
+        public static void InitiateDialogue(string dialogue, bool pause, DialogueFinishedDelegate callback = null, string target = null)
         {
             DialogueController.CurrentDialogue = dialogue;
             DialogueController.CurrentCallback = callback;
+            DialogueController.CurrentTarget = target;
             var prefab = CoreUtils.LoadResource<GameObject>("UI/DialogueSystem");
             var go = GameObject.Instantiate<GameObject>(prefab, CoreUtils.GetUIRoot());
             if (pause)
-                LockPauseModule.PauseGame(PauseLockType.All, go);
+                LockPauseModule.PauseGame(PauseLockType.AllowCutscene, go);
 
         }
 
         /// <summary>
         /// Initiates dialogue and waits for completion (async/await variant)
         /// </summary>
-        public static async Task RunDialogueAsync(string dialogue, bool pause)
+        public static async Task RunDialogueAsync(string dialogue, bool pause, string target = null)
         {
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
             InitiateDialogue(dialogue, pause, () => {
                 tcs.SetResult(true);
-            });
+            }, target);
             await tcs.Task;
         }
 
         /// <summary>
         /// Initiates dialogue and waits for completion (IEnumerator coroutine variant)
         /// </summary>
-        public static IEnumerator RunDialogueCoroutine(string dialogue, bool pause)
+        public static IEnumerator RunDialogueCoroutine(string dialogue, bool pause, string target = null)
         {
             bool complete = false;
             InitiateDialogue(dialogue, pause, () => {
                 complete = true;
-            });
+            }, target);
             while (!complete)
                 yield return null;
+        }
+
+        /// <summary>
+        /// Sets the dynamic dialogue (experimental)
+        /// </summary>
+        public static void SetDynamicDialogue(DialogueScene scene)
+        {
+            var dialogueModule = CCBase.GetModule<DialogueModule>();
+            dialogueModule.AddDialogue(DialogueModule.DynamicDialogueName, scene, true);
+        }
+
+        /// <summary>
+        /// Clears the dynamic dialogue (experimental)
+        /// </summary>
+        public static void ClearDynamicDialogue()
+        {
+            var dialogueModule = CCBase.GetModule<DialogueModule>();
+            dialogueModule.RemoveDialogue(DialogueModule.DynamicDialogueName);
         }
 
         [Command(alias = "Test", className = "Monologue")]
@@ -71,6 +90,21 @@ namespace CommonCore.RpgGame.Dialogue
         {
             bool bPause = Convert.ToBoolean(pause);
             InitiateDialogue(dialogue, bPause, null);
+        }
+
+        [Command(alias = "Close", className = "Dialogue")]
+        static void CloseDialogueSystems()
+        {
+            DialogueController.CurrentDialogue = null;
+            DialogueController.CurrentCallback = null;
+
+            var ds = GameObject.Find("DialogueSystem");
+            if (ds != null)
+            {
+                var dc = ds.GetComponent<DialogueController>();
+                dc.CloseDialogue();
+            }
+
         }
 
         [Command(alias = "Purge", className = "Dialogue")]

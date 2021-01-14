@@ -112,7 +112,7 @@ namespace CommonCore.UI
         public void OnClickExit()
         {
             Time.timeScale = ConfigState.Instance.DefaultTimescale; //needed?
-            //BaseSceneController.Current.("MainMenuScene");
+            //BaseSceneController.Current.(CoreParams.MainMenuScene);
             SharedUtils.EndGame();
         }
 

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.AI;
 
 namespace CommonCore.RpgGame.World
@@ -38,11 +39,15 @@ namespace CommonCore.RpgGame.World
         private bool NavmeshEnabled;
         private bool DeathHandled = false;
 
+        private Vector3 OriginalControllerCenter;
+        private float OriginalControllerHeight;
+
         protected override void Start()
         {
             base.Start();
 
             FindComponents();
+            StoreOriginalCharControllerValues();
         }
 
         public override void Init()
@@ -50,9 +55,16 @@ namespace CommonCore.RpgGame.World
             base.Init();
 
             FindComponents();
+            StoreOriginalCharControllerValues();
 
             SetInitialNavState();
         }
+
+        public override void BeforeRestore(Dictionary<string, object> data)
+        {
+            FindComponents();
+            StoreOriginalCharControllerValues();
+        }       
 
         protected override void Update() //TODO may go to delegated update
         {
@@ -80,6 +92,12 @@ namespace CommonCore.RpgGame.World
 
             if (CharController == null)
                 Debug.LogWarning($"{nameof(GenericActorMovementComponent)} on {name} is missing NavComponent!");
+        }
+
+        private void StoreOriginalCharControllerValues()
+        {
+            OriginalControllerCenter = CharController.center;
+            OriginalControllerHeight = CharController.height;
         }
 
         public override void SetDestination(Vector3 dest)
@@ -170,6 +188,22 @@ namespace CommonCore.RpgGame.World
             }
 
             DeathHandled = true;
+        }
+
+        public override void HandleRaise()
+        {
+            if (DisableColliderOnDeath)
+            {
+                CharController.detectCollisions = true;
+                CharController.enabled = true;
+            }
+            else if (ShrinkColliderOnDeath)
+            {
+                CharController.center = OriginalControllerCenter;
+                CharController.height = OriginalControllerHeight;
+            }
+
+            DeathHandled = false;
         }
 
         public override void HandleDifficultyChanged()

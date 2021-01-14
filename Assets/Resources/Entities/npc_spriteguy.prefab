@@ -165,8 +165,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EditorFormID: npc_spriteguy
+  EntityTags: []
+  HandleRestorableExtraData: 0
   HitMaterial: 6
-  CharacterModelIdOverride: 
   InteractComponent: {fileID: 0}
   TargetPoint: {fileID: 0}
   AnimationComponent: {fileID: 6161069623857721628}
@@ -183,34 +184,30 @@ MonoBehaviour:
   Invincible: 0
   DieImmediately: 0
   DestroyOnDeath: 0
-  DamageResistance:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  DamageThreshold:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
+  DisableCollidersOnDeath: 0
+  DisableHitboxesOnDeath: 0
+  DamageResistances: []
   OnDeathSpecial: {fileID: 0}
+  DefaultHitPuff: DefaultHitPuff
+  ExtremeDeathThreshold: 1
   FeelPain: 1
   PainChance: 1
   PainWaitTime: 1
-  DefaultHitPuff: DefaultHitPuff
+  PainMaxChance: 0.9
+  PainGuaranteeThreshold: 0
+  PainGuaranteeRelative: 0
+  PainStateAllowRestart: 0
   Aggressive: 0
   Faction: Neutral
   Detectability: 1
+  IsTarget: 1
   Defensive: 1
   Infighting: 0
   Relentless: 0
   UseLineOfSight: 0
   SearchRadius: 25
   SearchInterval: 70
+  ChaseOptimalDistance: 0
   DisableInteractionOnHit: 1
   GrantXpOnDeath: 50
   RunOnChase: 1
@@ -248,9 +245,12 @@ MonoBehaviour:
   DeadInteractionTarget: 
   DeadInteractionSpecial: {fileID: 0}
   InteractionDisabledByHit: 0
+  DisableTooltip: 0
   TooltipOverride: 
   CorpseItems:
     Items: []
+    EnforceQuantityLimits: 0
+    TakeOnly: 0
 --- !u!114 &4548769101768710095
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -265,6 +265,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ActorController: {fileID: 5737222755212715997}
   UseMelee: 0
+  UseSuicide: 0
+  AutoDamageEffector: 1
+  FriendlyFire: 0
   AttackRange: 6
   AttackStateWarmup: 0
   AttackStateDelay: 1
@@ -275,12 +278,20 @@ MonoBehaviour:
     Damage: 10
     DamagePierce: 2
     DamageType: 0
+    DamageEffector: 0
+    HarmFriendly: 0
     HitLocation: 0
     HitMaterial: 0
     Originator: {fileID: 0}
+    OriginatorFaction: 
     HitPuff: 
+    HitFlags: 0
+    ExtraHitFlags: 0
+  AttackRandomFactor: 0
+  AttackHitFlags: 
   BulletPrefab: TestBullet
   AttackEffectPrefab: 
+  ParentAttackEffect: 1
   AttackSound: {fileID: 6161069624574782821}
   ShootPoint: {fileID: 5628258314254578959}
   AttackAnimationOverride: 
@@ -472,6 +483,7 @@ MonoBehaviour:
     Duration: 0.1
   Punching: []
   ExtraAnimations: []
+  ExtraDeathAnimations: []
 --- !u!1 &6161069624318706670
 GameObject:
   m_ObjectHideFlags: 0

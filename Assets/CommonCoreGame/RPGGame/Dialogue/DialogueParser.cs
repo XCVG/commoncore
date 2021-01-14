@@ -38,6 +38,9 @@ namespace CommonCore.RpgGame.Dialogue
             string sNextText = string.Empty;
             string sCameraDir = string.Empty;
             FrameImagePosition sPosition = FrameImagePosition.Center;
+            FrameOptions sOptions = new FrameOptions();
+            FrameScripts sScripts = new FrameScripts();
+            IReadOnlyDictionary<string, object> sExtraData = null;
             if (jo["background"] != null)
                 sBackground = jo["background"].Value<string>();
             if (jo["image"] != null)
@@ -61,7 +64,19 @@ namespace CommonCore.RpgGame.Dialogue
                 if (Enum.TryParse(jo["position"].Value<string>(), true, out FrameImagePosition pos))
                     sPosition = pos;
             }
-            Frame baseFrame = new Frame(sBackground, sImage, sNext, sMusic, sName, sText, sNextText, sCameraDir, sPosition, null, null);
+            if(!jo["options"].IsNullOrEmpty())
+            {
+                sOptions = ParseFrameOptions(jo["options"], null);
+            }
+            if (!jo["scripts"].IsNullOrEmpty())
+            {
+                sScripts = ParseFrameScripts(jo["scripts"], null);
+            }
+            if (!jo["ExtraData"].IsNullOrEmpty())
+            {
+                sExtraData = ParseExtraData(jo["ExtraData"], null);
+            }
+            Frame baseFrame = new Frame(sBackground, sImage, sNext, sMusic, sName, sText, sNextText, sCameraDir, sPosition, null, null, sOptions, sScripts, sExtraData);
 
             //parse frames
             Dictionary<string, Frame> frames = new Dictionary<string, Frame>();
@@ -97,7 +112,10 @@ namespace CommonCore.RpgGame.Dialogue
             string nextText = baseFrame.NextText;
             string type = null;
             string cameraDir = baseFrame.CameraDirection;
+            FrameScripts scripts = new FrameScripts();
+            FrameOptions options = new FrameOptions();
             FrameImagePosition position = GameParams.UseDialoguePositionInheritance ? baseFrame.ImagePosition : FrameImagePosition.Center;
+            IReadOnlyDictionary<string, object> extraData = null;
 
             if (jt["background"] != null)
                 background = jt["background"].Value<string>();
@@ -170,6 +188,34 @@ namespace CommonCore.RpgGame.Dialogue
                 microscript = nList.ToArray();
             }
 
+            //load/parse options and scripts nodes
+            if (!jt["options"].IsNullOrEmpty())
+            {
+                options = ParseFrameOptions(jt["options"], baseFrame.Options);
+            }
+            else
+            {
+                options = new FrameOptions(baseFrame.Options); //because FrameOptions implements IReadOnlyDictionary this actually works
+            }
+
+            if (!jt["scripts"].IsNullOrEmpty())
+            {
+                scripts = ParseFrameScripts(jt["scripts"], baseFrame.Scripts);
+            }
+            else
+            {
+                scripts = new FrameScripts(baseFrame.Scripts); //TODO correctness?
+            }
+
+            if(!jt["ExtraData"].IsNullOrEmpty())
+            {
+                extraData = ParseExtraData(jt["ExtraData"], baseFrame.ExtraData);
+            }
+            else
+            {
+                extraData = baseFrame.ExtraData;
+            }
+
             if (type == "choice")
             {
                 //parse choices if choice frame
@@ -179,15 +225,43 @@ namespace CommonCore.RpgGame.Dialogue
                 {
                     choices.Add(ParseChoiceNode(x));
                 }
-                return new ChoiceFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, choices.ToArray(), conditional, microscript);
+                return new ChoiceFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, choices.ToArray(), conditional, microscript, options, scripts, extraData);
+            }
+            else if (type == "image")
+            {
+                bool allowSkip = true, hideSkip = false, useTimer = false;
+                float timeToShow = 0;
+
+                if (!jt["allowSkip"].IsNullOrEmpty() && jt["allowSkip"].Type == JTokenType.Boolean)
+                    allowSkip = jt["allowSkip"].ToObject<bool>();
+
+                if (!jt["hideSkip"].IsNullOrEmpty() && jt["hideSkip"].Type == JTokenType.Boolean)
+                    hideSkip = jt["hideSkip"].ToObject<bool>();
+
+                if (!jt["useTimer"].IsNullOrEmpty() && jt["useTimer"].Type == JTokenType.Boolean)
+                    useTimer = jt["useTimer"].ToObject<bool>();
+
+                if (!jt["timeToShow"].IsNullOrEmpty())
+                    timeToShow = jt["timeToShow"].ToObject<float>();
+
+                return new ImageFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, allowSkip, hideSkip, timeToShow, useTimer, conditional, microscript, options, scripts, extraData);
             }
             else if (type == "text")
             {
-                return new TextFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, conditional, microscript);
+                bool useTimer = false;
+                float timeToShow = 0;
+
+                if (!jt["useTimer"].IsNullOrEmpty() && jt["useTimer"].Type == JTokenType.Boolean)
+                    useTimer = jt["useTimer"].ToObject<bool>();
+
+                if (!jt["timeToShow"].IsNullOrEmpty())
+                    timeToShow = jt["timeToShow"].ToObject<float>();
+
+                return new TextFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, timeToShow, useTimer, conditional, microscript, options, scripts, extraData);
             }
             else if (type == "blank")
             {
-                return new BlankFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, conditional, microscript);
+                return new BlankFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, conditional, microscript, options, scripts, extraData);
             }
             else
             {
@@ -605,6 +679,53 @@ namespace CommonCore.RpgGame.Dialogue
 
             var arr = loc.Split('.');
             return new KeyValuePair<string, string>(arr[0], arr[1]);
+        }
+
+        public static FrameOptions ParseFrameOptions(JToken jToken, FrameOptions baseOptions)
+        {
+            if (jToken.Type != JTokenType.Object)
+                throw new InvalidOperationException("JToken must be an object!");
+
+            Dictionary<string, object> dictionary = new Dictionary<string, object>();
+
+            using (var sr = jToken.CreateReader())
+            {
+                dictionary = JsonSerializer.Create(CoreParams.DefaultJsonSerializerSettings).Deserialize<Dictionary<string, object>>(sr);
+            }
+
+            if (baseOptions != null)
+                return new FrameOptions(baseOptions, dictionary);
+            return new FrameOptions(dictionary);
+        }
+
+        public static FrameScripts ParseFrameScripts(JToken jToken, FrameScripts baseScripts)
+        {
+            if (jToken.Type != JTokenType.Object)
+                throw new InvalidOperationException("JToken must be an object!");
+
+            Debug.LogWarning("ParseFrameScripts is not yet fully implemented!");
+
+            //need to handle base/overrides
+            FrameScripts fs = new FrameScripts(baseScripts);
+
+            using (var sr = jToken.CreateReader())
+            {
+                JsonSerializer.Create(CoreParams.DefaultJsonSerializerSettings).Populate(sr, fs);
+            }
+
+            return fs;
+        }
+
+        public static IReadOnlyDictionary<string, object> ParseExtraData(JToken jToken, IReadOnlyDictionary<string, object> baseExtraData)
+        {
+            Dictionary<string, object> newExtraData = jToken.ToObject<Dictionary<string, object>>(JsonSerializer.CreateDefault(CoreParams.DefaultJsonSerializerSettings));
+
+            if(baseExtraData != null && baseExtraData.Count > 0)
+            {
+                newExtraData.AddRangeKeepExisting(baseExtraData);
+            }
+
+            return newExtraData;
         }
     }
 }

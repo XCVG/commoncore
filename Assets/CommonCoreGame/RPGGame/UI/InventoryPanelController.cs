@@ -8,6 +8,7 @@ using CommonCore.World;
 using CommonCore.UI;
 using CommonCore.RpgGame.Rpg;
 using CommonCore.RpgGame.World;
+using System.Linq;
 
 namespace CommonCore.RpgGame.UI
 {
@@ -45,7 +46,7 @@ namespace CommonCore.RpgGame.UI
             }
             ScrollContent.DetachChildren();
 
-            List<InventoryItemInstance> itemList = GameState.Instance.PlayerRpgState.Inventory.GetItemsListActual();
+            List<InventoryItemInstance> itemList = GameState.Instance.PlayerRpgState.Inventory.EnumerateItems().ToList();
 
             ItemLookupTable = new InventoryItemInstance[itemList.Count];
 
@@ -226,7 +227,11 @@ namespace CommonCore.RpgGame.UI
                 int qty = ItemLookupTable[SelectedItem].Quantity;
                 SelectedItemText.text = SelectedItemText.text + string.Format(" ({0})", qty);
             }
-            
+
+            bool allowInteraction = AllowGameStateInteraction;
+            SelectedItemUse.interactable = allowInteraction;
+            SelectedItemUse2.interactable = allowInteraction;
+            SelectedItemDrop.interactable = allowInteraction;
         }
 
         private void ClearDetailPane()

@@ -43,6 +43,11 @@ namespace CommonCore.State
         public CharacterModel PlayerRpgState { get; private set; } = new CharacterModel();
 
         /// <summary>
+        /// [RPGGame] State data of the faction table
+        /// </summary>
+        public FactionModel FactionState { get; private set; } = new FactionModel();
+
+        /// <summary>
         /// Initializes player state and containers from defs files
         /// </summary>
         /// <remarks>
@@ -58,19 +63,22 @@ namespace CommonCore.State
             //load initial player
             try
             {
-                instance.PlayerRpgState = new CharacterModel();
-                JsonConvert.PopulateObject(CoreUtils.LoadResource<TextAsset>("Data/RPGDefs/init_player").text, instance.PlayerRpgState, new JsonSerializerSettings
-                {
-                    Converters = CCJsonConverters.Defaults.Converters,
-                    TypeNameHandling = TypeNameHandling.Auto,
-                    NullValueHandling = NullValueHandling.Ignore
-                });
-                instance.PlayerRpgState.UpdateStats();
-                PlayerFlags.RegisterSource(instance.PlayerRpgState);
+                InitializePlayer();
             }
             catch (Exception e)
             {
                 Debug.LogError("Failed to load initial player");
+                Debug.LogException(e);
+            }
+
+            //hookup factions
+            try
+            {
+                FactionState = FactionModel.CloneFactionModel(FactionModel.BaseModel);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Failed to load faction model");
                 Debug.LogException(e);
             }
 
@@ -104,9 +112,36 @@ namespace CommonCore.State
         }
 
         /// <summary>
-        /// Re-registers player flags source after a load
+        /// Initializes the player from initial state in defs
         /// </summary>
-        /// <remarks>Will eventually do more, probably</remarks>
+        public void InitializePlayer()
+        {
+            InitializePlayer(CoreUtils.LoadResource<TextAsset>("Data/RPGDefs/init_player").text);
+        }
+
+        /// <summary>
+        /// Initializes the player from initial state 
+        /// </summary>
+        public void InitializePlayer(string jsonData)
+        {
+            if (instance.PlayerRpgState != null && PlayerFlags.HasSource(instance.PlayerRpgState))
+                PlayerFlags.UnregisterSource(instance.PlayerRpgState);
+
+            instance.PlayerRpgState = new CharacterModel();
+            JsonConvert.PopulateObject(jsonData, instance.PlayerRpgState, new JsonSerializerSettings
+            {
+                Converters = CCJsonConverters.Defaults.Converters,
+                TypeNameHandling = TypeNameHandling.Auto,
+                NullValueHandling = NullValueHandling.Ignore
+            });
+            InventoryModel.AssignUIDs(instance.PlayerRpgState.Inventory.EnumerateItems(), true);
+            instance.PlayerRpgState.UpdateStats();
+            PlayerFlags.RegisterSource(instance.PlayerRpgState);
+        }
+
+        /// <summary>
+        /// Reconnects things after loading a game (currently just PlayerFlags)
+        /// </summary>
         [AfterLoad]
         private void RpgAfterLoad()
         {

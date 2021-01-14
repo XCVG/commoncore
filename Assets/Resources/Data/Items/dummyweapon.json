@@ -1,0 +1,21 @@
+{
+  "dummyweapon": {
+    "model": {
+      "$type": "CommonCore.RpgGame.Rpg.DummyWeaponItemModel, Assembly-CSharp",      
+      "Weight": 1.5,	  
+	  "Value": 50,
+      "MaxCondition": 1,
+	  "ViewModel": null,
+	  "LowerTime": 1.0,
+	  "RaiseTime": 1.0,	 
+      "Unique": false,
+      "Essential": false,
+	  "Flags": ["WeaponTwoHanded", "DummyWeaponUseViewModelRaiseLower"]
+    },
+    "def": {
+    "NiceName": "Dummy Weapon",
+    "Image": "sword",
+    "Description": "A dummy weapon that shouldn't actually do anything."
+  }
+  }
+}

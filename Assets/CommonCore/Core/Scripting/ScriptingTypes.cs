@@ -41,7 +41,7 @@ namespace CommonCore.Scripting
 
     public enum ScriptHook
     {
-        None, AfterModulesLoaded, AfterAddonsLoaded, BeforeApplicationExit, OnGameStart, OnGameEnd, OnGameLoad, OnSceneTransition, OnSceneLoad, AfterSceneLoad, OnSceneUnload, OnPlayerSpawn, OnGameOver, AfterMainMenuCreate, AfterIGUIMenuCreate, OnIGUIMenuOpen, OnFrameUpdate, OnWorldTimeUpdate
+        None, AfterModulesLoaded, AfterAddonsLoaded, BeforeApplicationExit, OnGameStart, OnGameEnd, OnGameLoad, OnSceneTransition, OnSceneLoad, AfterSceneLoad, OnSceneUnload, OnPlayerSpawn, OnGameOver, AfterMainMenuCreate, AfterIGUIMenuCreate, OnIGUIMenuOpen, OnFrameUpdate, OnWorldTimeUpdate, AfterAddonLoaded, OnLoadingSceneOpen
     }
 
     /// <summary>

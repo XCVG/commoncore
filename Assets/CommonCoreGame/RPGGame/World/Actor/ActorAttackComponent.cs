@@ -208,7 +208,9 @@ namespace CommonCore.RpgGame.World
                     var bullet = WorldUtils.SpawnEffect(BulletPrefab, shootPos + (shootVec * 0.25f), bulletRotation.eulerAngles, transform.root);
                     var bulletRigidbody = bullet.GetComponent<Rigidbody>();
                     bulletRigidbody.velocity = (shootVec * BulletSpeed);
-                    bullet.GetComponent<BulletScript>().HitInfo = modHit;
+                    var bulletScript = bullet.GetComponent<BulletScript>();
+                    bulletScript.HitInfo = modHit;
+                    bulletScript.Target = target;
                 }
                 else
                 {

@@ -14,6 +14,9 @@ using CommonCore.RpgGame.UI;
 using CommonCore.World;
 using CommonCore.DebugLog;
 using CommonCore.UI;
+using CommonCore.Scripting;
+using System.Linq;
+using CommonCore.Config;
 
 namespace CommonCore.RpgGame.Dialogue
 {
@@ -23,11 +26,13 @@ namespace CommonCore.RpgGame.Dialogue
         public static string CurrentDialogue { get; set; }
         public static DialogueFinishedDelegate CurrentCallback { get; set; }
         //public static bool AutoPauseGame { get; set; }
+        public static string CurrentTarget { get; set; } //hacky but oh well
 
         public bool ApplyTheme = true;
         public string OverrideTheme;
 
         public RectTransform ChoicePanel;
+        public RectTransform NameTextPanel;
         public Text TextTitle;
         public Text TextMain;
         public Image BackgroundImage;
@@ -35,6 +40,7 @@ namespace CommonCore.RpgGame.Dialogue
         //public Button[] ButtonsChoice;
         public GameObject ButtonPrefab;
         public Button ButtonContinue;
+        public Button ButtonAlternateContinue;
         public ScrollRect ScrollChoice;
         public RectTransform ScrollChoiceContent;
 
@@ -50,6 +56,11 @@ namespace CommonCore.RpgGame.Dialogue
         //private string CurrentFrameName;
         private Frame CurrentFrameObject;
 
+        private float DefaultPanelHeight;
+        private Coroutine WaitAndAdvanceCoroutine = null;
+
+        private HashSet<string> HiddenObjects = new HashSet<string>();
+
         void Awake()
         {
             name = "DialogueSystem";
@@ -61,6 +72,8 @@ namespace CommonCore.RpgGame.Dialogue
 
             //if (AutoPauseGame)
             //    LockPauseModule.PauseGame(this.gameObject);
+
+            DefaultPanelHeight = ChoicePanel.rect.height; //ordering of this wrt ApplyThemeToPanel may matter later
 
             ApplyThemeToPanel();
 
@@ -87,12 +100,20 @@ namespace CommonCore.RpgGame.Dialogue
 
         private void LoadScene(string scene)
         {
+            //TODO bodge some dynamic shit in here for running Immersive Monologues (need to add some junk to DialogueModule as well)
+            //maybe if scene==_dynamicPreload we use a property or something
+            //if (scene.Equals(DialogueModule.DynamicDialogueName, StringComparison.OrdinalIgnoreCase))
+            //    throw new NotImplementedException($"{nameof(DialogueModule.DynamicDialogueName)} is not yet implemented!");
+            //this should "just work" actually
+
             CurrentScene = CCBase.GetModule<DialogueModule>().GetDialogue(scene);
             CurrentSceneName = scene;
         }
 
         private void PresentNewFrame(string s)
         {
+            TryCallScript(CurrentFrameObject?.Scripts?.OnUnpresent);
+
             CurrentFrameName = s;
             if (!CurrentSceneFrames.ContainsKey(s))
                 Debug.LogError($"[Dialogue] Can't find frame \"{s}\"");
@@ -101,10 +122,13 @@ namespace CommonCore.RpgGame.Dialogue
         
         private void PresentNewFrame(Frame f)
         {
+            TryCallScript(f?.Scripts?.BeforePresent, f);
+
             //special handling for blank frames
             if (f is BlankFrame)
             {
-                CurrentFrameObject = f;
+                CurrentFrameObject = f;                
+                TryCallScript(f?.Scripts?.OnPresent, f);
                 OnChoiceButtonClick(0);
                 return;
             }
@@ -124,9 +148,13 @@ namespace CommonCore.RpgGame.Dialogue
             }
 
             //present audio
+            string voiceClipName = $"{CurrentSceneName}/{CurrentFrameName}";
+            string voiceClipNameOverride = f.Options.VoiceOverride;
+            if (!string.IsNullOrEmpty(voiceClipNameOverride))
+                voiceClipName = voiceClipNameOverride;
             if (VoiceAudioSource.isPlaying)
                 VoiceAudioSource.Stop();
-            var voiceClip = CCBase.GetModule<AudioModule>().GetSound($"{CurrentSceneName}/{CurrentFrameName}", SoundType.Voice, !GameParams.DialogueVerboseLogging); //GetModule<T> is now preferred
+            var voiceClip = CCBase.GetModule<AudioModule>().GetSound(voiceClipName, SoundType.Voice, !GameParams.DialogueVerboseLogging); //GetModule<T> is now preferred
             if (voiceClip != null)
             {
                 VoiceAudioSource.clip = voiceClip;
@@ -151,6 +179,36 @@ namespace CommonCore.RpgGame.Dialogue
                 }
             }
 
+            //size panel
+            float faceYOffset = 0;
+            var framePanelHeight = f.Options.PanelHeight;
+            var panelHeight = framePanelHeight == ChoicePanelHeight.Default ? GameParams.DialoguePanelHeight : framePanelHeight;
+            switch (panelHeight)
+            {
+                case ChoicePanelHeight.Half:
+                    if (!Mathf.Approximately(ChoicePanel.rect.height, DefaultPanelHeight / 2f))
+                        ChoicePanel.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, DefaultPanelHeight / 2f);
+                    faceYOffset = -(DefaultPanelHeight / 2f);
+                    break;
+                case ChoicePanelHeight.Variable:
+                    CDebug.LogEx($"{nameof(ChoicePanelHeight)} {ChoicePanelHeight.Variable} is not supported!", LogLevel.Warning, this);
+                    break;
+                default:
+                    if (!Mathf.Approximately(ChoicePanel.rect.height, DefaultPanelHeight))
+                        ChoicePanel.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, DefaultPanelHeight); //correct?
+                    break;
+            }
+            
+            //show/hide name text
+            if(f.Options.HideNameText)
+            {
+                NameTextPanel.gameObject.SetActive(false);
+            }
+            else
+            {
+                NameTextPanel.gameObject.SetActive(true);
+            }
+
             //present image
             FaceImage.sprite = null;
             FaceImage.gameObject.SetActive(false);
@@ -162,23 +220,71 @@ namespace CommonCore.RpgGame.Dialogue
                 {
                     //Debug.Log(sprite.name);
 
+                    Vector2 canvasSize = ((RectTransform)FaceImage.canvas.transform).rect.size;
+
                     float spriteX = sprite.texture.width * (100f / sprite.pixelsPerUnit);
                     float spriteY = sprite.texture.height * (100f / sprite.pixelsPerUnit);
 
                     switch (f.ImagePosition)
                     {
-                        case FrameImagePosition.Fill:
+                        case FrameImagePosition.Fill: //works
                             FaceImage.rectTransform.localPosition = Vector3.zero;
-                            FaceImage.rectTransform.sizeDelta = FaceImage.canvas.pixelRect.size;
+                            FaceImage.rectTransform.sizeDelta = canvasSize;
+                            break;                        
+                        case FrameImagePosition.Contain: //works
+                            {
+                                FaceImage.rectTransform.localPosition = Vector3.zero;
+
+                                float imageRatio = (float)sprite.texture.width / (float)sprite.texture.height; //force float division!
+                                float rectRatio = canvasSize.x / canvasSize.y;
+
+                                if (imageRatio > rectRatio) //image is wider than rect
+                                {                                    
+                                    FaceImage.rectTransform.sizeDelta = new Vector2(canvasSize.x, canvasSize.x / imageRatio);
+                                }
+                                else //image is narrower than rect
+                                {                                    
+                                    FaceImage.rectTransform.sizeDelta = new Vector2(canvasSize.y * imageRatio, canvasSize.y);
+                                }
+                            }
                             break;
-                        case FrameImagePosition.Character:
-                            FaceImage.rectTransform.localPosition = new Vector3(0, GameParams.DialogueDrawPortraitHigh ? 140 : 100, 0);
+                        case FrameImagePosition.Cover: //works
+                            {
+                                FaceImage.rectTransform.localPosition = Vector3.zero;
+
+                                float imageRatio = (float)sprite.texture.width / (float)sprite.texture.height;
+                                float rectRatio = canvasSize.x / canvasSize.y;
+
+                                if (imageRatio > rectRatio) //image is wider than rect
+                                {                                    
+                                    FaceImage.rectTransform.sizeDelta = new Vector2(canvasSize.y * imageRatio, canvasSize.y);
+                                }
+                                else //image is narrower than rect
+                                {                                    
+                                    FaceImage.rectTransform.sizeDelta = new Vector2(canvasSize.x, canvasSize.x / imageRatio);
+                                }
+                            }
+                            break;
+                        case FrameImagePosition.Character: //works
+                            FaceImage.rectTransform.localPosition = new Vector3(0, faceYOffset + (GameParams.DialogueDrawPortraitHigh ? 140 : 100), 0);
                             FaceImage.rectTransform.sizeDelta = new Vector2(spriteX, spriteY);
                             break;
-                        default:
-                            //center, no scale
+                        case FrameImagePosition.CharacterBottom: //works
+                            {
+                                float yPos = (-(canvasSize.y / 2f)) + (spriteY / 2f); //I think we want SpriteY and not pixels directly
+
+                                FaceImage.rectTransform.localPosition = new Vector3(0, yPos, 0);
+                                FaceImage.rectTransform.sizeDelta = new Vector2(spriteX, spriteY);
+                            }
+                            break;
+                        case FrameImagePosition.Battler: //deliberately broken
+                            CDebug.LogEx($"FrameImagePosition {f.ImagePosition} is not supported!", LogLevel.Warning, this);
                             FaceImage.rectTransform.localPosition = Vector3.zero;
                             FaceImage.rectTransform.sizeDelta = new Vector2(spriteX, spriteY);
+                            break;
+                        default: //works
+                            FaceImage.rectTransform.localPosition = Vector3.zero;
+                            FaceImage.rectTransform.sizeDelta = new Vector2(spriteX, spriteY); ;
                             break;
                     }
 
@@ -216,6 +322,24 @@ namespace CommonCore.RpgGame.Dialogue
                 Debug.LogException(e);
             }
 
+            //present hidden objects
+            var objectsToHide = f.Options.HideObjects;
+            if (objectsToHide != null)
+            {
+                var hiddenObjectsToShow = HiddenObjects.Except(objectsToHide);
+                UnhideObjects(hiddenObjectsToShow);
+
+                var newObjectsToHide = objectsToHide.Except(HiddenObjects);
+                HideObjects(newObjectsToHide);
+
+                HiddenObjects.Clear();
+                HiddenObjects.UnionWith(objectsToHide);
+            }
+            else
+            {
+                UnhideAllObjects();
+            }
+
             //present text
             TextTitle.text = Sub.Macro(f.NameText);
             TextMain.text = Sub.Macro(f.Text);
@@ -226,17 +350,20 @@ namespace CommonCore.RpgGame.Dialogue
                 Destroy(t.gameObject);
             }
             ScrollChoiceContent.DetachChildren();
+            ButtonAlternateContinue.gameObject.SetActive(false);
 
-            //present buttons
-            if (f is ChoiceFrame)
+            //present buttons and frame
+            if (f is ChoiceFrame choiceFrame)
             {
+                ChoicePanel.gameObject.SetActive(true);
+
                 ScrollChoice.gameObject.SetActive(true);
                 ButtonContinue.gameObject.SetActive(false);
 
-                ChoiceFrame cf = (ChoiceFrame)f;
-                for (int i = 0; i < cf.Choices.Length; i++)
+                //ChoiceFrame cf = (ChoiceFrame)f;
+                for (int i = 0; i < choiceFrame.Choices.Length; i++)
                 {
-                    ChoiceNode cn = cf.Choices[i];
+                    ChoiceNode cn = choiceFrame.Choices[i];
 
                     string prependText = string.Empty;
                     bool showChoice = true;
@@ -280,8 +407,38 @@ namespace CommonCore.RpgGame.Dialogue
 
                 }
             }
-            else // if(f is TextFrame)
+            else if (f is ImageFrame imageFrame)
             {
+                string nextText = string.IsNullOrEmpty(f.NextText) ? Sub.Replace("DefaultNextText", "IGUI_DIALOGUE", false) : f.NextText;
+
+                if(imageFrame.AllowSkip)
+                {
+                    ChoicePanel.gameObject.SetActive(false);
+                    ScrollChoice.gameObject.SetActive(false);
+
+                    Button b = ButtonAlternateContinue;
+                    b.gameObject.SetActive(true);
+                    b.transform.Find("Text").GetComponent<Text>().text = nextText;
+                }
+                else
+                {
+                    ChoicePanel.gameObject.SetActive(false);
+                    ButtonAlternateContinue.gameObject.SetActive(false);
+                }
+
+                if(imageFrame.HideSkip)
+                {
+                    CDebug.LogEx("Image frame HideSkip is deprecated and not implemented (use AllowSkip=false instead)", LogLevel.Warning, this);
+                }
+
+                if(imageFrame.UseTimer)
+                {
+                    StartWaitAndAdvance(imageFrame.TimeToShow);
+                }
+            }
+            else if(f is TextFrame textFrame)
+            {
+                ChoicePanel.gameObject.SetActive(true);
                 ScrollChoice.gameObject.SetActive(false);
 
                 string nextText = string.IsNullOrEmpty(f.NextText) ? Sub.Replace("DefaultNextText", "IGUI_DIALOGUE", false) : f.NextText;
@@ -289,12 +446,23 @@ namespace CommonCore.RpgGame.Dialogue
                 Button b = ButtonContinue;
                 b.gameObject.SetActive(true);
                 b.transform.Find("Text").GetComponent<Text>().text = nextText;
+
+                if (textFrame.UseTimer)
+                {
+                    StartWaitAndAdvance(textFrame.TimeToShow);
+                }
+            }
+            else
+            {
+                throw new NotImplementedException($"Frame type {f.GetType().Name} is not supported");
             }
 
             //apply theme
             ApplyThemeToPanel();
 
             CurrentFrameObject = f;
+
+            TryCallScript(f?.Scripts?.OnPresent, f);
         }
 
         private void ApplyThemeToPanel()
@@ -303,14 +471,24 @@ namespace CommonCore.RpgGame.Dialogue
             {
                 var uiModule = CCBase.GetModule<UIModule>();
                 if (!string.IsNullOrEmpty(OverrideTheme))
+                {
                     uiModule.ApplyThemeRecurse(ChoicePanel, uiModule.GetThemeByName(OverrideTheme));
+                    uiModule.ApplyThemeRecurse(ButtonAlternateContinue.transform, uiModule.GetThemeByName(OverrideTheme));
+                }
                 else
+                {
                     uiModule.ApplyThemeRecurse(ChoicePanel);
+                    uiModule.ApplyThemeRecurse(ButtonAlternateContinue.transform);
+                }
             }
         }
 
         public void OnChoiceButtonClick(int idx)
         {
+            AbortWaitAndAdvance();
+
+            TryCallScript(CurrentFrameObject?.Scripts?.OnChoice);
+
             string choice = null;
             if (CurrentFrameObject is ChoiceFrame)
             {
@@ -359,7 +537,7 @@ namespace CommonCore.RpgGame.Dialogue
 
             GotoNext(choice);
 
-        }
+        }        
 
         //this one really isn't flexible enough to be useful...
         private KeyValuePair<string, string> ParseLocation(string loc)
@@ -397,7 +575,7 @@ namespace CommonCore.RpgGame.Dialogue
             else if (nextLoc.Key == "shop")
             {
                 var container = GameState.Instance.ContainerState[nextLoc.Value];
-                ContainerModal.PushModal(GameState.Instance.PlayerRpgState.Inventory, container, true, null);
+                ContainerModal.PushModal(GameState.Instance.PlayerRpgState.Inventory, container, true, null); //TODO we could add in "return from shop" with not _too_ much difficulty
                 CloseDialogue();
             }
             else if (nextLoc.Key == "scene")
@@ -421,8 +599,7 @@ namespace CommonCore.RpgGame.Dialogue
                 }
                 else
                 {
-                    Debug.LogWarning("DialogueController forced scene exit!");
-                    SceneManager.LoadScene(nextLoc.Value); //BAD BAD BAD forced exit
+                    SharedUtils.ChangeScene(nextLoc.Value);
                 }
 
             }
@@ -441,15 +618,18 @@ namespace CommonCore.RpgGame.Dialogue
                     PresentNewFrame(nextLoc.Value);
             }
 
-        }
+        }        
 
-        private void CloseDialogue()
+        public void CloseDialogue()
         {
-            CurrentDialogue = null;
+            AbortWaitAndAdvance();
+            CurrentDialogue = null;            
             LockPauseModule.UnpauseGame(this.gameObject);
             AudioPlayer.Instance.ClearMusic(MusicSlot.Cinematic);
             if (CameraController)
                 Destroy(CameraController.gameObject);
+            UnhideAllObjects();
+            CurrentTarget = null;
             Destroy(this.gameObject);
             if(CurrentCallback != null)
             {
@@ -468,6 +648,124 @@ namespace CommonCore.RpgGame.Dialogue
             }
         }
 
-        
+        private void TryCallScript(string script, Frame currentFrameObject = null)
+        {
+            if (currentFrameObject == null)
+                currentFrameObject = CurrentFrameObject;
+
+            if (!string.IsNullOrEmpty(script))
+            {
+                try
+                {
+                    ScriptingModule.Call(script, new ScriptExecutionContext() { Activator = gameObject, Caller = this }, currentFrameObject);
+                }
+                catch(Exception e)
+                {
+                    Debug.LogError($"[DialogueController] Failed to execute script \"{script}\" ({e.GetType().Name})");
+                    if (ConfigState.Instance.UseVerboseLogging)
+                        Debug.LogException(e);
+                }
+            }
+        }
+
+        private void HideObjects(IEnumerable<string> objects)
+        {
+            foreach (var obj in objects)
+            {
+                try
+                {
+                    var go = WorldUtils.FindObjectByTID(ResolveSpecialObjectName(obj));
+                    go.SetActive(false);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"[DialogueController] Failed to hide object \"{obj}\" ({e.GetType().Name})");
+                    if (ConfigState.Instance.UseVerboseLogging)
+                        Debug.LogException(e);
+                }
+            }
+        }
+
+        private void UnhideObjects(IEnumerable<string> objects)
+        {
+            foreach(var obj in objects)
+            {
+                try
+                {
+                    var go = WorldUtils.FindObjectByTID(ResolveSpecialObjectName(obj));
+                    go.SetActive(true);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"[DialogueController] Failed to unhide object {obj} ({e.GetType().Name})");
+                    if (ConfigState.Instance.UseVerboseLogging)
+                        Debug.LogException(e);
+                }
+            }
+        }
+
+        private string ResolveSpecialObjectName(string objectName)
+        {
+            if (objectName.StartsWith("#")) //interpret this literally
+                return objectName.TrimStart('#');
+
+            //resolve Player and Target
+            if (objectName.Equals("Player", StringComparison.OrdinalIgnoreCase))
+                return WorldUtils.GetPlayerObject().name;
+
+            if (objectName.Equals("Target", StringComparison.OrdinalIgnoreCase))
+                return CurrentTarget;
+
+            return objectName;
+        }
+
+        private void UnhideAllObjects()
+        {
+            UnhideObjects(HiddenObjects);
+            HiddenObjects.Clear();
+        }
+
+        private void AbortWaitAndAdvance()
+        {
+            if (WaitAndAdvanceCoroutine != null)
+            {
+                StopCoroutine(WaitAndAdvanceCoroutine);
+                WaitAndAdvanceCoroutine = null;
+            }
+        }
+
+        private void StartWaitAndAdvance(float timeToWait)
+        {
+            AbortWaitAndAdvance();
+            WaitAndAdvanceCoroutine = StartCoroutine(CoWaitAndAdvance(timeToWait));
+        }
+
+        private IEnumerator CoWaitAndAdvance(float timeToWait)
+        {
+            //slightly awkward with menus and whatever because we're still waiting for another pause level
+            //Debug.LogWarning("WaitAndAdvance in dialogue will be slightly fucky with menus because PauseLockType.Cutscene is not available yet");
+
+            //yield return new WaitForSecondsRealtime(timeToWait); //will need to replace this with our own jank when PauseLockType.Cutscene is available
+
+            //this is hacky and maximum jank because we don't draw a distinction in PauseLock between "game is locked because cutscene" and "game is locked because menu"
+
+            float timeStep = 0.1f;
+            float elapsed = 0;
+            while(elapsed < timeToWait)
+            {
+                yield return new WaitForSecondsRealtime(timeStep);
+
+                if (!(IngameMenuController.Current.Ref()?.IsOpen ?? false))
+                    elapsed += timeStep;                
+            }
+
+            yield return null;
+
+            WaitAndAdvanceCoroutine = null;
+            OnChoiceButtonClick(0);
+            
+        }
+
+
     }
 }

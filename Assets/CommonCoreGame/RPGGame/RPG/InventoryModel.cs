@@ -1,4 +1,5 @@
 ﻿using CommonCore.DebugLog;
+using CommonCore.State;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -289,14 +290,33 @@ namespace CommonCore.RpgGame.Rpg
         public static EquipSlot GetItemSlot(InventoryItemModel item)
         {
             //LeftWeapon isn't actually supported
-            if (item is RangedWeaponItemModel)
-                return EquipSlot.RightWeapon;
-            else if (item is MeleeWeaponItemModel)
+            if (item is WeaponItemModel)
                 return EquipSlot.RightWeapon;
             else if (item is ArmorItemModel aim)
                 return aim.Slot;
             else
                 return EquipSlot.None;
+        }
+
+        /// <summary>
+        /// Assigns UIDs to inventory item instances with UID=0
+        /// </summary>
+        public static void AssignUIDs(IEnumerable<InventoryItemInstance> items) => AssignUIDs(items, false);
+
+        /// <summary>
+        /// Assigns UIDs to inventory item instances with UID=0
+        /// </summary>
+        public static void AssignUIDs(IEnumerable<InventoryItemInstance> items, bool warn)
+        {
+            foreach(var item in items)
+            {
+                if (item.InstanceUID == 0)
+                {
+                    item.ResetUID();
+                    if (warn)
+                        Debug.LogWarning($"[InventoryModel] Set UID of item {item.ItemModel?.Name} to {item.InstanceUID} (item had no UID)");
+                }
+            }
         }
 
         //actually inventory model stuff begins here
@@ -323,14 +343,23 @@ namespace CommonCore.RpgGame.Rpg
             return quantity;
         }
 
-        public List<InventoryItemInstance> GetItemsListActual()
+        public IEnumerable<InventoryItemInstance> EnumerateItems()
         {
             return Items;
         }
 
-        public IEnumerable<InventoryItemInstance> EnumerateItems()
+        public InventoryItemInstance GetItem(long uid)
         {
-            return GetItemsListActual();
+            InventoryItemInstance instance = null;
+            foreach (InventoryItemInstance i in Items)
+            {
+                if (i.InstanceUID == uid)
+                {
+                    instance = i;
+                    break;
+                }
+            }
+            return instance;
         }
 
         //like the old deprecated GetItem but better defined
@@ -360,6 +389,22 @@ namespace CommonCore.RpgGame.Rpg
                 }
             }
             return instance;
+        }
+
+        public bool RemoveItem(long uid)
+        {
+            InventoryItemInstance instance = GetItem(uid);
+            if (instance == null)
+                return false;
+            return RemoveItem(instance);
+        }
+
+        public bool RemoveItem(long uid, int quantity)
+        {
+            InventoryItemInstance instance = GetItem(uid);
+            if (instance == null)
+                return false;
+            return RemoveItem(instance, quantity);
         }
 
         public bool RemoveItem(InventoryItemInstance item)

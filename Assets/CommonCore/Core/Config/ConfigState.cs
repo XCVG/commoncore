@@ -152,6 +152,9 @@ namespace CommonCore.Config
         public float EntityBudget { get; set; } = 1;
         public float EffectBudget { get; set; } = 1;
 
+        //THEME CONFIG
+        public bool SuppressThemeWarnings { get; set; } = false;
+
         //ADDON CONFIG
         public bool LoadAddons { get; set; } = true;
         public List<string> AddonsToLoad { get; private set; } = new List<string>();

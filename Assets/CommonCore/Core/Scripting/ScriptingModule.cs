@@ -48,6 +48,8 @@ namespace CommonCore.Scripting
 
                 Log(string.Format("Loaded {1} scripts from addon in {0:f2} ms ({2} total callable scripts)", sw.ElapsedMilliseconds, loadedScripts, CallableMethods.Count));
             }
+
+            CallHooked(ScriptHook.AfterAddonLoaded, this, data);
         }
 
         public override void OnAllModulesLoaded()

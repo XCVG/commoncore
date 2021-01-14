@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using CommonCore;
 using CommonCore.World;
@@ -25,12 +26,12 @@ namespace CommonCore.RpgGame.World
 
         public FacingSpriteSizeMode SpriteSizeMode = default;
         [Tooltip("If >0, multiplies the sprite size by this value (exact effect depends on size mode)")]
-        public float SpriteScale = 0;       
+        public float SpriteScale = 0;
 
         [Header("Animation Options")]
         public bool Animate = true;
         public bool LoopIdle = true;
-        public bool AutoTransition = true;        
+        public bool AutoTransition = true;
         public float AnimationTimescale = 1;
         public bool AnimateInRealtime = false;
 
@@ -56,6 +57,9 @@ namespace CommonCore.RpgGame.World
 
         [SerializeField]
         private SpriteFrameSequence[] ExtraAnimations = null;
+
+        [SerializeField]
+        private SpriteFrameDeathSequence[] ExtraDeathAnimations = null;
 
         private bool LoopCurrentFrameSet = false;
         private SpriteFrame[] NextFrameSet = null;
@@ -89,7 +93,7 @@ namespace CommonCore.RpgGame.World
 
         private void UpdateBillboard(Vector3 vecToTarget, Vector3 flatVecToTarget)
         {
-            if(!BillboardCorpse && CurrentFrameSet == Dead)
+            if (!BillboardCorpse && CurrentFrameSet == Dead)
             {
                 Attachment.transform.localRotation = ReverseBillboard ? (Quaternion.identity * Quaternion.AngleAxis(180, Vector3.up)) : Quaternion.identity;
                 return;
@@ -152,19 +156,19 @@ namespace CommonCore.RpgGame.World
                 CurrentFrame++;
             }
 
-            if(CurrentFrame == CurrentFrameSet.Length) //we are at the end
+            if (CurrentFrame == CurrentFrameSet.Length) //we are at the end
             {
-                if(LoopCurrentFrameSet)
+                if (LoopCurrentFrameSet)
                 {
                     CurrentFrame = 0;
                 }
-                else if(AutoTransition && NextFrameSet != null)
+                else if (AutoTransition && NextFrameSet != null)
                 {
                     if (NextFrameSet == Idle && LoopIdle)
                         LoopCurrentFrameSet = true;
 
                     StartAnimationSequence(NextFrameSet);
-                    if(NextAnimState.HasValue)
+                    if (NextAnimState.HasValue)
                         CurrentAnimState = NextAnimState.Value; //really only used for save/load
                     NextFrameSet = null;
                 }
@@ -172,7 +176,7 @@ namespace CommonCore.RpgGame.World
 
         }
 
-        public override void SetAnimationForced(ActorAnimState state)
+        public override void SetAnimationForced(ActorAnimState state, object args)
         {
             switch (state)
             {
@@ -183,16 +187,34 @@ namespace CommonCore.RpgGame.World
                     StartAnimationSequence(Idle);
                     break;
                 case ActorAnimState.Dead:
-                    LoopCurrentFrameSet = false;
-                    NextFrameSet = null;
-                    NextAnimState = null;
-                    StartAnimationSequence(Dead);
+                    {
+                        LoopCurrentFrameSet = false;
+                        SpriteFrame[] nextFrames = NextFrameSet ?? Dead;
+                        NextFrameSet = null;
+                        NextAnimState = null;
+                        StartAnimationSequence(nextFrames);
+                    }
                     break;
                 case ActorAnimState.Dying:
-                    LoopCurrentFrameSet = false;
-                    NextFrameSet = Dead;
-                    NextAnimState = ActorAnimState.Dead;
-                    StartAnimationSequence(Dying);
+                    {
+                        LoopCurrentFrameSet = false;                        
+                        NextAnimState = ActorAnimState.Dead;
+                        if (args is DeathStateActorAnimationArgs dArgs)
+                        {
+                            var dSequence = GetSpecificDeathAnimation(dArgs);
+                            if(dSequence.HasValue)
+                            {
+                                if (!string.IsNullOrEmpty(dSequence.Value.DyingEffect))
+                                    SpawnEffect(dSequence.Value.DyingEffect);
+                                NextFrameSet = dSequence.Value.DeadFrames;
+                                StartAnimationSequence(dSequence.Value.DyingFrames);
+                                break;
+                            }
+                        }
+
+                        NextFrameSet = Dead;
+                        StartAnimationSequence(Dying);
+                    }
                     break;
                 case ActorAnimState.Walking:
                     LoopCurrentFrameSet = true;
@@ -239,25 +261,25 @@ namespace CommonCore.RpgGame.World
                     break;
             }
 
-            if(CurrentFrameSet == null || CurrentFrameSet.Length == 0)
+            if (CurrentFrameSet == null || CurrentFrameSet.Length == 0)
                 Debug.LogWarning($"{GetType().Name} on {name} has no frames for state \"{state}\"!");
 
         }
 
-        public override void SetAnimationForced(string stateName)
+        public override void SetAnimationForced(string stateName, object args)
         {
-            if(Enum.TryParse<ActorAnimState>(stateName, true, out var state))
+            if (Enum.TryParse<ActorAnimState>(stateName, true, out var state))
             {
                 //we thunk backwards compared to what ActorAnimationComponent does
-                SetAnimationForced(state);
+                SetAnimationForced(state, args);
             }
             else
             {
-                if(ExtraAnimations != null && ExtraAnimations.Length > 0)
+                if (ExtraAnimations != null && ExtraAnimations.Length > 0)
                 {
-                    foreach(var animation in ExtraAnimations)
+                    foreach (var animation in ExtraAnimations)
                     {
-                        if(animation.Name.Equals(stateName, StringComparison.OrdinalIgnoreCase))
+                        if (animation.Name.Equals(stateName, StringComparison.OrdinalIgnoreCase))
                         {
                             LoopCurrentFrameSet = animation.Loop;
                             NextFrameSet = animation.ReturnToIdle ? Idle : null;
@@ -284,6 +306,43 @@ namespace CommonCore.RpgGame.World
             CurrentFrameSet = frameSet;
         }
 
+        private SpriteFrameDeathSequence? GetSpecificDeathAnimation(DeathStateActorAnimationArgs args)
+        {
+            //exit immediately if there's no potential
+            if (ExtraDeathAnimations == null || ExtraDeathAnimations.Length == 0)
+                return null;
+
+            IEnumerable<SpriteFrameDeathSequence> shortList = ExtraDeathAnimations;
+
+            //yes it's LINQ, no I don't care
+
+            //extreme death is prioritized; it makes no sense to play a headshot death if they've been pasted
+            shortList = shortList.Where(s => s.ExtremeDeath == args.ExtremeDeath);
+
+            //then look for specific damage type
+            if (shortList.Any(s => s.DamageType == args.DamageType))
+                shortList = shortList.Where(s => s.DamageType == args.DamageType);
+            else
+                shortList = shortList.Where(s => s.DamageType == 0);
+
+            //then look for specific hit location
+            if (shortList.Any(s => s.HitLocation == args.HitLocation))
+                shortList = shortList.Where(s => s.HitLocation == args.HitLocation);
+            else
+                shortList = shortList.Where(s => s.HitLocation == 0);
+
+            //pick the _last_ item
+            if (shortList.Any())
+                return shortList.Last();
+
+            return null;
+        }
+
+        private void SpawnEffect(string effect)
+        {
+            WorldUtils.SpawnEffect(effect, transform.position, transform.rotation, null, false);
+        }
+
         [Serializable]
         public struct SpriteFrameSequence
         {
@@ -291,6 +350,18 @@ namespace CommonCore.RpgGame.World
             public SpriteFrame[] Frames;
             public bool Loop;
             public bool ReturnToIdle;
+        }
+
+        [Serializable]
+        public struct SpriteFrameDeathSequence
+        {
+            public bool ExtremeDeath;
+            public int HitLocation;
+            public int DamageType;
+
+            public SpriteFrame[] DyingFrames;
+            public SpriteFrame[] DeadFrames;
+            public string DyingEffect;
         }
 
         [Serializable]

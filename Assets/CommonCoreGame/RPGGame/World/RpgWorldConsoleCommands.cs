@@ -57,9 +57,7 @@ namespace CommonCore.RpgGame.World
         static void Resurrect()
         {
             var ac = WorldConsoleCommands.SelectedObject.GetComponent<ActorController>();
-            ac.gameObject.SetActive(true);
-            ac.Health = ac.MaxHealth;
-            ac.EnterState(ac.BaseAiState);
+            ac.Raise();
         }
 
     }

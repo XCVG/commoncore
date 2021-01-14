@@ -86,7 +86,7 @@ public static class SharedConsoleCommands
         MetaState.Instance.LoadSave = name;
         MetaState.Instance.Intents.Clear();
 
-        SceneManager.LoadScene("LoadingScene"); //TODO put loading scene name somewhere
+        SceneManager.LoadScene(CoreParams.LoadingScene); //TODO put loading scene name somewhere
         
     }
 

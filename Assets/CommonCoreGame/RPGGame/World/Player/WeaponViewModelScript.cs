@@ -64,7 +64,7 @@ namespace CommonCore.RpgGame.World
 
     public abstract class WeaponViewModelScript : MonoBehaviour
     {
-        protected static readonly string HandsHidden = "Hidden";
+        public static readonly string HandsHidden = "Hidden";
 
         public virtual ViewModelOptions Options { get; set; }
 

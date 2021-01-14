@@ -1,0 +1,118 @@
+{
+  "image": "jen",
+  "nameText": "TEST 1.5",
+  "position": "character",
+  "default": "started1",
+  "options": {
+    "panelHeight": "half"
+  },
+  "frames": {
+    "matsuda1": {
+      "type": "text",
+      "image": "matsuda",
+      "nameText": "Matsuda Toyoda",
+      "next": "this.matsuda2",
+      "text": "Hey, there you are! I made it into the academy, too!",
+      "nextText": "Next!"
+    },
+    "started1": {
+      "type": "choice",
+      "text": "Choose some Dialogue 1.5 features to test",
+      "options": {
+        "panelHeight": "full"
+      },
+      "choices": [
+        {
+          "text": "Image Frames and image height modes",
+          "next": "this.images1"
+        },
+        {
+          "text": "panel height and other visual options",
+          "next": "this.options1"
+        },
+        {
+          "text": "script references",
+          "next": "this.scripts1"
+        }
+      ]
+    },
+    "images1": {
+      "type": "image",
+      "next": "this.images2",
+      "image": "library",
+	  "position": "center",
+      "text": "Image position: center"
+    },
+    "images2": {
+      "type": "image",
+      "next": "this.images3",
+      "image": "library",
+      "position": "fill",
+      "text": "Image position: fill"
+    },
+    "images3": {
+      "type": "image",
+      "next": "this.images4",
+      "image": "library",
+      "position": "contain",
+      "text": "Image position: contain"
+    },
+    "images4": {
+      "type": "image",
+      "next": "this.images5",
+      "image": "library",
+      "position": "cover",
+      "text": "Image position: cover"
+    },
+    "images5": {
+      "type": "image",
+      "next": "this.images5a",
+      "image": "jen",
+      "position": "character",
+      "text": "Image position: character (Jen)"
+    },
+    "images5a": {
+      "type": "image",
+      "next": "this.images6",
+      "image": "jen",
+      "position": "characterBottom",
+      "text": "Image position: character bottom (Jen)"
+    },
+    "images6": {
+      "type": "image",
+      "next": "this.started1",
+      "image": "jen",
+      "position": "battler",
+      "text": "Image position: battler (Jen)"
+    },
+    "options1": {
+      "type": "text",
+      "next": "this.options2",
+      "text": "No visual options: will use half height panel."
+    },
+    "options2": {
+      "type": "text",
+      "next": "this.options3",
+      "text": "Overridden back to full height panel",
+      "options": {
+        "panelHeight": "full"
+      }
+    },
+    "options3": {
+      "type": "text",
+      "next": "this.options4",
+      "text": "Variable panel height (probably not implemented yet)\nLorem ipsum dolor sit amet\nThe quick brown fox jumps over the lazy dog",
+      "options": {
+        "panelHeight": "variable"
+      }
+    },
+    "options4": {
+      "type": "text",
+      "next": "this.started1",
+      "text": "Hiding character name (hideNameText=true)",
+      "options": {
+        "hideNameText": true
+      }
+    }
+  }
+}

@@ -303,6 +303,7 @@ namespace CommonCore.World
         /// <summary>
         /// Spawn an effect into the world (Effects/*)
         /// </summary>
+        [Obsolete] //we want to force clients to make a decision about using a unique ID
         public static GameObject SpawnEffect(string effectID, Vector3 position, Vector3 rotation, Transform parent) => SpawnEffect(effectID, position, rotation, parent, false);
 
         /// <summary>

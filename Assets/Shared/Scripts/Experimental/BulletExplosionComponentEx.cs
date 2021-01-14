@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using CommonCore.RpgGame.World;
 using CommonCore;
+using CommonCore.State;
 
 namespace CommonCore.Experimental
 {
@@ -79,7 +80,7 @@ namespace CommonCore.Experimental
 								targetFaction = PredefinedFaction.Player.ToString();
 						}
 
-						var relation = FactionModel.GetRelation(originatorFaction, targetFaction);
+						var relation = GameState.Instance.FactionState.GetRelation(originatorFaction, targetFaction);
 						if (relation == FactionRelationStatus.Hostile)
 							goodHits.Add(hit);
 					}

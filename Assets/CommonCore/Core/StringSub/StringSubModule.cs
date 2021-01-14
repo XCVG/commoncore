@@ -168,6 +168,14 @@ namespace CommonCore.StringSub
 
         internal string GetString(string baseString, string listName, bool suppressWarnings, bool ignoreKeyCase)
         {
+            if(string.IsNullOrEmpty(baseString) || string.IsNullOrEmpty(listName))
+            {
+                if (!suppressWarnings)
+                    LogWarning("String passed to GetString was null or empty!");
+
+                return baseString;
+            }
+
             Dictionary<string, string> list = null;
             if (Strings.TryGetValue(listName, out list))
             {
@@ -196,7 +204,7 @@ namespace CommonCore.StringSub
         internal string SubstituteMacros(string baseString)
         {
             //sanity check and quick reject
-            if (!baseString.Contains("<"))
+            if (string.IsNullOrEmpty(baseString) || !baseString.Contains("<"))
                 return baseString;
 
             StringBuilder sb = new StringBuilder(baseString.Length * 2); //RAM is cheap, allocations are expensive

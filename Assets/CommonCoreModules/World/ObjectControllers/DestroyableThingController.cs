@@ -298,9 +298,9 @@ namespace CommonCore.World
                 WorldUtils.SpawnEffect(PainEffect, effectSpawnPoint.position, effectSpawnPoint.eulerAngles, null);
         }
 
-        public override Dictionary<string, object> GetExtraData()
+        public override Dictionary<string, object> CommitEntityData()
         {
-            var data = new Dictionary<string, object>();
+            var data = base.CommitEntityData();
 
             var dtData = new DestroyableThingData() { IsDead = this.IsDead, Health = this.Health };
 
@@ -309,8 +309,10 @@ namespace CommonCore.World
             return data;
         }
 
-        public override void SetExtraData(Dictionary<string, object> data)
+        public override void RestoreEntityData(Dictionary<string, object> data)
         {
+            base.RestoreEntityData(data);
+
             if(data != null && data.ContainsKey("DestroyableThing") && data["DestroyableThing"] is DestroyableThingData dtData)
             {
                 IsDead = dtData.IsDead;

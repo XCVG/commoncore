@@ -27,18 +27,18 @@ namespace CommonCore.RpgGame.World
                 Debug.LogError($"{nameof(ActorAnimationComponent)} on {name} is missing Animator!");
         }
 
-        public override void SetAnimation(ActorAnimState state)
+        public override void SetAnimation(ActorAnimState state, object args)
         {
             if (LockAnimState)
                 return;
 
             CurrentAnimState = state;
 
-            SetAnimationForced(state);
+            SetAnimationForced(state, args);
 
         }
 
-        public override void SetAnimationForced(ActorAnimState state)
+        public override void SetAnimationForced(ActorAnimState state, object args)
         {
             if (AnimController != null)
             {
@@ -51,7 +51,7 @@ namespace CommonCore.RpgGame.World
             }
         }
 
-        public override void SetAnimationForced(string stateName)
+        public override void SetAnimationForced(string stateName, object args)
         {
             if (AnimController != null)
             {

@@ -40,10 +40,13 @@ namespace CommonCore.RpgGame.Rpg
         WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponProjectileIsEntity, WeaponNeverRandomize, WeaponNeverHarmFriendly, WeaponAlwaysHarmFriendly,
 
         //weapon flags (translated to HitFlags)
-        WeaponPierceConsiderShields, WeaponPierceConsiderArmor, WeaponIgnoreShields, WeaponIgnoreArmor, WeaponNeverAlert, WeaponNeverBlockable, WeaponNoPain, WeaponAlwaysPain, WeaponIgnoreHitLocation,
+        WeaponPierceConsiderShields, WeaponPierceConsiderArmor, WeaponIgnoreShields, WeaponIgnoreArmor, WeaponNeverAlert, WeaponNeverBlockable, WeaponNoPain, WeaponAlwaysPain, WeaponIgnoreHitLocation, WeaponAlwaysExtremeDeath, WeaponNeverExtremeDeath,
 
         //melee-specific weapon flags
-        MeleeWeaponUsePreciseCasting
+        MeleeWeaponUsePreciseCasting,
+
+        //dummy-specific weapon flags
+        DummyWeaponUseViewModelRaiseLower
     }
 
     //an actual inventory item that the player has
@@ -68,7 +71,7 @@ namespace CommonCore.RpgGame.Rpg
 
         }
 
-        internal InventoryItemInstance(InventoryItemModel model, long id, float condition, int quantity, bool equipped)
+        public InventoryItemInstance(InventoryItemModel model, long id, float condition, int quantity, bool equipped)
         {
             InstanceUID = id;
             ItemModel = model;
@@ -79,8 +82,13 @@ namespace CommonCore.RpgGame.Rpg
 
         public InventoryItemInstance(InventoryItemModel model, float condition, int quantity, bool equipped) : this(model, 0, condition, quantity, equipped)
         {
+            ResetUID();
+        }
+
+        internal void ResetUID()
+        {
             var gameState = GameState.Instance;
-            if(gameState != null)
+            if (gameState != null)
             {
                 //use GameState id counter
                 InstanceUID = gameState.NextUID;
@@ -303,6 +311,12 @@ namespace CommonCore.RpgGame.Rpg
             if (CheckFlag(ItemFlag.WeaponIgnoreHitLocation))
                 flags |= BuiltinHitFlags.IgnoreHitLocation;
 
+            if (CheckFlag(ItemFlag.WeaponAlwaysExtremeDeath))
+                flags |= BuiltinHitFlags.AlwaysExtremeDeath;
+
+            if (CheckFlag(ItemFlag.WeaponNeverExtremeDeath))
+                flags |= BuiltinHitFlags.NeverExtremeDeath;
+
             return flags;
         }
     }
@@ -402,6 +416,20 @@ namespace CommonCore.RpgGame.Rpg
         public override string GetStatsString()
         {
             return $"<b>Ranged Weapon ({SkillType})</b>\n" + base.GetStatsString() + $"\nSpeed: {(1 / FireInterval):F1}\nMagazine: {MagazineSize}\nAmmo Type{InventoryModel.GetNiceName(AType.ToString())}";
+        }
+    }
+
+    public class DummyWeaponItemModel : WeaponItemModel
+    {
+        public DummyWeaponItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, float damage, float damagePierce, float damageSpread, float damagePierceSpread, DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType, string viewModel, string worldModel, string hitPuff, float lowerTime, float raiseTime) : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, damage, damagePierce, damageSpread, damagePierceSpread, dType, dEffector, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
+        {
+        }
+
+        public override DamageEffector Effector => DamageEffector.Unspecified;
+
+        public override string GetStatsString()
+        {
+            return base.GetStatsString() + $"\n(dummy weapon)";
         }
     }
 

@@ -157,6 +157,15 @@
           "ItemModel": {
             "$ItemModel": "shieldedarmor"
           }
+        },
+		{
+		  "InstanceUID": -1010,
+          "Quantity": 1,
+          "Condition": 1.0,
+          "Equipped": false,
+          "ItemModel": {
+            "$ItemModel": "dummyweapon"
+          }
         }
       ]
     },

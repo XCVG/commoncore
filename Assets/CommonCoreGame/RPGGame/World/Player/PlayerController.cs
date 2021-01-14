@@ -462,7 +462,7 @@ namespace CommonCore.RpgGame.World
                 string hitFaction = data.OriginatorFaction;
                 if (!string.IsNullOrEmpty(hitFaction))
                 {
-                    FactionRelationStatus relation = FactionModel.GetRelation(hitFaction, PredefinedFaction.Player.ToString()); //this looks backwards but it's because we're checking if the Bullet is-friendly-to the Actor
+                    FactionRelationStatus relation = GameState.Instance.FactionState.GetRelation(hitFaction, PredefinedFaction.Player.ToString()); //this looks backwards but it's because we're checking if the Bullet is-friendly-to the Actor
                     if (relation == FactionRelationStatus.Friendly)
                         return; //no friendly fire
                 }

@@ -11,9 +11,69 @@ namespace CommonCore
     /// </summary>
     public static class CollectionUtils
     {
+        //slightly horrifying dictionary helpers
+
+        public static TOut GetAs<TOut, TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
+        {
+            if (dictionary.TryGetValue(key, out TValue val))
+            {
+                if (typeof(TOut).IsAssignableFrom(val.GetType()))
+                    return (TOut)(object)val;
+                else
+                    return TypeUtils.CoerceValue<TOut>(val);
+            }
+            return default;
+        }
+
+        public static T GetAs<T>(this IDictionary<string, object> dictionary, string key)
+        {
+            if(dictionary.TryGetValue(key, out object val))
+            {
+                if (typeof(T).IsAssignableFrom(val.GetType()))
+                    return (T)val;
+                else
+                    return TypeUtils.CoerceValue<T>(val);
+            }
+            return default;
+        }
+
+        /// <summary>
+        /// AddRange for dictionary that uses add method, throwing on duplicate items
+        /// </summary>
+        public static void AddRange<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IEnumerable<KeyValuePair<TKey, TValue>> items)
+        {
+            foreach(var kvp in items)
+            {
+                dictionary.Add(kvp);
+            }
+        }
+
+        /// <summary>
+        /// AddRange for dictionary, ignoring duplicates of existing keys
+        /// </summary>
+        public static void AddRangeKeepExisting<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IEnumerable<KeyValuePair<TKey, TValue>> items)
+        {
+            foreach (var kvp in items)
+            {
+                if (!dictionary.ContainsKey(kvp.Key))
+                    dictionary.Add(kvp);
+            }
+        }
+
+        /// <summary>
+        /// AddRange for dictionary, overriding duplicates of existing keys
+        /// </summary>
+        public static void AddRangeReplaceExisting<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IEnumerable<KeyValuePair<TKey, TValue>> items)
+        {
+            foreach (var kvp in items)
+            {
+                dictionary[kvp.Key] = kvp.Value;
+            }
+        }
+
         public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
-            return GetOrDefault(dictionary, key, default(TValue));
+            return GetOrDefault(dictionary, key, default);
         }
 
         public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue def)
@@ -90,7 +150,7 @@ namespace CommonCore
         /// <summary>
         /// Fills up a dictionary with all enum values as keys
         /// </summary>
-        public static void SetupFromEnum<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TValue defaultValue) where TKey : Enum
+        public static void SetupFromEnum<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TValue defaultValue) where TKey : Enum
         {
             foreach(TKey key in Enum.GetValues(typeof(TKey)))
             {
@@ -101,7 +161,7 @@ namespace CommonCore
         /// <summary>
         /// Fills up a dictionary with all enum values as keys (int-indexed version)
         /// </summary>
-        public static void SetupFromEnum<TValue>(this Dictionary<int, TValue> dictionary, Type enumType, TValue defaultValue)
+        public static void SetupFromEnum<TValue>(this IDictionary<int, TValue> dictionary, Type enumType, TValue defaultValue)
         {
             foreach(int key in Enum.GetValues(enumType))
             {
@@ -110,7 +170,7 @@ namespace CommonCore
         }
 
         /// <summary>
-        /// Filles up a set with all members of an enum as values
+        /// Fills up a set with all members of an enum as values
         /// </summary>
         public static void SetupFromEnum<T>(this ISet<T> set) where T : Enum
         {
@@ -121,7 +181,7 @@ namespace CommonCore
         }
 
         /// <summary>
-        /// Filles up a set with all names of an enum as values
+        /// Fills up a set with all names of an enum as values
         /// </summary>
         public static void SetupFromEnum<T>(this ISet<string> set) where T : Enum
         {

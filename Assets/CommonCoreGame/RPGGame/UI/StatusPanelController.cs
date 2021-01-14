@@ -7,6 +7,9 @@ using CommonCore.RpgGame.Rpg;
 namespace CommonCore.RpgGame.UI
 {
 
+    /// <summary>
+    /// Controller for the Status panel, displaying character portrait, some text, and handling level up button and prompt
+    /// </summary>
     public class StatusPanelController : PanelController
     {
         public bool CheckLevelUp = true;
@@ -15,6 +18,7 @@ namespace CommonCore.RpgGame.UI
         public Text HealthText;
         public Text ArmorText;
         public Text AmmoText;
+        public Button LevelUpButton;
 
         public override void SignalPaint()
         {
@@ -29,6 +33,8 @@ namespace CommonCore.RpgGame.UI
                 GetNameForSlot(EquipSlot.Body, pModel), GetNameForSlot(EquipSlot.LeftWeapon, pModel), GetNameForSlot(EquipSlot.RightWeapon, pModel));
 
             AmmoText.text = equipText;
+
+            LevelUpButton.interactable = AllowGameStateInteraction;
 
             //this is now somewhat broken because there are more choices in the struct
             string rid = pModel.Gender == Sex.Female ? "portrait_f" : "portrait_m";
@@ -55,7 +61,8 @@ namespace CommonCore.RpgGame.UI
 
         void OnEnable()
         {
-            if(CheckLevelUp && GameState.Instance.PlayerRpgState.Experience >= RpgValues.XPToNext(GameState.Instance.PlayerRpgState.Level))
+            //why is this not on SignalPaint? hell if I know
+            if(CheckLevelUp && AllowGameStateInteraction && GameState.Instance.PlayerRpgState.Experience >= RpgValues.XPToNext(GameState.Instance.PlayerRpgState.Level))
             {
                 DefaultLevelUpModal.PushModal(OnLevelUpDone);
             }

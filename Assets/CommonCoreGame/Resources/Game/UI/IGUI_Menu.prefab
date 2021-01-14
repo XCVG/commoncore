@@ -927,6 +927,7 @@ MonoBehaviour:
   HealthText: {fileID: 114794084192733986}
   ArmorText: {fileID: 114817643632499554}
   AmmoText: {fileID: 114520193983298296}
+  LevelUpButton: {fileID: 114070126112443250}
 --- !u!1 &1164833490438356
 GameObject:
   m_ObjectHideFlags: 0

@@ -24,6 +24,8 @@ namespace CommonCore.RpgGame.World
         private AudioSource PainSound = null;
         [SerializeField]
         private AudioSource DeathSound = null;
+        [SerializeField]
+        private AudioSource ExtremeDeathSound = null;
 
         public void StartWalkSound()
         {
@@ -89,6 +91,12 @@ namespace CommonCore.RpgGame.World
         {
             if (DeathSound != null)
                 DeathSound.Play();
+        }
+
+        public void PlayExtremeDeathSound()
+        {
+            if (ExtremeDeathSound != null)
+                ExtremeDeathSound.Play();
         }
     }
 }

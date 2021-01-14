@@ -201,6 +201,8 @@ namespace CommonCore.RpgGame.Rpg
     [System.Serializable]
     public class SerializableItemInstance
     {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public long InstanceUID = 0;
         [JsonProperty(NullValueHandling= NullValueHandling.Ignore)]
         public int Quantity = 1;
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
@@ -218,7 +220,10 @@ namespace CommonCore.RpgGame.Rpg
             }
                 
 
-            InventoryItemInstance rItemInstance = new InventoryItemInstance(model, sItemInstance.Condition, sItemInstance.Quantity, false);
+            InventoryItemInstance rItemInstance = new InventoryItemInstance(model, sItemInstance.InstanceUID, sItemInstance.Condition, sItemInstance.Quantity, false);
+
+            if (rItemInstance.InstanceUID == 0)
+                rItemInstance.ResetUID();
 
             return rItemInstance;
         }
@@ -226,6 +231,7 @@ namespace CommonCore.RpgGame.Rpg
         public static SerializableItemInstance MakeSerializableItemInstance(InventoryItemInstance rItemInstance)
         {
             var sItemInstance = new SerializableItemInstance();
+            sItemInstance.InstanceUID = rItemInstance.InstanceUID;
             sItemInstance.Quantity = rItemInstance.Quantity;
             sItemInstance.Condition = rItemInstance.Condition;
             sItemInstance.ItemModel = rItemInstance.ItemModel.Name;

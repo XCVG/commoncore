@@ -22,6 +22,7 @@ namespace CommonCore.World
         public ActorHitInfo HitInfo;
         public string HitPuffOverride;
         public ActionSpecialEvent HitSpecial;
+        public Transform Target;
         public bool FiredByPlayer = false;
 
         [Header("Dynamics")]

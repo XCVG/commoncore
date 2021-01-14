@@ -121,6 +121,7 @@ namespace CommonCore
         {
             if(CoreParams.AutoInit)
             {
+                LoadSceneAfterInit = CoreParams.MainMenuScene;
                 if(CoreParams.StartupPolicy == StartupPolicy.SynchronousEarly)
                     Startup();
                 else if(Application.platform == RuntimePlatform.WebGLPlayer)
@@ -141,6 +142,7 @@ namespace CommonCore
 
             if (CoreParams.AutoInit)
             {
+                LoadSceneAfterInit = CoreParams.MainMenuScene;
                 var currentScene = SceneManager.GetActiveScene();
                 if (currentScene != null && currentScene.name != "InitScene")
                 {
@@ -262,7 +264,7 @@ namespace CommonCore
         private static void InitializeResourceManager()
         {
             //TODO async?
-            CoreUtils.ResourceManager = new LegacyResourceManager(); //TODO remove this
+            CoreUtils.ResourceManager = new LegacyResourceManager();
             ResourceManager = new ResourceManager();
             AddonManager = new AddonManager();
         }
