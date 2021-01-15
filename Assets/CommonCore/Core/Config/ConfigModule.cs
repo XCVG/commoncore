@@ -142,7 +142,7 @@ namespace CommonCore.Config
             //mesh quality
             var meshQuality = MeshQuality.Presets[ConfigState.Instance.MeshQuality];
             QualitySettings.lodBias = meshQuality.lodBias;
-            QualitySettings.blendWeights = meshQuality.blendWeights;
+            QualitySettings.skinWeights = meshQuality.blendWeights;
             //QualitySettings.maximumLODLevel = meshQuality.maximumLODLevel; //is a nop
 
             //texture scale

@@ -52,17 +52,17 @@ namespace CommonCore.Config
     /// </summary>
     public struct MeshQuality
     {
-        public BlendWeights blendWeights;
+        public SkinWeights blendWeights;
         public int maximumLODLevel;
         public float lodBias;
 
         public static IReadOnlyDictionary<QualityLevel, MeshQuality> Presets = new Dictionary<QualityLevel, MeshQuality>()
         {
-            { QualityLevel.VeryLow, new MeshQuality() { blendWeights = BlendWeights.OneBone, lodBias = 0.3f, maximumLODLevel = 0 } },
-            { QualityLevel.Low, new MeshQuality() { blendWeights = BlendWeights.TwoBones, lodBias = 0.7f, maximumLODLevel = 0 } },
-            { QualityLevel.Medium, new MeshQuality() { blendWeights = BlendWeights.TwoBones, lodBias = 1.0f, maximumLODLevel = 0 } },
-            { QualityLevel.High, new MeshQuality() { blendWeights = BlendWeights.FourBones, lodBias = 1.5f, maximumLODLevel = 0 } },
-            { QualityLevel.Ultra, new MeshQuality() { blendWeights = BlendWeights.FourBones, lodBias = 2.0f, maximumLODLevel = 0 } },
+            { QualityLevel.VeryLow, new MeshQuality() { blendWeights = SkinWeights.OneBone, lodBias = 0.3f, maximumLODLevel = 0 } },
+            { QualityLevel.Low, new MeshQuality() { blendWeights = SkinWeights.TwoBones, lodBias = 0.7f, maximumLODLevel = 0 } },
+            { QualityLevel.Medium, new MeshQuality() { blendWeights = SkinWeights.TwoBones, lodBias = 1.0f, maximumLODLevel = 0 } },
+            { QualityLevel.High, new MeshQuality() { blendWeights = SkinWeights.FourBones, lodBias = 1.5f, maximumLODLevel = 0 } },
+            { QualityLevel.Ultra, new MeshQuality() { blendWeights = SkinWeights.FourBones, lodBias = 2.0f, maximumLODLevel = 0 } },
         };
     }
 
