@@ -15,8 +15,8 @@ namespace CommonCore
     {
 
         //*****system version info
-        public static Version VersionCode { get; private set; } = new Version(2, 0, 1); //2.0.1
-        public static string VersionName { get; private set; } = "Balmora"; //start with A, locations from RPGs
+        public static Version VersionCode { get; private set; } = new Version(3, 0, 0); //3.0.0
+        public static string VersionName { get; private set; } = "Citadel"; //start with A, locations from RPGs
         public static Version UnityVersion { get; private set; } //auto-set
         public static string UnityVersionName { get; private set; } //auto-set
         public static RuntimePlatform Platform { get; private set; } //auto-set
@@ -26,7 +26,7 @@ namespace CommonCore
         public static string CompanyName { get; private set; } //auto-set from Unity settings
         public static string GameName { get; private set; } //auto-set from Unity settings
         public static Version GameVersion { get; private set; } //auto-set from Unity settings
-        public static string GameVersionName { get; private set; } = "Frangis Demo Development";
+        public static string GameVersionName { get; private set; } = "Test";
 
         //*****basic config settings
         public static bool AutoInit { get; private set; } = true;
@@ -48,7 +48,7 @@ namespace CommonCore
         public static bool SetSafeResolutionOnExit { get; private set; } = true;
         public static Vector2Int SafeResolution { get; private set; } = new Vector2Int(1280, 720);
 
-        public static UIThemePolicy UIThemeMode { get; private set; } = UIThemePolicy.Auto;
+        public static UIThemePolicy UIThemeMode { get; private set; } = UIThemePolicy.ExplicitOnly;
         public static string DefaultUITheme { get; private set; } = "ThresholdTheme";
 
         public static float DelayedEventPollInterval { get; private set; } = 1.0f;
@@ -58,7 +58,7 @@ namespace CommonCore
         //*****scene settings        
         public static string MainMenuScene { get; private set; } = "MainMenuScene";
         public static string LoadingScene { get; private set; } = "LoadingScene";
-        public static string InitialScene { get; private set; } = "PickerScene";
+        public static string InitialScene { get; private set; } = "TestScene";
         public static string GameOverScene { get; private set; } = "GameOverScene";
 
 
