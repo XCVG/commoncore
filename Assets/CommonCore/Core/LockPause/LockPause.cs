@@ -396,15 +396,15 @@ namespace CommonCore.LockPause
         /// <summary>
         /// Pauses game entirely
         /// </summary>
-        All,
+        All,        
         /// <summary>
-        /// Pauses game but allows cutscenes to continue (locks out menu interaction that modifies game state)
+        /// Pauses game but allows menu interaction
         /// </summary>
-        AllowCutscene,
+        AllowMenu,
         /// <summary>
-        /// Pauses game but allows menu interaction (including menu interaction that modifies game state)
+        /// Pauses game but allows cutscenes to continue
         /// </summary>
-        AllowMenu
+        AllowCutscene
     }
 
     public class InputLock

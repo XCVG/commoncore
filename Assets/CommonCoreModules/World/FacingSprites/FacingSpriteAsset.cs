@@ -14,6 +14,7 @@ namespace CommonCore.World
     /// <para>These correspond, in order, to Doom facings 1/2/3/4/5/6/7/8</para>
     /// <para>16 sprites is not supported</para>
     /// <para>To use mirrored sprites (eg A2A8) put the sprite in the first slot</para>
+    /// <para>GetFacingSprite is cheap, it doesn't need further optimization</para>
     /// </remarks>
     [CreateAssetMenu(fileName = "New Facing Sprite", menuName = "CCScriptableObjects/FacingSpriteAsset")]
     public class FacingSpriteAsset : ScriptableObject

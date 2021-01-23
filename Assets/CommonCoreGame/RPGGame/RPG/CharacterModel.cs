@@ -77,6 +77,24 @@ namespace CommonCore.RpgGame.Rpg
 
         public float ShieldsFraction { get; set; }
 
+        [JsonIgnore]
+        public float Magic
+        {
+            get
+            {
+                return DerivedStats.MaxMagic * MagicFraction;
+            }
+            set
+            {
+                MagicFraction = value / DerivedStats.MaxMagic;
+            }
+        }
+
+        [JsonProperty(PropertyName = "Magic")] //we want to serialize this (mostly for debugging) but don't want to load it
+        private float MagicJsonSavable => Energy;
+
+        public float MagicFraction { get; set; }
+
         public int Experience { get; set; }
         public int Level { get; set; }
 
@@ -162,9 +180,10 @@ namespace CommonCore.RpgGame.Rpg
                 c.ApplyToSkills(BaseStats, DerivedStats);
             }
 
-            //recalculate max health and energy
+            //recalculate max health, energy, and magic
             DerivedStats.MaxHealth = RpgValues.MaxHealth(this);
             DerivedStats.MaxEnergy = RpgValues.MaxEnergy(this);
+            DerivedStats.MaxMagic = RpgValues.MaxMagic(this);
 
             //recalculate shield parameters
             DerivedStats.ShieldParams = RpgValues.ShieldParams(this);

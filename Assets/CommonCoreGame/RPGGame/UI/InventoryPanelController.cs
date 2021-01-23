@@ -9,6 +9,7 @@ using CommonCore.UI;
 using CommonCore.RpgGame.Rpg;
 using CommonCore.RpgGame.World;
 using System.Linq;
+using System;
 
 namespace CommonCore.RpgGame.UI
 {
@@ -115,12 +116,28 @@ namespace CommonCore.RpgGame.UI
                 }
                 else if(itemModel is AidItemModel)
                 {
-                    var aim = (AidItemModel)itemModel;
-                    aim.Apply();
-                    GameState.Instance.PlayerRpgState.Inventory.RemoveItem(ItemLookupTable[SelectedItem]);
+                    bool appliedSuccessfully = false, showMessage = true;
+                    string message = string.Empty;
 
-                    string message = string.Format("{0} {1} {2}", aim.RType.ToString(), aim.Amount, aim.AType.ToString()); //temporary, will fix this up with lookups later
-                    Modal.PushMessageModal(message, "Aid Applied", null, null, true);
+                    try
+                    {
+                        var aim = (AidItemModel)itemModel;
+                        var result = aim.Apply(GameState.Instance.PlayerRpgState, itemInstance);
+                        appliedSuccessfully = result.Success;
+                        if (result.ConsumeItem)
+                            GameState.Instance.PlayerRpgState.Inventory.RemoveItem(ItemLookupTable[SelectedItem]);
+                        message = result.Message;
+                        showMessage = result.ShowMessage;
+                    }
+                    catch(Exception e)
+                    {
+                        Debug.LogError($"Failed to apply aid item {itemInstance} ({itemModel}) because of {e.GetType().Name}");
+                        Debug.LogException(e);
+                        message = e.ToString();
+                    }
+
+                    if(showMessage)
+                        Modal.PushMessageModal(message, appliedSuccessfully ? "Aid Applied" : "Aid Failed", null, null, true); //TODO use string lookups
                 }
 
                 SignalPaint();
@@ -228,7 +245,7 @@ namespace CommonCore.RpgGame.UI
                 SelectedItemText.text = SelectedItemText.text + string.Format(" ({0})", qty);
             }
 
-            bool allowInteraction = AllowGameStateInteraction;
+            bool allowInteraction = !GameState.Instance.MenuGameStateLocked;
             SelectedItemUse.interactable = allowInteraction;
             SelectedItemUse2.interactable = allowInteraction;
             SelectedItemDrop.interactable = allowInteraction;

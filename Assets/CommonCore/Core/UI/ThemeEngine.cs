@@ -403,6 +403,14 @@ namespace CommonCore.UI
                                     graphicImage.sprite = theme.RadioButtonCheck;
                                 }
                             }
+
+                            var labelElement = element.Find("Label").Ref() ?? element.Find("label");
+                            if (labelElement != null)
+                            {
+                                var labelText = labelElement.GetComponentInChildren<Text>();
+                                if (labelText != null)
+                                    labelText.font = theme.BodyFont;
+                            }
                         }
                         break;
                     case ElementClass.ToggleButton:

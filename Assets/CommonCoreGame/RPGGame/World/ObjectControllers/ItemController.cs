@@ -26,6 +26,8 @@ namespace CommonCore.RpgGame.World
         public bool UseWalkoverPickup;
         public bool UseInteractPickup;
 
+        protected override bool DeferComponentInitToSubclass => true;
+
         public override void Start()
         {
             base.Start();
@@ -52,6 +54,9 @@ namespace CommonCore.RpgGame.World
                     itemName = ItemId;
                 iobj.GetComponent<InteractableComponent>().Tooltip = ItemQuantity > 1 ? string.Format("{0} [{1}]", itemName, ItemQuantity) : itemName;
             }
+
+            TryExecuteOnComponents(component => component.Init(this));
+            Initialized = true;
         }
 
         void OnCollisionEnter(Collision collision)

@@ -16,7 +16,7 @@ namespace CommonCore
 
         //*****system version info
         public static Version VersionCode { get; private set; } = new Version(3, 0, 0); //3.0.0
-        public static string VersionName { get; private set; } = "Citadel"; //start with A, locations from RPGs
+        public static string VersionName { get; private set; } = "Citadel";
         public static Version UnityVersion { get; private set; } //auto-set
         public static string UnityVersionName { get; private set; } //auto-set
         public static RuntimePlatform Platform { get; private set; } //auto-set
@@ -26,7 +26,7 @@ namespace CommonCore
         public static string CompanyName { get; private set; } //auto-set from Unity settings
         public static string GameName { get; private set; } //auto-set from Unity settings
         public static Version GameVersion { get; private set; } //auto-set from Unity settings
-        public static string GameVersionName { get; private set; } = "Test";
+        public static string GameVersionName { get; private set; } = "Indev";
 
         //*****basic config settings
         public static bool AutoInit { get; private set; } = true;
@@ -303,6 +303,15 @@ namespace CommonCore
                 GameVersion, GameVersionName,
                 VersionCode.ToString(), VersionName,
                 UnityVersionName);
+        }
+
+        /// <summary>
+        /// Gets versioninfo of the current application
+        /// </summary>
+        /// <returns></returns>
+        public static VersionInfo GetCurrentVersion()
+        {
+            return new VersionInfo(GameVersion, VersionCode, UnityVersion);
         }
     }
 

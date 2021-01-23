@@ -32,8 +32,10 @@ namespace CommonCore.State
             }
             else
             {
-                Instance.IsFirstRun = false;
+                Instance.IsFirstRun = false;                
             }
+
+            MigrateLastMigratedVersion(Instance);
         }
 
         /// <summary>
@@ -41,6 +43,7 @@ namespace CommonCore.State
         /// </summary>
         public static void Save()
         {
+            Instance.CurrentVersion = CoreParams.GetCurrentVersion();
             CoreUtils.SaveExternalJson(Path, Instance);
         }
 
@@ -53,11 +56,36 @@ namespace CommonCore.State
             Save();
         }
 
+        //our first "migration": sets LastMigratedVersion if not already set
+        private static void MigrateLastMigratedVersion(PersistState ps)
+        {
+            if (ps.LastMigratedVersion == null)
+            {
+                ps.LastMigratedVersion = CoreParams.GetCurrentVersion();
+                Debug.Log($"[PersistState] Migrated to {ps.LastMigratedVersion} ({nameof(MigrateLastMigratedVersion)})");
+            }
+        }
+
+        //versioning metadata
+
+        /// <summary>
+        /// Version information of the initial state or last migration
+        /// </summary>
+        [JsonProperty]
+        public VersionInfo LastMigratedVersion { get; private set; }
+
+        /// <summary>
+        /// Version information of the current state
+        /// </summary>
+        [JsonProperty]
+        public VersionInfo CurrentVersion { get; private set; } = CoreParams.GetCurrentVersion();
+
         //actual instance data (shared across game types)
 
         /// <summary>
         /// Key/Value store for arbitrary persistent data
         /// </summary>
+        [JsonProperty]
         public Dictionary<string, System.Object> ExtraStore { get; private set; } = new Dictionary<string, object>();
 
         /// <summary>

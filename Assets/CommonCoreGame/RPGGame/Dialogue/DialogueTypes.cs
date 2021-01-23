@@ -275,7 +275,7 @@ namespace CommonCore.RpgGame.Dialogue
 
     public enum ChoicePanelHeight
     {
-        Default, Full, Half, Variable
+        Default, Full, Half, Variable, Fixed
     }
 
     /// <summary>
@@ -289,6 +289,8 @@ namespace CommonCore.RpgGame.Dialogue
         //explicit fields
 
         public ChoicePanelHeight PanelHeight => TypeUtils.CoerceValue<ChoicePanelHeight>(Options.GetOrDefault(nameof(PanelHeight), ChoicePanelHeight.Default), false);
+
+        public float PanelHeightPixels => TypeUtils.CoerceValue<float>(Options.GetOrDefault(nameof(PanelHeightPixels), 0), false);
 
         public bool HideNameText => TypeUtils.CoerceValue<bool>(Options.GetOrDefault(nameof(HideNameText), false), false);
 
@@ -435,12 +437,14 @@ namespace CommonCore.RpgGame.Dialogue
 
     public class TextFrame : Frame
     {
+        public readonly bool AllowSkip;
         public readonly float TimeToShow;
         public readonly bool UseTimer;
 
-        public TextFrame(string background, string image, string next, string music, string nameText, string text, string nextText, string cameraDir, FrameImagePosition imagePosition, float timeToShow, bool useTimer, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript, FrameOptions options, FrameScripts scripts, IReadOnlyDictionary<string, object> extraData)
+        public TextFrame(string background, string image, string next, string music, string nameText, string text, string nextText, string cameraDir, FrameImagePosition imagePosition, bool allowSkip, float timeToShow, bool useTimer, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript, FrameOptions options, FrameScripts scripts, IReadOnlyDictionary<string, object> extraData)
             : base(background, image, next, music, nameText, text, nextText, cameraDir, imagePosition, nextConditional, nextMicroscript, options, scripts, extraData)
         {
+            AllowSkip = allowSkip;
             TimeToShow = timeToShow;
             UseTimer = useTimer;
         }

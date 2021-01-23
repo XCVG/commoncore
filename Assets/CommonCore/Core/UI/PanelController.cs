@@ -108,6 +108,5 @@ namespace CommonCore.UI
             }
         }
 
-        protected bool AllowGameStateInteraction => (LockPauseModule.GetPauseLockState() ?? PauseLockType.AllowMenu) >= PauseLockType.AllowMenu;
     }
 }

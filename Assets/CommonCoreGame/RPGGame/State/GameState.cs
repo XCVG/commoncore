@@ -40,7 +40,7 @@ namespace CommonCore.State
         /// <summary>
         /// [RPGGame] State data of the player's RPG character (stats, inventory, etc)
         /// </summary>
-        public CharacterModel PlayerRpgState { get; private set; } = new CharacterModel();
+        public CharacterModel PlayerRpgState { get; private set; } = new CharacterModel() { FormID = "Player" };
 
         /// <summary>
         /// [RPGGame] State data of the faction table
@@ -134,9 +134,10 @@ namespace CommonCore.State
                 TypeNameHandling = TypeNameHandling.Auto,
                 NullValueHandling = NullValueHandling.Ignore
             });
+            instance.PlayerRpgState.FormID = "Player";
             InventoryModel.AssignUIDs(instance.PlayerRpgState.Inventory.EnumerateItems(), true);
             instance.PlayerRpgState.UpdateStats();
-            PlayerFlags.RegisterSource(instance.PlayerRpgState);
+            PlayerFlags.RegisterSource(instance.PlayerRpgState);            
         }
 
         /// <summary>

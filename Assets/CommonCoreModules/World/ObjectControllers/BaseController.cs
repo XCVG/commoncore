@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonCore.Config;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,6 +20,9 @@ namespace CommonCore.World
         public int HitMaterial = 0;
 
         protected virtual bool DeferRestorableExtraDataToSubclass => false;
+        protected virtual bool DeferComponentInitToSubclass => false;
+
+        protected bool Initialized;
 
         public virtual HashSet<string> Tags
         {
@@ -55,6 +59,29 @@ namespace CommonCore.World
             //set Unity tag
             //if (tag == null || tag == "Untagged")
             //    tag = "CCEntity";
+
+            TryExecuteOnComponents(component => component.BeforeInit(this));
+
+            if (!DeferComponentInitToSubclass)
+            {
+                TryExecuteOnComponents(component => component.Init(this));
+                Initialized = true;
+            }
+        }
+
+        public virtual void OnEnable()
+        {
+            TryExecuteOnComponents(component => component.Activate(!Initialized));
+        }
+
+        public virtual void OnDisable()
+        {
+            TryExecuteOnComponents(component => component.Deactivate());
+        }
+
+        public virtual void OnDestroy()
+        {
+            TryExecuteOnComponents(component => component.BeforeDestroy());
         }
 
         // Update is called once per frame
@@ -95,6 +122,24 @@ namespace CommonCore.World
         public virtual void SetVisibility(bool visible)
         {
             return;
+        }
+
+        //TODO move to utility class?
+        protected void TryExecuteOnComponents(Action<IReceiveEntityEvents> function)
+        {
+            foreach (var component in GetComponentsInChildren<IReceiveEntityEvents>(true)) //TODO should we run on deactivated components?
+            {
+                try
+                {
+                    function(component);
+                }
+                catch(Exception e)
+                {
+                    Debug.LogError($"Failed to execute action on component {component} ({e.GetType().Name})");
+                    if (ConfigState.Instance.UseVerboseLogging)
+                        Debug.LogException(e);
+                }
+            }
         }
 
     }

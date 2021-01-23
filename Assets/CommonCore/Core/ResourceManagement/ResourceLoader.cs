@@ -25,11 +25,12 @@ namespace CommonCore.ResourceManagement
         {
             //register builtin importers
             RegisterImporter(new SpriteAssetImporter());
+            RegisterImporter(new UnityWebRequestAssetImporter());
         }
 
         public void RegisterImporter(IResourceImporter importer)
         {
-            Importers.Add(importer);
+            Importers.Insert(0, importer);
             if (ConfigState.Instance.UseVerboseLogging)
                 Debug.Log($"[ResourceLoader] registered resource importer \"{importer.GetType().Name}\"");
         }        

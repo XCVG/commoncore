@@ -37,6 +37,11 @@ namespace CommonCore.State
             Elapsed = 0;
         }
 
+        public override void OnSceneLoaded()
+        {
+            MetaState.Instance.TempData.Clear();
+        }
+
         public override void OnFrameUpdate()
         {
             if (!GameState.Exists)

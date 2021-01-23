@@ -19,11 +19,16 @@ namespace CommonCore.World
         {
             if (Attachment == null)
                 Attachment = transform;
+
+            CameraEventsManager.RegisterOnPreCull(UpdateBillboard);
         }
 
-        protected virtual void Update()
+        protected virtual void UpdateBillboard(Camera camera)
         {
-            var targetTransform = FacingSpriteCameraCache.CameraTransform;
+            if (!isActiveAndEnabled)
+                return;
+
+            var targetTransform = camera.transform;
 
             Quaternion quatToTarget;
             Vector3 vecToTarget = targetTransform.position - Attachment.position;
@@ -43,9 +48,5 @@ namespace CommonCore.World
             Attachment.rotation = quatToTarget;
         }
 
-        private void LateUpdate()
-        {
-            FacingSpriteCameraCache.ResetCameraTransform();
-        }
     }
 }

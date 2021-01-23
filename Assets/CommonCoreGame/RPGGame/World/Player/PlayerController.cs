@@ -88,6 +88,8 @@ namespace CommonCore.RpgGame.World
 
         float IAmTargetable.Detectability => RpgValues.DetectionChance(GameState.Instance.PlayerRpgState, MovementComponent.IsCrouching, MovementComponent.IsRunning);
 
+        protected override bool DeferComponentInitToSubclass => true;
+
         public override void Awake()
         {
             base.Awake();
@@ -158,6 +160,9 @@ namespace CommonCore.RpgGame.World
             SetInitialViewModels();
 
             ShieldComponent.Ref()?.HandleLoadStart();
+
+            TryExecuteOnComponents(component => component.Init(this));
+            Initialized = true;
         }
 
         //should be fixedupdate, probably

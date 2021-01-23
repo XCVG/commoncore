@@ -25,6 +25,8 @@ namespace CommonCore.RpgGame.World
 
         private ContainerModel MyContainer;
 
+        protected override bool DeferComponentInitToSubclass => true;
+
         public override void Start()
         {
             base.Start();
@@ -33,6 +35,9 @@ namespace CommonCore.RpgGame.World
                 MyContainer = GameState.Instance.ContainerState[SharedContainer];
             else if (MyContainer == null) //should fix...
                 MyContainer = SerializableContainerModel.MakeContainerModel(LocalContainer); //called after and overriding save?
+
+            TryExecuteOnComponents(component => component.Init(this));
+            Initialized = true;
         }
 
         public void InvokeContainer(ActionInvokerData data) //for invoking with an action special etc

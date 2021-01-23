@@ -95,12 +95,17 @@ namespace CommonCore.World
         private bool ForceDeadState = false;
         private BaseController LastDamageDealer = null;
 
+        protected override bool DeferComponentInitToSubclass => true;
+
         public override void Start()
         {
             base.Start();
 
             if(Health == 0 && !IsDead)
                 Health = MaxHealth;
+
+            TryExecuteOnComponents(component => component.Init(this));
+            Initialized = true;
         }
 
         public override void Update()

@@ -70,11 +70,26 @@ namespace CommonCore.RpgGame.World
 
         private Vector2 InitialRendererScale;
 
+        protected override void Start()
+        {
+            base.Start();
+
+            CameraEventsManager.RegisterOnPreCull(UpdateVisual);
+        }
+
         protected override void Update()
         {
-            base.Update();
+            base.Update();            
 
-            var targetTransform = FacingSpriteCameraCache.CameraTransform;
+            UpdateAnimation();
+        }
+
+        protected void UpdateVisual(Camera camera)
+        {
+            if (!isActiveAndEnabled)
+                return;
+
+            var targetTransform = camera.transform;
             Vector3 vecToTarget = targetTransform.position - Attachment.transform.position;
             Vector3 flatVecToTarget = new Vector3(vecToTarget.x, 0, vecToTarget.z).normalized;
 
@@ -87,8 +102,6 @@ namespace CommonCore.RpgGame.World
             float angle = quatFacing.eulerAngles.y;
 
             UpdateSprite(angle);
-
-            UpdateAnimation();
         }
 
         private void UpdateBillboard(Vector3 vecToTarget, Vector3 flatVecToTarget)

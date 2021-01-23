@@ -136,6 +136,8 @@ namespace CommonCore.RpgGame.World
 
         float IAmTargetable.Detectability => Detectability;
 
+        protected override bool DeferComponentInitToSubclass => true;
+
         public override void Awake()
         {
             base.Awake();
@@ -204,9 +206,11 @@ namespace CommonCore.RpgGame.World
 
             AttackComponent.Ref()?.Init();
 
+            TryExecuteOnComponents(component => component.Init(this));
+
+            Initialized = true;
+
             EnterState(CurrentAiState);
-
-
 
         }
 

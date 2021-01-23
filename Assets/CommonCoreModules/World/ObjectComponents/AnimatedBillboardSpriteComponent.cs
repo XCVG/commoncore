@@ -48,10 +48,8 @@ namespace CommonCore.World
             InitialRendererScale = Renderer.transform.localScale;
         }
 
-        protected override void Update()
+        protected void Update()
         {
-            base.Update();
-
             UpdateSprite();
 
             UpdateAnimation();

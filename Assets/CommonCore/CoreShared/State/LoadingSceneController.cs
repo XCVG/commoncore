@@ -57,7 +57,7 @@ namespace CommonCore.State
                 }
                 else if (MetaState.Instance.TransitionType == SceneTransitionType.NewGame)
                 {
-                    GameState.Reset();
+                    GameState.Recreate();
                     MetaState.Instance.Clear();
                     if(string.IsNullOrEmpty(MetaState.Instance.NextScene))
                         MetaState.Instance.NextScene = CoreParams.InitialScene;                    
@@ -123,7 +123,7 @@ namespace CommonCore.State
             if (result)
             {
                 GameState.Clear();
-                MetaState.Reset();
+                MetaState.Instance.Clear();
                 GC.Collect();
                 SceneManager.LoadScene(CoreParams.MainMenuScene);
             }

@@ -43,6 +43,9 @@ namespace CommonCore.RpgGame.World
 
         [Header("Other")]
         public bool InteractionDisabledByHit; //not sure why this is public
+        public bool AllowIfNoFaction;
+        public bool IgnoreRestrictionIfDead = true;
+        public InteractionFactionMode FactionRestriction;
         public bool DisableTooltip;
         public string TooltipOverride;
         public SerializableContainerModel CorpseItems;
@@ -79,7 +82,7 @@ namespace CommonCore.RpgGame.World
 
         public void OnInteract(ActionInvokerData data)
         {
-            if (InteractionDisabledByHit)
+            if (InteractionDisabledByHit || CheckInteractionBlockedByFaction(data))
                 return;
 
             if (UseDeadAction && ActorController.CurrentAiState == ActorAiState.Dead)
@@ -106,6 +109,43 @@ namespace CommonCore.RpgGame.World
             }
         }
 
+        private bool CheckInteractionBlockedByFaction(ActionInvokerData data)
+        {
+            if (FactionRestriction == InteractionFactionMode.Unrestricted)
+                return false;
+
+            if (IgnoreRestrictionIfDead && ActorController.CurrentAiState == ActorAiState.Dead)
+                return false;
+
+            string otherFaction = PredefinedFaction.None.ToString();
+            if(data.Activator is PlayerController pc)
+            {
+                otherFaction = PredefinedFaction.Player.ToString();
+            }
+            else if(data.Activator is ActorController ac)
+            {
+                otherFaction = ac.Faction;
+            }
+
+            string myFaction = ActorController.Faction;
+            if (!(string.IsNullOrEmpty(myFaction) && string.IsNullOrEmpty(otherFaction)))
+            {
+                var relation = GameState.Instance.FactionState.GetRelation(myFaction, otherFaction);
+
+                switch (FactionRestriction)
+                {
+                    case InteractionFactionMode.NeutralOrFriendly:
+                        return !(relation == FactionRelationStatus.Neutral || relation == FactionRelationStatus.Friendly);
+                    case InteractionFactionMode.FriendlyOnly:
+                        return !(relation == FactionRelationStatus.Friendly);
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+
+            return !AllowIfNoFaction;
+        }
+
         private void ExecuteInteraction(ActorInteractionType type, string target, ActionSpecial special, ActionInvokerData data)
         {
             switch (type)
@@ -130,6 +170,11 @@ namespace CommonCore.RpgGame.World
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        public enum InteractionFactionMode
+        {
+            Unrestricted, NeutralOrFriendly, FriendlyOnly
         }
 
     }

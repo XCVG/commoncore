@@ -34,7 +34,7 @@ namespace CommonCore.RpgGame.UI
 
             AmmoText.text = equipText;
 
-            LevelUpButton.interactable = AllowGameStateInteraction;
+            LevelUpButton.interactable = !GameState.Instance.MenuGameStateLocked;
 
             //this is now somewhat broken because there are more choices in the struct
             string rid = pModel.Gender == Sex.Female ? "portrait_f" : "portrait_m";
@@ -62,7 +62,7 @@ namespace CommonCore.RpgGame.UI
         void OnEnable()
         {
             //why is this not on SignalPaint? hell if I know
-            if(CheckLevelUp && AllowGameStateInteraction && GameState.Instance.PlayerRpgState.Experience >= RpgValues.XPToNext(GameState.Instance.PlayerRpgState.Level))
+            if(CheckLevelUp && !GameState.Instance.MenuGameStateLocked && GameState.Instance.PlayerRpgState.Experience >= RpgValues.XPToNext(GameState.Instance.PlayerRpgState.Level))
             {
                 DefaultLevelUpModal.PushModal(OnLevelUpDone);
             }

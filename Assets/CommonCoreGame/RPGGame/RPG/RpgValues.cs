@@ -41,6 +41,9 @@ namespace CommonCore.RpgGame.Rpg
         public static float MaxEnergy(CharacterModel characterModel) => MaxEnergyImpl(characterModel);
         private static Func<CharacterModel, float> MaxEnergyImpl { get; set; } = RpgDefaultValues.MaxEnergy;
 
+        public static float MaxMagic(CharacterModel characterModel) => MaxMagicImpl(characterModel);
+        private static Func<CharacterModel, float> MaxMagicImpl { get; set; } = RpgDefaultValues.MaxMagic;
+
         public static ShieldParams ShieldParams(CharacterModel characterModel) => ShieldParamsImpl(characterModel);
         private static Func<CharacterModel, ShieldParams> ShieldParamsImpl { get; set; } = RpgDefaultValues.ShieldParams;
 

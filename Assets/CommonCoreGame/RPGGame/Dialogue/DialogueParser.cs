@@ -248,8 +248,11 @@ namespace CommonCore.RpgGame.Dialogue
             }
             else if (type == "text")
             {
-                bool useTimer = false;
+                bool allowSkip = true, useTimer = false;
                 float timeToShow = 0;
+
+                if (!jt["allowSkip"].IsNullOrEmpty() && jt["allowSkip"].Type == JTokenType.Boolean)
+                    allowSkip = jt["allowSkip"].ToObject<bool>();
 
                 if (!jt["useTimer"].IsNullOrEmpty() && jt["useTimer"].Type == JTokenType.Boolean)
                     useTimer = jt["useTimer"].ToObject<bool>();
@@ -257,7 +260,7 @@ namespace CommonCore.RpgGame.Dialogue
                 if (!jt["timeToShow"].IsNullOrEmpty())
                     timeToShow = jt["timeToShow"].ToObject<float>();
 
-                return new TextFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, timeToShow, useTimer, conditional, microscript, options, scripts, extraData);
+                return new TextFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, allowSkip, timeToShow, useTimer, conditional, microscript, options, scripts, extraData);
             }
             else if (type == "blank")
             {
@@ -702,8 +705,6 @@ namespace CommonCore.RpgGame.Dialogue
         {
             if (jToken.Type != JTokenType.Object)
                 throw new InvalidOperationException("JToken must be an object!");
-
-            Debug.LogWarning("ParseFrameScripts is not yet fully implemented!");
 
             //need to handle base/overrides
             FrameScripts fs = new FrameScripts(baseScripts);

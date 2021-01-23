@@ -68,6 +68,15 @@ namespace CommonCore.RpgGame.Rpg
                 + characterModel.DerivedStats.Skills[SkillType.AthleticsFleet] * 0.25f);
         }
 
+        public static float MaxMagic(CharacterModel characterModel)
+        {
+            return Mathf.FloorToInt(100
+                + characterModel.DerivedStats.Stats[StatType.Erudition] * 5.0f
+                + characterModel.DerivedStats.Stats[StatType.Intuition] * 5.0f
+                + characterModel.DerivedStats.Stats[StatType.Serendipity] * 5.0f
+                + characterModel.DerivedStats.Skills[SkillType.Magic] * 0.5f);
+        }
+
 
         public static ShieldParams ShieldParams(CharacterModel characterModel)
         {

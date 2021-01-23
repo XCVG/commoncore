@@ -74,6 +74,9 @@ namespace CommonCore.World
         /// </summary>
         public static void SetSpriteOnQuad(Renderer renderer, FacingSpriteSizeMode spriteSizeMode, Vector2 initialRendererScale, float spriteScale, Sprite sprite, bool mirror)
         {
+            //UnityEngine.Profiling.Profiler.BeginSample("SetSpriteOnQuad");
+            //this is not the _only_ expensive part, but it is an expensive part
+
             var texture = sprite.Ref()?.texture;
             if (renderer.material.mainTexture != texture) //skip a bunch of stuff if we've already assigned the right texture
             {
@@ -131,6 +134,8 @@ namespace CommonCore.World
 
                 renderer.transform.localPosition = new Vector3(newOffset.x, newOffset.y, renderer.transform.localPosition.z);
             }
+
+            //UnityEngine.Profiling.Profiler.EndSample();
         }
 
 

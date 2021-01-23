@@ -50,10 +50,13 @@ namespace CommonCore.Config
 
             if (Instance == null)
                 Instance = new ConfigState();
+
+            MigrateLastMigratedVersion(Instance);
         }
 
         public static void Save()
         {
+            Instance.CurrentVersion = CoreParams.GetCurrentVersion();
             CoreUtils.SaveExternalJson(Path, Instance);
         }
 
@@ -62,6 +65,16 @@ namespace CommonCore.Config
         private ConfigState()
         {
 
+        }
+
+        //our first "migration": sets LastMigratedVersion if not already set
+        private static void MigrateLastMigratedVersion(ConfigState cs)
+        {
+            if (cs.LastMigratedVersion == null)
+            {
+                cs.LastMigratedVersion = CoreParams.GetCurrentVersion();
+                Debug.Log($"[ConfigState] Migrated to {cs.LastMigratedVersion} ({nameof(MigrateLastMigratedVersion)})");
+            }
         }
 
         /// <summary>
@@ -141,6 +154,20 @@ namespace CommonCore.Config
             }
 
         }
+
+        //version metadata
+
+        /// <summary>
+        /// Version information of the initial state or last migration
+        /// </summary>
+        [JsonProperty]
+        public VersionInfo LastMigratedVersion { get; private set; }
+
+        /// <summary>
+        /// Version information of the current state
+        /// </summary>
+        [JsonProperty]
+        public VersionInfo CurrentVersion { get; private set; } = CoreParams.GetCurrentVersion();
 
         //actual config data here (WIP)
 

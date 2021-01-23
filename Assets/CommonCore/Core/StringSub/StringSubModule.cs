@@ -298,6 +298,9 @@ namespace CommonCore.StringSub
                     case "/i":
                         result = "</i>"; //handling dialogue written for improper html
                         break;
+                    case "lf":
+                        result = "\n";
+                        break;
                     default:
                         if (SubMap.ContainsKey(sequenceParts[0]))
                         {

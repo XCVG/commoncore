@@ -47,6 +47,7 @@ namespace CommonCore.RpgGame.Dialogue
         public AudioSource VoiceAudioSource;
         public GameObject CameraPrefab;
         public DialogueCameraController CameraController;
+        public DialogueNavigator Navigator;
 
         private string CurrentFrameName;
         private string CurrentSceneName;
@@ -76,6 +77,8 @@ namespace CommonCore.RpgGame.Dialogue
             DefaultPanelHeight = ChoicePanel.rect.height; //ordering of this wrt ApplyThemeToPanel may matter later
 
             ApplyThemeToPanel();
+
+            ScriptingModule.CallNamedHooked("DialogueOnOpen", this);
 
             var loc = ParseLocation(CurrentDialogue);
 
@@ -122,13 +125,14 @@ namespace CommonCore.RpgGame.Dialogue
         
         private void PresentNewFrame(Frame f)
         {
-            TryCallScript(f?.Scripts?.BeforePresent, f);
+            TryCallScript(f?.Scripts?.BeforePresent, f);            
 
             //special handling for blank frames
             if (f is BlankFrame)
             {
-                CurrentFrameObject = f;                
-                TryCallScript(f?.Scripts?.OnPresent, f);
+                CurrentFrameObject = f;
+                ScriptingModule.CallNamedHooked("DialogueOnPresent", this, CurrentFrameObject);
+                TryCallScript(f?.Scripts?.OnPresent, f);                
                 OnChoiceButtonClick(0);
                 return;
             }
@@ -192,6 +196,9 @@ namespace CommonCore.RpgGame.Dialogue
                     break;
                 case ChoicePanelHeight.Variable:
                     CDebug.LogEx($"{nameof(ChoicePanelHeight)} {ChoicePanelHeight.Variable} is not supported!", LogLevel.Warning, this);
+                    break;
+                case ChoicePanelHeight.Fixed:
+                    ChoicePanel.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, f.Options.PanelHeightPixels);
                     break;
                 default:
                     if (!Mathf.Approximately(ChoicePanel.rect.height, DefaultPanelHeight))
@@ -345,6 +352,7 @@ namespace CommonCore.RpgGame.Dialogue
             TextMain.text = Sub.Macro(f.Text);
 
             //clear buttons
+            Navigator.ClearButtons();
             foreach (Transform t in ScrollChoiceContent)
             {
                 Destroy(t.gameObject);
@@ -361,6 +369,7 @@ namespace CommonCore.RpgGame.Dialogue
                 ButtonContinue.gameObject.SetActive(false);
 
                 //ChoiceFrame cf = (ChoiceFrame)f;
+                var buttons = new List<Button>();
                 for (int i = 0; i < choiceFrame.Choices.Length; i++)
                 {
                     ChoiceNode cn = choiceFrame.Choices[i];
@@ -403,9 +412,13 @@ namespace CommonCore.RpgGame.Dialogue
                         b.transform.Find("Text").GetComponent<Text>().text = prependText + Sub.Macro(cn.Text);
                         int idx = i;
                         b.onClick.AddListener(delegate { OnChoiceButtonClick(idx); });
+                        buttons.Add(b);
                     }
 
                 }
+
+                Navigator.AttachButtons(buttons);
+
             }
             else if (f is ImageFrame imageFrame)
             {
@@ -419,6 +432,7 @@ namespace CommonCore.RpgGame.Dialogue
                     Button b = ButtonAlternateContinue;
                     b.gameObject.SetActive(true);
                     b.transform.Find("Text").GetComponent<Text>().text = nextText;
+                    Navigator.AttachButtons(new Button[] { b });
                 }
                 else
                 {
@@ -444,8 +458,9 @@ namespace CommonCore.RpgGame.Dialogue
                 string nextText = string.IsNullOrEmpty(f.NextText) ? Sub.Replace("DefaultNextText", "IGUI_DIALOGUE", false) : f.NextText;
 
                 Button b = ButtonContinue;
-                b.gameObject.SetActive(true);
+                b.gameObject.SetActive(textFrame.AllowSkip);
                 b.transform.Find("Text").GetComponent<Text>().text = nextText;
+                Navigator.AttachButtons(new Button[] { b });
 
                 if (textFrame.UseTimer)
                 {
@@ -462,6 +477,7 @@ namespace CommonCore.RpgGame.Dialogue
 
             CurrentFrameObject = f;
 
+            ScriptingModule.CallNamedHooked("DialogueOnPresent", this, CurrentFrameObject);
             TryCallScript(f?.Scripts?.OnPresent, f);
         }
 
@@ -623,6 +639,7 @@ namespace CommonCore.RpgGame.Dialogue
         public void CloseDialogue()
         {
             AbortWaitAndAdvance();
+            ScriptingModule.CallNamedHooked("DialogueOnClose", this);
             CurrentDialogue = null;            
             LockPauseModule.UnpauseGame(this.gameObject);
             AudioPlayer.Instance.ClearMusic(MusicSlot.Cinematic);
@@ -742,22 +759,7 @@ namespace CommonCore.RpgGame.Dialogue
 
         private IEnumerator CoWaitAndAdvance(float timeToWait)
         {
-            //slightly awkward with menus and whatever because we're still waiting for another pause level
-            //Debug.LogWarning("WaitAndAdvance in dialogue will be slightly fucky with menus because PauseLockType.Cutscene is not available yet");
-
-            //yield return new WaitForSecondsRealtime(timeToWait); //will need to replace this with our own jank when PauseLockType.Cutscene is available
-
-            //this is hacky and maximum jank because we don't draw a distinction in PauseLock between "game is locked because cutscene" and "game is locked because menu"
-
-            float timeStep = 0.1f;
-            float elapsed = 0;
-            while(elapsed < timeToWait)
-            {
-                yield return new WaitForSecondsRealtime(timeStep);
-
-                if (!(IngameMenuController.Current.Ref()?.IsOpen ?? false))
-                    elapsed += timeStep;                
-            }
+            yield return new WaitForSecondsEx(timeToWait, lowestPauseState: PauseLockType.AllowCutscene);
 
             yield return null;
 

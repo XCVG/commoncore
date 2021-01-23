@@ -56,6 +56,7 @@ namespace CommonCore.ResourceManagement
                 sd.Rect = new Rect(0, 0, texture.width, texture.height);
 
             Sprite sprite = Sprite.Create(texture, sd.Rect.Value, sd.Pivot, sd.PixelsPerUnit, 0, SpriteMeshType.FullRect);
+            sprite.name = Path.GetFileNameWithoutExtension(path);
 
             return sprite;
         }
@@ -82,6 +83,7 @@ namespace CommonCore.ResourceManagement
             await Task.Yield();
 
             Sprite sprite = Sprite.Create(texture, sd.Rect.Value, sd.Pivot, sd.PixelsPerUnit, 0, SpriteMeshType.FullRect);
+            sprite.name = Path.GetFileNameWithoutExtension(path);
 
             return sprite;
         }

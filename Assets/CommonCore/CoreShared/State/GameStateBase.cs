@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
+using UnityEngine;
 
 namespace CommonCore.State
 {
@@ -37,9 +38,10 @@ namespace CommonCore.State
         /// <summary>
         /// Purges the current game state and recreates it
         /// </summary>
-        public static void Reset()
+        public static void Recreate()
         {
             instance = new GameState();
+            MigrateLastMigratedVersion(instance);
         }
 
         /// <summary>
@@ -64,6 +66,7 @@ namespace CommonCore.State
         /// </summary>
         public static string Serialize()
         {
+            Instance.CurrentVersion = CoreParams.GetCurrentVersion();
             return JsonConvert.SerializeObject(Instance,
                 Formatting.Indented,
                 CoreParams.DefaultJsonSerializerSettings);
@@ -84,6 +87,8 @@ namespace CommonCore.State
         {
             instance = JsonConvert.DeserializeObject<GameState>(data,
             CoreParams.DefaultJsonSerializerSettings);
+
+            MigrateLastMigratedVersion(instance);
         }
 
         /// <summary>
@@ -94,6 +99,7 @@ namespace CommonCore.State
             if (instance == null)
             {
                 instance = new GameState();
+                MigrateLastMigratedVersion(instance);
             }
 
             instance.Init();
@@ -136,7 +142,7 @@ namespace CommonCore.State
             {
                 StringBuilder campaignDescriptor = new StringBuilder(1024);
 
-                Random rnd = new Random();
+                var rnd = new System.Random();
 
                 campaignDescriptor.Append(CoreParams.GameName + CoreParams.GameVersion.ToString() + CoreParams.UnityVersionName); //game descriptor
                 campaignDescriptor.Append(Environment.UserName + Environment.MachineName + Environment.OSVersion.ToString()); //machine descriptor
@@ -195,13 +201,31 @@ namespace CommonCore.State
             }
         }
 
+        //our first "migration": sets LastMigratedVersion if not already set
+        private static void MigrateLastMigratedVersion(GameState gs)
+        {
+            if (gs.LastMigratedVersion == null)
+            {
+                gs.LastMigratedVersion = CoreParams.GetCurrentVersion();
+                Debug.Log($"[GameState] Migrated to {gs.LastMigratedVersion} ({nameof(MigrateLastMigratedVersion)})");
+            }
+        }
+
         //metadata for save games
+
+        /// <summary>
+        /// Version information of the initial state or last migration
+        /// </summary>
         [JsonProperty]
-        private Version GameVersion => CoreParams.GameVersion;
+        public VersionInfo LastMigratedVersion { get; private set; } //defaults to null so we can identify saves before this property existed
+
+        /// <summary>
+        /// Version information of the current state
+        /// </summary>
         [JsonProperty]
-        private Version FrameworkVersion => CoreParams.VersionCode;
-        [JsonProperty]
-        private Version UnityVersion => CoreParams.UnityVersion;
+        public VersionInfo CurrentVersion { get; private set; } = CoreParams.GetCurrentVersion();
+
+        //should these be accessible?
         [JsonProperty]
         private string GameName => CoreParams.GameName;
         [JsonProperty]
@@ -230,12 +254,17 @@ namespace CommonCore.State
         public string CurrentScene { get; set; }
 
         /// <summary>
-        /// If any saving is allowed at this point
+        /// If modifying gamestate (inventory, RPG, etc) from menus is disallowed
+        /// </summary>
+        public bool MenuGameStateLocked { get; set; }
+
+        /// <summary>
+        /// If any saving is disallowed at this point
         /// </summary>
         public bool SaveLocked { get; set; }
 
         /// <summary>
-        /// If we are allowed to manually save at this point
+        /// If we are disallowed from manually saving at this point
         /// </summary>
         public bool ManualSaveLocked { get; set; }
 

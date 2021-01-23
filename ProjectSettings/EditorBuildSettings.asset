@@ -23,4 +23,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Other/TestScene.unity
     guid: 0b340932fb43bfa4b86dd20ee1c3e91e
+  - enabled: 1
+    path: Assets/Scenes/Other/ForestTestScene.unity
+    guid: b8cce87a8128efa4687e2e470e923788
+  - enabled: 1
+    path: Assets/Scenes/Other/UITestScene.unity
+    guid: cfdb22e5218ad914fb7ce8c13c41ed19
   m_configObjects: {}

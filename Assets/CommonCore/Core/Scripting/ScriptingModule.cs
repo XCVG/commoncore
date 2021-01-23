@@ -240,6 +240,9 @@ namespace CommonCore.Scripting
             if (PredefinedHooks.Contains(hook))
                 LogWarning($"Named hook \"{hook}\" was called, which is named similarly to a predefined hook. Scripts that hook the predefined hook will not be called!");
 
+            if (!NamedHookedMethods.ContainsKey(hook))
+                return;
+
             foreach(var scriptMethod in NamedHookedMethods[hook])
             {
                 try

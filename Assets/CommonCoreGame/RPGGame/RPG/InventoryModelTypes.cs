@@ -1,4 +1,5 @@
-﻿using CommonCore.State;
+﻿using CommonCore.Scripting;
+using CommonCore.State;
 using CommonCore.World;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -21,7 +22,7 @@ namespace CommonCore.RpgGame.Rpg
 
     public enum AidType //are there even any other stats?
     {
-        None, Health, Energy //other stats?
+        None, Health, Energy, Magic, Shields //other stats?
     }
 
     public enum RestoreType
@@ -46,7 +47,10 @@ namespace CommonCore.RpgGame.Rpg
         MeleeWeaponUsePreciseCasting,
 
         //dummy-specific weapon flags
-        DummyWeaponUseViewModelRaiseLower
+        DummyWeaponUseViewModelRaiseLower,
+
+        //aid item flags
+        AidDoNotConsume, AidNoMessage, ComboAidKeepAllMessages
     }
 
     //an actual inventory item that the player has
@@ -104,6 +108,11 @@ namespace CommonCore.RpgGame.Rpg
 
         public InventoryItemInstance(InventoryItemModel model) : this(model, model.MaxCondition, 1, false)
         {
+        }
+
+        public override string ToString()
+        {
+            return $"{InstanceUID} ({ItemModel}) [{Quantity}]";
         }
     }
 
@@ -202,6 +211,10 @@ namespace CommonCore.RpgGame.Rpg
             return Array.Exists(Flags, x => flag.Equals(x, StringComparison.OrdinalIgnoreCase));
         }
 
+        public override string ToString()
+        {
+            return $"{Name} : {GetType().Name}";
+        }
 
     }
 
@@ -474,46 +487,148 @@ namespace CommonCore.RpgGame.Rpg
     {
         public readonly AidType AType;
         public readonly RestoreType RType;
-        public float Amount;
-        //TODO conditions, exec script on use, etc
+        public readonly float Amount;
+        public readonly string Script;
 
         public AidItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, string worldModel,
-            AidType aType, RestoreType rType, float amount)
+            AidType aType, RestoreType rType, float amount, string script)
             : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, worldModel)
         {
             AType = aType;
             RType = rType;
             Amount = amount;
+            Script = script;
         }
 
-        public void Apply()
+        public virtual AidItemApplyResult Apply(CharacterModel target, InventoryItemInstance itemInstance)
         {
-            Apply(this, GameState.Instance.PlayerRpgState);
+            float amountRestored;
+            if (string.IsNullOrEmpty(Script))
+            {
+                amountRestored = ApplyBase(this, target);
+                return new AidItemApplyResult() { Success = true, ConsumeItem = !CheckFlag(ItemFlag.AidDoNotConsume), ShowMessage = !CheckFlag(ItemFlag.AidNoMessage), Message = GetSuccessMessage(amountRestored) };
+            }
+
+            var sResult = ApplyScript(this, target, itemInstance);
+            amountRestored = sResult.AmountRestored;
+            if (sResult.ContinueApply)
+                amountRestored = ApplyBase(this, target);
+            return new AidItemApplyResult() { Success = sResult.ReturnSuccess, ConsumeItem = sResult.ConsumeItem, ShowMessage = sResult.ShowMessage, Message = sResult.MessageOverride ?? GetSuccessMessage(amountRestored) };
         }
 
-        public static void Apply(AidItemModel item, CharacterModel player)
+        protected static AidItemScriptResult ApplyScript(AidItemModel item, CharacterModel player, InventoryItemInstance itemInstance)
         {
-            switch (item.AType)
+            return ScriptingModule.CallForResult<AidItemScriptResult>(item.Script, new ScriptExecutionContext() { Caller = player }, item, itemInstance);
+        }
+
+        protected static float ApplyBase(AidItemModel item, CharacterModel player)
+        {
+            return ApplyNode(item.AType, item.RType, item.Amount, player);
+        }
+
+        protected static float ApplyNode(AidType aType, RestoreType rType, float amount, CharacterModel player)
+        {
+            float amountRestored = 0;
+
+            //this is super gross but I will improve it later
+            switch (aType)
             {
                 case AidType.Health:
                     {
-                        switch (item.RType)
+                        switch (rType)
                         {
                             case RestoreType.Add:
-                                player.Health = Math.Min(player.Health + item.Amount, player.DerivedStats.MaxHealth);
+                                float oldHealth = player.Health;
+                                player.Health = Math.Min(player.Health + amount, player.DerivedStats.MaxHealth);
+                                amountRestored = player.Health - oldHealth;
                                 break;
                             case RestoreType.Boost:
-                                player.Health += item.Amount;
+                                player.Health += amount;
+                                amountRestored = amount;
                                 break;
                             case RestoreType.Override:
-                                player.Health = item.Amount;
+                                player.Health = amount;
+                                amountRestored = amount;
                                 break;
                             default:
                                 break;
                         }
                     }
-                    break;                
+                    break;
+                case AidType.Energy:
+                    {
+                        switch (rType)
+                        {
+                            case RestoreType.Add:
+                                float oldEnergy = player.Energy;
+                                player.Energy = Math.Min(player.Energy + amount, player.DerivedStats.MaxEnergy);
+                                amountRestored = player.Energy - oldEnergy;
+                                break;
+                            case RestoreType.Boost:
+                                player.Energy += amount;
+                                amountRestored = amount;
+                                break;
+                            case RestoreType.Override:
+                                player.Energy = amount;
+                                amountRestored = amount;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    break;
+                case AidType.Magic:
+                    {
+                        switch (rType)
+                        {
+                            case RestoreType.Add:
+                                float oldMagic = player.Magic;
+                                player.Magic = Math.Min(player.Magic + amount, player.DerivedStats.MaxMagic);
+                                amountRestored = player.Magic - oldMagic;
+                                break;
+                            case RestoreType.Boost:
+                                player.Magic += amount;
+                                amountRestored = amount;
+                                break;
+                            case RestoreType.Override:
+                                player.Magic = amount;
+                                amountRestored = amount;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    break;
+                case AidType.Shields:
+                    {
+                        switch (rType)
+                        {
+                            case RestoreType.Add:
+                                float oldShields = player.Shields;
+                                player.Shields = Math.Min(player.Shields + amount, player.DerivedStats.ShieldParams.MaxShields);
+                                amountRestored = player.Shields - oldShields;
+                                break;
+                            case RestoreType.Boost:
+                                player.Shields += amount;
+                                amountRestored = amount;
+                                break;
+                            case RestoreType.Override:
+                                player.Shields = amount;
+                                amountRestored = amount;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    break;
             }
+
+            return amountRestored;
+        }
+
+        protected virtual string GetSuccessMessage(float amountRestored)
+        {
+            return string.Format($"Restored {(int)amountRestored} {AType.ToString()}!");
         }
 
         public override string GetStatsString()
@@ -521,6 +636,98 @@ namespace CommonCore.RpgGame.Rpg
             return $"<b>Aid Item</b>\n" + base.GetStatsString() + $"\n{AType}: {Amount:F1} ({RType})\n"; //will need to redo this when we extend AidItem
         }
     }
+
+    public struct AidItemApplyResult
+    {
+        public bool Success;
+        public bool ConsumeItem;
+        public bool ShowMessage;
+        public string Message;
+    }
+
+    public struct AidItemScriptResult
+    {
+        public bool ContinueApply;
+        public bool ReturnSuccess;        
+        public bool ConsumeItem;
+        public bool ShowMessage;
+        public string MessageOverride; //null=no override, empty=empty message
+        public float AmountRestored;
+    }
+
+    public class ComboAidItemRestoreNode
+    {
+        [JsonProperty]
+        public AidType AType { get; private set; }
+        [JsonProperty]
+        public RestoreType RType { get; private set; }
+        [JsonProperty]
+        public float Amount { get; private set; }
+        [JsonProperty]
+        public bool AutoApply { get; private set; }
+    }
+
+    public class ComboAidItemModel : AidItemModel
+    {
+        public readonly IReadOnlyList<ComboAidItemRestoreNode> RestoreNodes;
+
+        public ComboAidItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, string worldModel,
+            AidType aType, RestoreType rType, float amount, string script, ComboAidItemRestoreNode[] restoreNodes) : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, worldModel, aType, rType, amount, script)
+        {
+            RestoreNodes = restoreNodes;
+        }
+
+        public override AidItemApplyResult Apply(CharacterModel target, InventoryItemInstance itemInstance)
+        {
+            StringBuilder messageBuilder = new StringBuilder();
+            AidItemScriptResult scriptResult = new AidItemScriptResult() { ReturnSuccess = true, ContinueApply = true, ConsumeItem = !CheckFlag(ItemFlag.AidDoNotConsume), ShowMessage = !CheckFlag(ItemFlag.AidNoMessage) };
+            //apply script
+            if(!string.IsNullOrEmpty(Script))
+            {
+                scriptResult = ApplyScript(this, target, itemInstance);
+            }
+
+            if (scriptResult.ContinueApply)
+            {
+                //apply base
+                if (AType != AidType.None)
+                {
+                    float amountRestored = ApplyBase(this, target);
+                    messageBuilder.AppendLine(base.GetSuccessMessage(amountRestored));
+                }
+
+                //apply nodes
+                if(RestoreNodes != null && RestoreNodes.Count > 0)
+                {
+                    foreach(var restoreNode in RestoreNodes)
+                    {
+                        if (!restoreNode.AutoApply)
+                            continue;
+                        float amountRestored = ApplyNode(restoreNode.AType, restoreNode.RType, restoreNode.Amount, target);
+                        messageBuilder.AppendLine($"Restored {(int)amountRestored} {restoreNode.AType.ToString()}!");
+                    }
+                }
+            }
+
+            //concat messages
+            string message;
+            if(scriptResult.MessageOverride != null)
+            {
+                if (CheckFlag(ItemFlag.ComboAidKeepAllMessages))
+                    message = scriptResult.MessageOverride + '\n' + messageBuilder.ToString();
+                else
+                    message = scriptResult.MessageOverride;
+            }    
+            else
+            {
+                message = messageBuilder.ToString();
+            }
+
+            return new AidItemApplyResult() { ConsumeItem = scriptResult.ConsumeItem, Message = message, ShowMessage = scriptResult.ShowMessage, Success = scriptResult.ReturnSuccess };
+
+        }
+    }
+    
 
     public class MoneyItemModel : InventoryItemModel
     {

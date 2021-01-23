@@ -65,6 +65,8 @@ namespace CommonCore.World
             if (jo.ContainsKey("FrontRight"))
                 asset.FrontRight = LoadSprite(path, (JObject)jo["FrontRight"], context);
 
+            asset.name = Path.GetFileNameWithoutExtension(path);
+
             return asset;
         }
 
@@ -90,6 +92,8 @@ namespace CommonCore.World
                 asset.Right = await LoadSpriteAsync(path, (JObject)jo["Right"], context);
             if (jo.ContainsKey("FrontRight"))
                 asset.FrontRight = await LoadSpriteAsync(path, (JObject)jo["FrontRight"], context);
+
+            asset.name = Path.GetFileNameWithoutExtension(path);
 
             return asset;
         }

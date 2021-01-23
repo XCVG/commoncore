@@ -58,6 +58,7 @@ GameObject:
   - component: {fileID: 7362106638838755766}
   - component: {fileID: 203825305049943644}
   - component: {fileID: 5336186101568774858}
+  - component: {fileID: 2764798020886303731}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -91,9 +92,10 @@ Camera:
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
-  m_GateFitMode: 2
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
@@ -109,7 +111,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 1847
+    m_Bits: 7991
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -138,6 +140,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   stopNaNPropagation: 1
+  finalBlitToCameraTarget: 0
   antialiasingMode: 0
   temporalAntialiasing:
     jitterSpread: 0.75
@@ -207,4 +210,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UseAggressiveConfigurationCheck: 0
+  ApplyFov: 1
   AttachedCamera: {fileID: 5508500177445624303}
+--- !u!114 &2764798020886303731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5965266614161986138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c91f6996096a90b49a6f03aed670a792, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

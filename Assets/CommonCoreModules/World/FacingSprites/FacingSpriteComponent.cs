@@ -35,11 +35,21 @@ namespace CommonCore.World
             }
 
             InitialRendererScale = Attachment.transform.localScale;
+
+            CameraEventsManager.RegisterOnPreCull(UpdateVisual);
         }
 
         protected virtual void Update()
         {
-            var targetTransform = FacingSpriteCameraCache.CameraTransform;
+            
+        }
+
+        protected virtual void UpdateVisual(Camera camera)
+        {
+            if (!isActiveAndEnabled)
+                return;
+
+            var targetTransform = camera.transform;
             Vector3 vecToTarget = targetTransform.position - Attachment.transform.position;
             Vector3 flatVecToTarget = new Vector3(vecToTarget.x, 0, vecToTarget.z).normalized;
 
@@ -52,8 +62,7 @@ namespace CommonCore.World
             float angle = quatFacing.eulerAngles.y;
 
             UpdateSprite(angle);
-
-        }
+        }        
 
         protected virtual void UpdateBillboard(Vector3 vecToTarget, Vector3 flatVecToTarget)
         {
@@ -84,9 +93,5 @@ namespace CommonCore.World
             FacingSpriteUtils.SetSpriteOnQuad(Attachment, SpriteSizeMode, InitialRendererScale, SpriteScale, sprite, mirror);
         }
 
-        protected virtual void LateUpdate()
-        {
-            FacingSpriteCameraCache.ResetCameraTransform();
-        }
     }
 }

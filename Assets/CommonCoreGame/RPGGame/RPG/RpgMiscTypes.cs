@@ -61,6 +61,7 @@ namespace CommonCore.RpgGame.Rpg
     {
         public float MaxHealth { get; set; }
         public float MaxEnergy { get; set; }
+        public float MaxMagic { get; set; }
 
         public ShieldParams ShieldParams { get; set; }
 
@@ -94,6 +95,7 @@ namespace CommonCore.RpgGame.Rpg
         {
             MaxHealth = original.MaxHealth;
             MaxEnergy = original.MaxEnergy;
+            MaxMagic = original.MaxMagic;
             ShieldParams = original.ShieldParams; //okay because ShieldParams is immutable
             DamageResistance = new Dictionary<DamageType, float>(original.DamageResistance);
             DamageThreshold = new Dictionary<DamageType, float>(original.DamageThreshold);

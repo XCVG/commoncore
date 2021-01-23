@@ -48,6 +48,7 @@ namespace CommonCore.State
         public void Clear()
         {
             Intents.Clear();
+            GameData.Clear();
             clearDecorated();
 
             LoadSave = null;
@@ -175,6 +176,21 @@ namespace CommonCore.State
         /// Intents to be persisted/executed across the next transition
         /// </summary>
         public List<Intent> Intents { get; private set; } = new List<Intent>();
+
+        /// <summary>
+        /// Generic data store persisted until next scene load
+        /// </summary>
+        public Dictionary<string, object> TempData { get; private set; } = new Dictionary<string, object>();
+
+        /// <summary>
+        /// Generic data store persisted until end of game (until next Clear())
+        /// </summary>
+        public Dictionary<string, object> GameData { get; private set; } = new Dictionary<string, object>();
+
+        /// <summary>
+        /// Generic data store persisted until end of session
+        /// </summary>
+        public Dictionary<string, object> SessionData { get; private set; } = new Dictionary<string, object>();
 
         /// <summary>
         /// Decorate fields or properties with this attribute to have them reset by Clear() soft-reset
