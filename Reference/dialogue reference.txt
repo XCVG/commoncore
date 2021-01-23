@@ -7,8 +7,32 @@ The draw area is assumed to be 1280x720. It is constrained in katana and scaled 
 
 In CommonCore, 100 is assumed to be the default pixels per unit, and images are scaled according to this value
 
-Images in the "character" position are drawn centered in katana, but 100px above center in CommonCore
+Images in the "character" position are drawn centered in katana, but 100px (or 140px if GameParams.DialogueDrawPortraitHigh is set) above center in CommonCore
 Images in the "battler" position are drawn slightly offset in katana, but centered in CommonCore. They were never really supported in either.
+Images in the "fill" position are stretched to the full draw area.
+
+In CommonCore, some additional positions are supported:
+	contain - Image is scaled, maintaining aspect ratio, to fit within the draw area
+	cover - Image is scaled, maintaining aspect ratio, to fully cover the draw area
+	characterBottom - Image is centered horizontally, pinned to the bottom vertically, scaled only by PixelsPerUnit
+
+_______________________________________________________________________________
+
+TIMED ADVANCE
+
+The ImageFrame and TextFrame frame types can be set to move on to the next frame after a set period of time. Several properties are defined on the Frame to accomplish this:
+
+useTimer
+	Set this to true to enable timed advance
+
+allowSkip
+	Allows or disallows skipping the frame with the skip button. In CommonCore, this controls the existence of the skip button as well.
+
+hideSkip
+	Hides the skip button. Not implemented in CommonCore, where it is tied to allowSkip instead.
+
+timeToShow
+	How long to wait, in float seconds, until moving on to the next frame.
 
 _______________________________________________________________________________
 
@@ -229,3 +253,67 @@ passNext - the frame to jump to if the check is passed
 failNext - the frame to jump to if the check is failed
 
 appendCheckText - If set, will prepend text that describes the skill check (ie [Dex 5])
+
+_______________________________________________________________________________
+
+CAMERA CONTROL (CommonCore Only)
+
+The direction of the camera can be set with cameraDirection on the Frame object. It can be inherited from the Scene as well.
+
+Default
+	Sets the camera back to where it was.
+
+FaceTarget:tid
+	Will face the target specified by tid at a fixed distance (defaults to 1.0)
+	If the : and tid are omitted, it will face the current target (which is by default the thing the dialogue was activated on)
+	
+CopyTransform:tid
+	Copies the transform of the object specified by the TID
+
+_______________________________________________________________________________
+
+ADDITIONAL OPTIONS (CommonCore Only)
+
+The options property of a Frame object defines some additional options for CommonCore only. It is inherited, so the scene can also have options which will be inherited by all of its Frames which can be overridden individually.
+
+panelHeight (enum)
+	default, full, half, variable
+	How high to make the panel. Currently default (follows what is set in GameParams), full, half are supported and variable is not.
+
+hideNameText (boolean)
+	Whether to hide the name text. Default is false.
+	
+voiceOverride (string)
+	Override the voice clip name for this frame
+
+hideObjects (list<string>)
+	Which objects in the scene to hide when this frame is displayed.
+	Lookup is by TID (name in scene).
+	It also accepts Player and Target which work the same as they do in camera control
+	Putting a # in front of the name will cause it to be interpreted literally, ignoring Player and Target logic.
+
+_______________________________________________________________________________
+
+SCRIPT CALLS (CommonCore Only)
+
+The scripts property of a Frame object defines some additional scripts for CommonCore only. It is inherited, so the scene can also have scripts which will be inherited by all of its Frames which can be overridden individually.
+
+Each of these is a string that refers to a script in the CommonCore scripting system.
+
+beforePresent
+	Runs before the frame is presented
+
+onPresent
+	Runs after the frame is presented
+	
+onChoice
+	Runs after a choice is chosen (including the "next" on TextFrame)
+	
+onUnpresent
+	Runs before a frame is cleared, before the next one is presented
+
+_______________________________________________________________________________
+
+EXTRADATA (CommonCore Only)
+
+An ExtraData property on the Frame allows adding extra data as a generic JSON object (internally it converts to IReadOnlyDictionary<string,object>. It is also available on the Scene object and is inherited, with individual properties on the frame overriding those on the base. Note that while ExtraData itself is immutable, objects contained within it may not be.

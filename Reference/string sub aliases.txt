@@ -12,6 +12,7 @@ BASE SUBSTITUTIONS (implemented in StringSubModule)
 </b>		</b>
 <i>			</i>
 </i>		</i>
+<lf>		/n
 
 <color=*>	<color=*>
 </color>	</color>

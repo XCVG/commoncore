@@ -1,6 +1,6 @@
 # CommonCore RPG Libraries for Unity
 ### Version 3.0.0 PREVIEW
-### For Unity 2018.4+
+### For Unity 2019.4+
 
 ## Introduction
 
@@ -14,7 +14,7 @@ Some limited documentation is available in the Reference folder. The Documentati
 
 ## Platform Support
 
-CommonCore supports Unity 2018.4 and Unity 2019.3. The plan is to continue to target the latest stable version of 2018.x at least until the next release. Unity 2017.x is no longer supported.
+CommonCore supports Unity 2019.4 and _should_ work on Unity 2020.x. The plan is to continue to target the latest stable version of 2019.x at least until the next major version of CommonCore (4.x _Downwarren_). Unity 2017.x and Unity 2018.x are longer supported.
 
 CommonCore is targeted toward standalone platforms using Mono and the .NET 4.x scripting runtime. As of 2.0.0pre9 (18f00d1), it works with IL2CPP and has been tested on UWP, though this is still experimental and some features will not work.
 
