@@ -30,3 +30,29 @@
 * Added "current target" option for dialogue camera
 * Implemented "hide object" options for dialogue
 * Implemented "cutscene" pause level (between menu only and all)
+
+# 3.0.0 Preview 2
+
+* Updated to Unity 2019.4.17
+* Updated dependency package versions
+* New loading indicator (finally!)
+* Fixed fundamentally flawed "cutscene" pause level
+* FormID of Player is now set to "Player"
+* Fixed theme font being applied inconsistently to toggle labels
+* Fixed some panels not using heading font for headings
+* Added scoped (different lifetimes) generic stores to MetaState
+* Interaction with NPCs can now be blocked by faction relationships
+* FacingSprite is now called via camera events (still slow, but handles multiple cameras)
+* Magic points added to CharacterModel
+* Aid items can now execute a script on use
+* Aid items can now restore shields or magic
+* Improved result message and result message handling for aid items
+* Added ComboAidItemModel that supports multiple aid types/effects
+* Dialogue frame options now supports Fixed height type
+* TextFrame now supports allowSkip
+* Added IReceiveEntityEvents interface for components to receive entity event calls (consider this API unstable)
+* Dialogue system now partially supports keyboard/controller option selection
+* Added UnityWebRequest Resource Importer for handling ogg and mp3 audio
+* Resource Importers are now (effectively) tried last-registered-first
+* Fixed some Resource Importers not setting name of imported objects
+* Version info is now saved to PersistState, ConfigState, and game saves (setting up for migrations)
