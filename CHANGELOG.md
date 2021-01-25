@@ -59,5 +59,5 @@
 
 # 3.0.0 next version
 
-* absolute/relative paths for VoiceOverride
+* VoiceOverride now supports relative (unprefixed) or absolute (starts with /) paths
 * DialogueNavigator robustness and use key handling
