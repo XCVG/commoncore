@@ -1,4 +1,5 @@
-﻿using CommonCore.LockPause;
+﻿using CommonCore.Input;
+using CommonCore.LockPause;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -47,14 +48,25 @@ namespace CommonCore.RpgGame.Dialogue
             if(EventSystem.currentSelectedGameObject == null || !EventSystem.currentSelectedGameObject.activeInHierarchy)
             {
                 SelectButton(SelectedButton);
-            }
+            }            
 
-            //listen for up/down (?!)
+            //update our view of SelectedButton
             if(EventSystem.currentSelectedGameObject != CurrentButtons[SelectedButton].gameObject)
             {
-                SelectedButton = CurrentButtons.IndexOf(EventSystem.currentSelectedGameObject.GetComponent<Button>());
+                int newIndex = CurrentButtons.IndexOf(EventSystem.currentSelectedGameObject.GetComponent<Button>());
+                if(newIndex >= 0)
+                    SelectedButton = newIndex;
 
                 //Debug.Log($"selected {SelectedButton}");
+            }
+
+            //listen for input
+            if (MappedInput.GetButtonDown(Input.DefaultControls.Use))
+            {
+                if(SelectedButton >= 0)
+                {
+                    CurrentButtons[SelectedButton].onClick.Invoke();
+                }
             }
         }
 

@@ -155,7 +155,12 @@ namespace CommonCore.RpgGame.Dialogue
             string voiceClipName = $"{CurrentSceneName}/{CurrentFrameName}";
             string voiceClipNameOverride = f.Options.VoiceOverride;
             if (!string.IsNullOrEmpty(voiceClipNameOverride))
-                voiceClipName = voiceClipNameOverride;
+            {
+                if (voiceClipNameOverride.StartsWith("/"))
+                    voiceClipName = voiceClipNameOverride.TrimStart('/');
+                else
+                    voiceClipName = $"{CurrentSceneName}/{voiceClipNameOverride}";
+            }
             if (VoiceAudioSource.isPlaying)
                 VoiceAudioSource.Stop();
             var voiceClip = CCBase.GetModule<AudioModule>().GetSound(voiceClipName, SoundType.Voice, !GameParams.DialogueVerboseLogging); //GetModule<T> is now preferred

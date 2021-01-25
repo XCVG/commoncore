@@ -56,3 +56,8 @@
 * Resource Importers are now (effectively) tried last-registered-first
 * Fixed some Resource Importers not setting name of imported objects
 * Version info is now saved to PersistState, ConfigState, and game saves (setting up for migrations)
+
+# 3.0.0 next version
+
+* absolute/relative paths for VoiceOverride
+* DialogueNavigator robustness and use key handling
