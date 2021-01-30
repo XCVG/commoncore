@@ -296,7 +296,7 @@ namespace CommonCore.RpgGame.Dialogue
 
         public string VoiceOverride => Options.GetOrDefault(nameof(VoiceOverride), null)?.ToString();
 
-        public float? VoiceVolume => Options.ContainsKey(nameof(VoiceVolume)) ? TypeUtils.CoerceValue<float>(Options[nameof(VoiceVolume)]) : null;
+        public float? VoiceVolume => Options.ContainsKey(nameof(VoiceVolume)) ? (float?)TypeUtils.CoerceValue<float>(Options[nameof(VoiceVolume)]) : (float?)null;
 
         public IEnumerable<string> HideObjects => Options.GetOrDefault(nameof(HideObjects), null) as IEnumerable<string>;
 
