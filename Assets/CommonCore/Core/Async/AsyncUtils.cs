@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonCore.LockPause;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -25,6 +26,42 @@ namespace CommonCore.Async
             {
                 Debug.LogException(e);
             }
+        }
+
+        /// <summary>
+        /// Runs a task and logs an exception if one is thrown
+        /// </summary>
+        /// <remarks>Use this instead of async void methods</remarks>
+        public static async void RunWithExceptionHandling(Task asyncTask)
+        {
+            try
+            {
+                await asyncTask;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+
+        /// <summary>
+        /// Runs an async method and logs an exception if one is thrown. Returns the Task representing the async method
+        /// </summary>
+        /// <remarks>Use this instead of async void methods</remarks>
+        public static Task RunWithExceptionHandlingEx(Func<Task> asyncMethod)
+        {
+            try
+            {
+                var task = asyncMethod();
+                RunWithExceptionHandling(() => task);
+                return task;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);                
+            }
+            return null;
+
         }
 
         /// <summary>
@@ -56,6 +93,26 @@ namespace CommonCore.Async
             float startTime = Time.time;
             while (Time.time - startTime < timeToWait)
                 await Task.Yield();
+        }
+
+        /// <summary>
+        /// Waits a specified number of seconds in scaled time (respecting pause state), can be skipped with skip button
+        /// </summary>
+        /// <remarks>Can only be used from the main thread</remarks>
+        public static async Task DelayScaled(float time, PauseLockType lowestPauseState, bool useRealtime = false)
+        {
+            for (float elapsed = 0; elapsed < time;)
+            {
+                await Task.Yield();
+                var pls = LockPauseModule.GetPauseLockState();
+                if (pls == null || pls >= lowestPauseState)
+                {
+                    float timeScale = useRealtime ? 1 : (Mathf.Approximately(Time.timeScale, 0) ? 1 : Time.timeScale);
+                    elapsed += Time.unscaledDeltaTime * timeScale;
+                }
+            }
+
+            await Task.Yield();
         }
     }
 }
