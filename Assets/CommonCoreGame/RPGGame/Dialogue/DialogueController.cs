@@ -167,6 +167,7 @@ namespace CommonCore.RpgGame.Dialogue
             if (voiceClip != null)
             {
                 VoiceAudioSource.clip = voiceClip;
+                VoiceAudioSource.volume = f.Options.VoiceVolume ?? 1f;
                 VoiceAudioSource.Play();
             }
 
