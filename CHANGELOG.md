@@ -61,3 +61,7 @@
 
 * VoiceOverride now supports relative (unprefixed) or absolute (starts with /) paths
 * DialogueNavigator robustness and use key handling
+* Added variant of AsyncUtils.RunWithExceptionHandling that returns Task
+* Added LockPause-aware wait method to AsyncUtils
+* Implemented VoiceVolume property in dialogue frame Options
+* Changed some labels in GameplayConfigPanel to overflow (fix for some themes)
