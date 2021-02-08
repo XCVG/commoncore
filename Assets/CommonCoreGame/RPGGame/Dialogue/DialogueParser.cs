@@ -639,7 +639,10 @@ namespace CommonCore.RpgGame.Dialogue
             }
             else
             {
-                throw new NotSupportedException("Unacceptable or unrecognized action for microscript");
+                if (type != MicroscriptType.Exec)
+                    throw new NotSupportedException("Unacceptable or unrecognized action for microscript");
+                else
+                    action = default;
             }
 
             //parse delay, if applicable

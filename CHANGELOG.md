@@ -65,3 +65,4 @@
 * Added LockPause-aware wait method to AsyncUtils
 * Implemented VoiceVolume property in dialogue frame Options
 * Changed some labels in GameplayConfigPanel to overflow (fix for some themes)
+* Fixed DialogueParser throwing an exception when loading dialogue with Exec microscripts with args
