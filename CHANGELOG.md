@@ -66,3 +66,5 @@
 * Implemented VoiceVolume property in dialogue frame Options
 * Changed some labels in GameplayConfigPanel to overflow (fix for some themes)
 * Fixed DialogueParser throwing an exception when loading dialogue with Exec microscripts with args
+* Added editor script to copy files post-build
+* Added datetime and guid to finalsave
