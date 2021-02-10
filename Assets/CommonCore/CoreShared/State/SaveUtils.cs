@@ -1,5 +1,7 @@
 ﻿using CommonCore.Config;
 using CommonCore.StringSub;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -429,7 +431,10 @@ namespace CommonCore.State
             string finalSaveName = $"finalsave_{DateTime.Now.ToString("yyyy-MM-dd_HHmmss", CultureInfo.InvariantCulture)}.json";
             string savePath = CoreParams.FinalSavePath + Path.DirectorySeparatorChar + finalSaveName;
             DateTime savePoint = DateTime.Now;
-            GameState.SerializeToFile(savePath);
+            var jobject = JObject.FromObject(GameState.Instance, JsonSerializer.CreateDefault(CoreParams.DefaultJsonSerializerSettings));
+            jobject.Add("FinalSaveDate", JToken.FromObject(savePoint));
+            jobject.Add("FinalSaveIdentifier", Guid.NewGuid().ToString("N"));
+            File.WriteAllText(savePath, JsonConvert.SerializeObject(jobject, Formatting.Indented, CoreParams.DefaultJsonSerializerSettings));
             File.SetCreationTime(savePath, savePoint);
             Debug.Log($"Finalsave complete ({finalSaveName})");
         }
