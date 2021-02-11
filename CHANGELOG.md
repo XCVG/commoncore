@@ -68,3 +68,4 @@
 * Fixed DialogueParser throwing an exception when loading dialogue with Exec microscripts with args
 * Added editor script to copy files post-build
 * Added datetime and guid to finalsave
+* Debug save methods now log full filename to console
