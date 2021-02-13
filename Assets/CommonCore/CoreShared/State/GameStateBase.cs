@@ -289,7 +289,7 @@ namespace CommonCore.State
         public DateTime CampaignStartDate { get; private set; } 
 
         [JsonProperty]
-        private long CurrentUID;
+        private long CurrentUID = CoreParams.ReserveUIDs;
 
         /// <summary>
         /// The next available unique ID

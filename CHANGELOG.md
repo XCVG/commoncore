@@ -69,3 +69,4 @@
 * Added editor script to copy files post-build
 * Added datetime and guid to finalsave
 * Debug save methods now log full filename to console
+* Added ReservedUIDs option to CoreParams to reserve low UID range for preassignment

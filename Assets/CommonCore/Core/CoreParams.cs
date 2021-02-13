@@ -63,6 +63,7 @@ namespace CommonCore
 
 
         //*****game config settings       
+		public static long ReserveUIDs { get; private set; } = 10000L;
         public static bool UseCampaignIdentifier { get; private set; } = true;
         public static bool UseCampaignStartDate { get; private set; } = true;
         public static bool AllowSaveLoad { get; private set; } = true;
