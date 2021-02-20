@@ -28,6 +28,8 @@ namespace CommonCore.RpgGame.Dialogue
         //public static bool AutoPauseGame { get; set; }
         public static string CurrentTarget { get; set; } //hacky but oh well
 
+        public static DialogueTrace Trace { get; private set; }
+
         public bool ApplyTheme = true;
         public string OverrideTheme;
 
@@ -78,6 +80,8 @@ namespace CommonCore.RpgGame.Dialogue
 
             ApplyThemeToPanel();
 
+            Trace = new DialogueTrace();
+
             ScriptingModule.CallNamedHooked("DialogueOnOpen", this);
 
             var loc = ParseLocation(CurrentDialogue);
@@ -125,7 +129,7 @@ namespace CommonCore.RpgGame.Dialogue
         
         private void PresentNewFrame(Frame f)
         {
-            TryCallScript(f?.Scripts?.BeforePresent, f);            
+            TryCallScript(f?.Scripts?.BeforePresent, f);           
 
             //special handling for blank frames
             if (f is BlankFrame)
@@ -136,6 +140,10 @@ namespace CommonCore.RpgGame.Dialogue
                 OnChoiceButtonClick(0);
                 return;
             }
+
+            //create trace node
+            var traceNode = new DialogueTraceNode();
+            traceNode.Path = $"{CurrentSceneName}.{CurrentFrameName}";
 
             //present music
             if (!string.IsNullOrEmpty(f.Music))
@@ -354,8 +362,14 @@ namespace CommonCore.RpgGame.Dialogue
             }
 
             //present text
-            TextTitle.text = Sub.Macro(f.NameText);
-            TextMain.text = Sub.Macro(f.Text);
+            string nameText = Sub.Macro(f.NameText);
+            TextTitle.text = nameText;
+            string mainText = Sub.Macro(f.Text);
+            TextMain.text = mainText;
+
+            //save text to trace (note use of null instead of null-or-empty)
+            traceNode.Speaker = (f.Options.TraceSpeaker == null) ? (string.IsNullOrEmpty(nameText) ? GetDefaultTraceSpeaker(f) : nameText) : Sub.Macro(f.Options.TraceSpeaker);
+            traceNode.Text = (f.Options.TraceText == null) ? mainText : Sub.Macro(f.Options.TraceText);
 
             //clear buttons
             Navigator.ClearButtons();
@@ -485,6 +499,10 @@ namespace CommonCore.RpgGame.Dialogue
 
             ScriptingModule.CallNamedHooked("DialogueOnPresent", this, CurrentFrameObject);
             TryCallScript(f?.Scripts?.OnPresent, f);
+
+            if (f.Options.TraceIgnore)
+                traceNode.Ignored = true;
+            Trace.Nodes.Add(traceNode);
         }
 
         private void ApplyThemeToPanel()
@@ -516,31 +534,42 @@ namespace CommonCore.RpgGame.Dialogue
             {
                 var cf = (ChoiceFrame)CurrentFrameObject;
 
-                if (cf.Choices[idx].SkillCheck != null)
+                ChoiceNode choiceNode = cf.Choices[idx];
+                if (choiceNode.SkillCheck != null)
                 {
-                    choice = cf.Choices[idx].SkillCheck.EvaluateSkillCheck();
+                    choice = choiceNode.SkillCheck.EvaluateSkillCheck();
                 }
-                else if (cf.Choices[idx].NextConditional != null)
+                else if (choiceNode.NextConditional != null)
                 {
-                    choice = cf.Choices[idx].EvaluateConditional();
+                    choice = choiceNode.EvaluateConditional();
 
                     if (choice == null)
-                        choice = cf.Choices[idx].Next;
+                        choice = choiceNode.Next;
                 }
                 else
                 {
-                    choice = cf.Choices[idx].Next;
+                    choice = choiceNode.Next;
                 }
 
                 //exec microscripts
-                if (cf.Choices[idx].NextMicroscript != null)
+                if (choiceNode.NextMicroscript != null)
                 {
-                    cf.Choices[idx].EvaluateMicroscript();
+                    choiceNode.EvaluateMicroscript();
                 }
                 if (GameParams.DialogueAlwaysExecuteFrameMicroscript && cf.NextMicroscript != null)
                 {
                     cf.EvaluateMicroscript();
                 }
+
+                //handle trace
+                Trace.Nodes.Add(new DialogueTraceNode()
+                {
+                    Choice = idx,
+                    Ignored = CurrentFrameObject.Options.TraceIncludeChoices ? choiceNode.TraceIgnore : !choiceNode.TraceShow,
+                    Path = $"{CurrentSceneName}.{CurrentFrameName}",
+                    Speaker = choiceNode.TraceSpeaker == null ? GetDefaultTraceSpeaker(CurrentFrameObject) : Sub.Macro(choiceNode.TraceSpeaker),
+                    Text = choiceNode.TraceText == null ? choiceNode.Text : Sub.Macro(choiceNode.TraceText)
+                });
             }
             else
             {
@@ -553,7 +582,18 @@ namespace CommonCore.RpgGame.Dialogue
                 {
                     CurrentFrameObject.EvaluateMicroscript();
                 }
+
+                //handle trace
+                Trace.Nodes.Add(new DialogueTraceNode() { 
+                    Choice = -1, 
+                    Ignored = !CurrentFrameObject.Options.TraceIncludeNextText, 
+                    Path = $"{CurrentSceneName}.{CurrentFrameName}",
+                    Speaker = CurrentFrameObject.Options.TraceNextTextSpeaker == null ?  GetDefaultTraceSpeaker(CurrentFrameObject) : Sub.Macro(CurrentFrameObject.Options.TraceNextTextSpeaker),
+                    Text = CurrentFrameObject.Options.TraceNextTextText == null ? CurrentFrameObject.NextText : Sub.Macro(CurrentFrameObject.Options.TraceNextTextText)
+                });
             }
+
+
 
             //Debug.Log(choice);
 
@@ -772,6 +812,21 @@ namespace CommonCore.RpgGame.Dialogue
             WaitAndAdvanceCoroutine = null;
             OnChoiceButtonClick(0);
             
+        }
+
+        private string GetDefaultTraceSpeaker(Frame f)
+        {
+            switch (f.Options.TraceDefaultSpeaker)
+            {
+                case TraceDefaultSpeaker.None:
+                    return "";
+                case TraceDefaultSpeaker.PlayerLookup:
+                    throw new NotImplementedException();
+                case TraceDefaultSpeaker.PlayerName:
+                    return GameState.Instance.PlayerRpgState.DisplayName;
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
 

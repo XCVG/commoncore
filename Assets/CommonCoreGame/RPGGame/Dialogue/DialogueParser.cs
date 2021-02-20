@@ -335,7 +335,23 @@ namespace CommonCore.RpgGame.Dialogue
                 skillCheck = ParseSkillCheck(jt["skillCheck"]);
             }
 
-            return new ChoiceNode(next, text, showCondition, hideCondition, microscripts, conditionals, skillCheck);
+            string traceSpeaker = null;
+            if (jt["traceSpeaker"] != null)
+                traceSpeaker = jt["traceSpeaker"].ToString();
+
+            string traceText = null;
+            if (jt["traceText"] != null)
+                traceText = jt["traceText"].ToString();
+
+            bool traceIgnore = false;
+            if (jt["traceIgnore"] != null)
+                traceIgnore = jt.Value<bool>("traceIgnore");
+
+            bool traceShow = false;
+            if (jt["traceShow"] != null)
+                traceShow = jt.Value<bool>("traceShow");
+
+            return new ChoiceNode(next, text, showCondition, hideCondition, microscripts, conditionals, skillCheck, traceSpeaker, traceText, traceIgnore, traceShow);
         }
 
         public static ConditionNode ParseConditionNode(JToken jt)

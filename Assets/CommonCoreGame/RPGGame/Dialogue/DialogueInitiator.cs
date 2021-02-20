@@ -1,5 +1,6 @@
 ﻿using CommonCore.Audio;
 using CommonCore.Console;
+using CommonCore.DebugLog;
 using CommonCore.LockPause;
 using System;
 using System.Collections;
@@ -127,6 +128,13 @@ namespace CommonCore.RpgGame.Dialogue
             AudioPlayer.Instance.ClearMusic(MusicSlot.Cinematic);            
             LockPauseModule.ForceCleanLocks(); //useless since objects aren't *yet* destroyed
 
+        }
+
+        [Command(alias = "DumpTrace", className = "Dialogue")]
+        static void DumpDialogueTrace()
+        {
+            if (DialogueController.Trace != null)
+                DebugUtils.JsonWrite(DialogueController.Trace, "dtrace");
         }
     }
 }

@@ -5,6 +5,7 @@ using CommonCore.Config;
 using CommonCore.RpgGame.Rpg;
 using CommonCore.RpgGame.State;
 using CommonCore.State;
+using Newtonsoft.Json;
 
 namespace CommonCore.RpgGame.Dialogue
 {
@@ -34,13 +35,19 @@ namespace CommonCore.RpgGame.Dialogue
 
         public readonly SkillCheckNode SkillCheck;
 
+        //TODO TraceSpeaker, TraceText, TraceIgnore, TraceShow
+        public readonly string TraceSpeaker;
+        public readonly string TraceText;
+        public readonly bool TraceIgnore;
+        public readonly bool TraceShow;
+
         public ChoiceNode(string next, string text)
         {
             Text = text;
             Next = next;
         }
 
-        public ChoiceNode(string next, string text, Conditional showCondition, Conditional hideCondition, MicroscriptNode[] nextMicroscript, ConditionNode[] nextConditional, SkillCheckNode skillCheck)
+        public ChoiceNode(string next, string text, Conditional showCondition, Conditional hideCondition, MicroscriptNode[] nextMicroscript, ConditionNode[] nextConditional, SkillCheckNode skillCheck, string traceSpeaker, string traceText, bool traceIgnore, bool traceShow)
             : this(next, text)
         {
             ShowCondition = showCondition;
@@ -48,6 +55,10 @@ namespace CommonCore.RpgGame.Dialogue
             NextMicroscript = nextMicroscript;
             NextConditional = nextConditional;
             SkillCheck = skillCheck;
+            TraceSpeaker = traceSpeaker;
+            TraceText = traceText;
+            TraceIgnore = traceIgnore;
+            TraceShow = traceShow;
         }
 
         public string EvaluateConditional()
@@ -278,6 +289,11 @@ namespace CommonCore.RpgGame.Dialogue
         Default, Full, Half, Variable, Fixed
     }
 
+    public enum TraceDefaultSpeaker
+    {
+        None, PlayerLookup, PlayerName
+    }
+
     /// <summary>
     /// Represents options for a frame
     /// </summary>
@@ -299,6 +315,15 @@ namespace CommonCore.RpgGame.Dialogue
         public float? VoiceVolume => Options.ContainsKey(nameof(VoiceVolume)) ? (float?)TypeUtils.CoerceValue<float>(Options[nameof(VoiceVolume)]) : (float?)null;
 
         public IEnumerable<string> HideObjects => Options.GetOrDefault(nameof(HideObjects), null) as IEnumerable<string>;
+
+        public TraceDefaultSpeaker TraceDefaultSpeaker => TypeUtils.CoerceValue<TraceDefaultSpeaker>(Options.GetOrDefault(nameof(TraceDefaultSpeaker), default(TraceDefaultSpeaker)), false);
+        public string TraceSpeaker => Options.GetOrDefault(nameof(TraceSpeaker), null)?.ToString();
+        public bool TraceIgnore => TypeUtils.CoerceValue<bool>(Options.GetOrDefault(nameof(TraceIgnore), false), false);
+        public string TraceText => Options.GetOrDefault(nameof(TraceText), null)?.ToString();
+        public bool TraceIncludeChoices => TypeUtils.CoerceValue<bool>(Options.GetOrDefault(nameof(TraceIncludeChoices), false), false);
+        public bool TraceIncludeNextText => TypeUtils.CoerceValue<bool>(Options.GetOrDefault(nameof(TraceIncludeNextText), false), false);
+        public string TraceNextTextSpeaker => Options.GetOrDefault(nameof(TraceNextTextSpeaker), null)?.ToString();
+        public string TraceNextTextText => Options.GetOrDefault(nameof(TraceNextTextText), null)?.ToString();
 
         //IReadOnlyDictionary implementation
 
@@ -505,6 +530,21 @@ namespace CommonCore.RpgGame.Dialogue
             }
             return true;
         }
+    }
+
+    public class DialogueTrace
+    {
+        [JsonProperty]
+        public List<DialogueTraceNode> Nodes { get; private set; } = new List<DialogueTraceNode>();
+    }
+
+    public struct DialogueTraceNode
+    {
+        public string Path;
+        public int? Choice;
+        public string Speaker;
+        public string Text;
+        public bool Ignored;
     }
 
 }
