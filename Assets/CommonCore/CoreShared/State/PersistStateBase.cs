@@ -91,6 +91,7 @@ namespace CommonCore.State
         /// <summary>
         /// If this is the first time the game has been run
         /// </summary>
+        [JsonIgnore]
         public bool IsFirstRun { get; set; } = true;
 
         /// <summary>
