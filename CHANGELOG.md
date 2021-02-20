@@ -70,4 +70,5 @@
 * Added datetime and guid to finalsave
 * Debug save methods now log full filename to console
 * Added ReservedUIDs option to CoreParams to reserve low UID range for preassignment
+* Fixed IGUI_Menu breaking in non-16:9 aspect ratios
 * Implemented dialogue trace (WIP)
