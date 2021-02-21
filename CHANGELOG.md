@@ -72,4 +72,6 @@
 * Added ReservedUIDs option to CoreParams to reserve low UID range for preassignment
 * Fixed IGUI_Menu breaking in non-16:9 aspect ratios
 * Fixed PersistState.IsFirstRun not JsonIgnore'd
+* Fixed forcing crosshair on/off not immediately applying to HUD
+* Fixed autoaim never fully disabling
 * Implemented dialogue trace (WIP)

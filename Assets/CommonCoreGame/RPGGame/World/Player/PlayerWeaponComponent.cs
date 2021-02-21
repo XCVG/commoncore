@@ -773,7 +773,8 @@ namespace CommonCore.RpgGame.World
                             var autoaimHit = WorldUtils.SpherecastAttackHit(shootPoint.position, shootPoint.forward, castSize * 0.5f, AutoaimCastRange, true, false, PlayerController);
                             if (autoaimHit.Controller != null)
                             {
-                                fireVec = (autoaimHit.HitPoint - shootPoint.position).normalized;
+                                if(autoaim != AimAssistState.Off)
+                                    fireVec = (autoaimHit.HitPoint - shootPoint.position).normalized;
                                 intendedTarget = autoaimHit.Controller.transform;
                             }
                         }

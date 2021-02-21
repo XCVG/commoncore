@@ -127,6 +127,7 @@ namespace CommonCore.RpgGame.UI
             else if(message is ConfigChangedMessage)
             {
                 SetFadeVisibility();
+                SetCrosshairOverride();
                 return true;
             }
             else if(message is QdmsKeyValueMessage kvmessage)
@@ -208,6 +209,20 @@ namespace CommonCore.RpgGame.UI
 
             return false;
 
+        }
+
+        private void SetCrosshairOverride()
+        {
+            var cs = ConfigState.Instance.GetGameplayConfig().Crosshair;
+            switch (cs)
+            {
+                case CrosshairState.Always:
+                    Crosshair.enabled = true;
+                    break;
+                case CrosshairState.Never:
+                    Crosshair.enabled = false;
+                    break;
+            }
         }
 
         private void SetCrosshair(QdmsMessage message)
