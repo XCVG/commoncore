@@ -50,7 +50,14 @@ namespace CommonCore.RpgGame.World
         {
             var ac = WorldConsoleCommands.SelectedObject.GetComponent<ActorController>();
             //ac.Health = 0;
-            ac.Kill();
+            if(ac != null)
+                ac.Kill();
+            var pc = WorldConsoleCommands.SelectedObject.GetComponent<PlayerController>();
+            if (pc != null)
+                pc.TakeDamage(new ActorHitInfo(999999f, 999999f, 0, 0, true, 0, 0, null, string.Empty, string.Empty, default, default));
+            var itd = WorldConsoleCommands.SelectedObject.GetComponent<ITakeDamage>();
+            if(itd != null)
+                itd.TakeDamage(new ActorHitInfo(999999f, 999999f, 0, 0, true, 0, 0, null, string.Empty, string.Empty, default, default));
         }
 
         [Command]

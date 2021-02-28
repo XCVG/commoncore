@@ -77,7 +77,10 @@ namespace CommonCore.RpgGame.World
         public bool IsTarget = true;
         public bool Defensive = true;
         public bool Infighting = false;
+        [Tooltip("If set, will continue to chase target until target is dead")]
         public bool Relentless = false;
+        [Tooltip("Fractional")]
+        public float FleeHealthThreshold = 0.2f;
         public bool UseLineOfSight = false;
         public float SearchRadius = 25.0f;
         public int SearchInterval = 70;
@@ -483,7 +486,7 @@ namespace CommonCore.RpgGame.World
                     if (!Relentless)
                     {
                         //break off if we are too far away or too badly hurt
-                        if (Health <= (MaxHealth * 0.2f))
+                        if (Health <= (MaxHealth * FleeHealthThreshold))
                         {
                             EnterState(ActorAiState.Fleeing);
                         }
@@ -906,19 +909,19 @@ namespace CommonCore.RpgGame.World
                     if (DisableInteractionOnHit && InteractionComponent != null)
                         InteractionComponent.InteractionDisabledByHit = true;
 
-                    if (FeelPain && didTakePain)
+                    if (FeelPain && didTakePain && CurrentAiState != ActorAiState.ScriptedAction && CurrentAiState != ActorAiState.ScriptedMoveTo)
                     {
                         if (PainStateAllowRestart || CurrentAiState != ActorAiState.Hurting)
                             EnterState(ActorAiState.Hurting);
                     }
-                    else
+                    else if(CurrentAiState != ActorAiState.Chasing && CurrentAiState != ActorAiState.Attacking && CurrentAiState != ActorAiState.ScriptedAction && CurrentAiState != ActorAiState.ScriptedMoveTo)
                         EnterState(ActorAiState.Chasing);
                 }
-                else if (PainStateAllowRestart || CurrentAiState != ActorAiState.Hurting)
+                else if ((PainStateAllowRestart || CurrentAiState != ActorAiState.Hurting) && FeelPain && CurrentAiState != ActorAiState.ScriptedAction && CurrentAiState != ActorAiState.ScriptedMoveTo)
                     EnterState(ActorAiState.Hurting);
 
             }
-            else if (FeelPain && didTakePain && (PainStateAllowRestart || CurrentAiState != ActorAiState.Hurting))
+            else if (FeelPain && didTakePain && (PainStateAllowRestart || CurrentAiState != ActorAiState.Hurting) && CurrentAiState != ActorAiState.ScriptedAction && CurrentAiState != ActorAiState.ScriptedMoveTo)
                 EnterState(ActorAiState.Hurting);
         }
 

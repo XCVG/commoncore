@@ -3,6 +3,7 @@ using CommonCore.Messaging;
 using CommonCore.RpgGame.Rpg;
 using CommonCore.State;
 using CommonCore.World;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -72,10 +73,9 @@ namespace CommonCore.RpgGame.World
             var playerModel = GameState.Instance.PlayerRpgState;
             if(playerModel.ExtraData.TryGetValue("ShieldRechargeState", out object rawState))
             {
-                var recoveredState = (ShieldRechargeState)rawState;
-                RechargeState = recoveredState;
+                RechargeState = (ShieldRechargeState)Convert.ToInt32(rawState); //because it'll actually be long because json.net
 
-                if(RechargeState == ShieldRechargeState.Recharging)
+                if (RechargeState == ShieldRechargeState.Recharging)
                     PlayRechargeEffect();
             }
 
@@ -97,6 +97,8 @@ namespace CommonCore.RpgGame.World
         //called on Update by PlayerController
         public void HandleRecharge()
         {
+            if (GameState.Instance.PlayerRpgState.HealthFraction <= 0)
+                return;
             
             switch (RechargeState)
             {

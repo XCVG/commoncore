@@ -34,7 +34,13 @@ namespace CommonCore.ExplicitKBMInput
             //create new KBMInputMap, loading default if available and skipping if not
             KBMInputMap inputMap;
 
-            var res = CoreUtils.LoadResource<TextAsset>("Modules/ExplicitKBMInput/DefaultControls");
+
+
+            TextAsset res;
+            if(CoreUtils.CheckResource<TextAsset>("Data/ExplicitKBMInput/DefaultControls"))
+                res = CoreUtils.LoadResource<TextAsset>("Data/ExplicitKBMInput/DefaultControls");
+            else
+                res = CoreUtils.LoadResource<TextAsset>("Modules/ExplicitKBMInput/DefaultControls");
             if(res != null)
             {                
                 try

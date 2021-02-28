@@ -74,4 +74,13 @@
 * Fixed PersistState.IsFirstRun not JsonIgnore'd
 * Fixed forcing crosshair on/off not immediately applying to HUD
 * Fixed autoaim never fully disabling
+* Implemented game-specific input maps in ExplicitKBMInput
+* Fixed shield recharging after player is dead
+* Fixed exception in PlayerShieldComponent when reloading save
+* Kill console command now works on player and ITakeDamage, not just actors
+* Fixed actor FeelPain toggle having no effect in some cases
+* Added configurable threshold for actor deciding to flee
+* Added InitiateDialogueSpecial (action special that does exactly what it says on the tin)
+* Made some members of bullet explosion script public (experimental)
+* Added TransformCopyScript (experimental)
 * Implemented dialogue trace (WIP)

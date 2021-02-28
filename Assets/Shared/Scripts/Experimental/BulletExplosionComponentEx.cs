@@ -17,14 +17,11 @@ namespace CommonCore.Experimental
 		[SerializeField]
 		private BulletScript BulletScript = null;
 
-		[SerializeField, Header("Explosion Parameters")]
-		private float Damage = 10f;
-		[SerializeField]
-		private float Radius = 5f;
-		[SerializeField]
-		private bool UseFalloff = true;
-		[SerializeField]
-		private string HitPuff = string.Empty;
+		[Header("Explosion Parameters")]
+		public float Damage = 10f;
+		public float Radius = 5f;
+		public bool UseFalloff = true;
+		public string HitPuff = string.Empty;
 
 		[SerializeField, Header("Proximity detonation")]
 		private bool EnableProximityDetonation = true;
