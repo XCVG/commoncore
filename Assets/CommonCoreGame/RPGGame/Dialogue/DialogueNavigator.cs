@@ -59,15 +59,6 @@ namespace CommonCore.RpgGame.Dialogue
 
                 //Debug.Log($"selected {SelectedButton}");
             }
-
-            //listen for input
-            if (MappedInput.GetButtonDown(Input.DefaultControls.Use))
-            {
-                if(SelectedButton >= 0)
-                {
-                    CurrentButtons[SelectedButton].onClick.Invoke();
-                }
-            }
         }
 
         public void ClearButtons()

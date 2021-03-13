@@ -83,4 +83,10 @@
 * Added InitiateDialogueSpecial (action special that does exactly what it says on the tin)
 * Made some members of bullet explosion script public (experimental)
 * Added TransformCopyScript (experimental)
+* Added deferred effect and a few extra options to BulletScript
+* Fixed Dialogue HideObjects not parsing correctly
+* Added EquipItem console command
+* Fixed doubled submit when using Use key in dialogue
+* Added a brief delay before dialogue exits (effectively debounces Use)
+* Updated Unity Input Mapper config modal message to reflect the new reality
 * Implemented dialogue trace (WIP)

@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using System;
 
 namespace CommonCore.World
 {
@@ -15,7 +16,7 @@ namespace CommonCore.World
     {
         //TODO clean this up a bit
 
-        private const float DefaultProbeDist = 10f;
+        protected const float DefaultProbeDist = 10f;
         //private const int BulletLayer = 9; //9=bullet, TODO find a better way of doing this
 
         [Header("Mechanics")]
@@ -31,18 +32,31 @@ namespace CommonCore.World
         public float MaxDistFromOrigin = 10000f;
         public float MaxDistToTravel = 0;
         public float FakeGravity = 0;
-        public Vector3 Origin;       
+        public Vector3 Origin;
+        [Tooltip("0=use default distance")]
+        public float OverrideProbeDist = 0;
         public bool EnableRaycasting = true;
         public bool EnableCollision = true;
+        [Tooltip("Warning: EXPERIMENTAL")]
+        public bool EnableDeferredHits = false;
 
         private Rigidbody Rigidbody;
         private float Elapsed;
 
+        public bool DeferredHitBegan { get; protected set; }
+        protected float TimeToDeferredHit;
+        protected Action DeferredHitAction;
 
         void Start()
         {
             gameObject.layer = LayerMask.NameToLayer("Bullet");
             Rigidbody = GetComponent<Rigidbody>();
+
+            if(Rigidbody == null && EnableDeferredHits)
+            {
+                EnableDeferredHits = false;
+                Debug.LogWarning("[BulletScript] Deferred hits requires a Rigidbody!");
+            }
 
             Origin = transform.position;
 
@@ -51,6 +65,8 @@ namespace CommonCore.World
 
         private void FixedUpdate()
         {
+            //TODO pause handling?
+
             //fake gravity
             if (FakeGravity > 0)
             {
@@ -62,12 +78,14 @@ namespace CommonCore.World
 
         private void Update()
         {
+            //TODO pause handling?
+
             //maybe die
             if (StayTime > 0)
             {
                 Elapsed += Time.deltaTime;
 
-                if (Elapsed >= StayTime)
+                if (Elapsed >= StayTime && !DeferredHitBegan)
                 {
                     //Debug.Log($"Destroying {name} at {Elapsed:F2}s/{StayTime:F2}");
                     Destroy(this.gameObject);
@@ -75,7 +93,7 @@ namespace CommonCore.World
             }
 
             //distance travel check
-            if(MaxDistToTravel > 0)
+            if(MaxDistToTravel > 0 && !DeferredHitBegan)
             {
                 float distance = (Origin - transform.position).magnitude;
                 if(distance > MaxDistToTravel)
@@ -84,19 +102,29 @@ namespace CommonCore.World
                 }
             }
 
-            if (MaxDistFromOrigin >= 0 && transform.position.magnitude > MaxDistFromOrigin)
+            if (MaxDistFromOrigin >= 0 && transform.position.magnitude > MaxDistFromOrigin && !DeferredHitBegan)
             {
                 //Debug.Log($"Destroying {name} because it's really far away");
                 Destroy(this.gameObject);
             }
 
-            if (EnableRaycasting)
+            if(DeferredHitBegan && TimeToDeferredHit > 0)
+            {
+                TimeToDeferredHit -= Time.deltaTime;
+                if(TimeToDeferredHit <= 0)
+                {
+                    //handle deferred hit
+                    DeferredHitAction();
+                }
+            }
+
+            if (EnableRaycasting && !DeferredHitBegan)
             {
 
                 //raycast
                 bool hasRigidbody = Rigidbody != null;
                 Vector3 forward = hasRigidbody ? Rigidbody.velocity.normalized : transform.forward;
-                float maxDistance = hasRigidbody ? Rigidbody.velocity.magnitude / 30f : DefaultProbeDist;
+                float maxDistance = OverrideProbeDist > 0 ? OverrideProbeDist : (hasRigidbody ? Rigidbody.velocity.magnitude / 30f : DefaultProbeDist);
                 //var hits = Physics.RaycastAll(transform.position, forward, maxDistance, RaycastLayerMask, QueryTriggerInteraction.Collide);
 
                 //find closest hit
@@ -121,7 +149,17 @@ namespace CommonCore.World
                         allDamageIsPierce = false;
                     }
 
-                    HandleHit(hit.Controller, hit.Hitbox, hit.HitLocation, hit.HitMaterial, hit.HitPoint, damageMultiplier, allDamageIsPierce);
+                    if(EnableDeferredHits)
+                    {
+                        DeferredHitBegan = true;
+                        DeferredHitAction = () => HandleHit(hit.Controller, hit.Hitbox, hit.HitLocation, hit.HitMaterial, hit.HitPoint, damageMultiplier, allDamageIsPierce);
+                        TimeToDeferredHit = (transform.position - hit.HitPoint).magnitude / Rigidbody.velocity.magnitude;
+                        //Debug.Log($"bullet: {transform.position} | target: {hit.HitPoint} | distance: {(transform.position - hit.HitPoint).magnitude} | velocity: {Rigidbody.velocity.magnitude}");
+                    }
+                    else
+                    {
+                        HandleHit(hit.Controller, hit.Hitbox, hit.HitLocation, hit.HitMaterial, hit.HitPoint, damageMultiplier, allDamageIsPierce);
+                    }                    
                 }
                 else if(hit.Controller == null && hit.HitCollider != null)
                 {
@@ -130,14 +168,24 @@ namespace CommonCore.World
                     if (colliderHitMaterial != null)
                         hitMaterial = colliderHitMaterial.Material;
 
-                    HandleHit(null, null, hit.HitLocation, hitMaterial, hit.HitPoint, 1, false);
+                    if(EnableDeferredHits)
+                    {
+                        DeferredHitBegan = true;
+                        DeferredHitAction = () => HandleHit(null, null, hit.HitLocation, hitMaterial, hit.HitPoint, 1, false);
+                        TimeToDeferredHit = (transform.position - hit.HitPoint).magnitude / Rigidbody.velocity.magnitude;
+                        //Debug.Log($"bullet: {transform.position} | target: {hit.HitPoint} | distance: {(transform.position - hit.HitPoint).magnitude} | velocity: {Rigidbody.velocity.magnitude}");
+                    }
+                    else
+                    {
+                        HandleHit(null, null, hit.HitLocation, hitMaterial, hit.HitPoint, 1, false);
+                    }                    
                 }
             }
         }
 
         void OnTriggerEnter(Collider other)
         {
-            if (!EnableCollision)
+            if (!EnableCollision || DeferredHitBegan)
                 return;
 
             var ahc = other.GetComponent<IHitboxComponent>();
@@ -153,7 +201,7 @@ namespace CommonCore.World
 
         void OnCollisionEnter(Collision collision)
         {
-            if (!EnableCollision)
+            if (!EnableCollision || DeferredHitBegan)
                 return;
 
             //Debug.Log("Bullet hit " + collision.transform.name);
@@ -263,7 +311,7 @@ namespace CommonCore.World
         {
             //Debug.Log($"{name} hit {otherController?.name}");
 
-            if (!EnableCollision)
+            if (!EnableCollision || DeferredHitBegan)
                 return;
 
             HandleHit(otherController, hitbox, hitLocation, hitmaterial, positionOverride, damageMultiplier, allDamageIsPierce);

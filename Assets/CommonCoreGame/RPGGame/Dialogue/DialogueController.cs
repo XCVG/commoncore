@@ -685,30 +685,11 @@ namespace CommonCore.RpgGame.Dialogue
         public void CloseDialogue()
         {
             AbortWaitAndAdvance();
-            ScriptingModule.CallNamedHooked("DialogueOnClose", this);
-            CurrentDialogue = null;            
-            LockPauseModule.UnpauseGame(this.gameObject);
-            AudioPlayer.Instance.ClearMusic(MusicSlot.Cinematic);
-            if (CameraController)
-                Destroy(CameraController.gameObject);
-            UnhideAllObjects();
-            CurrentTarget = null;
-            Destroy(this.gameObject);
-            if(CurrentCallback != null)
-            {
-                try
-                {
-                    CurrentCallback();
-                }
-                catch(Exception e)
-                {
-                    Debug.LogException(e);
-                }
-                finally
-                {
-                    CurrentCallback = null;
-                }
-            }
+            foreach (Transform t in transform)
+                t.gameObject.SetActive(false);
+            Navigator.enabled = false;
+
+            StartCoroutine(CoWaitAndClose());
         }
 
         private void TryCallScript(string script, Frame currentFrameObject = null)
@@ -812,6 +793,36 @@ namespace CommonCore.RpgGame.Dialogue
             WaitAndAdvanceCoroutine = null;
             OnChoiceButtonClick(0);
             
+        }
+
+        private IEnumerator CoWaitAndClose()
+        {
+            yield return null;
+
+            ScriptingModule.CallNamedHooked("DialogueOnClose", this);
+            CurrentDialogue = null;
+            LockPauseModule.UnpauseGame(this.gameObject);
+            AudioPlayer.Instance.ClearMusic(MusicSlot.Cinematic);
+            if (CameraController)
+                Destroy(CameraController.gameObject);
+            UnhideAllObjects();
+            CurrentTarget = null;
+            Destroy(this.gameObject);
+            if (CurrentCallback != null)
+            {
+                try
+                {
+                    CurrentCallback();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
+                finally
+                {
+                    CurrentCallback = null;
+                }
+            }
         }
 
         private string GetDefaultTraceSpeaker(Frame f)

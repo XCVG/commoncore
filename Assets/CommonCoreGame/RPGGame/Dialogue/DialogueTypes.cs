@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using CommonCore.Config;
 using CommonCore.RpgGame.Rpg;
 using CommonCore.RpgGame.State;
@@ -314,7 +315,7 @@ namespace CommonCore.RpgGame.Dialogue
 
         public float? VoiceVolume => Options.ContainsKey(nameof(VoiceVolume)) ? (float?)TypeUtils.CoerceValue<float>(Options[nameof(VoiceVolume)]) : (float?)null;
 
-        public IEnumerable<string> HideObjects => Options.GetOrDefault(nameof(HideObjects), null) as IEnumerable<string>;
+        public IEnumerable<string> HideObjects => (Options.GetOrDefault(nameof(HideObjects), null) as IEnumerable)?.Cast<object>().Select(o => o.ToString()); //just... don't question this
 
         public TraceDefaultSpeaker TraceDefaultSpeaker => TypeUtils.CoerceValue<TraceDefaultSpeaker>(Options.GetOrDefault(nameof(TraceDefaultSpeaker), default(TraceDefaultSpeaker)), false);
         public string TraceSpeaker => Options.GetOrDefault(nameof(TraceSpeaker), null)?.ToString();

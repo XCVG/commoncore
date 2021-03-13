@@ -233,6 +233,19 @@ namespace CommonCore.RpgGame.Rpg
             }
         }
 
+        [Command(className = "Player")]
+        static void EquipItem(string item)
+        {
+            try
+            {
+                GameState.Instance.PlayerRpgState.EquipItem(GameState.Instance.PlayerRpgState.Inventory.FindItem(item)[0]);
+            }
+            catch (Exception e)
+            {
+                ConsoleModule.WriteLine(e.ToString(), LogLevel.Error);
+            }
+        }
+
         //***** Quest model/def manipulation
         [Command]
         static void ListQuestDefs()

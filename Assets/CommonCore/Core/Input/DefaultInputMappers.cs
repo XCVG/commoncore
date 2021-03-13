@@ -61,7 +61,7 @@ namespace CommonCore.Input
     {
         public override void Configure()
         {
-            Modal.PushMessageModal("Please configure the controls using the Unity launcher", "Not Available", null, null);
+            Modal.PushMessageModal("Controls cannot be configured for the Unity Input Mapper", "Not Available", null, null);
         }
 
         public override float GetAxis(string axis)
