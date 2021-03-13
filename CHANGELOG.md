@@ -57,7 +57,7 @@
 * Fixed some Resource Importers not setting name of imported objects
 * Version info is now saved to PersistState, ConfigState, and game saves (setting up for migrations)
 
-# 3.0.0 next version
+# 3.0.0 pNext
 
 * VoiceOverride now supports relative (unprefixed) or absolute (starts with /) paths
 * DialogueNavigator robustness and use key handling
