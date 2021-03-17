@@ -90,5 +90,6 @@
 * Added a brief delay before dialogue exits (effectively debounces Use)
 * Updated Unity Input Mapper config modal message to reflect the new reality
 * Added AnimateQuadScript and TextureAssignScript (hacky/experimental dynamic texture assignment)
+* Enabled incremental GC
 * Implemented dialogue trace (WIP)
 * Implemented lighting for sprite weapon viewmodels (WIP)
