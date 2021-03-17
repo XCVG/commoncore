@@ -43,6 +43,10 @@ namespace CommonCore.UI
         private Slider RenderingQualitySlider = null;
         [SerializeField]
         private Text RenderingQualityLabel = null;
+        [SerializeField]
+        private Slider LightReportingSlider = null;
+        [SerializeField]
+        private Text LightReportingLabel = null;
 
         [Header("Options"), SerializeField]
         private float ShadowDistanceSliderScale = 5f;
@@ -58,6 +62,7 @@ namespace CommonCore.UI
             TextureScaleSlider.value = (int)(ConfigState.Instance.TextureScale);
             AnisotropicFilteringSlider.value = (int)ConfigState.Instance.AnisotropicFiltering;
             RenderingQualitySlider.value = (int)ConfigState.Instance.RenderingQuality;
+            LightReportingSlider.value = (int)ConfigState.Instance.PlayerLightReporting;
 
             HandleShadowQualityChanged();
             HandleShadowDistanceChanged();
@@ -66,6 +71,7 @@ namespace CommonCore.UI
             HandleTextureScaleChanged();
             HandleAnisotropicFilteringChanged();
             HandleRenderingQualityChanged();
+            HandleLightReportingChanged();
         }
 
         public override void UpdateValues()
@@ -79,6 +85,7 @@ namespace CommonCore.UI
             ConfigState.Instance.TextureScale = (TextureScale)(int)TextureScaleSlider.value;
             ConfigState.Instance.AnisotropicFiltering = (AnisotropicFiltering)(int)AnisotropicFilteringSlider.value;
             ConfigState.Instance.RenderingQuality = (Config.QualityLevel)(int)RenderingQualitySlider.value;
+            ConfigState.Instance.PlayerLightReporting = (PlayerLightReportingType)(int)LightReportingSlider.value;
         }
 
 
@@ -116,6 +123,11 @@ namespace CommonCore.UI
         public void HandleRenderingQualityChanged()
         {
             RenderingQualityLabel.text = GetTextForQualityValue(RenderingQualitySlider.value);
+        }
+
+        public void HandleLightReportingChanged()
+        {
+            LightReportingLabel.text = ((PlayerLightReportingType)(int)LightReportingSlider.value).ToString();
         }
 
         private string GetTextForQualityValue(float value)

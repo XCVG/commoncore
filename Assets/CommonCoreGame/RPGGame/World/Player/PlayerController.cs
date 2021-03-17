@@ -37,6 +37,29 @@ namespace CommonCore.RpgGame.World
         public PlayerCameraZoomComponent CameraZoomComponent;
         public PlayerDeathComponent DeathComponent;
         public PlayerShieldComponent ShieldComponent;
+
+        //hacking around Unity's shitty support for interfaces
+        [SerializeField]
+        private MonoBehaviour LightReportingComponent;
+        public IReportLight LightReporter
+        {
+            get
+            {
+                var rl = LightReportingComponent as IReportLight;
+                if(rl == null && LightReportingComponent != null)
+                {
+                    Debug.LogError("[PlayerController] LightReportingComponent is not an IReportLight!");
+                    LightReportingComponent = null;
+                }
+
+                return rl;
+            }
+            private set //iunno why you'd want it but it's here if you need it
+            {
+                LightReportingComponent = (MonoBehaviour)value;
+            }
+        }
+
         private QdmsMessageInterface MessageInterface;
 
         [Header("Sounds")]
@@ -134,6 +157,11 @@ namespace CommonCore.RpgGame.World
             if(!ShieldComponent)
             {
                 ShieldComponent = GetComponent<PlayerShieldComponent>();
+            }
+
+            if(LightReportingComponent == null)
+            {
+                LightReportingComponent = GetComponentInChildren<IReportLight>() as MonoBehaviour;
             }
 
             if(!HUDScript)

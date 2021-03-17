@@ -87,6 +87,14 @@ namespace CommonCore.Config
     }
 
     /// <summary>
+    /// Sprite weapon (player light probe) light
+    /// </summary>
+    public enum PlayerLightReportingType
+    {
+        None, Calculated, Probed
+    }
+
+    /// <summary>
     /// Texture scale values
     /// </summary>
     public enum TextureScale
@@ -108,6 +116,5 @@ namespace CommonCore.Config
     public enum SubtitlesLevel 
     {
         Always, ForcedOnly, Never
-    }
-
+    }    
 }

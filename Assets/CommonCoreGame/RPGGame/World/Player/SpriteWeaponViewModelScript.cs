@@ -25,6 +25,11 @@ namespace CommonCore.RpgGame.World
         [SerializeField]
         private bool HandleCrosshair = false;
 
+        [SerializeField, Header("Lighting Options")]
+        private bool ApplyReportedLighting = true;
+        [SerializeField]
+        private float ReportedLightingBias = 1.0f;
+
         [SerializeField, Header("Movebob Options")]
         private bool AllowMovebob = true;
         [SerializeField]
@@ -157,6 +162,21 @@ namespace CommonCore.RpgGame.World
                 //explicit movebob handling?
                 Debug.LogWarning($"Explicit movebob handling is not yet implemented in {nameof(SpriteWeaponViewModelScript)}!");
                 MovebobCriticalError = true;
+            }
+        }
+
+        private void HandleLighting()
+        {
+            if (!ApplyReportedLighting)
+                return;
+
+            var reporter = Options.WeaponComponent.Ref()?.PlayerController.Ref()?.LightReporter;
+            if (reporter != null)
+            {
+                var c = reporter.Light;
+                c *= ReportedLightingBias;
+                c.a = WeaponImage.color.a;
+                WeaponImage.color = c;
             }
         }
 

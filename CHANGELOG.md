@@ -90,3 +90,4 @@
 * Added a brief delay before dialogue exits (effectively debounces Use)
 * Updated Unity Input Mapper config modal message to reflect the new reality
 * Implemented dialogue trace (WIP)
+* Implemented lighting for sprite weapon viewmodels (WIP)

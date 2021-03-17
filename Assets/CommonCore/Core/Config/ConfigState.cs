@@ -54,6 +54,11 @@ namespace CommonCore.Config
             MigrateLastMigratedVersion(Instance);
         }
 
+        public static float GetGameplayConfig()
+        {
+            throw new NotImplementedException();
+        }
+
         public static void Save()
         {
             Instance.CurrentVersion = CoreParams.GetCurrentVersion();
@@ -180,7 +185,7 @@ namespace CommonCore.Config
         public float EffectBudget { get; set; } = 1;
 
         //THEME CONFIG
-        public bool SuppressThemeWarnings { get; set; } = false;
+        public bool SuppressThemeWarnings { get; set; } = true;
 
         //ADDON CONFIG
         public bool LoadAddons { get; set; } = true;
@@ -214,6 +219,34 @@ namespace CommonCore.Config
         public AnisotropicFiltering AnisotropicFiltering { get; set; } = AnisotropicFiltering.Enable;
         public QualityLevel RenderingQuality { get; set; } = QualityLevel.Medium;
 
+        //VIDEO CONFIG (SPECIAL HANDLING)
+        [JsonIgnore]
+        public PlayerLightReportingType PlayerLightReporting { 
+            get 
+            {
+                if (CoreParams.ForcePlayerLightReporting)
+                    return PlayerLightReportingType.Probed;
+
+                if (UseCustomVideoSettings)
+                    return _PlayerLightReporting;
+
+                var q = QualitySettings.GetQualityLevel();
+                if (q >= 4) //ultra or better
+                    return PlayerLightReportingType.Probed;
+                else if (q >= 2) //medium or better (medium/high)
+                    return PlayerLightReportingType.Calculated;
+                else
+                    return PlayerLightReportingType.None;
+
+            }
+            set
+            {
+                _PlayerLightReporting = value;
+            }
+        }
+        [JsonProperty(PropertyName = "PlayerLightReporting")]
+        private PlayerLightReportingType _PlayerLightReporting;
+
         //GAME/GAMEPLAY CONFIG
         public SubtitlesLevel Subtitles { get; set; } = SubtitlesLevel.Always;
         public bool ShakeEffects { get; set; } = true;
@@ -222,7 +255,7 @@ namespace CommonCore.Config
         public int AutosaveCount { get; set; } = 3;
 
         //INPUT CONFIG
-        public string InputMapper { get; set; } = "UnityInputMapper";
+        public string InputMapper { get; set; } = "ExplicitKBMInputMapper";
         public float LookSpeed { get; set; } = 1.0f;
         public bool LookInvert { get; set; } = false;
         public float AxisDeadzone { get; set; } = 0.1f;

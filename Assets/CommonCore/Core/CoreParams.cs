@@ -71,6 +71,7 @@ namespace CommonCore
         public static IReadOnlyList<string> AdditionalAxes { get; private set; } = ImmutableArray.Create<string>(); //specify additional axes your game will use; it's up to individual input mappers to handle these
         public static IReadOnlyList<string> AdditionalButtons { get; private set; } = ImmutableArray.Create<string>(); //same, but for buttons
         public static IReadOnlyList<string> HideControlMappings { get; private set; } = ImmutableArray.Create<string>("OpenMenu"); //add things to this to hide DefaultControls you're not using, note that it's not guaranteed to stop the control from responding to input
+        public static bool ForcePlayerLightReporting { get; set; } = false; //forces spriteweapon/player light probe on, if available
 
         //*****path variables (some hackery to provide thread-safeish versions)
         public static string DataPath { get; private set; }
