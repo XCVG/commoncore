@@ -31,7 +31,7 @@ namespace CommonCore.State
 
             }
 
-            GC.Collect();
+            CoreUtils.CollectGarbage(false);
 
             Application.logMessageReceived += HandleLog;
 
@@ -123,8 +123,7 @@ namespace CommonCore.State
             if (result)
             {
                 GameState.Clear();
-                MetaState.Instance.Clear();
-                GC.Collect();
+                MetaState.Instance.Clear();                
                 SceneManager.LoadScene(CoreParams.MainMenuScene);
             }
             else

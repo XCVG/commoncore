@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Scripting;
 
 namespace CommonCore
 {
@@ -204,6 +205,33 @@ namespace CommonCore
         {
             //for now, call through- we use hooks to execute our code on exit
             Application.Quit(exitCode);
+        }
+
+        /// <summary>
+        /// Runs the garbage collector
+        /// </summary>
+        public static void CollectGarbage() => CollectGarbage(false);
+
+        /// <summary>
+        /// Runs the garbage collector
+        /// </summary>
+        public static void CollectGarbage(bool waitForPendingFinalizers)
+        {
+            if (GarbageCollector.GCMode == GarbageCollector.Mode.Disabled && !CoreParams.AlwaysEnableGCBeforeCollect)
+                return;
+
+            var oldMode = GarbageCollector.GCMode;
+            GarbageCollector.GCMode = GarbageCollector.Mode.Enabled;
+
+            GC.Collect();
+
+            if(waitForPendingFinalizers)
+            {
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+            }
+
+            GarbageCollector.GCMode = oldMode;
         }
 
     }

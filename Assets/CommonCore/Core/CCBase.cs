@@ -190,8 +190,7 @@ namespace CommonCore
             AddonManager.WarnOnSyncLoad();
             ExecuteAllAddonsLoaded();
 
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+            CoreUtils.CollectGarbage(true);
 
             Initialized = true;
             Initializing = false;
@@ -230,8 +229,7 @@ namespace CommonCore
                 await AddonManager.LoadAddonsAsync(ExecuteAddonLoaded);
                 ExecuteAllAddonsLoaded();
 
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
+                CoreUtils.CollectGarbage(true);
 
                 Initialized = true;
             }
@@ -674,8 +672,7 @@ namespace CommonCore
             }
 
             Modules = null;
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+            CoreUtils.CollectGarbage(true);
 
             Debug.Log("[Core] ...done!");
         }

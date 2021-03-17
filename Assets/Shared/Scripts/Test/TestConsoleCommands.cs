@@ -62,7 +62,7 @@ public static class TestConsoleCommands
             AsyncUtils.ThrowIfEditorStopped();
 
             lockObject = null;
-            GC.Collect();
+            CoreUtils.CollectGarbage(false);
 
             Debug.Log("Untyped lock released!");
 
@@ -86,7 +86,7 @@ public static class TestConsoleCommands
             AsyncUtils.ThrowIfEditorStopped();
 
             typedLockObject = null;
-            GC.Collect();
+            CoreUtils.CollectGarbage(false);
 
             Debug.Log("Typed lock released!");
 

@@ -102,7 +102,6 @@ namespace CommonCore
 
             onLoadedMethod(new AddonLoadData(context.LoadedAssemblies, context.LoadedResources));
 
-            GC.Collect();
         }
 
         public async Task LoadAddonsAsync(Action<AddonLoadData> onLoadedMethod)

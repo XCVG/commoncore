@@ -55,6 +55,8 @@ namespace CommonCore
         //public static bool UseAggressiveLookups { get; private set; } = true; //may bring this back someday if performance is an issue
         public static int ResourceMaxRecurseDepth { get; private set; } = 32;
 
+        public static bool AlwaysEnableGCBeforeCollect { get; private set; } = true;
+
         //*****scene settings        
         public static string MainMenuScene { get; private set; } = "MainMenuScene";
         public static string LoadingScene { get; private set; } = "LoadingScene";
