@@ -123,6 +123,19 @@ namespace CommonCore.World
             WorldUtils.SpawnEntity(fid, null, (WorldUtils.GetPlayerObject().transform.position + (WorldUtils.GetPlayerObject().transform.forward * 1.0f)), Vector3.zero, null);
         }
 
+        [Command]
+        static void ListEntitiesInScene()
+        {
+            StringBuilder sb = new StringBuilder();
+            var entities = CoreUtils.GetWorldRoot().GetComponentsInChildren<BaseController>(true);
+            foreach(var entity in entities)
+            {
+                sb.AppendLine($"{entity.gameObject.name} ({entity.FormID ?? entity.EditorFormID} : {entity.GetType().Name}) [{entity.transform.position.ToString("F2")}] {(entity.isActiveAndEnabled ? "" : "(disabled)")} {(entity is ITakeDamage && WorldUtils.IsAlive(entity) ? "" : "(dead)")}");
+            }
+
+            ConsoleModule.WriteLine(sb.ToString());
+        }
+
         //pick object by form id
         [Command]
         static void Prid(string fid)
@@ -231,6 +244,32 @@ namespace CommonCore.World
         {
             SelectedTID = null;
             SelectedObject = null;
+        }
+
+        [Command]
+        static void TeleportToMe()
+        {
+            var playerTransform = WorldUtils.GetPlayerObject().transform;
+
+            Vector3 targetPos = playerTransform.position + (playerTransform.forward.GetFlatVector().GetSpaceVector() * 1f);
+            Quaternion targetRot = playerTransform.rotation;
+
+            SelectedObject.transform.position = targetPos;
+            SelectedObject.transform.rotation = targetRot;
+        }
+
+        [Command]
+        static void TeleportToTarget()
+        {
+            var targetTransform = SelectedObject.transform;
+
+            Vector3 targetPos = targetTransform.position + (targetTransform.forward.GetFlatVector().GetSpaceVector() * 1f);
+            Quaternion targetRot = targetTransform.rotation;
+
+            var playerTransform = WorldUtils.GetPlayerObject().transform;
+
+            playerTransform.position = targetPos;
+            playerTransform.rotation = targetRot;
         }
 
         //***** ACTOR MANIPULATION

@@ -92,5 +92,6 @@
 * Added AnimateQuadScript and TextureAssignScript (hacky/experimental dynamic texture assignment)
 * Enabled incremental GC
 * Added CollectGarbage API to CoreUtils
+* Added teleport and list entities console commands
 * Implemented dialogue trace (WIP)
 * Implemented lighting for sprite weapon viewmodels (WIP)

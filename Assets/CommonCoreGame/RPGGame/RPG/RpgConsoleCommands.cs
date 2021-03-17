@@ -238,7 +238,14 @@ namespace CommonCore.RpgGame.Rpg
         {
             try
             {
-                GameState.Instance.PlayerRpgState.EquipItem(GameState.Instance.PlayerRpgState.Inventory.FindItem(item)[0]);
+                if(long.TryParse(item, out var uid))
+                {
+                    GameState.Instance.PlayerRpgState.EquipItem(GameState.Instance.PlayerRpgState.Inventory.GetItem(uid));
+                }
+                else
+                {
+                    GameState.Instance.PlayerRpgState.EquipItem(GameState.Instance.PlayerRpgState.Inventory.FindItem(item)[0]);
+                }                
             }
             catch (Exception e)
             {
