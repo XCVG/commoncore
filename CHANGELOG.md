@@ -93,5 +93,10 @@
 * Enabled incremental GC
 * Added CollectGarbage API to CoreUtils
 * Added teleport and list entities console commands
+* Added config flag for generating keymap on startup (InputDumpKeycodes)
+* Implemented infrastructure for informing player of pending changes or needed restart in options panel
+* Fixed MusicFader restarting music that should be stopped
+* Implemented utility interfaces for thunking values from classes in Assembly-CSharp to Core
+* Implemented timescale setting in GameState
 * Implemented dialogue trace (WIP)
 * Implemented lighting for sprite weapon viewmodels (WIP)

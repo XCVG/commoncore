@@ -24,7 +24,7 @@ namespace CommonCore
 
         public static void FadeIn(MusicSlot slot, float volume, float duration, bool realTime = false, bool persist = false)
         {
-            AudioPlayer.Instance.SetMusicVolume(0, slot);
+            AudioPlayer.Instance.SetMusicVolumeDirect(0, slot);
             FadeTo(slot, volume, duration, realTime, persist);
         }
 

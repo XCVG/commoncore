@@ -299,6 +299,12 @@ namespace CommonCore.State
         public long NextUID { get { return ++CurrentUID; } }
 
         /// <summary>
+        /// Current timescale
+        /// </summary>
+        [JsonProperty]
+        public float CurrentTimescale { get; set; } = 1.0f;
+
+        /// <summary>
         /// Decorate methods with this atrribute to have them run on GameState initialization. Higher priority is sooner.
         /// </summary>
         public class InitAttribute : Attribute

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,11 @@ namespace CommonCore.UI
     /// </summary>
     public abstract class ConfigSubpanelController : MonoBehaviour
     {
+        /// <summary>
+        /// Signals that there are pending changes (call FROM the subpanel controller)
+        /// </summary>
+        public Action<PendingChangesFlags> SignalPendingChanges { get; set; }
+
         /// <summary>
         /// Applies the values from the backing config to the UI
         /// </summary>

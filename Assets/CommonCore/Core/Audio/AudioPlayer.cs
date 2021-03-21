@@ -175,10 +175,12 @@ namespace CommonCore.Audio
                         }
                         break;
                     case "EnableMusic": //not entirely happy with this method
+                        Debug.LogWarning("[AudioPlayer] Received deprecated message EnableMusic");
                         MusicEnabled = true;
                         HandleMusicChanged();
                         break;
                     case "DisableMusic":
+                        Debug.LogWarning("[AudioPlayer] Received deprecated message DisableMusic");
                         MusicEnabled = false;
                         HandleMusicChanged();
                         break;
@@ -738,6 +740,22 @@ namespace CommonCore.Audio
             {
                 CurrentMusics[slot].Volume = volume;
                 HandleMusicChanged();
+            }
+        }
+
+        /// <summary>
+        /// Sets the volume of a music slot directly, bypassing HandleMusicChanged 
+        /// </summary>
+        public void SetMusicVolumeDirect(float volume, MusicSlot slot)
+        {
+            if (CurrentMusics.ContainsKey(slot))
+            {
+                CurrentMusics[slot].Volume = volume;
+            }
+
+            if (MusicPlayers.ContainsKey(slot))
+            {
+                MusicPlayers[slot].volume = Mathf.Clamp(volume * ConfigState.Instance.MusicVolume, 0, 1);
             }
         }
 

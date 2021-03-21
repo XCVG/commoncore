@@ -86,13 +86,13 @@ namespace CommonCore
                 elapsed += realTime ? Time.unscaledDeltaTime : Time.deltaTime;
                 float ratio = elapsed / duration;
                 float volume = Mathf.Lerp(startVolume, endVolume, ratio);
-                AudioPlayer.Instance.SetMusicVolume(volume, slot);
+                AudioPlayer.Instance.SetMusicVolumeDirect(volume, slot);
                 yield return null;
             }
 
             yield return null;
 
-            AudioPlayer.Instance.SetMusicVolume(endVolume, slot);
+            AudioPlayer.Instance.SetMusicVolumeDirect(endVolume, slot);
 
             ActiveFades[slot].Coroutine = null;
         }

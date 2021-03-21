@@ -6,6 +6,7 @@ using CommonCore.Messaging;
 using CommonCore.DebugLog;
 using CommonCore.Config;
 using System.Reflection;
+using System.Linq;
 
 namespace CommonCore.LockPause
 {
@@ -24,11 +25,17 @@ namespace CommonCore.LockPause
         private InputLockType? InputLockState;
         private PauseLockType? PauseLockState;
 
+        private IValueThunk<float> GameCurrentTimescaleThunk;
+
         public LockPauseModule() : base()
         {
             Instance = this;
             InputLocks = new List<InputLock>();
             PauseLocks = new List<PauseLock>();
+
+            //hacky stuff to get information we don't actually have access to
+            Type thunkType = CCBase.BaseGameTypes.FirstOrDefault(t => t.Name == "GameCurrentTimescaleThunk");
+            GameCurrentTimescaleThunk = Activator.CreateInstance(thunkType) as IValueThunk<float>;
 
             Log("Pause module started!");
         }
@@ -230,7 +237,7 @@ namespace CommonCore.LockPause
         private void DoUnpause()
         {
             PauseLockState = null;
-            Time.timeScale = ConfigState.Instance.DefaultTimescale;
+            Time.timeScale = ConfigState.Instance.DefaultTimescale * GameCurrentTimescaleThunk.Value;
 
             //recapture mouse (if applicable)
             if (EnableMouseCapture)

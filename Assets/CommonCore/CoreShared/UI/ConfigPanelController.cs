@@ -9,6 +9,8 @@ using CommonCore.Config;
 using CommonCore.UI;
 using CommonCore.Input;
 using CommonCore.StringSub;
+using CommonCore.State;
+using System.Text;
 
 namespace CommonCore.UI
 {
@@ -23,6 +25,8 @@ namespace CommonCore.UI
 
         [Header("Containers"), SerializeField]
         private RectTransform PanelContainer = null;
+        [SerializeField]
+        private Text StatusText = null;
 
         [Header("Input")]
         public Dropdown InputDropdown;
@@ -58,6 +62,12 @@ namespace CommonCore.UI
         private List<string> InputMappers = null;
         private List<Vector2Int> Resolutions = null;
 
+        //backing data for status text
+        private bool PendingChanges = false;
+        private bool PendingMoreOptionsOnApply = false;
+        private bool PendingRequiresRestart = false;
+        private bool CommittedRequiresRestart { get => (bool)MetaState.Instance.SessionData.GetOrDefault("ConfigRequiresRestart", false); set => MetaState.Instance.SessionData["ConfigRequiresRestart"] = value; }
+
         public override void SignalInitialPaint()
         {
             base.SignalInitialPaint();
@@ -72,6 +82,12 @@ namespace CommonCore.UI
                 if (ApplyTheme)
                 {
                     ApplyThemeToElements(subpanelGO.transform);
+                }
+
+                var subpanelController = subpanelGO.GetComponent<ConfigSubpanelController>();
+                if(subpanelController != null)
+                {
+                    subpanelController.SignalPendingChanges = SignalPendingChanges;
                 }
             }
             
@@ -90,7 +106,7 @@ namespace CommonCore.UI
             InputDropdown.ClearOptions();
             InputDropdown.AddOptions(InputMappers.Select(m => Sub.Replace(m, "CFG_MAPPERS")).ToList());
             int iIndex = InputMappers.IndexOf(ConfigState.Instance.InputMapper);
-            InputDropdown.value = iIndex >= 0 ? iIndex : 0;
+            InputDropdown.SetValueWithoutNotify(iIndex >= 0 ? iIndex : 0);
             ConfigureInputButton.interactable = iIndex >= 0; //enable configure button
 
             LookSpeedSlider.value = ConfigState.Instance.LookSpeed;
@@ -140,11 +156,14 @@ namespace CommonCore.UI
                     Debug.LogException(e);
                 }
             }
+
+            PaintStatusText();
         }
 
         public void OnInputDropdownChanged()
         {
             ConfigureInputButton.interactable = false;
+            SignalPendingChanges(PendingChangesFlags.MoreOptionsOnApply | PendingChangesFlags.DoNotSetPendingChanges);
         }
 
         public void OnFramerateSliderChanged()
@@ -213,6 +232,9 @@ namespace CommonCore.UI
             {
                 if(status == ModalStatusCode.Complete && result)
                 {
+                    PendingChanges = false;
+                    PendingMoreOptionsOnApply = false;
+                    PendingRequiresRestart = CommittedRequiresRestart;
                     PaintValues();
                 }
                 else
@@ -229,6 +251,12 @@ namespace CommonCore.UI
 
         private void OnConfirmed(ModalStatusCode status, string tag)
         {
+            PendingChanges = false;
+            PendingMoreOptionsOnApply = false;
+            if (PendingRequiresRestart)
+                CommittedRequiresRestart = true;
+            PendingRequiresRestart = CommittedRequiresRestart;
+
             string sceneName = SceneManager.GetActiveScene().name;
             if(sceneName == CoreParams.MainMenuScene)
                 SceneManager.LoadScene(sceneName);
@@ -278,6 +306,32 @@ namespace CommonCore.UI
         private List<Vector2Int> GetDeduplicatedResolutionList(IEnumerable<Resolution> resolutions)
         {
             return resolutions.Select(r => new Vector2Int(r.width, r.height)).Distinct().ToList();
+        }
+
+        private void SignalPendingChanges(PendingChangesFlags flags)
+        {
+            if(!flags.HasFlag(PendingChangesFlags.DoNotSetPendingChanges))
+                PendingChanges = true;
+            if (flags.HasFlag(PendingChangesFlags.MoreOptionsOnApply))
+                PendingMoreOptionsOnApply = true;
+            if (flags.HasFlag(PendingChangesFlags.RequiresRestart))
+                PendingRequiresRestart = true;
+
+            PaintStatusText();
+        }
+
+        private void PaintStatusText()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            if (PendingChanges)
+                sb.AppendLine("There are unsaved settings changes");
+            if (PendingMoreOptionsOnApply)
+                sb.AppendLine("More options will be shown or unlocked when changes are applied");
+            if (PendingRequiresRestart || CommittedRequiresRestart)
+                sb.AppendLine("The game must be restarted to fully apply settings changes");
+
+            StatusText.text = sb.ToString();
         }
 
     }

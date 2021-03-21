@@ -25,7 +25,7 @@ namespace CommonCore.Input
             MappedInput.SetMapper(new NullInputMapper());
 
             //dump keycodes to file for future use
-            if(CoreParams.IsDebug)
+            if(CoreParams.IsDebug || ConfigState.Instance.HasCustomFlag("InputDumpKeycodes"))
                 DumpKeycodes();
         }
 
