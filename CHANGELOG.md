@@ -57,7 +57,7 @@
 * Fixed some Resource Importers not setting name of imported objects
 * Version info is now saved to PersistState, ConfigState, and game saves (setting up for migrations)
 
-# 3.0.0 pNext
+# 3.0.0 Preview 3
 
 * VoiceOverride now supports relative (unprefixed) or absolute (starts with /) paths
 * DialogueNavigator robustness and use key handling
@@ -100,3 +100,6 @@
 * Implemented timescale setting in GameState
 * Implemented dialogue trace (WIP)
 * Implemented lighting for sprite weapon viewmodels (WIP)
+
+# 3.0.0 pNext
+
