@@ -76,10 +76,13 @@ namespace CommonCore.RpgGame.Dialogue
             {
                 sExtraData = ParseExtraData(jo["ExtraData"], null);
             }
-            Frame baseFrame = new Frame(sBackground, sImage, sNext, sMusic, sName, sText, sNextText, sCameraDir, sPosition, null, null, sOptions, sScripts, sExtraData);
 
-            //parse frames
             Dictionary<string, Frame> frames = new Dictionary<string, Frame>();
+            var scene = new DialogueScene(frames, sNext, sMusic);
+
+            Frame baseFrame = new Frame(sBackground, sImage, sNext, sMusic, sName, sText, sNextText, sCameraDir, sPosition, null, null, sOptions, sScripts, scene, null, jo, sExtraData);
+
+            //parse frames            
             frames.Add(dialogueName, baseFrame);
             JObject jf = (JObject)jo["frames"];
             foreach (var x in jf)
@@ -88,7 +91,7 @@ namespace CommonCore.RpgGame.Dialogue
                 {
                     string key = x.Key;
                     JToken value = x.Value;
-                    Frame f = DialogueParser.ParseSingleFrame(value, baseFrame);
+                    Frame f = DialogueParser.ParseSingleFrame(value, baseFrame, scene);
                     frames.Add(key, f);
                 }
                 catch (Exception e)
@@ -98,10 +101,10 @@ namespace CommonCore.RpgGame.Dialogue
                 }
             }
 
-            return new DialogueScene(frames, sNext, sMusic);
+            return scene;
         }
 
-        public static Frame ParseSingleFrame(JToken jt, Frame baseFrame)
+        public static Frame ParseSingleFrame(JToken jt, Frame baseFrame, DialogueScene parentScene)
         {
             string background = baseFrame.Background;
             string image = baseFrame.Image;
@@ -225,7 +228,7 @@ namespace CommonCore.RpgGame.Dialogue
                 {
                     choices.Add(ParseChoiceNode(x));
                 }
-                return new ChoiceFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, choices.ToArray(), conditional, microscript, options, scripts, extraData);
+                return new ChoiceFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, choices.ToArray(), conditional, microscript, options, scripts, parentScene, baseFrame, jt, extraData);
             }
             else if (type == "image")
             {
@@ -244,7 +247,7 @@ namespace CommonCore.RpgGame.Dialogue
                 if (!jt["timeToShow"].IsNullOrEmpty())
                     timeToShow = jt["timeToShow"].ToObject<float>();
 
-                return new ImageFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, allowSkip, hideSkip, timeToShow, useTimer, conditional, microscript, options, scripts, extraData);
+                return new ImageFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, allowSkip, hideSkip, timeToShow, useTimer, conditional, microscript, options, scripts, parentScene, baseFrame, jt, extraData);
             }
             else if (type == "text")
             {
@@ -260,11 +263,11 @@ namespace CommonCore.RpgGame.Dialogue
                 if (!jt["timeToShow"].IsNullOrEmpty())
                     timeToShow = jt["timeToShow"].ToObject<float>();
 
-                return new TextFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, allowSkip, timeToShow, useTimer, conditional, microscript, options, scripts, extraData);
+                return new TextFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, allowSkip, timeToShow, useTimer, conditional, microscript, options, scripts, parentScene, baseFrame, jt, extraData);
             }
             else if (type == "blank")
             {
-                return new BlankFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, conditional, microscript, options, scripts, extraData);
+                return new BlankFrame(background, image, next, music, nameText, text, nextText, cameraDir, position, conditional, microscript, options, scripts, parentScene, baseFrame, jt, extraData);
             }
             else
             {

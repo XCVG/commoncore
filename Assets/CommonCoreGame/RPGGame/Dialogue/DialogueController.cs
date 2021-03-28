@@ -54,7 +54,7 @@ namespace CommonCore.RpgGame.Dialogue
         private string CurrentFrameName;
         private string CurrentSceneName;
         private DialogueScene CurrentScene;
-        private Dictionary<string, Frame> CurrentSceneFrames { get { return CurrentScene.Frames; } }
+        private IReadOnlyDictionary<string, Frame> CurrentSceneFrames { get { return CurrentScene.Frames; } }
 
         //private string CurrentFrameName;
         private Frame CurrentFrameObject;
@@ -637,8 +637,9 @@ namespace CommonCore.RpgGame.Dialogue
             else if (nextLoc.Key == "shop")
             {
                 var container = GameState.Instance.ContainerState[nextLoc.Value];
-                ContainerModal.PushModal(GameState.Instance.PlayerRpgState.Inventory, container, true, null); //TODO we could add in "return from shop" with not _too_ much difficulty
-                CloseDialogue();
+                ContainerModal.PushModal(GameState.Instance.PlayerRpgState.Inventory, container, true, null);
+                if(!CurrentFrameObject.Options.AllowReturnFromShop)
+                    CloseDialogue();
             }
             else if (nextLoc.Key == "scene")
             {

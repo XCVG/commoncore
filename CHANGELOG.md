@@ -103,3 +103,7 @@
 
 # 3.0.0 pNext
 
+* Added args field to ScriptExecutionContext
+* Added raw data, references to scene and base frame to dialogue frame objects
+* Fixed ChaseOptimalDistance sanity check being backwards
+* Added flag for returning to dialogue after shop (experimental)

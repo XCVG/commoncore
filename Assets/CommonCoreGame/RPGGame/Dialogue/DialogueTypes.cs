@@ -7,16 +7,17 @@ using CommonCore.RpgGame.Rpg;
 using CommonCore.RpgGame.State;
 using CommonCore.State;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CommonCore.RpgGame.Dialogue
 {
     public class DialogueScene
     {
-        public Dictionary<string, Frame> Frames { get; private set; }
+        public IReadOnlyDictionary<string, Frame> Frames { get; private set; }
         public string Default;
         public string Music;
 
-        public DialogueScene(Dictionary<string, Frame> frames, string defaultFrame, string music)
+        public DialogueScene(IReadOnlyDictionary<string, Frame> frames, string defaultFrame, string music)
         {
             Frames = frames;
             Default = defaultFrame;
@@ -317,6 +318,8 @@ namespace CommonCore.RpgGame.Dialogue
 
         public IEnumerable<string> HideObjects => (Options.GetOrDefault(nameof(HideObjects), null) as IEnumerable)?.Cast<object>().Select(o => o.ToString()); //just... don't question this
 
+        public bool AllowReturnFromShop => TypeUtils.CoerceValue<bool>(Options.GetOrDefault(nameof(AllowReturnFromShop), false), false);
+
         public TraceDefaultSpeaker TraceDefaultSpeaker => TypeUtils.CoerceValue<TraceDefaultSpeaker>(Options.GetOrDefault(nameof(TraceDefaultSpeaker), default(TraceDefaultSpeaker)), false);
         public string TraceSpeaker => Options.GetOrDefault(nameof(TraceSpeaker), null)?.ToString();
         public bool TraceIgnore => TypeUtils.CoerceValue<bool>(Options.GetOrDefault(nameof(TraceIgnore), false), false);
@@ -406,7 +409,11 @@ namespace CommonCore.RpgGame.Dialogue
 
         public readonly IReadOnlyDictionary<string, object> ExtraData;
 
-        public Frame(string background, string image, string next, string music, string nameText, string text, string nextText, string cameraDirection, FrameImagePosition imagePosition, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript, FrameOptions options, FrameScripts scripts, IReadOnlyDictionary<string, object> extraData)
+        public readonly DialogueScene ParentScene;
+        public readonly Frame BaseFrame;
+        public readonly JToken RawData;
+
+        public Frame(string background, string image, string next, string music, string nameText, string text, string nextText, string cameraDirection, FrameImagePosition imagePosition, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript, FrameOptions options, FrameScripts scripts, DialogueScene parentScene, Frame baseFrame, JToken rawData, IReadOnlyDictionary<string, object> extraData)
         {
             Background = background;
             Image = image;
@@ -427,6 +434,10 @@ namespace CommonCore.RpgGame.Dialogue
 
             Options = options;
             Scripts = scripts;
+
+            ParentScene = parentScene;
+            BaseFrame = baseFrame;
+            RawData = rawData;
 
             ExtraData = extraData ?? new Dictionary<string, object>();
         }
@@ -456,8 +467,8 @@ namespace CommonCore.RpgGame.Dialogue
 
     public class BlankFrame : Frame
     {
-        public BlankFrame(string background, string image, string next, string music, string nameText, string text, string nextText, string cameraDir, FrameImagePosition imagePosition, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript, FrameOptions options, FrameScripts scripts, IReadOnlyDictionary<string, object> extraData)
-            : base(background, image, next, music, nameText, text, nextText, cameraDir, imagePosition, nextConditional, nextMicroscript, options, scripts, extraData)
+        public BlankFrame(string background, string image, string next, string music, string nameText, string text, string nextText, string cameraDir, FrameImagePosition imagePosition, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript, FrameOptions options, FrameScripts scripts, DialogueScene parentScene, Frame baseFrame, JToken rawData, IReadOnlyDictionary<string, object> extraData)
+            : base(background, image, next, music, nameText, text, nextText, cameraDir, imagePosition, nextConditional, nextMicroscript, options, scripts, parentScene, baseFrame, rawData, extraData)
         {
 
         }
@@ -469,8 +480,8 @@ namespace CommonCore.RpgGame.Dialogue
         public readonly float TimeToShow;
         public readonly bool UseTimer;
 
-        public TextFrame(string background, string image, string next, string music, string nameText, string text, string nextText, string cameraDir, FrameImagePosition imagePosition, bool allowSkip, float timeToShow, bool useTimer, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript, FrameOptions options, FrameScripts scripts, IReadOnlyDictionary<string, object> extraData)
-            : base(background, image, next, music, nameText, text, nextText, cameraDir, imagePosition, nextConditional, nextMicroscript, options, scripts, extraData)
+        public TextFrame(string background, string image, string next, string music, string nameText, string text, string nextText, string cameraDir, FrameImagePosition imagePosition, bool allowSkip, float timeToShow, bool useTimer, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript, FrameOptions options, FrameScripts scripts, DialogueScene parentScene, Frame baseFrame, JToken rawData, IReadOnlyDictionary<string, object> extraData)
+            : base(background, image, next, music, nameText, text, nextText, cameraDir, imagePosition, nextConditional, nextMicroscript, options, scripts, parentScene, baseFrame, rawData, extraData)
         {
             AllowSkip = allowSkip;
             TimeToShow = timeToShow;
@@ -485,8 +496,8 @@ namespace CommonCore.RpgGame.Dialogue
         public readonly float TimeToShow;
         public readonly bool UseTimer;
 
-        public ImageFrame(string background, string image, string next, string music, string nameText, string text, string nextText, string cameraDir, FrameImagePosition imagePosition, bool allowSkip, bool hideSkip, float timeToShow, bool useTimer, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript, FrameOptions options, FrameScripts scripts, IReadOnlyDictionary<string, object> extraData)
-            : base(background, image, next, music, nameText, text, nextText, cameraDir, imagePosition, nextConditional, nextMicroscript, options, scripts, extraData)
+        public ImageFrame(string background, string image, string next, string music, string nameText, string text, string nextText, string cameraDir, FrameImagePosition imagePosition, bool allowSkip, bool hideSkip, float timeToShow, bool useTimer, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript, FrameOptions options, FrameScripts scripts, DialogueScene parentScene, Frame baseFrame, JToken rawData, IReadOnlyDictionary<string, object> extraData)
+            : base(background, image, next, music, nameText, text, nextText, cameraDir, imagePosition, nextConditional, nextMicroscript, options, scripts, parentScene, baseFrame, rawData, extraData)
         {
             AllowSkip = allowSkip;
             HideSkip = hideSkip;
@@ -499,8 +510,8 @@ namespace CommonCore.RpgGame.Dialogue
     {
         public readonly ChoiceNode[] Choices;
 
-        public ChoiceFrame(string background, string image, string next, string music, string nameText, string text, string nextText, string cameraDir, FrameImagePosition imagePosition, ChoiceNode[] choices, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript, FrameOptions options, FrameScripts scripts, IReadOnlyDictionary<string, object> extraData)
-            : base(background, image, next, music, nameText, text, nextText, cameraDir, imagePosition, nextConditional, nextMicroscript, options, scripts, extraData)
+        public ChoiceFrame(string background, string image, string next, string music, string nameText, string text, string nextText, string cameraDir, FrameImagePosition imagePosition, ChoiceNode[] choices, ConditionNode[] nextConditional, MicroscriptNode[] nextMicroscript, FrameOptions options, FrameScripts scripts, DialogueScene parentScene, Frame baseFrame, JToken rawData, IReadOnlyDictionary<string, object> extraData)
+            : base(background, image, next, music, nameText, text, nextText, cameraDir, imagePosition, nextConditional, nextMicroscript, options, scripts, parentScene, baseFrame, rawData, extraData)
         {
             Choices = (ChoiceNode[])choices.Clone();
         }

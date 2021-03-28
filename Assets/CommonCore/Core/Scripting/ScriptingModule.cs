@@ -279,6 +279,9 @@ namespace CommonCore.Scripting
 
         private static object CallScriptMethod(MethodInfo scriptMethod, object instance, ScriptExecutionContext context, object[] args)
         {
+            //assign args property
+            context.Args = args;
+
             //get script attribute
             CCScriptAttribute scriptAttribute = null;
             var scriptAttributes = scriptMethod.GetCustomAttributes(typeof(CCScriptAttribute), false);

@@ -69,6 +69,14 @@ namespace CommonCore.Scripting
         /// </summary>
         public string NamedHook;
 
+        /// <summary>
+        /// A collection of all arguments passed to the script
+        /// </summary>
+        /// <remarks>
+        /// <para>Note that these are NEVER COERCED</para>
+        /// </remarks>
+        public IReadOnlyList<object> Args;
+
         public override string ToString()
         {
             return string.Format("{0} : [Caller:{1}, Activator:{2}, Hook:{3}]", GetType().Name, Caller, Activator, Hook == ScriptHook.None ? (string.IsNullOrEmpty(NamedHook) ? "null" : NamedHook) : Hook.ToString());

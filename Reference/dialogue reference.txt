@@ -277,8 +277,11 @@ ADDITIONAL OPTIONS (CommonCore Only)
 The options property of a Frame object defines some additional options for CommonCore only. It is inherited, so the scene can also have options which will be inherited by all of its Frames which can be overridden individually.
 
 panelHeight (enum)
-	default, full, half, variable
-	How high to make the panel. Currently default (follows what is set in GameParams), full, half are supported and variable is not.
+	default, full, half, variable, fixed
+	How high to make the panel. Currently default (follows what is set in GameParams), full, half, fixed are supported and variable is not.
+
+panelHeightPixels (float)
+	How high to make the panel, in pixels, when fixed height is selected
 
 hideNameText (boolean)
 	Whether to hide the name text. Default is false.
@@ -286,11 +289,54 @@ hideNameText (boolean)
 voiceOverride (string)
 	Override the voice clip name for this frame
 
+voiceVolume (float)
+	Override the voice clip volume for this frame
+
 hideObjects (list<string>)
 	Which objects in the scene to hide when this frame is displayed.
 	Lookup is by TID (name in scene).
 	It also accepts Player and Target which work the same as they do in camera control
 	Putting a # in front of the name will cause it to be interpreted literally, ignoring Player and Target logic.
+
+Several options are related to the conversation trace system added in CommonCore 3.0.0 Preview 3, which temporarily records the conversation path (meant to be used for a history window but that is not yet implemented).
+
+traceDefaultSpeaker (enum)
+	The "default" speaker used in conversation trace if nameText or traceSpeaker are not found, really more meant to be used in the scene rather than an individual frame. Can be None, PlayerLookup, PlayerName. PlayerName uses the player's CharacterModel DisplayName. PlayerLookup is not yet implemented.
+
+traceSpeaker (string)
+	The speaker name used in conversation trace for this frame. If not defined, nameText, then traceDefaultSpeaker will be used in that order.
+
+traceText (string)
+	The text used in conversation trace for this frame. If not defined, the normal text property of this frame will be used.
+
+traceIncludeChoices (string)
+	Whether to include choices in the conversation trace (defaults to false).
+
+traceIncludeNextText (bool)
+	Whether to include the nextText in the conversation trace (defaults to false).
+
+traceNextTextSpeaker (string)
+	The speaker name used for nextText in conversation trace. If not set, default speaker defined by traceDefaultSpeaker will be used.
+
+traceNextTextText (string)
+	The text used for nextText in conversation trace. If not defined, the normal text property of this frame will be used.
+_______________________________________________________________________________
+
+TRACE ON CHOICES (CommonCore Only)
+
+Trace options are also supported on choice nodes.
+
+traceSpeaker (string)
+	The speaker name used for this choice node. If not set, default speaker defined by traceDefaultSpeaker will be used.
+
+traceText (string)
+	The text used for this choice node. If not set, the text property of the choice node will be used.
+
+traceIgnore (bool)
+	If set, the choice node will be omitted from conversation trace even if traceIncludeChoices is set on the containing Frame.
+
+traceShow (bool)
+	If set, the choice node will be shown in the conversation trace even if traceIncludeChoices is false/unset on the containing Frame. If both traceIgnore and traceShow are set the behaviour is undefined.
 
 _______________________________________________________________________________
 
@@ -316,4 +362,4 @@ _______________________________________________________________________________
 
 EXTRADATA (CommonCore Only)
 
-An ExtraData property on the Frame allows adding extra data as a generic JSON object (internally it converts to IReadOnlyDictionary<string,object>. It is also available on the Scene object and is inherited, with individual properties on the frame overriding those on the base. Note that while ExtraData itself is immutable, objects contained within it may not be.
+An ExtraData property on the Frame allows adding extra data as a generic JSON object (internally it converts to IReadOnlyDictionary<string,object>). It is also available on the Scene object and is inherited, with individual properties on the frame overriding those on the base. Note that while ExtraData itself is immutable, objects contained within it may not be.

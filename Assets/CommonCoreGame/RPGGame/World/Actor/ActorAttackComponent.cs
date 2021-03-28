@@ -56,9 +56,9 @@ namespace CommonCore.RpgGame.World
         {
             FindComponents();
 
-            if(ActorController.ChaseOptimalDistance > 0 && ActorController.ChaseOptimalDistance < AttackRange)
+            if(ActorController.ChaseOptimalDistance > 0 && ActorController.ChaseOptimalDistance > AttackRange)
             {
-                Debug.LogWarning($"[ActorAttackComponent] {ActorController.gameObject.name} has ChaseOptimalDistance set to less than attack range and will never be able to attack!");
+                Debug.LogWarning($"[ActorAttackComponent] {ActorController.gameObject.name} has ChaseOptimalDistance set to greater than attack range and will never be able to attack!");
             }
             
         }
