@@ -26,6 +26,9 @@ namespace CommonCore.RpgGame.World
         [field: SerializeField]
         public virtual bool ControlRotation { get; set; } = true;
 
+        [field: SerializeField]
+        public Vector3 PhysicsVelocity { get; protected set; } = Vector3.zero;
+
         public virtual void Init()
         {
             if (ActorController == null)
@@ -80,6 +83,16 @@ namespace CommonCore.RpgGame.World
         /// Handles a difficulty change (if necessary)
         /// </summary>
         public virtual void HandleDifficultyChanged() { }
+
+        /// <summary>
+        /// Sets the physics velocity (will have no effect if the movement component does not support physics)
+        /// </summary>
+        public virtual void SetVelocity(Vector3 velocity) => PhysicsVelocity = velocity;
+
+        /// <summary>
+        /// Adds to the physics velocity (will have no effect if the movement component does not support physics)
+        /// </summary>
+        public virtual void AddVelocity(Vector3 velocity) => PhysicsVelocity += velocity;
 
         /// <summary>
         /// The speed factor from the difficulty selection

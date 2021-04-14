@@ -32,6 +32,10 @@ namespace CommonCore.RpgGame.UI
         public Text EnergyText;
         public Image EnergyFillArea;
 
+        public Slider MagicSlider;
+        public Text MagicText;
+        public Image MagicFillArea;
+
         [Header("Right Bar")]
         public Text RightWeaponText;
         public Text RightAmmoText;
@@ -54,6 +58,8 @@ namespace CommonCore.RpgGame.UI
         public Color EnergyBarFlashColor;
         public float ShieldBarFlashTime;
         public Color ShieldBarFlashColor;
+        public float MagicBarFlashTime;
+        public Color MagicBarFlashColor;
 
         public float HitIndicatorHoldTime;
         public float HitIndicatorFadeTime;
@@ -86,6 +92,9 @@ namespace CommonCore.RpgGame.UI
 
         private Color? EnergyOriginalColor = null;
         private Coroutine EnergyFlashCoroutine = null;
+
+        private Color? MagicOriginalColor = null;
+        private Coroutine MagicFlashCoroutine = null;
 
         private float DamageFadeIntensityTarget = 0;
         private float ShieldFadeIntensityTarget = 0;
@@ -188,6 +197,9 @@ namespace CommonCore.RpgGame.UI
                         break;
                     case "PlayerHitTarget":
                         FlashHitIndicator();
+                        break;
+                    case "RpgInsufficientMagic":
+                        FlashMagicBar();
                         break;
                     case "RpgInsufficientEnergy":
                         FlashEnergyBar();
@@ -349,20 +361,22 @@ namespace CommonCore.RpgGame.UI
                 ShieldSlider.value = 0;
             }
 
-            //handle health flashing
-            /*
-            if(TimeSinceLastHealthSample > GameParams.DamageFlashSamplePeriod)
+            if (player.DerivedStats.MaxMagic > 0)
             {
-                TimeSinceLastHealthSample = 0;
-                if(LastHealthSampleValue.HasValue)
-                {
-                    if (LastHealthSampleValue.Value - player.HealthFraction > GameParams.DamageFlashThreshold)
-                        FlashHealthBar();
-                }
-                LastHealthSampleValue = player.HealthFraction;
+                if(MagicText != null)
+                    MagicText.text = player.Magic.ToString("f0");
+                if(MagicSlider != null)
+                    MagicSlider.value = player.MagicFraction;
+                //flashing is handled by messages for magic, not the stupid hacky shit health uses
             }
-            TimeSinceLastHealthSample += Time.deltaTime;
-            */
+            else
+            {
+                if (MagicText != null)
+                    MagicText.text = "";
+                if (MagicSlider != null)
+                    MagicSlider.value = 0;
+            }
+
         }
 
         private void HandleShieldsHit(float damageToShields)
@@ -588,6 +602,60 @@ namespace CommonCore.RpgGame.UI
             EnergyFillArea.color = EnergyOriginalColor.Value;
 
             EnergyFlashCoroutine = null;
+        }
+
+        private void FlashMagicBar()
+        {
+            if (MagicSlider == null || MagicFillArea == null)
+                return;
+
+            //flash the energy bar
+            if (!MagicOriginalColor.HasValue)
+                MagicOriginalColor = MagicFillArea.color;
+
+            if (MagicFlashCoroutine != null)
+                return;
+
+            MagicFlashCoroutine = StartCoroutine(FlashMagicBarCoroutine());
+        }
+
+        private IEnumerator FlashMagicBarCoroutine()
+        {
+            yield return null;
+
+            float fadeHalfTime = MagicBarFlashTime / 2f;
+
+            MagicFillArea.color = MagicOriginalColor.Value;
+
+            //fade to final color
+            for (float elapsed = 0; elapsed < fadeHalfTime; elapsed += Time.deltaTime)
+            {
+                float ratio = elapsed / fadeHalfTime;
+
+                Color c = Vector4.Lerp(MagicOriginalColor.Value, MagicBarFlashColor, ratio);
+                MagicFillArea.color = c;
+
+                yield return null;
+            }
+
+            MagicFillArea.color = MagicBarFlashColor;
+            yield return null;
+
+            //fade back to original color
+
+            for (float elapsed = 0; elapsed < fadeHalfTime; elapsed += Time.deltaTime)
+            {
+                float ratio = elapsed / fadeHalfTime;
+
+                Color c = Vector4.Lerp(MagicBarFlashColor, MagicOriginalColor.Value, ratio);
+                MagicFillArea.color = c;
+
+                yield return null;
+            }
+
+            MagicFillArea.color = MagicOriginalColor.Value;
+
+            MagicFlashCoroutine = null;
         }
 
         private void UpdateWeaponDisplay()

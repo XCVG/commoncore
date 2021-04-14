@@ -21,7 +21,8 @@ namespace CommonCore
         public static bool DialogueAlwaysExecuteFrameMicroscript { get; private set; } = true; //if set, will always execute the top-level microscript of a frame even on choice frames
         public static bool DialogueDrawPortraitHigh { get; private set; } = true; //if set, will draw portrait images fully above rather than above/behind dialogue panel
         public static bool DialogueVerboseLogging { get; private set; } = false;
-        public static ChoicePanelHeight DialoguePanelHeight { get; set; } = ChoicePanelHeight.Full;
+        public static ChoicePanelHeight DialoguePanelHeight { get; private set; } = ChoicePanelHeight.Full;
+        public static bool DialogueHideHud { get; private set; } = true;
 
         public static bool UseCustomLeveling { get; private set; } = true;
         public static bool UseDerivedSkills { get; private set; } = true;

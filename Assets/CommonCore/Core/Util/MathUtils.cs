@@ -39,6 +39,17 @@ namespace CommonCore
             return (val / ((oldMax - oldMin) / (newMax - newMin))) + newMin;
         }
 
+        /// <summary>
+        /// Clamps an angle to the range [0, 360)
+        /// </summary>
+        public static float ClampAngle(float angleInDegrees)
+        {
+            float result = angleInDegrees - Mathf.CeilToInt(angleInDegrees / 360f) * 360f;
+            if (result < 0)
+                result += 360f;
+            return result;
+        }
+
 
     }
 }

@@ -17,6 +17,7 @@ using CommonCore.UI;
 using CommonCore.Scripting;
 using System.Linq;
 using CommonCore.Config;
+using CommonCore.RpgGame.Rpg;
 
 namespace CommonCore.RpgGame.Dialogue
 {
@@ -64,6 +65,8 @@ namespace CommonCore.RpgGame.Dialogue
 
         private HashSet<string> HiddenObjects = new HashSet<string>();
 
+        private SetPlayerFlagsSource PlayerFlagsSource = new SetPlayerFlagsSource();
+
         void Awake()
         {
             name = "DialogueSystem";
@@ -84,15 +87,17 @@ namespace CommonCore.RpgGame.Dialogue
 
             ScriptingModule.CallNamedHooked("DialogueOnOpen", this);
 
+            SetPlayerFlags();
+
             var loc = ParseLocation(CurrentDialogue);
 
-            if(loc.Key == null && GameParams.DialogueDefaultToThisScene)
+            if (loc.Key == null && GameParams.DialogueDefaultToThisScene)
             {
                 //use default
                 LoadScene(loc.Value); //this has always been a hack
                 PresentNewFrame(CurrentScene.Default);
             }
-            else if(loc.Value == null && GameParams.DialogueDefaultToThisScene)
+            else if (loc.Value == null && GameParams.DialogueDefaultToThisScene)
             {
                 LoadScene(loc.Key);
                 PresentNewFrame(CurrentScene.Default);
@@ -103,6 +108,37 @@ namespace CommonCore.RpgGame.Dialogue
                 PresentNewFrame(loc.Value);
             }
 
+        }
+
+        private void OnDestroy()
+        {
+            if (CCBase.Terminated)
+                return; //nop, game is ended anyway and there's nothing we can meaningfully do
+
+            ScriptingModule.CallNamedHooked("DialogueOnClose", this);
+            CurrentDialogue = null;
+            LockPauseModule.UnpauseGame(this.gameObject);
+            AudioPlayer.Instance.ClearMusic(MusicSlot.Cinematic);
+            if (CameraController)
+                Destroy(CameraController.gameObject);
+            UnhideAllObjects();
+            CurrentTarget = null;
+            UnsetPlayerFlags();
+            if (CurrentCallback != null)
+            {
+                try
+                {
+                    CurrentCallback();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
+                finally
+                {
+                    CurrentCallback = null;
+                }
+            }
         }
 
         private void LoadScene(string scene)
@@ -800,30 +836,7 @@ namespace CommonCore.RpgGame.Dialogue
         {
             yield return null;
 
-            ScriptingModule.CallNamedHooked("DialogueOnClose", this);
-            CurrentDialogue = null;
-            LockPauseModule.UnpauseGame(this.gameObject);
-            AudioPlayer.Instance.ClearMusic(MusicSlot.Cinematic);
-            if (CameraController)
-                Destroy(CameraController.gameObject);
-            UnhideAllObjects();
-            CurrentTarget = null;
             Destroy(this.gameObject);
-            if (CurrentCallback != null)
-            {
-                try
-                {
-                    CurrentCallback();
-                }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                }
-                finally
-                {
-                    CurrentCallback = null;
-                }
-            }
         }
 
         private string GetDefaultTraceSpeaker(Frame f)
@@ -839,6 +852,20 @@ namespace CommonCore.RpgGame.Dialogue
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        private void SetPlayerFlags()
+        {
+            GameState.Instance.PlayerFlags.RegisterSource(PlayerFlagsSource);
+            if (GameParams.DialogueHideHud)
+            {
+                PlayerFlagsSource.Add(PlayerFlags.HideHud);
+            }
+        }
+
+        private void UnsetPlayerFlags()
+        {
+            GameState.Instance.PlayerFlags.UnregisterSource(PlayerFlagsSource);
         }
 
 

@@ -35,6 +35,17 @@ namespace CommonCore.RpgGame.World
         [SerializeField]
         private bool DisableColliderOnDeath = false;
 
+        [SerializeField, Header("Physics")]
+        private bool EnablePhysics = true;
+        [SerializeField]
+        private float BrakeFactor = 2f;
+        [SerializeField]
+        private float CollidedBrakeFactor = 10f;
+        [SerializeField]
+        private float YBrakeFactor = 10f;
+        [SerializeField, Tooltip("Use to simulate mass (lower multiplier=higher mass)")]
+        private float VelocityMultiplier = 1f;
+
         //fields
         private bool NavmeshEnabled;
         private bool DeathHandled = false;
@@ -71,6 +82,8 @@ namespace CommonCore.RpgGame.World
             base.Update();
 
             EmulateNav();
+
+            HandlePhysics();
         }
 
         private void FindComponents()
@@ -213,6 +226,54 @@ namespace CommonCore.RpgGame.World
                 NavComponent.speed = WalkSpeed * DifficultySpeedFactor; //TODO should probably set this on config changed
                 NavComponent.angularSpeed = RotateSpeed * DifficultySpeedFactor;
             }
+        }
+
+        private void HandlePhysics()
+        {
+            if (!EnablePhysics || !CharController.enabled)
+                return;
+
+            if(PhysicsVelocity.magnitude > 0)
+            {
+                CharController.Move(PhysicsVelocity * Time.deltaTime);
+
+                if(CharController.isGrounded & PhysicsVelocity.y > 0)
+                {
+                    PhysicsVelocity = new Vector3(PhysicsVelocity.x, Mathf.Max(PhysicsVelocity.y - Time.deltaTime * YBrakeFactor), PhysicsVelocity.z);
+                }
+
+                var dir = PhysicsVelocity.normalized;
+                float brakeMagnitude = 0;
+                if (CharController.collisionFlags == CollisionFlags.Sides)
+                {
+                    //collision brake factor
+                    brakeMagnitude = Time.deltaTime * CollidedBrakeFactor;
+                }
+                else
+                {
+                    //normal brake factor
+                    brakeMagnitude = Time.deltaTime * BrakeFactor;
+                }
+                brakeMagnitude = Mathf.Min(brakeMagnitude, PhysicsVelocity.magnitude);
+                PhysicsVelocity -= dir * brakeMagnitude;
+            }          
+
+        }
+
+        public override void AddVelocity(Vector3 velocity)
+        {
+            if (!EnablePhysics)
+                return;
+
+            base.AddVelocity(velocity * VelocityMultiplier);
+        }
+
+        public override void SetVelocity(Vector3 velocity)
+        {
+            if (!EnablePhysics)
+                return;
+
+            base.SetVelocity(velocity * VelocityMultiplier);
         }
 
     }

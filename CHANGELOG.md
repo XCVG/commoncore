@@ -107,3 +107,8 @@
 * Added raw data, references to scene and base frame to dialogue frame objects
 * Fixed ChaseOptimalDistance sanity check being backwards
 * Added flag for returning to dialogue after shop (experimental)
+* Implemented fake physics for actors, allowing them to be pushed (WIP)
+* Implemented option for dialogue controller to hide HUD
+* Added support for magic indicator to RPG HUD controller
+* Added Terminated flag to CCBase, indicating that CommonCore has shut down
+* Added clamp angle function to MathUtils

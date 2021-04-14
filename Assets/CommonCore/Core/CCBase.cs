@@ -34,6 +34,11 @@ namespace CommonCore
         public static bool Initialized { get; private set; }
 
         /// <summary>
+        /// Whether the game has been terminated (CommonCore shut down)
+        /// </summary>
+        public static bool Terminated { get; private set; }
+
+        /// <summary>
         /// The scene to load after completing initialization
         /// </summary>
         public static string LoadSceneAfterInit { get; private set; } = "MainMenuScene";
@@ -673,6 +678,7 @@ namespace CommonCore
 
             Modules = null;
             CoreUtils.CollectGarbage(true);
+            Terminated = true;
 
             Debug.Log("[Core] ...done!");
         }
