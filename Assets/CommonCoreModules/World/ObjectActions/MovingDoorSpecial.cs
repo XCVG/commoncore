@@ -14,12 +14,19 @@ namespace CommonCore.ObjectActions
     {
         [SerializeField, Header("Door Parameters"), Tooltip("Set to 0 to have the door immediately close, or -1 to have it stay open until manually closed")]
         protected float HoldTime = 5f;
+        [SerializeField]
+        protected bool InitiallyOpen = false;
         [SerializeField, Tooltip("If set, OpenSound will be used for Close as well")]
         protected bool UseSameSound = true;
         [SerializeField]
         protected bool LoopSound = false;
         [SerializeField]
         protected MovingDoorBlockedAction BlockedAction = MovingDoorBlockedAction.Continue;
+
+        [SerializeField, Header("Persistence")]
+        protected bool PersistState = false;
+        [SerializeField, Tooltip("If blank, the name of the object this is attached to will be used")]
+        protected string PersistKey = null;
 
         [SerializeField, Header("Door Effects")] //we prefer AudioSource over dynamic
         protected AudioSource OpenSoundSource = null;
@@ -34,12 +41,26 @@ namespace CommonCore.ObjectActions
         private Coroutine DoorSequenceCoroutine = null;
         protected bool DoorOpen = false;
 
+        protected string LocalStorePersistKey => string.IsNullOrEmpty(PersistKey) ? $"{this.gameObject.name}_{GetType().Name}" : PersistKey;
+
+        protected virtual void Start()
+        {
+            if(InitiallyOpen)
+            {
+                DoorOpen = true;
+                SetDoorOpen();
+            }
+
+            RestoreState();
+        }
+
         public override void Execute(ActionInvokerData data)
         {
             if (Locked || (!AllowInvokeWhenDisabled && !isActiveAndEnabled))
                 return;
 
             ToggleDoor();
+            SaveState();
 
             if (!Repeatable)
                 Locked = true;
@@ -184,9 +205,40 @@ namespace CommonCore.ObjectActions
                 Debug.LogWarning($"{GetType().Name} on {gameObject.name} is set to loop sounds but uses dynamic sounds (looping dynamic sounds not supported)");
         }
 
+        protected void RestoreState()
+        {
+            if (!PersistState)
+                return;
+
+            if (BaseSceneController.Current.LocalStore.TryGetValue(LocalStorePersistKey + "_Locked", out object lockedObj) && lockedObj is bool locked)
+            {
+                Locked = locked;
+            }
+
+            if (BaseSceneController.Current.LocalStore.TryGetValue(LocalStorePersistKey + "_Open", out object openObj) && openObj is bool open)
+            {
+                DoorOpen = open;
+                if (DoorOpen)
+                    SetDoorOpen();
+                else
+                    SetDoorClosed();
+            }
+        }
+
+        protected void SaveState()
+        {
+            if (!PersistState)
+                return;
+
+            BaseSceneController.Current.LocalStore[LocalStorePersistKey + "_Open"] = DoorOpen;
+            BaseSceneController.Current.LocalStore[LocalStorePersistKey + "_Locked"] = Locked;
+        }
+
         //these handle the actual open/close action
         protected abstract IEnumerator CoOpenDoor();
         protected abstract IEnumerator CoCloseDoor();
+        protected abstract void SetDoorOpen();
+        protected abstract void SetDoorClosed();
 
 
     }

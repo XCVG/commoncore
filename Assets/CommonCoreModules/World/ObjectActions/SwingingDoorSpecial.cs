@@ -36,7 +36,7 @@ namespace CommonCore.ObjectActions
 
         private float CurrentDisplacement;
 
-        private void Start()
+        protected override void Start()
         {
             if (BlockedAction != MovingDoorBlockedAction.Continue)
             {
@@ -47,6 +47,8 @@ namespace CommonCore.ObjectActions
             {
                 Debug.LogWarning($"{GetType().Name} on {gameObject.name} has a pivot and mirror door set, but no pivot set (will result in undefined behaviour)");
             }
+
+            base.Start();
         }
 
         protected override IEnumerator CoOpenDoor()
@@ -120,5 +122,24 @@ namespace CommonCore.ObjectActions
             }
         }
 
+        protected override void SetDoorOpen()
+        {
+            if (Mathf.Approximately(CurrentDisplacement, RotateDisplacement))
+                return;
+
+            RotateDoors(RotateDisplacement);
+
+            CurrentDisplacement = RotateDisplacement;
+        }
+
+        protected override void SetDoorClosed()
+        {
+            if (Mathf.Approximately(CurrentDisplacement, 0))
+                return;
+
+            RotateDoors(-CurrentDisplacement);
+
+            CurrentDisplacement = 0;
+        }
     }
 }

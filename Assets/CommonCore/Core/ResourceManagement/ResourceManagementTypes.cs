@@ -21,7 +21,7 @@ namespace CommonCore.ResourceManagement
         public string Path { get; private set; } //I don't like this duplication but don't see a better way yet
 
         private HashSet<Type> ExploredForTypes { get; set; } = new HashSet<Type>();
-        private Dictionary<string, ResourceObject> ResourceObjects { get; set; } = new Dictionary<string, ResourceObject>();
+        private Dictionary<string, ResourceObject> ResourceObjects { get; set; } = new Dictionary<string, ResourceObject>(StringComparer.OrdinalIgnoreCase);
 
         public ResourceFolder(string path)
         {
@@ -176,7 +176,7 @@ namespace CommonCore.ResourceManagement
         {
             ExploreForType<T>();
 
-            Dictionary<string, T> resources = new Dictionary<string, T>();
+            Dictionary<string, T> resources = new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
             foreach(var kvp in ResourceObjects)
             {
                 var resource = kvp.Value.GetResource<T>(exactType);
@@ -211,7 +211,7 @@ namespace CommonCore.ResourceManagement
         public Dictionary<string, IEnumerable<T>> GetResourcesAllDictionary<T>(bool exactType) where T : UnityEngine.Object
         {
             ExploreForType<T>();
-            Dictionary<string, IEnumerable<T>> resources = new Dictionary<string, IEnumerable<T>>();
+            Dictionary<string, IEnumerable<T>> resources = new Dictionary<string, IEnumerable<T>>(StringComparer.OrdinalIgnoreCase);
             foreach (var kvp in ResourceObjects)
             {
                 var resource = kvp.Value.GetResourceAll<T>(exactType);
@@ -896,7 +896,7 @@ namespace CommonCore.ResourceManagement
             }
         }
 
-        public string Path { get; private set; } //path is relative to StreamingAssets TODO fix this
+        public string Path { get; private set; }
         //do we also need to know our logical path?
         private T _Resource;
 

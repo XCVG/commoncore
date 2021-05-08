@@ -57,10 +57,10 @@ namespace CommonCore.State
                 }
                 else if (MetaState.Instance.TransitionType == SceneTransitionType.NewGame)
                 {
+                    string sceneOverride = MetaState.Instance.NextScene;
                     GameState.Recreate();
                     MetaState.Instance.Clear();
-                    if(string.IsNullOrEmpty(MetaState.Instance.NextScene))
-                        MetaState.Instance.NextScene = CoreParams.InitialScene;                    
+                    MetaState.Instance.NextScene = string.IsNullOrEmpty(sceneOverride) ? CoreParams.InitialScene : sceneOverride;
                     GameState.LoadInitial();
                     PersistState.Instance.LastCampaignIdentifier = GameState.Instance.CampaignIdentifier;
                     GameState.Instance.CurrentScene = MetaState.Instance.NextScene;

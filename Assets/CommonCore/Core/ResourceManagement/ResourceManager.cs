@@ -19,9 +19,9 @@ namespace CommonCore.ResourceManagement
         public int NextResourceHandleID => ++CurrentResourceHandleID;
         private int CurrentResourceHandleID = 0;
 
-        private Dictionary<string, ResourceObject> ResourceObjectCache = new Dictionary<string, ResourceObject>();
+        private Dictionary<string, ResourceObject> ResourceObjectCache = new Dictionary<string, ResourceObject>(StringComparer.OrdinalIgnoreCase);
 
-        private Dictionary<string, ResourceFolder> ResourceFolders = new Dictionary<string, ResourceFolder>();
+        private Dictionary<string, ResourceFolder> ResourceFolders = new Dictionary<string, ResourceFolder>(StringComparer.OrdinalIgnoreCase);
 
         public ResourceManager()
         {
@@ -195,28 +195,6 @@ namespace CommonCore.ResourceManagement
             var rh = (ResourceHandle)Activator.CreateInstance(handleType, resource, filePath, priority, context);
             ro.AddResourceHandle(rh, resource.GetType());
             return rh;
-        }
-
-
-        //these two are probably junk
-        //needs to be renamed, needs to not use StreamingAssets, needs to at least give the option to preload
-        [Obsolete]
-        public void AddStreamingResource(string path, string assetPath, ResourcePriority priority) //logical path, physical path...
-        {
-            //will probably fail on IL2CPP but I don't think failure is guaranteed
-            var type = ResourceLoader.DetermineResourceType(Path.Combine(CoreParams.StreamingAssetsPath, assetPath), new ResourceLoadContext() { TargetPath = path, ResourceManager = this, ResourceLoader = ResourceLoader});
-            var handleType = typeof(FileResourceHandle<>).MakeGenericType(type);
-            ResourceHandle resourceHandle = (ResourceHandle)Activator.CreateInstance(handleType, Path.Combine(CoreParams.StreamingAssetsPath, assetPath), priority);
-
-            var ro = RetrieveResourceObject(path);
-            ro.AddResourceHandle(resourceHandle, type);
-        }
-
-        [Obsolete]
-        public void AddStreamingResource<T>(string path, string assetPath, ResourcePriority priority) where T : UnityEngine.Object
-        {
-            var ro = RetrieveResourceObject(path);
-            ro.AddResourceHandle(new FileResourceHandle<T>(Path.Combine(CoreParams.StreamingAssetsPath, assetPath), priority));
         }
 
         //gets a resource folder from the dictionary if it exists, creates it if it does not

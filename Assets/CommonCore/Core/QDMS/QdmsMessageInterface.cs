@@ -14,12 +14,12 @@ namespace CommonCore.Messaging
     /// </remarks>
     public class QdmsMessageInterface: IQdmsMessageReceiver
     {
-        internal Queue<QdmsMessage> MessageQueue;
+        private Queue<QdmsMessage> MessageQueue;
 
         /// <summary>
-        /// The GameObject this receiver is attached to (if it exists)
+        /// The Object this receiver is attached to (if it exists)
         /// </summary>
-        public GameObject Attachment { get; private set; }
+        public UnityEngine.Object Attachment { get; private set; }
 
         /// <summary>
         /// Whether this interface has a GameObject attachment
@@ -34,13 +34,19 @@ namespace CommonCore.Messaging
         /// </remarks>
         public bool KeepMessagesInQueue { get; set; } = false;
 
+        /// <summary>
+        /// Whether this message receiver is valid
+        /// </summary>
+        /// <remarks>Actual validity reported to bus is "has no attachment or attachment exists AND this is valid"</remarks>
+        public bool IsValid { get; set; } = true;
+
         private List<Action<QdmsMessage>> ReceiveActions = new List<Action<QdmsMessage>>();
 
         /// <summary>
         /// Create a message receiver interface
         /// </summary>
         /// <param name="attachment">The gameobject to attach to</param>
-        public QdmsMessageInterface(GameObject attachment) : this()
+        public QdmsMessageInterface(UnityEngine.Object attachment) : this()
         {
             Attachment = attachment;
             HasAttachment = true;
@@ -49,6 +55,7 @@ namespace CommonCore.Messaging
         /// <summary>
         /// Create a message receiver interface
         /// </summary>
+        /// <remarks>If you use this directly (no attachment) you must set IsValid to false when you are done with the receiver!</remarks>
         public QdmsMessageInterface()
         {
             MessageQueue = new Queue<QdmsMessage>();
@@ -112,19 +119,19 @@ namespace CommonCore.Messaging
         /// <remarks>Interface implementation.</remarks>
         public void ReceiveMessage(QdmsMessage msg)
         {
-            MessageQueue.Enqueue(msg);
+            bool handledMessage = HandleMessage(msg);
 
-            HandleMessage();
+            if(!handledMessage || KeepMessagesInQueue)
+                MessageQueue.Enqueue(msg);
+            
         }
 
-        private void HandleMessage()
+        private bool HandleMessage(QdmsMessage message)
         {
             //if we have any receivers, fire them
             bool handledMessage = false;
             if(ReceiveActions.Count > 0)
             {
-                var message = MessageQueue.Peek();
-
                 foreach(var action in ReceiveActions)
                 {
                     if (action != null)
@@ -142,20 +149,17 @@ namespace CommonCore.Messaging
                 }
             }
 
-            //if we handled the message and don't intend to keep it, dump it
-            if (handledMessage && !KeepMessagesInQueue)
-                MessageQueue.Dequeue();
+            return handledMessage;
         }
 
         /// <summary>
-        /// Whether this receiver is valid or not.
+        /// Interface implementation; if this receiver is valid or not
         /// </summary>
-        /// <remarks>Interface implementation.</remarks>
-        public bool IsValid
+        bool IQdmsMessageReceiver.IsValid
         {
             get
             {
-                return HasAttachment ? Attachment != null : true;
+                return (HasAttachment ? Attachment != null : true) && this.IsValid;
             }
         }
 

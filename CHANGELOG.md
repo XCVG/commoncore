@@ -112,3 +112,12 @@
 * Added support for magic indicator to RPG HUD controller
 * Added Terminated flag to CCBase, indicating that CommonCore has shut down
 * Added clamp angle function to MathUtils
+* Fixed scene override on new game not working
+* Custom difficulty can no longer be selected from the ingame UI
+* Door open/closed state can now be persisted across scene change
+* Revamped player spawn logic with explicit PlayerSpawnPoint script
+* Items are now equipped in CharacterModel by item ID
+* FlyingActorMovementComponent thresholds are no longer hardcoded
+* Minor fix in selection logic for FacingSpriteActorAnimationComponent (will now definitely pick first option)
+* Messaging system no longer locks up or lags when messages are sent from message receivers (fixed handle-before-enqueue logic in QdmsMessageInterface)
+* ResourceManager is no longer case sensitive (behaviour now consistent with Unity)

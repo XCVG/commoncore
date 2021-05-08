@@ -28,12 +28,14 @@ namespace CommonCore.ObjectActions
 
         private float CurrentDisplacement;
 
-        private void Start()
+        protected override void Start()
         {
             if(BlockedAction != MovingDoorBlockedAction.Continue && DoorCollider == null)
             {
                 Debug.LogWarning($"{GetType().Name} on {gameObject.name} has a block action set but has no collider set (will never detect the door as blocked)");
             }
+
+            base.Start();
         }
 
         protected override IEnumerator CoOpenDoor()
@@ -81,6 +83,28 @@ namespace CommonCore.ObjectActions
 
                 yield return null;
             }
+        }
+
+        protected override void SetDoorOpen()
+        {
+            if (Mathf.Approximately(CurrentDisplacement, MoveDisplacement))
+                return;
+
+            Vector3 scaledMoveVector = MoveVector.normalized * MoveDisplacement;
+            DoorTransform.Translate(transform.TransformVector(scaledMoveVector), Space.World);
+
+            CurrentDisplacement = MoveDisplacement;
+        }
+
+        protected override void SetDoorClosed()
+        {
+            if (Mathf.Approximately(CurrentDisplacement, 0))
+                return;
+
+            Vector3 scaledMoveVector = -MoveVector.normalized * CurrentDisplacement;
+            DoorTransform.Translate(transform.TransformVector(scaledMoveVector), Space.World);
+
+            CurrentDisplacement = 0;
         }
     }
 }

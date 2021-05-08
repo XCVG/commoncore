@@ -75,6 +75,8 @@ namespace CommonCore.RpgGame.UI
             ShakeEffectToggle.isOn = ConfigState.Instance.ShakeEffects;
             FlashEffectToggle.isOn = ConfigState.Instance.FlashEffects;
 
+            if (DifficultySlider.maxValue < (int)gameplayConfig.DifficultySetting)
+                DifficultySlider.maxValue = (int)gameplayConfig.DifficultySetting;
             DifficultySlider.value = (int)gameplayConfig.DifficultySetting;
 
             SetCrosshairValue(gameplayConfig.Crosshair);

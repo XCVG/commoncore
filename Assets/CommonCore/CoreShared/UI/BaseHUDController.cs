@@ -27,7 +27,7 @@ namespace CommonCore.UI
 
         private void Awake()
         {
-            MessageInterface = new QdmsMessageInterface();
+            MessageInterface = new QdmsMessageInterface(this);
             Current = this;
         }
 

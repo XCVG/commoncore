@@ -439,36 +439,45 @@ namespace CommonCore.World
             {
                 if (!string.IsNullOrEmpty(mgs.PlayerIntent.SpawnPoint))
                 {
-                    GameObject spawnPoint = WorldUtils.FindObjectByTID(mgs.PlayerIntent.SpawnPoint);
-                    player.transform.position = spawnPoint.transform.position;
-                    player.transform.rotation = spawnPoint.transform.rotation;
+                    GameObject spawnPoint = WorldUtils.FindPlayerSpawn(mgs.PlayerIntent.SpawnPoint);
+                    if (spawnPoint != null)
+                    {
+                        player.transform.position = spawnPoint.transform.position;
+                        player.transform.rotation = spawnPoint.transform.rotation;
+                        return;
+                    }
                 }
                 else if(mgs.PlayerIntent.SpawnPoint != null) //not null, but is empty
                 {
-                    GameObject spawnPoint = WorldUtils.FindObjectByTID("DefaultPlayerSpawn");
+                    GameObject spawnPoint = WorldUtils.FindPlayerSpawn();
                     if(spawnPoint != null)
                     {
                         player.transform.position = spawnPoint.transform.position;
                         player.transform.rotation = spawnPoint.transform.rotation;
+                        return;
                     }                    
                 }
                 else
                 {
                     player.transform.position = mgs.PlayerIntent.Position;
                     player.transform.rotation = mgs.PlayerIntent.Rotation;
+                    return;
                 }
+
+                Debug.LogWarning($"Failed to restore player to spawn point from player intent because spawn point \"{mgs.PlayerIntent.SpawnPoint}\" could not be found!");
             }
-            else
+            //else
+
             {
 
-                GameObject spawnPoint = WorldUtils.FindObjectByTID("DefaultPlayerSpawn");
+                GameObject spawnPoint = WorldUtils.FindPlayerSpawn();
                 if (spawnPoint != null)
                 {
                     player.transform.position = spawnPoint.transform.position;
                     player.transform.rotation = spawnPoint.transform.rotation;
                 }
 
-                Debug.LogWarning("No player spawn intent exists!");
+                //Debug.LogWarning("No player spawn intent exists!");
             }
         }
 

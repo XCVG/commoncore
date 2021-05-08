@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using CommonCore.State;
 using CommonCore.Config;
+using System.Linq;
 
 namespace CommonCore.World
 {
@@ -73,6 +74,34 @@ namespace CommonCore.World
                     Debug.LogWarning("Couldn't find PlayerController!");
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Finds the default player spawn point
+        /// </summary>
+        public static GameObject FindPlayerSpawn() => FindPlayerSpawn("DefaultPlayerSpawn");
+
+        /// <summary>
+        /// Finds the player spawn point by name
+        /// </summary>
+        /// <remarks>
+        /// <para>Selects from active PlayerSpawnPoints, then active without PlayerSpawnPoint, then inactive without PlayerSpawnPoint</para>
+        /// </remarks>
+        public static GameObject FindPlayerSpawn(string spawnPointName)
+        {
+            Transform[] transforms = CoreUtils.GetWorldRoot().GetComponentsInChildren<Transform>(true);
+            var potentialSpawnPoints = transforms.Select(t => t.gameObject).Where(g => g.name == spawnPointName);
+            PlayerSpawnPoint spawnPoint = potentialSpawnPoints.Where(g => g.activeInHierarchy).Select(g => g.GetComponent<PlayerSpawnPoint>()).Where(p => p != null).FirstOrDefault();
+            if (spawnPoint != null)
+                return spawnPoint.gameObject;
+            GameObject spawnPointObject = potentialSpawnPoints.Where(g => g.activeInHierarchy).FirstOrDefault();
+            if (spawnPointObject != null)
+                return spawnPointObject;
+            spawnPointObject = potentialSpawnPoints.Where(g => g.GetComponent<PlayerSpawnPoint>() == null).FirstOrDefault();
+            if (spawnPointObject != null)
+                return spawnPointObject;
+
+            return null;
         }
 
         /// <summary>

@@ -298,6 +298,7 @@ namespace CommonCore.RpgGame.World
                             NextFrameSet = animation.ReturnToIdle ? Idle : null;
 
                             StartAnimationSequence(animation.Frames);
+                            break;
                         }
                         else
                         {

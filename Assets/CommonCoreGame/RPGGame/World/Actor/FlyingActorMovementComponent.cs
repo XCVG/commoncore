@@ -14,9 +14,7 @@ namespace CommonCore.RpgGame.World
     {
         private const float AltimeterRaycastDistance = 500f;
         private const float AngleThreshold = 0.5f;
-        private const float HoverThreshold = 0.5f; //TODO unconst this?
-        private const float DropThreshold = 0.2f;
-
+        
         [SerializeField, Header("Flying Options")]
         private float PreferredHeight = 10f;
         [SerializeField]
@@ -39,6 +37,10 @@ namespace CommonCore.RpgGame.World
         private float DropAccleration = 5f;
         [SerializeField]
         private float MaxDropSpeed = 15f;
+        [SerializeField]
+        private float HoverThreshold = 0.5f;
+        [SerializeField]
+        private float DropThreshold = 0.2f;
 
         //override altitude, for scripted movement or whatever
         public float? YPositionOverride { get; set; } //TODO implement this
