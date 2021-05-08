@@ -101,7 +101,7 @@
 * Implemented dialogue trace (WIP)
 * Implemented lighting for sprite weapon viewmodels (WIP)
 
-# 3.0.0 pNext
+# 3.0.0 Preview 4
 
 * Added args field to ScriptExecutionContext
 * Added raw data, references to scene and base frame to dialogue frame objects
@@ -121,3 +121,6 @@
 * Minor fix in selection logic for FacingSpriteActorAnimationComponent (will now definitely pick first option)
 * Messaging system no longer locks up or lags when messages are sent from message receivers (fixed handle-before-enqueue logic in QdmsMessageInterface)
 * ResourceManager is no longer case sensitive (behaviour now consistent with Unity)
+
+# 3.0.0 pNext
+
