@@ -152,7 +152,7 @@ affinity
 quest
 	set, add, start, finish
 
-av
+av or actorvalue (CommonCore only)
 	set, add
 
 eval (Katana only)
@@ -231,7 +231,7 @@ skill: <skill>
 
 stat: <stat>
 
-av: <actorvalue>
+actorvalue: <actorvalue>
 
 AVAILABLE COMPARISONS
 
