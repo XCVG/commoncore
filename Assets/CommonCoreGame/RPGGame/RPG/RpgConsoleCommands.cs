@@ -95,7 +95,7 @@ namespace CommonCore.RpgGame.Rpg
 
         //***** Faction manipulation
 
-        [Command]
+        [Command(className = "Factions", alias = "List", useClassName = true)]
         static void ListFactions()
         {
             ConsoleModule.WriteLine(GameState.Instance.FactionState.EnumerateFactions().ToNiceString());
@@ -105,6 +105,12 @@ namespace CommonCore.RpgGame.Rpg
         static void ListFactionRelations()
         {
             ConsoleModule.WriteLine(GameState.Instance.FactionState.EnumerateRelations().ToNiceString((x) => $"{x.self}->{x.target} : {x.relation}"));
+        }
+
+        [Command(className = "Factions", alias = "SetRelation", useClassName = true)]
+        static void SetFactionRelation(string factionSource, string factionTarget, string relation)
+        {
+            GameState.Instance.FactionState.SetRelation(factionSource, factionTarget, (FactionRelationStatus)Enum.Parse(typeof(FactionRelationStatus), relation));
         }
 
         //***** MapMarker manipulation

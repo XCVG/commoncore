@@ -18,11 +18,14 @@ namespace CommonCore.State
         public StateModule()
         {
             PersistState.Load();
+            PersistState.Instance.LastStartupTime = DateTime.Now;
+            PersistState.Instance.LastApplicationPath = CoreParams.GameFolderPath;
             PersistState.Save();
         }
 
         public override void Dispose()
         {
+            PersistState.Instance.LastExitTime = DateTime.Now;
             PersistState.Save();
         }
 

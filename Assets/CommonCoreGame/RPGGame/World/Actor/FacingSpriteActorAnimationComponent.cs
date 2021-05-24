@@ -239,7 +239,7 @@ namespace CommonCore.RpgGame.World
                     LoopCurrentFrameSet = true;
                     NextFrameSet = null;
                     NextAnimState = null;
-                    StartAnimationSequence(Running);
+                    StartAnimationSequence((Running != null && Running.Length > 0) ? Running : Walking);
                     break;
                 case ActorAnimState.Hurting:
                     LoopCurrentFrameSet = false;

@@ -406,6 +406,11 @@ namespace CommonCore.RpgGame.Dialogue
                 type = ConditionType.Item;
                 target = jt["item"].Value<string>();
             }
+            else if (jt["av"] != null)
+            {
+                type = ConditionType.ActorValue;
+                target = jt["av"].Value<string>();
+            }
             else if (jt["actorvalue"] != null)
             {
                 type = ConditionType.ActorValue;
@@ -521,6 +526,11 @@ namespace CommonCore.RpgGame.Dialogue
                 targetType = SkillCheckTarget.ActorValue;
                 target = jt["av"].ToString();
             }
+            else if (!jt["actorvalue"].IsNullOrEmpty())
+            {
+                targetType = SkillCheckTarget.ActorValue;
+                target = jt["actorvalue"].ToString();
+            }
             else
             {
                 throw new NotSupportedException("Unsupported or unrecognized skill check type");
@@ -598,6 +608,11 @@ namespace CommonCore.RpgGame.Dialogue
             {
                 type = MicroscriptType.Quest;
                 target = jt["quest"].Value<string>();
+            }
+            else if (jt["av"] != null)
+            {
+                type = MicroscriptType.ActorValue;
+                target = jt["av"].Value<string>();
             }
             else if (jt["actorvalue"] != null)
             {

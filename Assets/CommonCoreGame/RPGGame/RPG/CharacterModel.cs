@@ -11,6 +11,7 @@ using CommonCore.World;
 using CommonCore.State;
 using System.Collections;
 using System.Linq;
+using CommonCore.Scripting;
 
 namespace CommonCore.RpgGame.Rpg
 {
@@ -150,6 +151,7 @@ namespace CommonCore.RpgGame.Rpg
             Level = 1;
 
             Inventory = new InventoryModel();
+            Inventory.Character = this;
             Conditions = new List<Condition>();
             Equipped = new EquippedDictionaryProxy(this);
             AmmoInMagazine = new Dictionary<EquipSlot, int>();
@@ -163,6 +165,7 @@ namespace CommonCore.RpgGame.Rpg
         [OnDeserialized]
         private void HandleOnDeserialized(StreamingContext context)
         {
+            Inventory.Character = this;
             RecalculateStats(); //recalculate derived stats on load
         }
 
@@ -273,6 +276,9 @@ namespace CommonCore.RpgGame.Rpg
 
             item.Equipped = true;
 
+            if (!string.IsNullOrEmpty(item?.ItemModel?.Scripts?.OnEquip))
+                ScriptingModule.Call(item?.ItemModel?.Scripts?.OnEquip, new ScriptExecutionContext() { Caller = this }, item.ItemModel, item);
+
             UpdateStats();
 
             QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgChangeWeapon", "Slot", slot));
@@ -315,6 +321,9 @@ namespace CommonCore.RpgGame.Rpg
             }
 
             item.Equipped = false;
+
+            if (!string.IsNullOrEmpty(item?.ItemModel?.Scripts?.OnUnequip))
+                ScriptingModule.Call(item?.ItemModel?.Scripts?.OnUnequip, new ScriptExecutionContext() { Caller = this }, item.ItemModel, item);
 
             UpdateStats();
 

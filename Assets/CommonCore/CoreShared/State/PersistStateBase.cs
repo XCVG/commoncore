@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
+using System;
 
 namespace CommonCore.State
 {
@@ -98,5 +99,20 @@ namespace CommonCore.State
         /// Campaign Identifier of the last played game
         /// </summary>
         public string LastCampaignIdentifier { get; set; } = null;
+
+        /// <summary>
+        /// Last time this application was started up
+        /// </summary>
+        public DateTime? LastStartupTime { get; set; } = null;
+
+        /// <summary>
+        /// Last time this application was exited
+        /// </summary>
+        public DateTime? LastExitTime { get; set; } = null;
+
+        /// <summary>
+        /// Last path this application was started from
+        /// </summary>
+        public string LastApplicationPath { get; set; } = null;
     }
 }

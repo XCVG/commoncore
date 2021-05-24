@@ -249,6 +249,7 @@ namespace CommonCore.RpgGame.Dialogue
                     break;
                 case ChoicePanelHeight.Fixed:
                     ChoicePanel.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, f.Options.PanelHeightPixels);
+                    faceYOffset = -(DefaultPanelHeight - f.Options.PanelHeightPixels);
                     break;
                 default:
                     if (!Mathf.Approximately(ChoicePanel.rect.height, DefaultPanelHeight))

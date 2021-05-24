@@ -32,6 +32,9 @@ namespace CommonCore.World
 
         public void SpawnEntity()
         {
+            if (SpawnedEntity)
+                return;
+
             //check for warning conditions
             if(string.IsNullOrEmpty(FormID))
             {

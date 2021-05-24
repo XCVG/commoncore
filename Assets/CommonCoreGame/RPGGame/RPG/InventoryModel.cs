@@ -1,4 +1,5 @@
 ﻿using CommonCore.DebugLog;
+using CommonCore.Scripting;
 using CommonCore.State;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -7,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using UnityEngine;
 
@@ -81,14 +83,14 @@ namespace CommonCore.RpgGame.Rpg
                 CDebug.LogEx("Autocreating item models!", LogLevel.Verbose, null);
                 foreach (AmmoType at in Enum.GetValues(typeof(AmmoType)))
                 {
-                    AmmoItemModel aim = new AmmoItemModel(at.ToString(), 0, 1, 1, 0, false, false, null, null, at);
+                    AmmoItemModel aim = new AmmoItemModel(at.ToString(), 0, 1, 1, 0, false, false, null, null, null, at);
                     Models.Add(at.ToString(), aim);
                     LoadItemCount++;
                 }
                 
                 foreach(MoneyType mt in Enum.GetValues(typeof(MoneyType)))
                 {
-                    MoneyItemModel mim = new MoneyItemModel(mt.ToString(), 0, 1, 1, 0, false, false, null, null, mt);
+                    MoneyItemModel mim = new MoneyItemModel(mt.ToString(), 0, 1, 1, 0, false, false, null, null, null, mt);
                     Models.Add(mt.ToString(), mim);
                     LoadItemCount++;
                 }
@@ -323,7 +325,10 @@ namespace CommonCore.RpgGame.Rpg
 
         [JsonProperty]
         private List<InventoryItemInstance> Items;
-        
+
+        [JsonIgnore]
+        public CharacterModel Character { get; internal set; }
+
         public InventoryModel()
         {
             Items = new List<InventoryItemInstance>();
@@ -409,6 +414,7 @@ namespace CommonCore.RpgGame.Rpg
 
         public bool RemoveItem(InventoryItemInstance item)
         {
+            CallOnRemove(item);
             return Items.Remove(item);
         }
 
@@ -417,7 +423,9 @@ namespace CommonCore.RpgGame.Rpg
             if(item.ItemModel.Stackable)
             {
                 //reduce quantity
+                int oldQuantity = item.Quantity;
                 item.Quantity = Math.Max(0, (item.Quantity - quantity));
+                CallOnQuantityChanged(item, oldQuantity);
                 if (item.Quantity == 0)
                     return RemoveItem(item);
                 return true;
@@ -460,9 +468,14 @@ namespace CommonCore.RpgGame.Rpg
                     if (Items[foundIndex].Quantity < quantity)
                         throw new InvalidOperationException();
 
+                    int oldQuantity = Items[foundIndex].Quantity;
                     Items[foundIndex].Quantity -= quantity;
+                    CallOnQuantityChanged(Items[foundIndex], oldQuantity);
                     if (Items[foundIndex].Quantity == 0)
+                    {
+                        CallOnRemove(Items[foundIndex]);
                         Items.RemoveAt(foundIndex);
+                    }
                 }
                 else
                 {
@@ -476,6 +489,7 @@ namespace CommonCore.RpgGame.Rpg
                     }
                     else
                     {
+                        CallOnRemove(Items[foundIndex]);
                         Items.RemoveAt(foundIndex);
                     }
 
@@ -506,12 +520,18 @@ namespace CommonCore.RpgGame.Rpg
             {
                 if(foundModel.Stackable)
                 {
+                    int oldQuantity = Items[foundIndex].Quantity;
                     Items[foundIndex].Quantity -= 1;
+                    CallOnQuantityChanged(Items[foundIndex], oldQuantity);
                     if (Items[foundIndex].Quantity == 0)
+                    {
+                        CallOnRemove(Items[foundIndex]);
                         Items.RemoveAt(foundIndex);
+                    }
                 }
                 else
                 {
+                    CallOnRemove(Items[foundIndex]);
                     Items.RemoveAt(foundIndex);
                 }
                 
@@ -540,15 +560,18 @@ namespace CommonCore.RpgGame.Rpg
             {
                 instance = new InventoryItemInstance(item.ItemModel);
                 Items.Add(instance);
+                CallOnAdd(instance);
                 instance.Quantity = Math.Min(item.Quantity, item.ItemModel.MaxQuantity);
-
+                CallOnQuantityChanged(instance, 0);
                 int quantityRemaining = item.Quantity - instance.Quantity;
                 item.Quantity = quantityRemaining;
             }
             else
             {
                 int quantityToAdd = Math.Min(item.Quantity, item.ItemModel.MaxQuantity - instance.Quantity);
+                int oldQuantity = instance.Quantity;
                 instance.Quantity += quantityToAdd;
+                CallOnQuantityChanged(instance, oldQuantity);
                 int quantityRemaining = item.Quantity - quantityToAdd;
                 item.Quantity = quantityRemaining;
             }
@@ -598,6 +621,7 @@ namespace CommonCore.RpgGame.Rpg
         /// </summary>
         public void AddItem(InventoryItemInstance item)
         {
+            CallOnAdd(item);
             Items.Add(item);
         }
 
@@ -635,18 +659,55 @@ namespace CommonCore.RpgGame.Rpg
                 {
                     instance = new InventoryItemInstance(mdl);
                     Items.Add(instance);
+                    CallOnAdd(instance);
                     instance.Quantity = 0;
                 }
+                int oldQuantity = instance.Quantity;
 
                 instance.Quantity += quantity;
+                CallOnQuantityChanged(instance, oldQuantity);
             }
             else
             {
                 for (int i = 0; i < quantity; i++)
                 {
-                    Items.Add(new InventoryItemInstance(mdl));
+                    var instance = new InventoryItemInstance(mdl);
+                    Items.Add(instance);
+                    CallOnAdd(instance);
                 }
             }
+        }
+
+        //scripting handling
+
+        private void CallOnQuantityChanged(InventoryItemInstance instance, int oldQuantity, int? newQuantity = null)
+        {
+            if (string.IsNullOrEmpty(instance?.ItemModel?.Scripts?.OnQuantityChange))
+                return;
+
+            if(!instance.ItemModel.Stackable)
+            {
+                Debug.LogError($"Tried to call OnQuantityChange script \"{instance.ItemModel.Scripts.OnQuantityChange}\" on non-stackable model \"{instance.ItemModel}\"");
+                return;
+            }
+
+            ScriptingModule.Call(instance.ItemModel.Scripts.OnQuantityChange, new ScriptExecutionContext() { Caller = this }, instance.ItemModel, instance, oldQuantity, newQuantity ?? instance.Quantity);
+        }
+
+        private void CallOnAdd(InventoryItemInstance instance)
+        {
+            if (string.IsNullOrEmpty(instance?.ItemModel?.Scripts?.OnAdd))
+                return;
+
+            ScriptingModule.Call(instance.ItemModel.Scripts.OnAdd, new ScriptExecutionContext() { Caller = this }, instance.ItemModel, instance);
+        }
+
+        private void CallOnRemove(InventoryItemInstance instance)
+        {
+            if (string.IsNullOrEmpty(instance?.ItemModel?.Scripts?.OnRemove))
+                return;
+
+            ScriptingModule.Call(instance.ItemModel.Scripts.OnRemove, new ScriptExecutionContext() { Caller = this }, instance.ItemModel, instance);
         }
 
     }

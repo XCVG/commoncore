@@ -486,7 +486,7 @@ namespace CommonCore.RpgGame.World
                     if (!Relentless)
                     {
                         //break off if we are too far away or too badly hurt
-                        if (Health <= (MaxHealth * FleeHealthThreshold))
+                        if (FleeHealthThreshold > 0 && Health <= (MaxHealth * FleeHealthThreshold))
                         {
                             EnterState(ActorAiState.Fleeing);
                         }

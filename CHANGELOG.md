@@ -122,5 +122,14 @@
 * Messaging system no longer locks up or lags when messages are sent from message receivers (fixed handle-before-enqueue logic in QdmsMessageInterface)
 * ResourceManager is no longer case sensitive (behaviour now consistent with Unity)
 
-# 3.0.0 pNext
+# 3.0.0 Preview 5
+
+* Added ability for items to execute scripts on pickup, use, drop etc
+* Fixed actor FleeHealthThreshold not disabled when set to 0
+* FacingSpriteActorAnimationComponent now uses walking animation if running animation is not available
+* Added console command to set faction relationships
+* Preemptive fix to EntityPlaceholder (could double-activate in a theoretical edge case)
+* Fixed DialogueController placing Character-position portrait at wrong height 
+* Added startup metadata to PersistState
+* Added consistent support for both `av` and `actorvalue` in DialogueParser
 
