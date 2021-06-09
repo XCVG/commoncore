@@ -24,17 +24,18 @@ public class PostBuildFileCopy : IPostprocessBuildWithReport
                 List<string> filePaths = new List<string>();
                 var lines = File.ReadAllLines(iniPath);
 
-                foreach(var line in lines)
+                foreach (var line in lines)
                 {
                     if (line.TrimStart().StartsWith("#"))
                         continue;
 
                     var path = Path.Combine(projectFolder, line.Trim());
-                    if(Directory.Exists(path))
+                    if (Directory.Exists(path))
                     {
+                        Directory.CreateDirectory(Path.Combine(targetFolder, line.Trim()));
                         CopyFilesRecursively(new DirectoryInfo(path), new DirectoryInfo(Path.Combine(targetFolder, line.Trim())), filePaths);
                     }
-                    else if(File.Exists(path))
+                    else if (File.Exists(path))
                     {
                         File.Copy(path, Path.Combine(targetFolder, Path.GetFileName(path)), true);
                         filePaths.Add(path);
@@ -48,7 +49,7 @@ public class PostBuildFileCopy : IPostprocessBuildWithReport
                 Debug.Log("[PostBuildFileCopy] No filecopy.ini found!");
             }
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Debug.LogError($"[PostBuildFileCopy] Fatal Error {e.GetType().Name}");
             Debug.LogException(e);

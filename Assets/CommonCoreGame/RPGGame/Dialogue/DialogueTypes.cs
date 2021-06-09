@@ -13,6 +13,8 @@ namespace CommonCore.RpgGame.Dialogue
 {
     public class DialogueScene
     {
+        public static readonly string BaseFrameName = "_BaseFrame";
+
         public IReadOnlyDictionary<string, Frame> Frames { get; private set; }
         public string Default;
         public string Music;
@@ -23,6 +25,8 @@ namespace CommonCore.RpgGame.Dialogue
             Default = defaultFrame;
             Music = music;
         }
+
+        public Frame BaseFrame => Frames[BaseFrameName];
     }
 
     public class ChoiceNode

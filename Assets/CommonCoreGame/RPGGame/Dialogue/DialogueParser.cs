@@ -83,7 +83,7 @@ namespace CommonCore.RpgGame.Dialogue
             Frame baseFrame = new Frame(sBackground, sImage, sNext, sMusic, sName, sText, sNextText, sCameraDir, sPosition, null, null, sOptions, sScripts, scene, null, jo, sExtraData);
 
             //parse frames            
-            frames.Add(dialogueName, baseFrame);
+            frames.Add(DialogueScene.BaseFrameName, baseFrame);
             JObject jf = (JObject)jo["frames"];
             foreach (var x in jf)
             {
@@ -92,6 +92,8 @@ namespace CommonCore.RpgGame.Dialogue
                     string key = x.Key;
                     JToken value = x.Value;
                     Frame f = DialogueParser.ParseSingleFrame(value, baseFrame, scene);
+                    if (key.StartsWith("_"))
+                        Debug.LogWarning($"Frame {key} starts with \"_\" and may collide with special names");
                     frames.Add(key, f);
                 }
                 catch (Exception e)

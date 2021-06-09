@@ -40,7 +40,7 @@ namespace CommonCore
 
         private void Update()
         {
-            if(TimeToWait > 0)
+            if (TimeToWait > 0)
                 Elapsed += Time.deltaTime;
 
             if (GetSkipKeyDown())
@@ -89,6 +89,13 @@ namespace CommonCore
                 return true;
 
             return false;
+        }
+
+        public void Reset()
+        {
+            HeldTime = 0;
+            Elapsed = 0;
+            ContinueHintObject.Ref()?.SetActive(false);
         }
     }
 }

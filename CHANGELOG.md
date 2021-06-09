@@ -133,3 +133,10 @@
 * Added startup metadata to PersistState
 * Added consistent support for both `av` and `actorvalue` in DialogueParser
 
+# 3.0.0 pNext
+
+* Fixed editor file copy script not creating root dir
+* Added Reset functionality to SkippableTimerScript
+* Added option for ApplyThemeScript to apply when theme policy is ExplicitOnly or not
+* Cleaned up handling of base frame in dialogue scene (now available via DialogueScene.BaseFrame)
+

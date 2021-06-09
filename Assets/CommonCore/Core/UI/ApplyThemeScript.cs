@@ -22,6 +22,8 @@ namespace CommonCore.UI
         private bool Recurse = true;
         [SerializeField]
         private string ThemeOverride = null;
+        [SerializeField, Tooltip("If true, theme will be applied if theme policy is ExplicitOnly")]
+        private bool ConsiderExplicit = false;
 
         private void Start()
         {
@@ -37,7 +39,7 @@ namespace CommonCore.UI
 
         public void ApplyTheme()
         {
-            if (CoreParams.UIThemeMode == UIThemePolicy.Disabled)
+            if (CoreParams.UIThemeMode == UIThemePolicy.Disabled || (!ConsiderExplicit && CoreParams.UIThemeMode == UIThemePolicy.ExplicitOnly))
                 return;
 
             var uiModule = CCBase.GetModule<UIModule>();
