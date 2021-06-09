@@ -43,3 +43,9 @@ LightingData.asset.meta
 # /Assets/Objects/ThirdParty/
 # /Assets/Standard Assets/
 # /Assets/Resources/ThirdParty/
+
+# Explicitly excluded (this repo only, remove them from your own!)
+/Assets/CommonCoreModules/SickDevConsoleIntegration.meta
+/Assets/CommonCoreModules/SickDevConsoleIntegration/
+/Assets/Plugins/DevConsole.meta
+/Assets/Plugins/DevConsole/
