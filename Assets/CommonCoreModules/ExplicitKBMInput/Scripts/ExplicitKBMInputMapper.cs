@@ -26,7 +26,7 @@ namespace CommonCore.ExplicitKBMInput
         private float MouseYSensitivity;
         private float MouseScrollSensitivity;
 
-        private bool UseVerboseWarnings;
+        private bool UseMapperWarnings;
 
         public ExplicitKBMInputMapper()
         {
@@ -51,7 +51,7 @@ namespace CommonCore.ExplicitKBMInput
             MouseYSensitivity = inputMap.MouseYSensitivity;
             MouseScrollSensitivity = inputMap.MouseScrollSensitivity;
 
-            UseVerboseWarnings = ConfigState.Instance.UseVerboseLogging;
+            UseMapperWarnings = !ConfigState.Instance.SuppressInputMapperWarnings;
         }
 
         public override float GetAxis(string axis)
@@ -76,7 +76,7 @@ namespace CommonCore.ExplicitKBMInput
 
                 return keyboardValue + mouseValue;
             }
-            else if (UseVerboseWarnings)
+            else if (UseMapperWarnings)
             {
                 Debug.LogWarning($"[ExplicitKBMInputMapper] can't find mapping for axis \"{axis}\"");
             }
@@ -103,7 +103,7 @@ namespace CommonCore.ExplicitKBMInput
 
                 return keyboardValue + mouseValue;
             }
-            else if(UseVerboseWarnings)
+            else if(UseMapperWarnings)
             {
                 Debug.LogWarning($"[ExplicitKBMInputMapper] can't find mapping for axis \"{axis}\"");
             }
@@ -121,7 +121,7 @@ namespace CommonCore.ExplicitKBMInput
             {
                 return UnityEngine.Input.GetKey((KeyCode)axisMapping.PrimaryPositive) || UnityEngine.Input.GetKey((KeyCode)axisMapping.PrimaryNegative) || UnityEngine.Input.GetKey((KeyCode)axisMapping.SecondaryPositive) || UnityEngine.Input.GetKey((KeyCode)axisMapping.SecondaryNegative) || Mathf.Abs(GetMouseAxis(axisMapping.MouseAxis, false)) > MouseMoveThreshold;
             }
-            else if(UseVerboseWarnings)
+            else if(UseMapperWarnings)
             {
                 Debug.LogWarning($"[ExplicitKBMInputMapper] can't find mapping for button \"{button}\"");
             }
@@ -139,7 +139,7 @@ namespace CommonCore.ExplicitKBMInput
             {
                 return UnityEngine.Input.GetKeyDown((KeyCode)axisMapping.PrimaryPositive) || UnityEngine.Input.GetKeyDown((KeyCode)axisMapping.PrimaryNegative) || UnityEngine.Input.GetKeyDown((KeyCode)axisMapping.SecondaryPositive) || UnityEngine.Input.GetKeyDown((KeyCode)axisMapping.SecondaryNegative) || Mathf.Abs(GetMouseAxis(axisMapping.MouseAxis, false)) > MouseMoveThreshold;
             }
-            else if (UseVerboseWarnings)
+            else if (UseMapperWarnings)
             {
                 Debug.LogWarning($"[ExplicitKBMInputMapper] can't find mapping for button \"{button}\"");
             }
@@ -157,7 +157,7 @@ namespace CommonCore.ExplicitKBMInput
             {
                 return UnityEngine.Input.GetKeyUp((KeyCode)axisMapping.PrimaryPositive) || UnityEngine.Input.GetKeyUp((KeyCode)axisMapping.PrimaryNegative) || UnityEngine.Input.GetKeyUp((KeyCode)axisMapping.SecondaryPositive) || UnityEngine.Input.GetKeyUp((KeyCode)axisMapping.SecondaryNegative) || Mathf.Abs(GetMouseAxis(axisMapping.MouseAxis, false)) < MouseMoveThreshold;
             }
-            else if (UseVerboseWarnings)
+            else if (UseMapperWarnings)
             {
                 Debug.LogWarning($"[ExplicitKBMInputMapper] can't find mapping for button \"{button}\"");
             }

@@ -256,6 +256,7 @@ namespace CommonCore.Config
 
         //INPUT CONFIG
         public string InputMapper { get; set; } = "ExplicitKBMInputMapper";
+        public bool SuppressInputMapperWarnings { get; set; } = true;
         public float LookSpeed { get; set; } = 1.0f;
         public bool LookInvert { get; set; } = false;
         public float AxisDeadzone { get; set; } = 0.1f;
