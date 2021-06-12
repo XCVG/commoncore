@@ -725,7 +725,7 @@ namespace CommonCore.RpgGame.World
                         if (wim.CheckFlag(ItemFlag.WeaponProjectileIsEntity))
                             bullet = WorldUtils.SpawnEntity(wim.Projectile, null, shootPoint.position + (shootPoint.forward.normalized * 0.25f), shootPoint.rotation, null);
                         else
-                            bullet = WorldUtils.SpawnEffect(wim.Projectile, shootPoint.position + (shootPoint.forward.normalized * 0.25f), shootPoint.rotation.eulerAngles, transform.root);
+                            bullet = WorldUtils.SpawnEffect(wim.Projectile, shootPoint.position + (shootPoint.forward.normalized * 0.25f), shootPoint.rotation.eulerAngles, transform.root, false);
                     }
 
                     var bulletRigidbody = bullet.GetComponent<Rigidbody>();
@@ -742,6 +742,40 @@ namespace CommonCore.RpgGame.World
                     //Debug.Log(wim.Effector);
                     //Debug.Log($"damage: {bulletScript.HitInfo.Damage:F2} | pierce: {bulletScript.HitInfo.DamagePierce:F2}");
                     bulletScript.FiredByPlayer = true;
+
+                    //apply projectile and explosion options
+                    if (wim.ProjectileData != null)
+                        bulletScript.FakeGravity = wim.ProjectileData.Gravity;
+
+                    if (wim.ExplosionData != null && !wim.CheckFlag(ItemFlag.WeaponAlwaysUseEffectExplosion))
+                    {
+                        var explosionComponent = bulletScript.GetComponent<BulletExplosionComponent>();
+                        if(explosionComponent != null)
+                        {
+                            explosionComponent.Damage = wim.ExplosionData.Damage;
+                            explosionComponent.Radius = wim.ExplosionData.Radius;
+                            explosionComponent.UseFalloff = wim.ExplosionData.UseFalloff;
+                            if (!string.IsNullOrEmpty(wim.ExplosionData.HitPuff))
+                                explosionComponent.HitPuff = wim.ExplosionData.HitPuff;
+
+                            explosionComponent.EnableProximityDetonation = wim.ExplosionData.EnableProximityDetonation;
+                            explosionComponent.ProximityRadius = wim.ExplosionData.ProximityRadius;
+                            explosionComponent.UseFactions = wim.ExplosionData.UseFactions;
+                            explosionComponent.UseTangentHack = wim.ExplosionData.UseTangentHack;
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Explosion data is specified for {wim.Name} but {wim.Projectile} does not have a {nameof(BulletExplosionComponent)}!");
+                        }
+                    }
+                    else if(!wim.CheckFlag(ItemFlag.WeaponAlwaysUseEffectExplosion))
+                    {
+                        var explosionComponent = bulletScript.GetComponent<BulletExplosionComponent>();
+                        if (explosionComponent != null)
+                        {
+                            explosionComponent.enabled = false;
+                        }
+                    }
 
                     //Vector3 fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread), Vector3.right)
                     //    * (Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread), Vector3.up) * ShootPoint.forward.normalized);

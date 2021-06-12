@@ -6,15 +6,13 @@ using UnityEngine;
 using CommonCore.RpgGame.World;
 using CommonCore;
 using CommonCore.State;
-using System;
 
-namespace CommonCore.Experimental
+namespace CommonCore.RpgGame.World //here because we need factions
 {
 	/// <summary>
 	/// Somewhat hacky script for making bullets go boom
 	/// </summary>
-	[Obsolete]
-	public class BulletExplosionComponentEx : MonoBehaviour
+	public class BulletExplosionComponent : MonoBehaviour
 	{
 		[SerializeField]
 		private BulletScript BulletScript = null;
@@ -25,14 +23,12 @@ namespace CommonCore.Experimental
 		public bool UseFalloff = true;
 		public string HitPuff = string.Empty;
 
-		[SerializeField, Header("Proximity detonation")]
-		private bool EnableProximityDetonation = true;
-		[SerializeField]
-		private float ProximityRadius = 3f;
-		[SerializeField]
-		private bool UseFactions = false;
-		[SerializeField, Tooltip("If enabled, will only detonate if it is beside or past the target")]
-		private bool UseTangentHack = false;
+		[Header("Proximity detonation")]
+		public bool EnableProximityDetonation = true;
+		public float ProximityRadius = 3f;
+		public bool UseFactions = false;
+		[Tooltip("If enabled, will only detonate if it is beside or past the target")]
+		public bool UseTangentHack = false;
 
 		private bool Triggered = false;
 
@@ -47,7 +43,7 @@ namespace CommonCore.Experimental
 		private void Update()
 		{
 			//explode in close proximity to enemies
-			if(EnableProximityDetonation)
+			if (EnableProximityDetonation)
 			{
 				if (BulletScript.HitInfo.Originator == null)
 					return; //a bit of a hack; hitinfo not set up yet
@@ -71,7 +67,7 @@ namespace CommonCore.Experimental
 					foreach (var hit in hits)
 					{
 						string targetFaction = PredefinedFaction.None.ToString();
-						if(hit.Controller != null)
+						if (hit.Controller != null)
 						{
 							if (hit.Controller is ActorController ac)
 								targetFaction = ac.Faction;
@@ -89,11 +85,11 @@ namespace CommonCore.Experimental
 					goodHits = hits;
 				}
 
-				if(UseTangentHack)
+				if (UseTangentHack)
 				{
 					var possibleHits = goodHits;
 					goodHits = new List<HitInfo>();
-					foreach(var pHit in possibleHits)
+					foreach (var pHit in possibleHits)
 					{
 						Vector3 vecBulletToTarget = pHit.HitPoint - transform.position;
 						Vector3 dirBulletToTarget = vecBulletToTarget.normalized;
@@ -114,7 +110,7 @@ namespace CommonCore.Experimental
 
 		private void OnDestroy()
 		{
-			if (Triggered)
+			if (Triggered || !enabled)
 				return;
 
 			DoRadiusDamage();
@@ -127,7 +123,7 @@ namespace CommonCore.Experimental
 			var bulletHitInfo = BulletScript.HitInfo;
 
 			ActorHitInfo hitInfo = new ActorHitInfo(Damage, 0, bulletHitInfo.DamageType, (int)DefaultDamageEffectors.Explosion, false, 0, 0, bulletHitInfo.Originator, bulletHitInfo.OriginatorFaction, HitPuff, null, bulletHitInfo.HitFlags);
-            //TODO we copy flags, should we also copy ExtraFlags and ExtraData?
+			//TODO we copy flags, should we also copy ExtraFlags and ExtraData?
 
 			WorldUtils.RadiusDamage(transform.position, Radius, UseFalloff, true, false, false, false, hitInfo);
 
