@@ -146,6 +146,7 @@
 * Implemented different difficulty handling for actors considered followers vs normal actors
 * Added caller and dynamics data to ActionInvokerData
 * Assemblies are now loaded from StreamingAssets/managed
+* Cleaned up data types and methods of QdmsKeyValueMessage
 * Added subtitle convenience methods from Shattered 2 [Experimental]
 * Added lock time to weapons [WIP]
 * Added burst fire to weapons [WIP]

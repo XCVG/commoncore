@@ -478,9 +478,7 @@ namespace CommonCore.RpgGame.World
 
         private void PushViewChangeMessage(PlayerViewType newView)
         {
-            Dictionary<string, object> dict = new Dictionary<string, object>();
-            dict["ViewType"] = newView;
-            QdmsKeyValueMessage msg = new QdmsKeyValueMessage(dict, "PlayerChangeView");
+            QdmsKeyValueMessage msg = new QdmsKeyValueMessage("PlayerChangeView", "ViewType", newView);
             QdmsMessageBus.Instance.PushBroadcast(msg);
         }
         
@@ -556,7 +554,7 @@ namespace CommonCore.RpgGame.World
                     { "DamageToArmor", damageToArmor },
                     { "DamageToCharacter", damageToCharacter }
                 };
-                MessageInterface.PushToBus(new QdmsKeyValueMessage(damageValues, "PlayerTookDamage"));
+                MessageInterface.PushToBus(new QdmsKeyValueMessage("PlayerTookDamage", damageValues));
             }
 
         }

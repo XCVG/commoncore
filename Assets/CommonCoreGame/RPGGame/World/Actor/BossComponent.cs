@@ -62,7 +62,7 @@ namespace CommonCore.RpgGame.World
                 //signal health change
                 if(EnableMessaging && EnableHealthUpdates && !DeathKnown)
                 {
-                    var message = new QdmsKeyValueMessage(new Dictionary<string, object>() { { "Target", GetTooltip()}, {"Health", currentHealthFraction} }, "RpgBossHealthUpdate");
+                    var message = new QdmsKeyValueMessage("RpgBossHealthUpdate", new Dictionary<string, object>() { { "Target", GetTooltip()}, {"Health", currentHealthFraction} });
                     QdmsMessageBus.Instance.PushBroadcast(message);
                 }
             }

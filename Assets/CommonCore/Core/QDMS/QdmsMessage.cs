@@ -40,23 +40,23 @@ namespace CommonCore.Messaging
     /// </summary>
     public class QdmsKeyValueMessage : QdmsFlagMessage
     {
-        private readonly Dictionary<string, object> _Dictionary;
+        private readonly IDictionary<string, object> _Dictionary = new Dictionary<string, object>();        
 
-        public QdmsKeyValueMessage(Dictionary<string, object> values, string flag): base(flag)
+        public QdmsKeyValueMessage(string flag, IEnumerable<KeyValuePair<string, object>> values) : base(flag)
         {
-            _Dictionary = new Dictionary<string, object>();
-
-            foreach(var p in values)
-            {
-                _Dictionary.Add(p.Key, p.Value);
-            }
-        }
+            _Dictionary.AddRange(values);
+        }        
 
         //shorthand constructor for single key/value
         public QdmsKeyValueMessage(string flag, string key, object value) : base(flag)
         {
-            _Dictionary = new Dictionary<string, object>();
             _Dictionary.Add(key, value);
+        }
+
+        [Obsolete] //the f'ed-up argument order of this is the worst thing ever
+        public QdmsKeyValueMessage(Dictionary<string, object> values, string flag) : this(flag, values)
+        {
+
         }
 
         public bool HasValue(string key)
@@ -78,6 +78,7 @@ namespace CommonCore.Messaging
             return default(T);
         }
 
+        [Obsolete] //why did this ever exist
         public Type GetType(string key)
         {
             if (_Dictionary.ContainsKey(key))
