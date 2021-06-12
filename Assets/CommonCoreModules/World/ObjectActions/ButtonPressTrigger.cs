@@ -34,7 +34,7 @@ namespace CommonCore.ObjectActions
 
             if (inputPressed)
             {
-                ActionInvokerData d = new ActionInvokerData { Activator =  WorldUtils.GetPlayerController() };
+                ActionInvokerData d = new ActionInvokerData { Activator =  WorldUtils.GetPlayerController(), Caller = this };
                 Special.Invoke(d);
 
                 if (!Repeatable)

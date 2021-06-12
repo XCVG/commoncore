@@ -36,7 +36,7 @@ namespace CommonCore.RpgGame.ObjectActions
 
             if(GameState.Instance.CampaignState.HasFlag(Flag))
             {
-                ActionInvokerData d = new ActionInvokerData();
+                ActionInvokerData d = new ActionInvokerData() { Caller = this };
                 Special.Invoke(d);
                 Triggered = true;
 

@@ -154,7 +154,7 @@ namespace CommonCore.World
                 }
 
                 if(RepeatDeathSpecial)
-                    DeathSpecial.Ref()?.Execute(new ActionInvokerData() { Activator = LastDamageDealer }); //note that LastDamageDealer will almost certainly be null
+                    DeathSpecial.Ref()?.Execute(new ActionInvokerData() { Activator = LastDamageDealer, Caller = this }); //note that LastDamageDealer will almost certainly be null
 
                 //destroy/deactivate
                 if (DeactivateOnDeath)
@@ -222,7 +222,7 @@ namespace CommonCore.World
                 if(!string.IsNullOrEmpty(DeathEffect))
                     WorldUtils.SpawnEffect(DeathEffect, effectSpawnPoint.position, effectSpawnPoint.eulerAngles, null);
 
-                DeathSpecial.Ref()?.Execute(new ActionInvokerData() { Activator = LastDamageDealer });
+                DeathSpecial.Ref()?.Execute(new ActionInvokerData() { Activator = LastDamageDealer, Caller = this });
 
                 //destroy/deactivate
                 if (DeactivateOnDeath)

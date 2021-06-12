@@ -16,7 +16,7 @@ namespace CommonCore.ObjectActions
 
             if(!Triggered)
             {
-                ActionInvokerData d = new ActionInvokerData();
+                ActionInvokerData d = new ActionInvokerData() { Caller = this };
                 Special.Invoke(d);
                 Triggered = true;
                 SaveState();

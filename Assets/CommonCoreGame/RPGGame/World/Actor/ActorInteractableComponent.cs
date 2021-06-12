@@ -19,7 +19,7 @@ namespace CommonCore.RpgGame.World
 
         public override void OnActivate(GameObject activator)
         {
-            ControllerOnInteractDelegate.Invoke(new ActionInvokerData{ Activator = activator.GetComponent<BaseController>() });
+            ControllerOnInteractDelegate.Invoke(new ActionInvokerData{ Activator = activator.GetComponent<BaseController>(), Caller = this });
         }
     }
 }

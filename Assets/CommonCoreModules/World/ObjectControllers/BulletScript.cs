@@ -302,7 +302,7 @@ namespace CommonCore.World
                 HitPuffScript.SpawnHitPuff(HitInfo);
 
             if (HitSpecial != null)
-                HitSpecial.Invoke(new ActionInvokerData() { Activator = HitInfo.Originator });
+                HitSpecial.Invoke(new ActionInvokerData() { Activator = HitInfo.Originator, Caller = this, Velocity = Rigidbody.Ref()?.velocity, Position = transform.position, Rotation = transform.rotation });
 
             Destroy(this.gameObject);
         }

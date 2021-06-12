@@ -2,6 +2,7 @@
 using UnityEngine.Events;
 using System.Collections;
 using CommonCore.World;
+using System.Collections.Generic;
 
 namespace CommonCore.ObjectActions
 {
@@ -9,6 +10,13 @@ namespace CommonCore.ObjectActions
     public struct ActionInvokerData
     {
         public BaseController Activator;
+        public object Caller;
+
+        public Vector3? Position;
+        public Quaternion? Rotation;
+        public Vector3? Velocity;
+
+        public IDictionary<string, object> ExtraData;
     }
 
     [System.Serializable]

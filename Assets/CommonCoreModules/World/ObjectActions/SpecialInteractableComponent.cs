@@ -26,7 +26,7 @@ namespace CommonCore.World
 
             //execute special
             var activatorController = activator.GetComponent<BaseController>();
-            var data = new ActionInvokerData() { Activator = activatorController };
+            var data = new ActionInvokerData() { Activator = activatorController, Caller = this };
             Special.Invoke(data);
 
             //lock if not repeatable

@@ -39,7 +39,7 @@ namespace CommonCore.RpgGame.ObjectActions
 
             //execute special
             var activator = other.GetComponent<BaseController>();
-            var data = new ActionInvokerData() {Activator = activator};
+            var data = new ActionInvokerData() { Activator = activator, Caller = this, Position = other.transform.position, Rotation = other.transform.rotation };
             Special.Invoke(data);
 
             //lock if not repeatable

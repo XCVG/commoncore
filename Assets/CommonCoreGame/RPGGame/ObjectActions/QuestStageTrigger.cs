@@ -39,7 +39,7 @@ namespace CommonCore.RpgGame.ObjectActions
 
             if (CheckCondition())
             {
-                ActionInvokerData d = new ActionInvokerData();
+                ActionInvokerData d = new ActionInvokerData() { Caller = this };
                 Special.Invoke(d);
                 Triggered = true;
 

@@ -38,7 +38,7 @@ namespace CommonCore.ObjectActions
 
             //execute special
             var activator = other.GetComponent<BaseController>();
-            var data = new ActionInvokerData() { Activator = activator };
+            var data = new ActionInvokerData() { Activator = activator, Caller = this };
             Special.Invoke(data);
 
             //lock if not repeatable
