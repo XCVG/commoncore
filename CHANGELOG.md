@@ -142,6 +142,7 @@
 * Suppressed warnings from ExplicitKBMInputMapper when noclipping (and other "missing axis" warnings as well)
 * Changed ammo type backing type from AmmoType enum to string
 * GetActiveCamera now explicitly rejects ViewModel and LightReporter cameras
+* Autoaim now works properly when cast includes the ground/non-hittable objects
 * Added lock time to weapons [WIP]
 * Added burst fire to weapons [WIP]
 * Extended projectile and explosion handling for weapons [WIP]

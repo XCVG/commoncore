@@ -804,11 +804,10 @@ namespace CommonCore.RpgGame.World
                         if (probeHit.Controller == null && autoaim != AimAssistState.Off)
                         {
                             float castSize = autoaim == AimAssistState.Strong ? AutoaimStrongCastSize : AutoaimWeakCastSize;
-                            var autoaimHit = WorldUtils.SpherecastAttackHit(shootPoint.position, shootPoint.forward, castSize * 0.5f, AutoaimCastRange, true, false, PlayerController);
+                            var autoaimHit = WorldUtils.SpherecastForAutoaim(shootPoint.position, shootPoint.forward, castSize * 0.5f, AutoaimCastRange, true, false, PlayerController);
                             if (autoaimHit.Controller != null)
-                            {
-                                if(autoaim != AimAssistState.Off)
-                                    fireVec = (autoaimHit.HitPoint - shootPoint.position).normalized;
+                            {                                
+                                fireVec = (autoaimHit.HitPoint - shootPoint.position).normalized;
                                 intendedTarget = autoaimHit.Controller.transform;
                             }
                         }
