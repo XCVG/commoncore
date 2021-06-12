@@ -38,7 +38,7 @@ namespace CommonCore.RpgGame.Rpg
         Unique,
 
         //weapon flags 
-        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponProjectileIsEntity, WeaponNeverRandomize, WeaponNeverHarmFriendly, WeaponAlwaysHarmFriendly,
+        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponProjectileIsEntity, WeaponNeverRandomize, WeaponNeverHarmFriendly, WeaponAlwaysHarmFriendly, WeaponBurstSingleAnimation, WeaponBurstSingleEffect, WeaponEffectWaitsForLockTime,
 
         //weapon flags (translated to HitFlags)
         WeaponPierceConsiderShields, WeaponPierceConsiderArmor, WeaponIgnoreShields, WeaponIgnoreArmor, WeaponNeverAlert, WeaponNeverBlockable, WeaponNoPain, WeaponAlwaysPain, WeaponIgnoreHitLocation, WeaponAlwaysExtremeDeath, WeaponNeverExtremeDeath,
@@ -419,14 +419,21 @@ namespace CommonCore.RpgGame.Rpg
         public readonly float CrouchRecoveryFactor;
 
         public readonly float FireInterval;
-        public readonly int NumProjectiles;
+        public readonly int ProjectilesPerShot;
+        public readonly int AmmoPerShot;
+        public readonly int ShotsPerBurst;
+        public readonly float LockTime;
+
         public readonly int MagazineSize;       
         public readonly float ReloadTime;
 
         public readonly float ADSZoomFactor;
 
-        public readonly AmmoType AType; 
+        public readonly string AType; 
         public readonly string Projectile;
+
+        public readonly RangedWeaponItemProjectileData ProjectileData;
+        public readonly RangedWeaponItemExplosionData ExplosionData;
 
         //it looks like JSON.net is actually using these constructors and the naming of the parameters matters, which is somewhat terrifying
         public RangedWeaponItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, ItemScriptNode scripts,
@@ -434,8 +441,10 @@ namespace CommonCore.RpgGame.Rpg
             RangeEnvelope recoil, RangeEnvelope spread, RangeEnvelope adsRecoil, RangeEnvelope adsSpread,
             PulseEnvelope recoilImpulse, PulseEnvelope adsRecoilImpulse,
             float movementSpreadFactor, float movementRecoveryFactor, float crouchSpreadFactor, float crouchRecoveryFactor,
-            float fireInterval, int numProjectiles, int magazineSize, float reloadTime,
-            AmmoType aType, DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType, string viewModel, string worldModel, string hitPuff, string projectile, float adsZoomFactor, float lowerTime, float raiseTime)
+            float fireInterval, int projectilesPerShot, int ammoPerShot, int shotsPerBurst, float lockTime, int magazineSize, float reloadTime,
+            string aType, DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType, string viewModel, string worldModel,
+            string hitPuff, string projectile, float adsZoomFactor, float lowerTime, float raiseTime,
+            RangedWeaponItemProjectileData projectileData, RangedWeaponItemExplosionData explosionData)
             : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, scripts, damage, damagePierce, damageSpread, damagePierceSpread, dType, dEffector, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
         {
             ProjectileVelocity = projectileVelocity;
@@ -453,7 +462,10 @@ namespace CommonCore.RpgGame.Rpg
             CrouchRecoveryFactor = crouchRecoveryFactor;
 
             FireInterval = fireInterval;
-            NumProjectiles = numProjectiles;
+            ProjectilesPerShot = projectilesPerShot;
+            AmmoPerShot = ammoPerShot;
+            ShotsPerBurst = shotsPerBurst;
+            LockTime = lockTime;
 
             MagazineSize = magazineSize;
             ReloadTime = reloadTime;
@@ -461,10 +473,15 @@ namespace CommonCore.RpgGame.Rpg
             ADSZoomFactor = adsZoomFactor;
 
             AType = aType;
-            Projectile = projectile;            
+            Projectile = projectile;
+
+            ProjectileData = projectileData;
+            ExplosionData = explosionData;
         }
 
         public bool UseMagazine => MagazineSize > 0;
+
+        public bool UseAmmo => !(string.IsNullOrEmpty(AType) || string.Equals(AType, AmmoType.NoAmmo.ToString(), StringComparison.OrdinalIgnoreCase));
 
         public override DamageEffector Effector => DEffector ?? DamageEffector.Projectile;
 
@@ -472,6 +489,33 @@ namespace CommonCore.RpgGame.Rpg
         {
             return $"<b>Ranged Weapon ({SkillType})</b>\n" + base.GetStatsString() + $"\nSpeed: {(1 / FireInterval):F1}\nMagazine: {MagazineSize}\nAmmo Type{InventoryModel.GetNiceName(AType.ToString())}";
         }
+    }
+
+    public class RangedWeaponItemExplosionData
+    {
+        [JsonProperty]
+        public float Damage { get; private set; }
+        [JsonProperty]
+        public float Radius { get; private set; }
+        [JsonProperty]
+        public bool UseFalloff { get; private set; } = true;
+        [JsonProperty]
+        public string HitPuff { get; private set; } = string.Empty;
+
+        [JsonProperty]
+        public bool EnableProximityDetonation { get; private set; }
+        [JsonProperty]
+        public float ProximityRadius { get; private set; }
+        [JsonProperty]
+        public bool UseFactions { get; private set; } = false;
+        [JsonProperty]
+        public bool UseTangentHack { get; private set; } = false;
+    }
+
+    public class RangedWeaponItemProjectileData
+    {
+        //we may enable more options here later
+        public float Gravity { get; private set; }
     }
 
     public class DummyWeaponItemModel : WeaponItemModel
@@ -771,9 +815,9 @@ namespace CommonCore.RpgGame.Rpg
 
     public class MoneyItemModel : InventoryItemModel
     {
-        public readonly MoneyType Type;
+        public readonly string Type;
 
-        public MoneyItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, ItemScriptNode scripts, string worldModel, MoneyType type) :
+        public MoneyItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, ItemScriptNode scripts, string worldModel, string type) :
             base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, scripts, worldModel)
         {
             Type = type;
@@ -788,9 +832,9 @@ namespace CommonCore.RpgGame.Rpg
 
     public class AmmoItemModel : InventoryItemModel
     {
-        public readonly AmmoType Type;
+        public readonly string Type;
 
-        public AmmoItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, ItemScriptNode scripts, string worldModel, AmmoType type) :
+        public AmmoItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, ItemScriptNode scripts, string worldModel, string type) :
             base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, scripts, worldModel)
         {
             Type = type;

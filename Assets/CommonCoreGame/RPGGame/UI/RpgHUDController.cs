@@ -666,7 +666,7 @@ namespace CommonCore.RpgGame.UI
             if (player.IsEquipped(EquipSlot.RightWeapon))
             {
                 RightWeaponText.text = InventoryModel.GetNiceName(player.Equipped[EquipSlot.RightWeapon].ItemModel);
-                if (player.Equipped[EquipSlot.RightWeapon].ItemModel is RangedWeaponItemModel rwim && !(rwim.AType == AmmoType.NoAmmo))
+                if (player.Equipped[EquipSlot.RightWeapon].ItemModel is RangedWeaponItemModel rwim && rwim.UseAmmo)
                 {
                     if (rwim.UseMagazine)
                     {

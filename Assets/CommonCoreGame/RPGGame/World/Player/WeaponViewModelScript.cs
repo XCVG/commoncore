@@ -10,7 +10,7 @@ namespace CommonCore.RpgGame.World
         Idle, Raise, Lower, Block, Reload, Charge, Fire, Recock //(we may remove or defer Charge and Recock though we kinda need them for bows and bolt guns respectively)
     }
 
-    public readonly struct ViewModelOptions
+    public class ViewModelOptions
     {
         //these are the ones you'd generally look at
         public readonly bool UseShake;
@@ -20,6 +20,8 @@ namespace CommonCore.RpgGame.World
         public readonly bool UseCharge;
         public readonly bool UseRecock;
         public readonly ViewModelSide Side;
+
+        public readonly bool EffectWaitsForLockTime;
 
         //it's not recommended you refer to these but we make them available anyway
         public readonly InventoryItemInstance WeaponItemInstance;
@@ -49,6 +51,8 @@ namespace CommonCore.RpgGame.World
                     Side = ViewModelSide.Undefined;
                     break;
             }
+
+            EffectWaitsForLockTime = wim.CheckFlag(ItemFlag.WeaponEffectWaitsForLockTime);
 
             WeaponItemInstance = itemInstance;
             WeaponComponent = weaponComponent;

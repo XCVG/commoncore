@@ -491,7 +491,7 @@ namespace CommonCore.RpgGame.World
             {
 
                 //ammo logic
-                if (rightWeaponModel is RangedWeaponItemModel rwim && rwim.AType != AmmoType.NoAmmo)
+                if (rightWeaponModel is RangedWeaponItemModel rwim && rwim.UseAmmo)
                 {
                     if (rwim.UseMagazine && GameState.Instance.PlayerRpgState.AmmoInMagazine[EquipSlot.RightWeapon] <= 0)
                     {
@@ -686,7 +686,7 @@ namespace CommonCore.RpgGame.World
                 RangedWeaponItemModel wim = player.Equipped[slot].ItemModel as RangedWeaponItemModel;
                 if (wim != null)
                 {
-                    bool useAmmo = !(wim.AType == AmmoType.NoAmmo);
+                    bool useAmmo = wim.UseAmmo;
                     bool autoReload = wim.CheckFlag(ItemFlag.WeaponAutoReload);
 
                     bool harmFriendly = wim.HarmFriendly ?? GameParams.UseFriendlyFire;
