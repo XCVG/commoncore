@@ -99,6 +99,7 @@ namespace CommonCore
             context.AbortOnSingleFileFailure = false;
 
             await LoadResourcesFromPathAsync(context);
+            await LoadAssembliesAsync(context);
 
             onLoadedMethod(new AddonLoadData(context.LoadedAssemblies, context.LoadedResources));
 
