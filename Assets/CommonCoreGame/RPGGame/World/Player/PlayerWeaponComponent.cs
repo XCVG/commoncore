@@ -85,10 +85,15 @@ namespace CommonCore.RpgGame.World
         private float AccumulatedSpread;
         private float AccumulatedRecoil;
         private bool DidJustFire;
+        private int BurstCount;
         private bool PendingADSExit;
         private WeaponTransitionState TransitionState;
         private float OldWeaponLowerTime; //need to save this because we lose the item model before transition
         private bool OldWeaponNoLowerAnimation;
+
+        //pending firing (lock time)
+        private Action DelayedFiringAction;
+        private float DelayedFiringTimeRemaining;
 
         //offhand kick
         private float TimeToNextKick;
@@ -107,6 +112,7 @@ namespace CommonCore.RpgGame.World
             if (Time.timeScale == 0 || LockPauseModule.IsPaused())
                 return;
 
+            HandleDelayedFiring();
             HandleAccumulators();
 
             DidJustFire = false;
@@ -158,6 +164,24 @@ namespace CommonCore.RpgGame.World
         {
             //this thunk should just work
             SetVisibility(false);
+        }
+
+        /// <summary>
+        /// Handle delayed firing (ie lock time)
+        /// </summary>
+        protected void HandleDelayedFiring()
+        {
+            if (DelayedFiringAction == null)
+                return;
+
+            DelayedFiringTimeRemaining -= Time.deltaTime;
+            if(DelayedFiringTimeRemaining <= 0)
+            {
+                DelayedFiringAction();
+
+                DelayedFiringAction = null;
+                DelayedFiringTimeRemaining = 0;
+            }
         }
 
         /// <summary>
@@ -402,6 +426,8 @@ namespace CommonCore.RpgGame.World
 
                         if (rightEquipped)
                         {
+                            BurstCount = 0;
+
                             //fire right weapon
                             if (weaponModel is RangedWeaponItemModel)
                                 DoRangedAttack(EquipSlot.RightWeapon);
@@ -487,17 +513,18 @@ namespace CommonCore.RpgGame.World
 
             var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel;
             
-            if (MappedInput.GetButton(DefaultControls.Fire) && rightWeaponModel.CheckFlag(ItemFlag.WeaponFullAuto))
+            if (MappedInput.GetButton(DefaultControls.Fire) && (rightWeaponModel.CheckFlag(ItemFlag.WeaponFullAuto) 
+                || (rightWeaponModel is RangedWeaponItemModel rm && BurstCount < rm.ShotsPerBurst)))
             {
 
                 //ammo logic
                 if (rightWeaponModel is RangedWeaponItemModel rwim && rwim.UseAmmo)
                 {
-                    if (rwim.UseMagazine && GameState.Instance.PlayerRpgState.AmmoInMagazine[EquipSlot.RightWeapon] <= 0)
+                    if (rwim.UseMagazine && GameState.Instance.PlayerRpgState.AmmoInMagazine[EquipSlot.RightWeapon] < rwim.AmmoPerShot)
                     {
                         return false;
                     }
-                    if (!rwim.UseMagazine && GameState.Instance.PlayerRpgState.Inventory.CountItem(rwim.AType.ToString()) < 1)
+                    if (!rwim.UseMagazine && GameState.Instance.PlayerRpgState.Inventory.CountItem(rwim.AType.ToString()) < rwim.AmmoPerShot)
                     {
                         return false;
                     }
@@ -692,136 +719,105 @@ namespace CommonCore.RpgGame.World
                     bool harmFriendly = wim.HarmFriendly ?? GameParams.UseFriendlyFire;
 
                     //ammo logic
-                    //TODO handle weapons that don't use magazine logic
+                    //TODO more burst logic?
                     if (useAmmo)
                     {
                         if (wim.UseMagazine)
                         {
-                            if (player.AmmoInMagazine[slot] == 0 && !IsReloading)
+                            if (player.AmmoInMagazine[slot] < wim.AmmoPerShot && !IsReloading)
                             {
                                 //I think this one actually works okay
                                 DoReload();
                                 return;
                             }
 
-                            player.AmmoInMagazine[slot] -= 1;
+                            player.AmmoInMagazine[slot] -= wim.AmmoPerShot;
                         }
                         else
                         {
-                            if (player.Inventory.CountItem(wim.AType.ToString()) < 1)
+                            if (player.Inventory.CountItem(wim.AType.ToString()) < wim.AmmoPerShot)
                                 return;
 
-                            player.Inventory.RemoveItem(wim.AType.ToString(), 1);
+                            player.Inventory.RemoveItem(wim.AType.ToString(), wim.AmmoPerShot);
                         }
                     }
 
-                    //bullet logic
-                    GameObject bullet = null;
-
                     Transform shootPoint = wim.CheckFlag(ItemFlag.WeaponUseFarShootPoint) ? ShootPointFar : ShootPointNear;
-
-                    if (!string.IsNullOrEmpty(wim.Projectile))
-                    {
-                        if (wim.CheckFlag(ItemFlag.WeaponProjectileIsEntity))
-                            bullet = WorldUtils.SpawnEntity(wim.Projectile, null, shootPoint.position + (shootPoint.forward.normalized * 0.25f), shootPoint.rotation, null);
-                        else
-                            bullet = WorldUtils.SpawnEffect(wim.Projectile, shootPoint.position + (shootPoint.forward.normalized * 0.25f), shootPoint.rotation.eulerAngles, transform.root, false);
-                    }
-
-                    var bulletRigidbody = bullet.GetComponent<Rigidbody>();
-
-                    var bulletScript = bullet.GetComponent<BulletScript>();
 
                     float damageRpgFactor = RpgValues.GetWeaponDamageFactor(player, wim);
                     float damageDifficultyFactor = ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerStrength;
                     bool useRandomDamage = wim.DamageSpread > 0 && !wim.CheckFlag(ItemFlag.WeaponNeverRandomize);
                     bool useRandomPierce = wim.DamagePierceSpread > 0 && !wim.CheckFlag(ItemFlag.WeaponNeverRandomize);
-                    float randomizedDamage = useRandomDamage ? Mathf.Max(Mathf.Min(1, wim.Damage), wim.Damage + UnityEngine.Random.Range(-wim.DamageSpread, wim.DamageSpread)) : wim.Damage;
-                    float randomizedPierce = useRandomPierce ? Mathf.Max(Mathf.Min(1, wim.DamagePierce), wim.DamagePierce + UnityEngine.Random.Range(-wim.DamagePierceSpread, wim.DamagePierceSpread)) : wim.DamagePierce;
-                    bulletScript.HitInfo = new ActorHitInfo(randomizedDamage * damageRpgFactor * damageDifficultyFactor, randomizedPierce * damageRpgFactor * damageDifficultyFactor, (int)wim.DType, (int)wim.Effector, harmFriendly, (int)ActorBodyPart.Unspecified, (int)DefaultHitMaterials.Unspecified, PlayerController, PredefinedFaction.Player.ToString(), wim.HitPuff, null, wim.GetHitFlags());
-                    //Debug.Log(wim.Effector);
-                    //Debug.Log($"damage: {bulletScript.HitInfo.Damage:F2} | pierce: {bulletScript.HitInfo.DamagePierce:F2}");
-                    bulletScript.FiredByPlayer = true;
-
-                    //apply projectile and explosion options
-                    if (wim.ProjectileData != null)
-                        bulletScript.FakeGravity = wim.ProjectileData.Gravity;
-
-                    if (wim.ExplosionData != null && !wim.CheckFlag(ItemFlag.WeaponAlwaysUseEffectExplosion))
-                    {
-                        var explosionComponent = bulletScript.GetComponent<BulletExplosionComponent>();
-                        if(explosionComponent != null)
-                        {
-                            explosionComponent.Damage = wim.ExplosionData.Damage;
-                            explosionComponent.Radius = wim.ExplosionData.Radius;
-                            explosionComponent.UseFalloff = wim.ExplosionData.UseFalloff;
-                            if (!string.IsNullOrEmpty(wim.ExplosionData.HitPuff))
-                                explosionComponent.HitPuff = wim.ExplosionData.HitPuff;
-
-                            explosionComponent.EnableProximityDetonation = wim.ExplosionData.EnableProximityDetonation;
-                            explosionComponent.ProximityRadius = wim.ExplosionData.ProximityRadius;
-                            explosionComponent.UseFactions = wim.ExplosionData.UseFactions;
-                            explosionComponent.UseTangentHack = wim.ExplosionData.UseTangentHack;
-                        }
-                        else
-                        {
-                            Debug.LogWarning($"Explosion data is specified for {wim.Name} but {wim.Projectile} does not have a {nameof(BulletExplosionComponent)}!");
-                        }
-                    }
-                    else if(!wim.CheckFlag(ItemFlag.WeaponAlwaysUseEffectExplosion))
-                    {
-                        var explosionComponent = bulletScript.GetComponent<BulletExplosionComponent>();
-                        if (explosionComponent != null)
-                        {
-                            explosionComponent.enabled = false;
-                        }
-                    }
-
-                    //Vector3 fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread), Vector3.right)
-                    //    * (Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread), Vector3.up) * ShootPoint.forward.normalized);
-
-                    float spreadRpgFactor = RpgValues.GetWeaponSpreadFactor(player, wim);
-
-                    float spreadMoveFactor = 1f;
-                    if(PlayerController.MovementComponent.IsMoving)
-                    {
-                        spreadMoveFactor = wim.MovementSpreadFactor;
-                        if (wim.CheckFlag(ItemFlag.WeaponProportionalMovement) && PlayerController.MovementComponent.IsRunning)
-                            spreadMoveFactor *= 2f;
-                        if (PlayerController.MovementComponent.IsCrouching)
-                            spreadMoveFactor *= wim.CrouchSpreadFactor;
-                    }
-
                     Vector3 fireVec = shootPoint.forward.normalized;
 
-                    //bend bullets if autoaim is enabled
-                    var autoaim = ConfigState.Instance.GetGameplayConfig().AimAssist;
-                    Transform intendedTarget = null;
-                    //if(autoaim != AimAssistState.Off)
+                    //this GIANT ASS BLOCK OF CODE fires ONE bullet
+                    //some logic is definitely redundant but eh
+                    for(int bulletCount = 0; bulletCount < Math.Max(1, wim.ShotsPerBurst); bulletCount++)
                     {
-                        //we "probe" to see if we would have hit anyway, and don't correct if we did
-                        var probeHit = WorldUtils.RaycastAttackHit(shootPoint.position, shootPoint.forward, AutoaimCastRange * 1.25f, true, false, PlayerController);
-                        if (probeHit.Controller == null && autoaim != AimAssistState.Off)
+                        float randomizedDamage = useRandomDamage ? Mathf.Max(Mathf.Min(1, wim.Damage), wim.Damage + UnityEngine.Random.Range(-wim.DamageSpread, wim.DamageSpread)) : wim.Damage;
+                        float randomizedPierce = useRandomPierce ? Mathf.Max(Mathf.Min(1, wim.DamagePierce), wim.DamagePierce + UnityEngine.Random.Range(-wim.DamagePierceSpread, wim.DamagePierceSpread)) : wim.DamagePierce;
+
+                        //Vector3 fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread), Vector3.right)
+                        //    * (Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread), Vector3.up) * ShootPoint.forward.normalized);
+
+                        float spreadRpgFactor = RpgValues.GetWeaponSpreadFactor(player, wim);
+
+                        float spreadMoveFactor = 1f;
+                        if (PlayerController.MovementComponent.IsMoving)
                         {
-                            float castSize = autoaim == AimAssistState.Strong ? AutoaimStrongCastSize : AutoaimWeakCastSize;
-                            var autoaimHit = WorldUtils.SpherecastForAutoaim(shootPoint.position, shootPoint.forward, castSize * 0.5f, AutoaimCastRange, true, false, PlayerController);
-                            if (autoaimHit.Controller != null)
-                            {                                
-                                fireVec = (autoaimHit.HitPoint - shootPoint.position).normalized;
-                                intendedTarget = autoaimHit.Controller.transform;
+                            spreadMoveFactor = wim.MovementSpreadFactor;
+                            if (wim.CheckFlag(ItemFlag.WeaponProportionalMovement) && PlayerController.MovementComponent.IsRunning)
+                                spreadMoveFactor *= 2f;
+                            if (PlayerController.MovementComponent.IsCrouching)
+                                spreadMoveFactor *= wim.CrouchSpreadFactor;
+                        }
+
+                        fireVec = shootPoint.forward.normalized;
+
+                        //bend bullets if autoaim is enabled
+                        var autoaim = ConfigState.Instance.GetGameplayConfig().AimAssist;
+                        Transform intendedTarget = null;
+                        //if(autoaim != AimAssistState.Off)
+                        {
+                            //we "probe" to see if we would have hit anyway, and don't correct if we did
+                            var probeHit = WorldUtils.RaycastAttackHit(shootPoint.position, shootPoint.forward, AutoaimCastRange * 1.25f, true, false, PlayerController);
+                            if (probeHit.Controller == null && autoaim != AimAssistState.Off)
+                            {
+                                float castSize = autoaim == AimAssistState.Strong ? AutoaimStrongCastSize : AutoaimWeakCastSize;
+                                var autoaimHit = WorldUtils.SpherecastForAutoaim(shootPoint.position, shootPoint.forward, castSize * 0.5f, AutoaimCastRange, true, false, PlayerController);
+                                if (autoaimHit.Controller != null)
+                                {
+                                    fireVec = (autoaimHit.HitPoint - shootPoint.position).normalized;
+                                    intendedTarget = autoaimHit.Controller.transform;
+                                }
                             }
+                            else
+                                intendedTarget = probeHit.Controller.Ref()?.transform;
+                        }
+
+                        //apply spread
+                        fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread) * spreadMoveFactor * spreadRpgFactor, Vector3.up) * fireVec;
+                        fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread) * spreadMoveFactor * spreadRpgFactor, transform.right) * fireVec;
+                        fireVec = Quaternion.AngleAxis(AccumulatedRecoil * spreadMoveFactor * spreadRpgFactor, -transform.right) * fireVec; //iffy
+
+                        var hitInfo = new ActorHitInfo(randomizedDamage * damageRpgFactor * damageDifficultyFactor, randomizedPierce * damageRpgFactor * damageDifficultyFactor, (int)wim.DType, (int)wim.Effector, harmFriendly, (int)ActorBodyPart.Unspecified, (int)DefaultHitMaterials.Unspecified, PlayerController, PredefinedFaction.Player.ToString(), wim.HitPuff, null, wim.GetHitFlags());
+
+                        //now a function call!
+                        if(wim.LockTime > 0)
+                        {
+                            DelayedFiringTimeRemaining = wim.LockTime;
+                            DelayedFiringAction = () =>
+                            {
+                                SpawnBullet(wim, shootPoint, fireVec, intendedTarget, hitInfo);
+                            };
+                            
                         }
                         else
-                            intendedTarget = probeHit.Controller.Ref()?.transform;
+                        {
+                            SpawnBullet(wim, shootPoint, fireVec, intendedTarget, hitInfo);
+                        }
+                        
                     }
-                    bulletScript.Target = intendedTarget;
-
-                    //apply spread
-                    fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread) * spreadMoveFactor * spreadRpgFactor, Vector3.up) * fireVec;
-                    fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread) * spreadMoveFactor * spreadRpgFactor, transform.right) * fireVec;
-                    fireVec = Quaternion.AngleAxis(AccumulatedRecoil * spreadMoveFactor * spreadRpgFactor, -transform.right) * fireVec; //iffy
-
-                    bulletRigidbody.velocity = (fireVec * wim.ProjectileVelocity);
 
                     //recoil accumulation
                     float accumulatorRpgFactor = RpgValues.GetWeaponInstabilityFactor(player, wim);
@@ -831,8 +827,13 @@ namespace CommonCore.RpgGame.World
                     AccumulatedSpread = Mathf.Min(spreadEnvelope.Max, AccumulatedSpread + (spreadEnvelope.Gain * accumulatorRpgFactor));
 
                     DidJustFire = true;
+                    if(wim.ShotsPerBurst > 1)
+                        BurstCount++;
+                    if (BurstCount >= wim.ShotsPerBurst)
+                        BurstCount = 0;
                     float rateRpgFactor = RpgValues.GetWeaponRateFactor(player, wim);
-                    TimeToNext = (wim.CheckFlag(ItemFlag.WeaponIgnoreLevelledRate)) ? wim.FireInterval : (wim.FireInterval * rateRpgFactor);
+                    float fireInterval = BurstCount > 0 ? wim.BurstFireInterval : wim.FireInterval;
+                    TimeToNext = (wim.CheckFlag(ItemFlag.WeaponIgnoreLevelledRate)) ? fireInterval : (fireInterval * rateRpgFactor);
 
                     //GameObject fireEffect = null;
 
@@ -889,6 +890,63 @@ namespace CommonCore.RpgGame.World
             QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepFired"));
         }
 
+        private void SpawnBullet(RangedWeaponItemModel wim, Transform shootPoint, Vector3 fireVec, Transform intendedTarget, ActorHitInfo hitInfo)
+        {
+            GameObject bullet = null;
+            if (!string.IsNullOrEmpty(wim.Projectile))
+            {
+                if (wim.CheckFlag(ItemFlag.WeaponProjectileIsEntity))
+                    bullet = WorldUtils.SpawnEntity(wim.Projectile, null, shootPoint.position + (shootPoint.forward.normalized * 0.25f), shootPoint.rotation, null);
+                else
+                    bullet = WorldUtils.SpawnEffect(wim.Projectile, shootPoint.position + (shootPoint.forward.normalized * 0.25f), shootPoint.rotation.eulerAngles, transform.root, false);
+            }
+
+            var bulletRigidbody = bullet.GetComponent<Rigidbody>();
+            var bulletScript = bullet.GetComponent<BulletScript>();
+
+            bulletScript.HitInfo = hitInfo;
+            //Debug.Log(wim.Effector);
+            //Debug.Log($"damage: {bulletScript.HitInfo.Damage:F2} | pierce: {bulletScript.HitInfo.DamagePierce:F2}");
+            bulletScript.FiredByPlayer = true;
+            bulletScript.Target = intendedTarget;
+
+            //apply projectile and explosion options
+            if (wim.ProjectileData != null)
+                bulletScript.FakeGravity = wim.ProjectileData.Gravity;
+
+            if (wim.ExplosionData != null && !wim.CheckFlag(ItemFlag.WeaponAlwaysUseEffectExplosion))
+            {
+                var explosionComponent = bulletScript.GetComponent<BulletExplosionComponent>();
+                if (explosionComponent != null)
+                {
+                    explosionComponent.Damage = wim.ExplosionData.Damage;
+                    explosionComponent.Radius = wim.ExplosionData.Radius;
+                    explosionComponent.UseFalloff = wim.ExplosionData.UseFalloff;
+                    if (!string.IsNullOrEmpty(wim.ExplosionData.HitPuff))
+                        explosionComponent.HitPuff = wim.ExplosionData.HitPuff;
+
+                    explosionComponent.EnableProximityDetonation = wim.ExplosionData.EnableProximityDetonation;
+                    explosionComponent.ProximityRadius = wim.ExplosionData.ProximityRadius;
+                    explosionComponent.UseFactions = wim.ExplosionData.UseFactions;
+                    explosionComponent.UseTangentHack = wim.ExplosionData.UseTangentHack;
+                }
+                else
+                {
+                    Debug.LogWarning($"Explosion data is specified for {wim.Name} but {wim.Projectile} does not have a {nameof(BulletExplosionComponent)}!");
+                }
+            }
+            else if (!wim.CheckFlag(ItemFlag.WeaponAlwaysUseEffectExplosion))
+            {
+                var explosionComponent = bulletScript.GetComponent<BulletExplosionComponent>();
+                if (explosionComponent != null)
+                {
+                    explosionComponent.enabled = false;
+                }
+            }
+
+            bulletRigidbody.velocity = (fireVec * wim.ProjectileVelocity);
+        }
+
         private void DoReload()
         {
             if (IsReloading) //I think we need this guard
@@ -900,6 +958,7 @@ namespace CommonCore.RpgGame.World
             IsADS = false;
             SetCameraZoom(1, ADSZoomFadeTime);
             IsReloading = true;
+            BurstCount = 0;
 
             QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepReloading"));
 
@@ -948,6 +1007,7 @@ namespace CommonCore.RpgGame.World
             finishReloadSide(EquipSlot.LeftWeapon, LeftViewModel);
 
             IsReloading = false;
+            BurstCount = 0;
 
             QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepReloaded"));
 
@@ -989,6 +1049,7 @@ namespace CommonCore.RpgGame.World
                 //needed?
                 IsReloading = false;
                 TimeToNext = 0;
+                BurstCount = 0;
 
                 //handle equip/unequip melee weapon
                 if (player.Equipped.ContainsKey(EquipSlot.RightWeapon) && player.Equipped[EquipSlot.RightWeapon] != null && player.Equipped[EquipSlot.RightWeapon].ItemModel is WeaponItemModel wim)

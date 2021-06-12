@@ -21,6 +21,7 @@ namespace CommonCore.RpgGame.World
         public readonly bool UseRecock;
         public readonly ViewModelSide Side;
 
+        public readonly float LockTime;
         public readonly bool EffectWaitsForLockTime;
 
         //it's not recommended you refer to these but we make them available anyway
@@ -52,6 +53,7 @@ namespace CommonCore.RpgGame.World
                     break;
             }
 
+            LockTime = (wim as RangedWeaponItemModel)?.LockTime ?? 0f;
             EffectWaitsForLockTime = wim.CheckFlag(ItemFlag.WeaponEffectWaitsForLockTime);
 
             WeaponItemInstance = itemInstance;

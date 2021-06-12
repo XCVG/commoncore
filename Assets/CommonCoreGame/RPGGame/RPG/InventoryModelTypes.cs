@@ -38,7 +38,7 @@ namespace CommonCore.RpgGame.Rpg
         Unique,
 
         //weapon flags 
-        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponProjectileIsEntity, WeaponNeverRandomize, WeaponNeverHarmFriendly, WeaponAlwaysHarmFriendly, WeaponBurstSingleAnimation, WeaponBurstSingleEffect, WeaponEffectWaitsForLockTime, WeaponAlwaysUseEffectExplosion,
+        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponProjectileIsEntity, WeaponNeverRandomize, WeaponNeverHarmFriendly, WeaponAlwaysHarmFriendly, WeaponBurstSingleAnimation, WeaponBurstSingleEffect, WeaponBurstRequireFullAmmo, WeaponBurstSucceedWithPartialAmmo, WeaponEffectWaitsForLockTime, WeaponAlwaysUseEffectExplosion,
 
         //weapon flags (translated to HitFlags)
         WeaponPierceConsiderShields, WeaponPierceConsiderArmor, WeaponIgnoreShields, WeaponIgnoreArmor, WeaponNeverAlert, WeaponNeverBlockable, WeaponNoPain, WeaponAlwaysPain, WeaponIgnoreHitLocation, WeaponAlwaysExtremeDeath, WeaponNeverExtremeDeath,
@@ -419,6 +419,7 @@ namespace CommonCore.RpgGame.Rpg
         public readonly float CrouchRecoveryFactor;
 
         public readonly float FireInterval;
+        public readonly float BurstFireInterval;
         public readonly int ProjectilesPerShot;
         public readonly int AmmoPerShot;
         public readonly int ShotsPerBurst;
@@ -441,7 +442,7 @@ namespace CommonCore.RpgGame.Rpg
             RangeEnvelope recoil, RangeEnvelope spread, RangeEnvelope adsRecoil, RangeEnvelope adsSpread,
             PulseEnvelope recoilImpulse, PulseEnvelope adsRecoilImpulse,
             float movementSpreadFactor, float movementRecoveryFactor, float crouchSpreadFactor, float crouchRecoveryFactor,
-            float fireInterval, int projectilesPerShot, int ammoPerShot, int shotsPerBurst, float lockTime, int magazineSize, float reloadTime,
+            float fireInterval, float burstFireInterval, int projectilesPerShot, int ammoPerShot, int shotsPerBurst, float lockTime, int magazineSize, float reloadTime,
             string aType, DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType, string viewModel, string worldModel,
             string hitPuff, string projectile, float adsZoomFactor, float lowerTime, float raiseTime,
             RangedWeaponItemProjectileData projectileData, RangedWeaponItemExplosionData explosionData)
@@ -462,6 +463,7 @@ namespace CommonCore.RpgGame.Rpg
             CrouchRecoveryFactor = crouchRecoveryFactor;
 
             FireInterval = fireInterval;
+            BurstFireInterval = burstFireInterval;
             ProjectilesPerShot = projectilesPerShot;
             AmmoPerShot = ammoPerShot;
             ShotsPerBurst = shotsPerBurst;

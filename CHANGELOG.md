@@ -150,4 +150,5 @@
 * Added subtitle convenience methods from Shattered 2 [Experimental]
 * Added lock time to weapons [WIP]
 * Added burst fire to weapons [WIP]
+* Implemented projectils-per-shot and ammo-per-shot for weapons [WIP]
 * Extended projectile and explosion handling for weapons [WIP]
