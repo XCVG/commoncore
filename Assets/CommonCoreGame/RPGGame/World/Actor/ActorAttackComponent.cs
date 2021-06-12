@@ -96,7 +96,7 @@ namespace CommonCore.RpgGame.World
         /// <summary>
         /// If we are ready to attack again (attack interval)
         /// </summary>
-        public bool ReadyToAttack => (Time.time - LastAttackTime >= AttackInterval * (1f / ConfigState.Instance.GetGameplayConfig().Difficulty.ActorAggression));
+        public bool ReadyToAttack => (Time.time - LastAttackTime >= AttackInterval * (1f / ActorController.EffectiveAggression));
 
         /// <summary>
         /// If our actor's target is within range of us
@@ -147,8 +147,8 @@ namespace CommonCore.RpgGame.World
 
                 var modHit = new ActorHitInfo(AttackHit);
                 var gameplayConfig = ConfigState.Instance.GetGameplayConfig();
-                modHit.Damage *= gameplayConfig.Difficulty.ActorStrength * randomFactor;
-                modHit.DamagePierce *= gameplayConfig.Difficulty.ActorStrength * randomFactor;
+                modHit.Damage *= ActorController.EffectiveStrength * randomFactor;
+                modHit.DamagePierce *= ActorController.EffectiveStrength * randomFactor;
                 modHit.Originator = ActorController;
                 if (FriendlyFire == FriendlyFireMode.Always)
                     modHit.HarmFriendly = true;

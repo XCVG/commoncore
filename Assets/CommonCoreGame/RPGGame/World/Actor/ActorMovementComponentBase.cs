@@ -97,7 +97,7 @@ namespace CommonCore.RpgGame.World
         /// <summary>
         /// The speed factor from the difficulty selection
         /// </summary>
-        protected float DifficultySpeedFactor => ConfigState.Instance.GetGameplayConfig().Difficulty.ActorAggression;
+        protected float DifficultySpeedFactor => ActorController.EffectiveAggression;
 
     }
 }

@@ -104,6 +104,9 @@ namespace CommonCore.RpgGame.World
         public float WanderTimeout = 10.0f;
         public Vector2 WanderRadius = new Vector2(10.0f, 10.0f);
 
+        [Header("Misc")]
+        public ActorDifficultyHandling DifficultyHandling = ActorDifficultyHandling.AsActor; //default for historical reasons
+
         private QdmsMessageInterface MessageInterface;
 
         //handlers
@@ -635,7 +638,7 @@ namespace CommonCore.RpgGame.World
         {
             var gameplayConfig = ConfigState.Instance.GetGameplayConfig();
 
-            if (TotalTickCount % SearchInterval * (1f / gameplayConfig.Difficulty.ActorAggression) != 0)
+            if (TotalTickCount % SearchInterval * (1f / EffectiveAggression) != 0)
                 return;
 
             if(TargetPicker != null)
@@ -644,7 +647,7 @@ namespace CommonCore.RpgGame.World
                 return;
             }
 
-            var detectionDifficultyFactor = 1f / gameplayConfig.Difficulty.ActorPerception;
+            var detectionDifficultyFactor = 1f / EffectivePerception;
 
             //check player first since it's (relatively) cheap
             if (GameState.Instance.FactionState.GetRelation(Faction, "Player") == FactionRelationStatus.Hostile && !MetaState.Instance.SessionFlags.Contains("NoTarget") && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoTarget))
@@ -820,7 +823,7 @@ namespace CommonCore.RpgGame.World
                         damageTaken *= 0.75f;
                 }
 
-                damageTaken *= (1f / ConfigState.Instance.GetGameplayConfig().Difficulty.ActorStrength);
+                damageTaken *= (1f / EffectiveEndurance);
             }
 
             if (!Invincible)
@@ -964,6 +967,74 @@ namespace CommonCore.RpgGame.World
             }
 
             EnterState(BaseAiState);
+        }
+
+        public float EffectiveAggression
+        {
+            get
+            {
+                switch (DifficultyHandling)
+                {
+                    case ActorDifficultyHandling.AsActor:
+                    case ActorDifficultyHandling.AsFollower:
+                        return ConfigState.Instance.GetGameplayConfig().Difficulty.ActorPerception;
+                    default:
+                        return 1f;
+                }
+            }
+        }
+
+        //if we need to we can speed these getters up with caching
+
+        public float EffectiveStrength
+        {
+            get
+            {
+                switch (DifficultyHandling)
+                {
+                    case ActorDifficultyHandling.AsActor:
+                        return ConfigState.Instance.GetGameplayConfig().Difficulty.ActorStrength;
+                    case ActorDifficultyHandling.AsFollower:
+                        return ConfigState.Instance.GetGameplayConfig().Difficulty.ActorStrength * ConfigState.Instance.GetGameplayConfig().Difficulty.FollowerStrength;
+                    case ActorDifficultyHandling.AsFollowerOnly:
+                        return ConfigState.Instance.GetGameplayConfig().Difficulty.FollowerStrength;
+                    default:
+                        return 1f;
+                }
+            }
+        }
+
+        public float EffectiveEndurance
+        {
+            get
+            {
+                switch (DifficultyHandling)
+                {
+                    case ActorDifficultyHandling.AsActor:
+                        return ConfigState.Instance.GetGameplayConfig().Difficulty.ActorStrength;
+                    case ActorDifficultyHandling.AsFollower:
+                        return ConfigState.Instance.GetGameplayConfig().Difficulty.ActorStrength * ConfigState.Instance.GetGameplayConfig().Difficulty.FollowerEndurance;
+                    case ActorDifficultyHandling.AsFollowerOnly:
+                        return ConfigState.Instance.GetGameplayConfig().Difficulty.FollowerEndurance;
+                    default:
+                        return 1f;
+                }
+            }
+        }
+
+        public float EffectivePerception
+        {
+            get
+            {
+                switch (DifficultyHandling)
+                {
+                    case ActorDifficultyHandling.AsActor:                        
+                    case ActorDifficultyHandling.AsFollower:
+                        return ConfigState.Instance.GetGameplayConfig().Difficulty.ActorPerception;
+                    default:
+                        return 1f;
+                }
+            }
         }
 
         //these are both done stupidly and could probably be done through reflection instead but for now...

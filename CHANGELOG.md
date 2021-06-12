@@ -143,6 +143,7 @@
 * Changed ammo type backing type from AmmoType enum to string
 * GetActiveCamera now explicitly rejects ViewModel and LightReporter cameras
 * Autoaim now works properly when cast includes the ground/non-hittable objects
+* Implemented different difficulty handling for actors considered followers vs normal actors
 * Added subtitle convenience methods from Shattered 2 [Experimental]
 * Added lock time to weapons [WIP]
 * Added burst fire to weapons [WIP]

@@ -26,6 +26,23 @@ namespace CommonCore.RpgGame.World
         Unspecified, Torso, Head, LeftArm, LeftLeg, RightArm, RightLeg, Tail
     }
 
+    public enum ActorDifficultyHandling
+    {
+        None,
+        /// <summary>
+        /// Apply Actor* difficulty scaling
+        /// </summary>
+        AsActor,
+        /// <summary>
+        /// Apply Follower* and Actor* difficulty scaling
+        /// </summary>
+        AsFollower,
+        /// <summary>
+        /// Apply only Actor* difficult scaling
+        /// </summary>
+        AsFollowerOnly
+    }
+
     //this is in flux, we may change what data we store in the future
     public class ActorExtraData
     {
