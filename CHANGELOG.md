@@ -141,6 +141,7 @@
 * Cleaned up handling of base frame in dialogue scene (now available via DialogueScene.BaseFrame)
 * Suppressed warnings from ExplicitKBMInputMapper when noclipping (and other "missing axis" warnings as well)
 * Changed ammo type backing type from AmmoType enum to string
+* GetActiveCamera now explicitly rejects ViewModel and LightReporter cameras
 * Added lock time to weapons [WIP]
 * Added burst fire to weapons [WIP]
 * Extended projectile and explosion handling for weapons [WIP]

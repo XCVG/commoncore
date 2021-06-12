@@ -383,6 +383,9 @@ namespace CommonCore.World
 
                 foreach(var camera in cameras)
                 {
+                    if (camera.gameObject.layer == LayerMask.NameToLayer("LightReporter") || camera.gameObject.name.Equals("GunCamera", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
                     //First choice is the camera on the player object tagged MainCamera and enabled
                     if (camera.gameObject.tag == "MainCamera" && camera.enabled)
                         return camera;
@@ -390,6 +393,9 @@ namespace CommonCore.World
 
                 foreach(var camera in cameras)
                 {
+                    if (camera.gameObject.layer == LayerMask.NameToLayer("LightReporter") || camera.gameObject.name.Equals("GunCamera", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
                     //Next choice is the camera on the player object that is enabled
                     if (camera.enabled)
                         return camera;
