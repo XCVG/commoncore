@@ -147,9 +147,9 @@
 * Added caller and dynamics data to ActionInvokerData
 * Assemblies are now loaded from StreamingAssets/managed
 * Cleaned up data types and methods of QdmsKeyValueMessage
+* Added lock time to ranged weapons
+* Added burst fire to ranged weapons
+* Implemented projectils-per-shot and ammo-per-shot for ranged weapons
 * Added subtitle convenience methods from Shattered 2 [Experimental]
-* Added lock time to weapons [WIP]
-* Added burst fire to weapons [WIP]
-* Implemented projectils-per-shot and ammo-per-shot for weapons [WIP]
 * Extended projectile and explosion handling for weapons [WIP]
 * Extended effects handling for sprite weapon view models [WIP]

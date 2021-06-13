@@ -278,15 +278,10 @@ namespace CommonCore.RpgGame.World
             void playFireEffects()
             {
                 FireSound.Ref()?.Play();
-                EjectShell();
+                ViewModelUtils.EjectShell(ShellEjectPoint, ShellPrefab, Options.WeaponComponent);
                 InstantiateFireEffect();
             }
 
-        }
-
-        private void EjectShell()
-        {
-            ViewModelUtils.EjectShell(ShellEjectPoint, ShellPrefab, Options.WeaponComponent);
         }
 
         private void InstantiateFireEffect()

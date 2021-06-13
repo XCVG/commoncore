@@ -513,8 +513,8 @@ namespace CommonCore.RpgGame.World
 
             var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel;
             
-            if (MappedInput.GetButton(DefaultControls.Fire) && (rightWeaponModel.CheckFlag(ItemFlag.WeaponFullAuto) 
-                || (rightWeaponModel is RangedWeaponItemModel rm && BurstCount < rm.ShotsPerBurst)))
+            if ((MappedInput.GetButton(DefaultControls.Fire) && rightWeaponModel.CheckFlag(ItemFlag.WeaponFullAuto)) 
+                || (rightWeaponModel is RangedWeaponItemModel rm && BurstCount < rm.ShotsPerBurst && BurstCount > 0))
             {
 
                 //ammo logic

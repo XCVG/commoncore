@@ -47,7 +47,6 @@
 	  "MovementRecoveryFactor": 0.5,
 	  "CrouchRecoveryFactor": 0.75,
       "FireInterval": 0.35,
-	  "NumProjectiles": 1,
 	  "MagazineSize": 15,
 	  "LockTime": 0.2,	  
       "ReloadTime": 2.5,
