@@ -748,7 +748,7 @@ namespace CommonCore.RpgGame.World
                     float damageDifficultyFactor = ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerStrength;
                     bool useRandomDamage = wim.DamageSpread > 0 && !wim.CheckFlag(ItemFlag.WeaponNeverRandomize);
                     bool useRandomPierce = wim.DamagePierceSpread > 0 && !wim.CheckFlag(ItemFlag.WeaponNeverRandomize);
-                    Vector3 fireVec = shootPoint.forward.normalized;
+                    Vector3 rFireVec = shootPoint.forward.normalized;
 
                     //this GIANT ASS BLOCK OF CODE fires ONE bullet
                     //some logic is definitely redundant but eh
@@ -772,51 +772,29 @@ namespace CommonCore.RpgGame.World
                                 spreadMoveFactor *= wim.CrouchSpreadFactor;
                         }
 
-                        fireVec = shootPoint.forward.normalized;
-
-                        //bend bullets if autoaim is enabled
-                        var autoaim = ConfigState.Instance.GetGameplayConfig().AimAssist;
-                        Transform intendedTarget = null;
-                        //if(autoaim != AimAssistState.Off)
-                        {
-                            //we "probe" to see if we would have hit anyway, and don't correct if we did
-                            var probeHit = WorldUtils.RaycastAttackHit(shootPoint.position, shootPoint.forward, AutoaimCastRange * 1.25f, true, false, PlayerController);
-                            if (probeHit.Controller == null && autoaim != AimAssistState.Off)
-                            {
-                                float castSize = autoaim == AimAssistState.Strong ? AutoaimStrongCastSize : AutoaimWeakCastSize;
-                                var autoaimHit = WorldUtils.SpherecastForAutoaim(shootPoint.position, shootPoint.forward, castSize * 0.5f, AutoaimCastRange, true, false, PlayerController);
-                                if (autoaimHit.Controller != null)
-                                {
-                                    fireVec = (autoaimHit.HitPoint - shootPoint.position).normalized;
-                                    intendedTarget = autoaimHit.Controller.transform;
-                                }
-                            }
-                            else
-                                intendedTarget = probeHit.Controller.Ref()?.transform;
-                        }
-
-                        //apply spread
-                        fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread) * spreadMoveFactor * spreadRpgFactor, Vector3.up) * fireVec;
-                        fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-AccumulatedSpread, AccumulatedSpread) * spreadMoveFactor * spreadRpgFactor, transform.right) * fireVec;
-                        fireVec = Quaternion.AngleAxis(AccumulatedRecoil * spreadMoveFactor * spreadRpgFactor, -transform.right) * fireVec; //iffy
+                        Vector3 fireVec = CalculateFireVec(shootPoint, spreadRpgFactor, spreadMoveFactor, AccumulatedSpread, AccumulatedRecoil, out var intendedTarget);
+                        rFireVec = fireVec;
 
                         var hitInfo = new ActorHitInfo(randomizedDamage * damageRpgFactor * damageDifficultyFactor, randomizedPierce * damageRpgFactor * damageDifficultyFactor, (int)wim.DType, (int)wim.Effector, harmFriendly, (int)ActorBodyPart.Unspecified, (int)DefaultHitMaterials.Unspecified, PlayerController, PredefinedFaction.Player.ToString(), wim.HitPuff, null, wim.GetHitFlags());
 
                         //now a function call!
-                        if(wim.LockTime > 0)
+                        if (wim.LockTime > 0)
                         {
+                            float aRecoil = AccumulatedRecoil;
+                            float aSpread = AccumulatedSpread;
                             DelayedFiringTimeRemaining = wim.LockTime;
                             DelayedFiringAction = () =>
                             {
-                                SpawnBullet(wim, shootPoint, fireVec, intendedTarget, hitInfo);
+                                Vector3 fVec = CalculateFireVec(shootPoint, spreadRpgFactor, spreadMoveFactor, aSpread, aRecoil, out var tgt); //need to recalculate because the player may move
+                                SpawnBullet(wim, shootPoint, fVec, tgt, hitInfo);
                             };
-                            
+
                         }
                         else
                         {
                             SpawnBullet(wim, shootPoint, fireVec, intendedTarget, hitInfo);
                         }
-                        
+
                     }
 
                     //recoil accumulation
@@ -845,7 +823,7 @@ namespace CommonCore.RpgGame.World
                         float recoilScale = ConfigState.Instance.GetGameplayConfig().RecoilEffectScale;
 
                         //factor in the actual fire vector, but only a little bit
-                        Quaternion fireRotation = Quaternion.LookRotation(ViewShakeScript.transform.parent.InverseTransformDirection(fireVec));
+                        Quaternion fireRotation = Quaternion.LookRotation(ViewShakeScript.transform.parent.InverseTransformDirection(rFireVec));
                         Quaternion scaledFireRotation = Quaternion.SlerpUnclamped(Quaternion.identity, fireRotation, RecoilFireVecFactor * recoilScale);
 
                         //scaledFireRotation = Quaternion.identity;
@@ -888,6 +866,41 @@ namespace CommonCore.RpgGame.World
 
 
             QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepFired"));
+
+            
+        }
+        private Vector3 CalculateFireVec(Transform shootPoint, float spreadRpgFactor, float spreadMoveFactor, float accumulatedSpread, float accumulatedRecoil, out Transform intendedTarget)
+        {
+            Vector3 fireVec = shootPoint.forward.normalized;
+
+            //bend bullets if autoaim is enabled
+            var autoaim = ConfigState.Instance.GetGameplayConfig().AimAssist;
+            intendedTarget = null;
+            //if(autoaim != AimAssistState.Off)
+            {
+                //we "probe" to see if we would have hit anyway, and don't correct if we did
+                var probeHit = WorldUtils.RaycastAttackHit(shootPoint.position, shootPoint.forward, AutoaimCastRange * 1.25f, true, false, PlayerController);
+                if (probeHit.Controller == null && autoaim != AimAssistState.Off)
+                {
+                    float castSize = autoaim == AimAssistState.Strong ? AutoaimStrongCastSize : AutoaimWeakCastSize;
+                    var autoaimHit = WorldUtils.SpherecastForAutoaim(shootPoint.position, shootPoint.forward, castSize * 0.5f, AutoaimCastRange, true, false, PlayerController);
+                    if (autoaimHit.Controller != null)
+                    {
+                        fireVec = (autoaimHit.HitPoint - shootPoint.position).normalized;
+                        intendedTarget = autoaimHit.Controller.transform;
+                    }
+                }
+                else
+                    intendedTarget = probeHit.Controller.Ref()?.transform;
+            }
+
+            //apply spread
+            //we don't use accumulators directly because they may change between pulling the trigger and the gun going off (although they probably _shouldn't_)
+            fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-accumulatedSpread, accumulatedSpread) * spreadMoveFactor * spreadRpgFactor, Vector3.up) * fireVec;
+            fireVec = Quaternion.AngleAxis(UnityEngine.Random.Range(-accumulatedSpread, accumulatedSpread) * spreadMoveFactor * spreadRpgFactor, transform.right) * fireVec;
+            fireVec = Quaternion.AngleAxis(accumulatedRecoil * spreadMoveFactor * spreadRpgFactor, -transform.right) * fireVec; //iffy
+
+            return fireVec;
         }
 
         private void SpawnBullet(RangedWeaponItemModel wim, Transform shootPoint, Vector3 fireVec, Transform intendedTarget, ActorHitInfo hitInfo)
@@ -1050,6 +1063,7 @@ namespace CommonCore.RpgGame.World
                 IsReloading = false;
                 TimeToNext = 0;
                 BurstCount = 0;
+                DelayedFiringAction = null; //should we?
 
                 //handle equip/unequip melee weapon
                 if (player.Equipped.ContainsKey(EquipSlot.RightWeapon) && player.Equipped[EquipSlot.RightWeapon] != null && player.Equipped[EquipSlot.RightWeapon].ItemModel is WeaponItemModel wim)

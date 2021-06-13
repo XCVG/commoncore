@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -442,7 +443,7 @@ namespace CommonCore.RpgGame.Rpg
             RangeEnvelope recoil, RangeEnvelope spread, RangeEnvelope adsRecoil, RangeEnvelope adsSpread,
             PulseEnvelope recoilImpulse, PulseEnvelope adsRecoilImpulse,
             float movementSpreadFactor, float movementRecoveryFactor, float crouchSpreadFactor, float crouchRecoveryFactor,
-            float fireInterval, float burstFireInterval, int projectilesPerShot, int ammoPerShot, int shotsPerBurst, float lockTime, int magazineSize, float reloadTime,
+            float fireInterval, float? burstFireInterval, int? projectilesPerShot, int? ammoPerShot, int? shotsPerBurst, float lockTime, int magazineSize, float reloadTime,
             string aType, DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType, string viewModel, string worldModel,
             string hitPuff, string projectile, float adsZoomFactor, float lowerTime, float raiseTime,
             RangedWeaponItemProjectileData projectileData, RangedWeaponItemExplosionData explosionData)
@@ -463,10 +464,10 @@ namespace CommonCore.RpgGame.Rpg
             CrouchRecoveryFactor = crouchRecoveryFactor;
 
             FireInterval = fireInterval;
-            BurstFireInterval = burstFireInterval;
-            ProjectilesPerShot = projectilesPerShot;
-            AmmoPerShot = ammoPerShot;
-            ShotsPerBurst = shotsPerBurst;
+            BurstFireInterval = burstFireInterval ?? fireInterval;
+            ProjectilesPerShot = projectilesPerShot ?? 1;
+            AmmoPerShot = ammoPerShot ?? 1;
+            ShotsPerBurst = shotsPerBurst?? 1;
             LockTime = lockTime;
 
             MagazineSize = magazineSize;
