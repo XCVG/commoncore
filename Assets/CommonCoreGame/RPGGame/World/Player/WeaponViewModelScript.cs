@@ -1,4 +1,5 @@
 ﻿using CommonCore.RpgGame.Rpg;
+using CommonCore.World;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -66,6 +67,73 @@ namespace CommonCore.RpgGame.World
     public enum ViewModelSide
     {
         Undefined, Left, Center, Right
+    }
+
+    public static class ViewModelUtils
+    {
+        public static void EjectShell(Transform shellEjectPoint, string shellPrefab, PlayerWeaponComponent weaponComponent)
+        {
+            if (shellEjectPoint == null || shellPrefab == null || shellEjectPoint.childCount == 0)
+            {
+                //can't eject shell
+                return;
+            }
+
+            Transform shellDirTransform = shellEjectPoint.GetChild(0);
+            ShellEjectionComponent shellEjectionComponent = shellEjectPoint.GetComponent<ShellEjectionComponent>();
+
+            //var shell = Instantiate(ShellPrefab, ShellEjectPoint.position, ShellEjectPoint.rotation, CoreUtils.GetWorldRoot());
+            var shell = WorldUtils.SpawnEffect(shellPrefab, shellEjectPoint.position, shellEjectPoint.rotation.eulerAngles, CoreUtils.GetWorldRoot(), false);
+
+            if (shell == null)
+                return;
+
+            //shell parameters (use ShellEjectionComponent if available)
+            float shellScale;
+            float shellVelocity;
+            float shellTorque;
+            float shellRandomVelocity;
+            float shellRandomTorque;
+
+            if (shellEjectionComponent)
+            {
+                shellScale = shellEjectionComponent.ShellScale;
+                shellVelocity = shellEjectionComponent.ShellVelocity;
+                shellTorque = shellEjectionComponent.ShellTorque;
+                shellRandomVelocity = shellEjectionComponent.ShellRandomVelocity;
+                shellRandomTorque = shellEjectionComponent.ShellRandomTorque;
+            }
+            else
+            {
+                //legacy stupid hacky shit
+
+                shellScale = shellDirTransform.localScale.x;
+                shellVelocity = shellDirTransform.localScale.z;
+                shellTorque = shellDirTransform.localScale.y;
+
+                shellRandomVelocity = 0;
+                shellRandomTorque = 0;
+            }
+
+            //scale the shell, make it move
+            shell.transform.localScale = Vector3.one * shellScale;
+            var shellRB = shell.GetComponent<Rigidbody>();
+            if (shellRB != null)
+            {
+                Vector3 velocityDirection = shellDirTransform.forward;
+
+                Vector3 playerVelocity = weaponComponent.Ref()?.PlayerController.Ref()?.MovementComponent.Ref()?.Velocity ?? Vector3.zero;
+                Vector3 randomVelocity = new Vector3(UnityEngine.Random.Range(-1f, 1f) * shellRandomVelocity, UnityEngine.Random.Range(-1f, 1f) * shellRandomVelocity, UnityEngine.Random.Range(-1f, 1f) * shellRandomVelocity);
+
+                Vector3 velocity = velocityDirection * shellVelocity;
+                shellRB.AddForce(velocity + playerVelocity + randomVelocity, ForceMode.VelocityChange);
+
+                Vector3 randomTorque = new Vector3(UnityEngine.Random.Range(-1f, 1f) * shellRandomTorque, UnityEngine.Random.Range(-1f, 1f) * shellRandomTorque, UnityEngine.Random.Range(-1f, 1f) * shellRandomTorque);
+
+                shellRB.AddTorque(velocity * shellTorque, ForceMode.VelocityChange);
+            }
+        }
+
     }
 
     public abstract class WeaponViewModelScript : MonoBehaviour

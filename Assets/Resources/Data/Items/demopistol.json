@@ -59,7 +59,7 @@
       "MaxCondition": 1,
       "Unique": false,
       "Hidden": false,
-	  "Flags": ["WeaponHasADS", "WeaponTwoHanded", "WeaponShake", "WeaponUseCrosshair", "WeaponProportionalMovement"]
+	  "Flags": ["WeaponHasADS", "WeaponTwoHanded", "WeaponShake", "WeaponUseCrosshair", "WeaponProportionalMovement", "WeaponEffectWaitsForLockTime"]
     },
     "def": {
     "NiceName": "Demo Pistol",

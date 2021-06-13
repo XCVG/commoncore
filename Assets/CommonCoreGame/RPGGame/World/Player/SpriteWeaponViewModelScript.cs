@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonCore.World;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -73,6 +74,12 @@ namespace CommonCore.RpgGame.World
         [SerializeField]
         private AudioSource ADSLowerSound = null;
 
+        [SerializeField, Header("Effects"), Tooltip("The rotation of this transform will be used for the shell. The direction of its first child will be used as the ejection vector.")]
+        private Transform ShellEjectPoint = null;
+        private string ShellPrefab = default;
+        private Transform FireEffectPoint = null;
+        private string FireEffectPrefab = null;
+
         //state
         private WeaponFrame[] CurrentFrameSet;
         private int CurrentFrameIndex;
@@ -80,6 +87,8 @@ namespace CommonCore.RpgGame.World
         private float TimeInFrame;
 
         private bool MovebobCriticalError;
+
+        private Coroutine EffectDelayedCoroutine;
 
         public override bool ViewHandlesCrosshair => HandleCrosshair;
 
@@ -204,7 +213,7 @@ namespace CommonCore.RpgGame.World
                         break;
                     case ViewModelState.Fire:
                         CurrentFrameSet = ADSFire;
-                        FireSound.Ref()?.Play();
+                        PlayFireEffects();
                         break;
                     default:
                         Debug.LogWarning($"Tried to put {name} into state {newState} which is not supported for {nameof(SpriteWeaponViewModelScript)}");
@@ -235,7 +244,7 @@ namespace CommonCore.RpgGame.World
                         break;
                     case ViewModelState.Fire:
                         CurrentFrameSet = Fire;
-                        FireSound.Ref()?.Play();
+                        PlayFireEffects();
                         break;
                     default:
                         Debug.LogWarning($"Tried to put {name} into state {newState} which is not supported for {nameof(SpriteWeaponViewModelScript)}");
@@ -253,6 +262,40 @@ namespace CommonCore.RpgGame.World
         public override void SetVisibility(bool visible)
         {
             WeaponImage.gameObject.SetActive(visible);
+        }
+
+        private void PlayFireEffects()
+        {
+            if(Options.LockTime > 0 && Options.EffectWaitsForLockTime)
+            {
+                EffectDelayedCoroutine = StartCoroutine(CoDelayedEffect(Options.LockTime, playFireEffects));
+            }
+            else
+            {
+                playFireEffects();
+            }
+
+            void playFireEffects()
+            {
+                FireSound.Ref()?.Play();
+                EjectShell();
+                InstantiateFireEffect();
+            }
+
+        }
+
+        private void EjectShell()
+        {
+            ViewModelUtils.EjectShell(ShellEjectPoint, ShellPrefab, Options.WeaponComponent);
+        }
+
+        private void InstantiateFireEffect()
+        {
+            if (!string.IsNullOrEmpty(FireEffectPrefab))
+            {
+                var t = FireEffectPoint.Ref() ?? transform;
+                WorldUtils.SpawnEffect(FireEffectPrefab, t.position, t.rotation, t, false);
+            }
         }
 
         private void SetImage(WeaponFrame[] frameSet, int frameIndex)
@@ -288,6 +331,12 @@ namespace CommonCore.RpgGame.World
 
             WeaponImage.rectTransform.sizeDelta = new Vector2(spriteWidth, spriteHeight);
             WeaponImage.rectTransform.anchoredPosition = new Vector2(spriteXOffset, spriteYOffset);
+        }
+
+        private IEnumerator CoDelayedEffect(float time, Action action)
+        {
+            yield return new WaitForSeconds(time);
+            action();
         }
 
 

@@ -51,7 +51,8 @@
       "FireInterval": 0.15,
 	  "NumProjectiles": 1,
       "MagazineSize": 30,	  
-      "ReloadTime": 2.5,
+	  "ReloadTime": 2.5,
+	  "LockTime": 0,
       "AType": "Nato556",      
 	  "Projectile": "Bullet",
 	  "ViewModel": "DemoSpriteWeapon",
@@ -63,7 +64,7 @@
       "MaxCondition": 1,
       "Unique": false,
       "Hidden": false,
-	  "Flags": ["WeaponHasADS", "WeaponTwoHanded", "WeaponFullAuto", "WeaponShake", "WeaponUseCrosshair", "WeaponProportionalMovement", "WeaponIgnoreLevelledRate"]
+	  "Flags": ["WeaponHasADS", "WeaponTwoHanded", "WeaponFullAuto", "WeaponShake", "WeaponUseCrosshair", "WeaponProportionalMovement", "WeaponIgnoreLevelledRate", "WeaponEffectWaitsForLockTime"]
     },
     "def": {
     "NiceName": "Demo Sprite Weapon",

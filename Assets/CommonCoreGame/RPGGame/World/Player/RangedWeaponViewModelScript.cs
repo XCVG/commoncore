@@ -44,12 +44,14 @@ namespace CommonCore.RpgGame.World
         [Tooltip("The rotation of this transform will be used for the shell. The direction of its first child will be used as the ejection vector.")]
         public Transform ShellEjectPoint = null;        
         public string ShellPrefab = default;
+        public Transform FireEffectPoint = null;
+        public string FireEffectPrefab = null;
 
-        private PlayerWeaponComponent WeaponComponent { get { if (_weaponComponent == null) _weaponComponent = GetComponentInParent<PlayerWeaponComponent>(); return _weaponComponent; } }
-        private PlayerWeaponComponent _weaponComponent; //cached
+        private PlayerWeaponComponent WeaponComponent => Options.WeaponComponent;
 
         private Coroutine LightFlashCoroutine;
         private Coroutine ADSTransitionCoroutine;
+        private Coroutine EffectDelayedCoroutine;
         private Vector3 ModelDefaultPosition; //in local space
         private Quaternion ModelDefaultRotation; //in local space
         private bool InADS;
@@ -156,11 +158,8 @@ namespace CommonCore.RpgGame.World
                     ModelAnimator.Play(prefix + "Charge");
                     break;
                 case ViewModelState.Fire:
-                    ModelAnimator.Play(prefix + "Fire");                    
-                    FireSound.Ref()?.Play();
-                    FireParticleSystem.Ref()?.Play();
-                    FlashFireLight();
-                    EjectShell();
+                    ModelAnimator.Play(prefix + "Fire");
+                    PlayFireEffects();
                     break;
                 case ViewModelState.Recock:
                     ModelAnimator.Play(prefix + "Recock");
@@ -170,7 +169,7 @@ namespace CommonCore.RpgGame.World
                     ModelAnimator.Play("Idle");
                     break;
             }
-        }
+        }        
 
         public override (string, float) GetHandAnimation(ViewModelState newState, ViewModelHandednessState handednessState)
         {
@@ -219,66 +218,41 @@ namespace CommonCore.RpgGame.World
             ModelAnimator.gameObject.SetActive(visible);
         }
 
-        private void EjectShell()
+        private void PlayFireEffects()
         {
-            if(ShellEjectPoint == null || ShellPrefab == null ||ShellEjectPoint.childCount == 0)
+            if (Options.LockTime > 0 && Options.EffectWaitsForLockTime)
             {
-                //can't eject shell
-                return;
-            }
+                if (EffectDelayedCoroutine != null)
+                    StopCoroutine(EffectDelayedCoroutine);
 
-            Transform shellDirTransform = ShellEjectPoint.GetChild(0);
-            ShellEjectionComponent shellEjectionComponent = ShellEjectPoint.GetComponent<ShellEjectionComponent>();
-
-            //var shell = Instantiate(ShellPrefab, ShellEjectPoint.position, ShellEjectPoint.rotation, CoreUtils.GetWorldRoot());
-            var shell = WorldUtils.SpawnEffect(ShellPrefab, ShellEjectPoint.position, ShellEjectPoint.rotation.eulerAngles, CoreUtils.GetWorldRoot());
-
-            if (shell == null)
-                return;
-
-            //shell parameters (use ShellEjectionComponent if available)
-            float shellScale;
-            float shellVelocity;
-            float shellTorque;
-            float shellRandomVelocity;
-            float shellRandomTorque;
-
-            if(shellEjectionComponent)
-            {
-                shellScale = shellEjectionComponent.ShellScale;
-                shellVelocity = shellEjectionComponent.ShellVelocity;
-                shellTorque = shellEjectionComponent.ShellTorque;
-                shellRandomVelocity = shellEjectionComponent.ShellRandomVelocity;
-                shellRandomTorque = shellEjectionComponent.ShellRandomTorque;
+                EffectDelayedCoroutine = StartCoroutine(CoDelayedEffect(base.Options.LockTime, playFireEffects));
             }
             else
             {
-                //legacy stupid hacky shit
-
-                shellScale = shellDirTransform.localScale.x;
-                shellVelocity = shellDirTransform.localScale.z;
-                shellTorque = shellDirTransform.localScale.y;
-
-                shellRandomVelocity = 0;
-                shellRandomTorque = 0;
+                playFireEffects();
             }
 
-            //scale the shell, make it move
-            shell.transform.localScale = Vector3.one * shellScale;
-            var shellRB = shell.GetComponent<Rigidbody>();
-            if(shellRB != null)
+            void playFireEffects()
             {
-                Vector3 velocityDirection = shellDirTransform.forward;
+                FireSound.Ref()?.Play();
+                FireParticleSystem.Ref()?.Play();
+                FlashFireLight();
+                InstantiateFireEffect();
+                EjectShell();
+            }
+        }
 
-                Vector3 playerVelocity = WeaponComponent.PlayerController.MovementComponent.Velocity;
-                Vector3 randomVelocity = new Vector3(UnityEngine.Random.Range(-1f, 1f) * shellRandomVelocity, UnityEngine.Random.Range(-1f, 1f) * shellRandomVelocity, UnityEngine.Random.Range(-1f, 1f) * shellRandomVelocity);
+        private void EjectShell()
+        {
+            ViewModelUtils.EjectShell(ShellEjectPoint, ShellPrefab, WeaponComponent);
+        }
 
-                Vector3 velocity = velocityDirection * shellVelocity;
-                shellRB.AddForce(velocity + playerVelocity + randomVelocity, ForceMode.VelocityChange);
-
-                Vector3 randomTorque = new Vector3(UnityEngine.Random.Range(-1f, 1f) * shellRandomTorque, UnityEngine.Random.Range(-1f, 1f) * shellRandomTorque, UnityEngine.Random.Range(-1f, 1f) * shellRandomTorque);
-
-                shellRB.AddTorque(velocity * shellTorque, ForceMode.VelocityChange);
+        private void InstantiateFireEffect()
+        {
+            if(!string.IsNullOrEmpty(FireEffectPrefab))
+            {
+                var t = FireEffectPoint.Ref() ?? ModelTransform.Ref() ?? transform;
+                WorldUtils.SpawnEffect(FireEffectPrefab, t.position, t.rotation, t, false);
             }
         }
 
@@ -291,10 +265,10 @@ namespace CommonCore.RpgGame.World
 
             if (LightFlashCoroutine != null)
                 StopCoroutine(LightFlashCoroutine);
-            LightFlashCoroutine = StartCoroutine(FireLightCoroutine());
+            LightFlashCoroutine = StartCoroutine(CoFireLight());
         }
 
-        private IEnumerator FireLightCoroutine()
+        private IEnumerator CoFireLight()
         {
             yield return new WaitForSeconds(FireLightDuration);
             FireLight.gameObject.SetActive(false);            
@@ -312,10 +286,10 @@ namespace CommonCore.RpgGame.World
             if (ADSTransitionCoroutine != null)
                 StopCoroutine(ADSTransitionCoroutine);
 
-            ADSTransitionCoroutine = StartCoroutine(TransitionADSCoroutine(targetPosition, targetRotation));
+            ADSTransitionCoroutine = StartCoroutine(CoTransitionADS(targetPosition, targetRotation));
         }
 
-        private IEnumerator TransitionADSCoroutine(Vector3 targetPosition, Quaternion targetRotation)
+        private IEnumerator CoTransitionADS(Vector3 targetPosition, Quaternion targetRotation)
         {
             Vector3 oldPosition = ModelTransform.localPosition;
 
@@ -331,6 +305,12 @@ namespace CommonCore.RpgGame.World
 
             ModelTransform.localPosition = targetPosition;
             ModelTransform.localRotation = targetRotation;
+        }
+
+        private IEnumerator CoDelayedEffect(float time, Action action)
+        {
+            yield return new WaitForSeconds(time);
+            action();
         }
 
         public bool HasADSEnterAnim => !string.IsNullOrEmpty(ADSAnimations.RaiseAnim);
