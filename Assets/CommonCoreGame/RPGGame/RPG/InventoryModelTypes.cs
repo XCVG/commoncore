@@ -506,6 +506,12 @@ namespace CommonCore.RpgGame.Rpg
         public string HitPuff { get; private set; } = string.Empty;
 
         [JsonProperty]
+        public bool DetonateOnWorldHit { get; private set; } = true;
+
+        [JsonProperty]
+        public bool DetonateOnDespawn { get; private set; } = false;
+
+        [JsonProperty]
         public bool EnableProximityDetonation { get; private set; }
         [JsonProperty]
         public float ProximityRadius { get; private set; }

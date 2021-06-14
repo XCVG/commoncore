@@ -9,6 +9,11 @@ using System;
 
 namespace CommonCore.World
 {
+    public enum BulletScriptDestroyType
+    {
+        Despawn, HitWorld, HitDamageable
+    }
+
     /// <summary>
     /// Script for a basic bullet that works with ActorHitboxComponent and ITakeDamage
     /// </summary>
@@ -44,6 +49,7 @@ namespace CommonCore.World
         private float Elapsed;
 
         public bool DeferredHitBegan { get; protected set; }
+        public BulletScriptDestroyType DestroyType { get; protected set; }
         protected float TimeToDeferredHit;
         protected Action DeferredHitAction;
 
@@ -300,6 +306,8 @@ namespace CommonCore.World
                 HitPuffScript.SpawnHitPuff(HitPuffOverride, HitInfo.HitCoords.Value, HitInfo.HitMaterial);
             else
                 HitPuffScript.SpawnHitPuff(HitInfo);
+
+            DestroyType = (otherController is ITakeDamage) ? BulletScriptDestroyType.HitDamageable : BulletScriptDestroyType.HitWorld;
 
             if (HitSpecial != null)
                 HitSpecial.Invoke(new ActionInvokerData() { Activator = HitInfo.Originator, Caller = this, Velocity = Rigidbody.Ref()?.velocity, Position = transform.position, Rotation = transform.rotation });

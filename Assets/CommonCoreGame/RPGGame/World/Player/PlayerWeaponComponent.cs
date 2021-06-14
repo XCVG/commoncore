@@ -938,6 +938,9 @@ namespace CommonCore.RpgGame.World
                     if (!string.IsNullOrEmpty(wim.ExplosionData.HitPuff))
                         explosionComponent.HitPuff = wim.ExplosionData.HitPuff;
 
+                    explosionComponent.DetonateOnWorldHit = wim.ExplosionData.DetonateOnWorldHit;
+                    explosionComponent.DetonateOnDespawn = wim.ExplosionData.DetonateOnDespawn;
+
                     explosionComponent.EnableProximityDetonation = wim.ExplosionData.EnableProximityDetonation;
                     explosionComponent.ProximityRadius = wim.ExplosionData.ProximityRadius;
                     explosionComponent.UseFactions = wim.ExplosionData.UseFactions;

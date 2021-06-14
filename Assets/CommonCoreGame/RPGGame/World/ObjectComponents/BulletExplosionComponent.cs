@@ -23,12 +23,20 @@ namespace CommonCore.RpgGame.World //here because we need factions
 		public bool UseFalloff = true;
 		public string HitPuff = string.Empty;
 
+		[Header("Detonation Parameters")]
+		public bool DetonateOnWorldHit = true;
+		public bool DetonateOnDespawn = false;
+
 		[Header("Proximity detonation")]
 		public bool EnableProximityDetonation = true;
 		public float ProximityRadius = 3f;
 		public bool UseFactions = false;
 		[Tooltip("If enabled, will only detonate if it is beside or past the target")]
 		public bool UseTangentHack = false;
+
+		[Header("Effect Parameters")]
+		public string ExplosionEffect = null;
+		public bool ApplyVelocityToEffect = false;		
 
 		private bool Triggered = false;
 
@@ -113,11 +121,14 @@ namespace CommonCore.RpgGame.World //here because we need factions
 			if (Triggered || !enabled)
 				return;
 
-			DoRadiusDamage();
+			if(BulletScript.DestroyType == BulletScriptDestroyType.HitDamageable || (BulletScript.DestroyType == BulletScriptDestroyType.HitWorld && DetonateOnWorldHit) || DetonateOnDespawn)
+				Explode();
 		}
 
-		private void DoRadiusDamage()
+		private void Explode()
 		{
+			Triggered = true;
+
 			//do radius damage
 
 			var bulletHitInfo = BulletScript.HitInfo;
@@ -127,7 +138,21 @@ namespace CommonCore.RpgGame.World //here because we need factions
 
 			WorldUtils.RadiusDamage(transform.position, Radius, UseFalloff, true, false, false, false, hitInfo);
 
-			Triggered = true;
+			if(!string.IsNullOrEmpty(ExplosionEffect))
+            {
+				var explosionEffect = WorldUtils.SpawnEffect(ExplosionEffect, transform.position, transform.rotation, null, false);
+				if(explosionEffect != null && ApplyVelocityToEffect)
+                {
+					var rb = BulletScript.gameObject.GetComponent<Rigidbody>();
+					var erb = explosionEffect.GetComponent<Rigidbody>();
+					if(rb != null && erb != null)
+                    {
+						erb.velocity = rb.velocity;
+                    }
+                }
+            }
+
+			
 		}
 	}
 }

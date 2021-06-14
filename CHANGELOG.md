@@ -150,6 +150,7 @@
 * Added lock time to ranged weapons
 * Added burst fire to ranged weapons
 * Implemented projectils-per-shot and ammo-per-shot for ranged weapons
+* BulletExplosionComponent (no longer experimental) optionally detonates on world hit and despawn
 * Added subtitle convenience methods from Shattered 2 [Experimental]
 * Extended projectile and explosion handling for weapons [WIP]
 * Extended effects handling for sprite weapon view models [WIP]
