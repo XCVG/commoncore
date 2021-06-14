@@ -69,6 +69,11 @@ namespace CommonCore.RpgGame.World
         Undefined, Left, Center, Right
     }
 
+    public enum ViewModelWaitForLockTime
+    {
+        Unspecified, Always, Never
+    }
+
     public static class ViewModelUtils
     {
         public static void EjectShell(Transform shellEjectPoint, string shellPrefab, PlayerWeaponComponent weaponComponent)

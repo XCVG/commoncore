@@ -21,6 +21,8 @@ namespace CommonCore.RpgGame.World
         private float ADSTransitionTime = 0.1f;
         [SerializeField]
         private bool HandleCrosshair = false;
+        [SerializeField]
+        private ViewModelWaitForLockTime EffectWaitForLockTime = ViewModelWaitForLockTime.Unspecified;
 
         //separate into another component?
         [Header("Hand Animations")]
@@ -220,7 +222,7 @@ namespace CommonCore.RpgGame.World
 
         private void PlayFireEffects()
         {
-            if (Options.LockTime > 0 && Options.EffectWaitsForLockTime)
+            if (Options.LockTime > 0 && ((Options.EffectWaitsForLockTime && EffectWaitForLockTime != ViewModelWaitForLockTime.Never) || EffectWaitForLockTime == ViewModelWaitForLockTime.Always))
             {
                 if (EffectDelayedCoroutine != null)
                     StopCoroutine(EffectDelayedCoroutine);

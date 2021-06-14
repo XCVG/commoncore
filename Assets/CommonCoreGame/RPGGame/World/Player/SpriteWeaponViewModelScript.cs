@@ -25,6 +25,8 @@ namespace CommonCore.RpgGame.World
         private bool AutoTransition = true; //automatically go from fire->idle, raise->idle, reload->idle, etc
         [SerializeField]
         private bool HandleCrosshair = false;
+        [SerializeField]
+        private ViewModelWaitForLockTime EffectWaitForLockTime = ViewModelWaitForLockTime.Unspecified;
 
         [SerializeField, Header("Lighting Options")]
         private bool ApplyReportedLighting = true;
@@ -266,7 +268,7 @@ namespace CommonCore.RpgGame.World
 
         private void PlayFireEffects()
         {
-            if(Options.LockTime > 0 && Options.EffectWaitsForLockTime)
+            if (Options.LockTime > 0 && ((Options.EffectWaitsForLockTime && EffectWaitForLockTime != ViewModelWaitForLockTime.Never) || EffectWaitForLockTime == ViewModelWaitForLockTime.Always))
             {
                 EffectDelayedCoroutine = StartCoroutine(CoDelayedEffect(Options.LockTime, playFireEffects));
             }
