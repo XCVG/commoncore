@@ -616,15 +616,8 @@ namespace CommonCore.RpgGame.World
             if (wim != null)
             {
                 float timeScale = 1;
-                ActorHitInfo hitInfo = default;
 
                 Transform shootPoint = wim.CheckFlag(ItemFlag.WeaponUseFarShootPoint) ? ShootPointFar : ShootPointNear;
-
-                //cast!
-                var (otherController, hitPoint, hitLocation, hitMaterial) = wim.CheckFlag(ItemFlag.MeleeWeaponUsePreciseCasting) ?
-                    WorldUtils.RaycastAttackHit(shootPoint.position, shootPoint.forward, MeleeProbeDist, true, true, PlayerController) :
-                    WorldUtils.SpherecastAttackHit(shootPoint.position, shootPoint.forward, MeleeBoxCastSize * 0.5f, MeleeProbeDist, true, false, PlayerController);
-                float distance = (hitPoint - shootPoint.position).magnitude;
 
                 //Debug.Log(distance);
 
@@ -657,18 +650,18 @@ namespace CommonCore.RpgGame.World
                 else
                     player.Energy -= energyUsed;
 
-                if (distance <= wim.Reach)
+                bool harmFriendly = wim.HarmFriendly ?? GameParams.UseFriendlyFire;
+
+                //cast!
+                if (wim.CheckFlag(ItemFlag.MeleeWeaponDelayCasting) && wim.DamageDelay > 0)
                 {
-                    bool harmFriendly = wim.HarmFriendly ?? GameParams.UseFriendlyFire;
-
-                    hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, (int)wim.DType, (int)wim.Effector, harmFriendly, hitLocation, hitMaterial, PlayerController, PredefinedFaction.Player.ToString(), wim.HitPuff, hitPoint, wim.GetHitFlags());
-
-                    if (otherController is ITakeDamage itd)
-                    {
-                        HitPuffScript.SpawnHitPuff(hitInfo);
-                        itd.TakeDamage(hitInfo);
-                    }
+                    DelayedFiringAction = () => MeleeCastAndDealDamage(wim, shootPoint, calcDamage, calcDamagePierce, harmFriendly);
+                    DelayedFiringTimeRemaining = wim.DamageDelay;
                 }
+                else
+                {
+                    MeleeCastAndDealDamage(wim, shootPoint, calcDamage, calcDamagePierce, harmFriendly);
+                }                
 
                 if (slot == EquipSlot.RightWeapon && RightViewModel != null)
                 {
@@ -679,7 +672,7 @@ namespace CommonCore.RpgGame.World
                 {
                     //not supported
                 }
-                else if(slot == EquipSlot.None)
+                else if (slot == EquipSlot.None)
                 {
                     //we can only reach here if we found and are using a fallback
                     FallbackViewModel.Ref()?.SetState(ViewModelState.Fire, ViewModelHandednessState.TwoHanded, timeScale);
@@ -695,6 +688,38 @@ namespace CommonCore.RpgGame.World
                 Debug.LogError($"Player can't do a melee attack because weapon in {slot.ToString()} is not a melee weapon!");
             }
             
+        }
+
+        private void MeleeCastAndDealDamage(MeleeWeaponItemModel wim, Transform shootPoint, float calcDamage, float calcDamagePierce, bool harmFriendly)
+        {
+            var (otherController, hitPoint, hitLocation, hitMaterial) = wim.CheckFlag(ItemFlag.MeleeWeaponUsePreciseCasting) ?
+                                WorldUtils.RaycastAttackHit(shootPoint.position, shootPoint.forward, MeleeProbeDist, true, true, PlayerController) :
+                                WorldUtils.SpherecastAttackHit(shootPoint.position, shootPoint.forward, MeleeBoxCastSize * 0.5f, MeleeProbeDist, true, false, PlayerController);
+            float distance = (hitPoint - shootPoint.position).magnitude;
+
+            if (distance <= wim.Reach)
+            {
+                var hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, (int)wim.DType, (int)wim.Effector, harmFriendly, hitLocation, hitMaterial, PlayerController, PredefinedFaction.Player.ToString(), wim.HitPuff, hitPoint, wim.GetHitFlags());
+
+                if (otherController is ITakeDamage itd)
+                {
+                    if(!wim.CheckFlag(ItemFlag.MeleeWeaponDelayCasting) && wim.DamageDelay > 0)
+                    {
+                        DelayedFiringAction = () => MeleeDealDamage(hitInfo, itd);
+                        DelayedFiringTimeRemaining = wim.DamageDelay;
+                    }
+                    else
+                    {
+                        MeleeDealDamage(hitInfo, itd);
+                    }                    
+                }
+            }
+        }
+
+        private static void MeleeDealDamage(ActorHitInfo hitInfo, ITakeDamage itd)
+        {
+            HitPuffScript.SpawnHitPuff(hitInfo);
+            itd.TakeDamage(hitInfo);
         }
 
         //this whole thing is a fucking mess that needs to be refactored

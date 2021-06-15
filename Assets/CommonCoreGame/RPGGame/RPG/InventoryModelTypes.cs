@@ -47,7 +47,7 @@ namespace CommonCore.RpgGame.Rpg
         WeaponPierceConsiderShields, WeaponPierceConsiderArmor, WeaponIgnoreShields, WeaponIgnoreArmor, WeaponNeverAlert, WeaponNeverBlockable, WeaponNoPain, WeaponAlwaysPain, WeaponIgnoreHitLocation, WeaponAlwaysExtremeDeath, WeaponNeverExtremeDeath,
 
         //melee-specific weapon flags
-        MeleeWeaponUsePreciseCasting,
+        MeleeWeaponUsePreciseCasting, MeleeWeaponDelayCasting,
 
         //dummy-specific weapon flags
         DummyWeaponUseViewModelRaiseLower,
@@ -384,16 +384,19 @@ namespace CommonCore.RpgGame.Rpg
         public readonly float Reach;
         public readonly float Rate;
         public readonly float EnergyCost;
+        public readonly float DamageDelay;
 
         public MeleeWeaponItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, ItemScriptNode scripts,
             float damage, float damagePierce, float damageSpread, float damagePierceSpread,
-            float reach, float rate, float energyCost, DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType,
+            float reach, float rate, float energyCost, float damageDelay,
+            DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType,
             string viewModel, string worldModel, string hitPuff, float lowerTime, float raiseTime) 
             : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, scripts, damage, damagePierce, damageSpread, damagePierceSpread, dType, dEffector, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
         {
             Reach = reach;
             Rate = rate;
             EnergyCost = energyCost;
+            DamageDelay = damageDelay;
         }
 
         public override DamageEffector Effector => DEffector ?? DamageEffector.Melee;

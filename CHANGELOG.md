@@ -151,7 +151,9 @@
 * Added burst fire to ranged weapons
 * Implemented projectils-per-shot and ammo-per-shot for ranged weapons
 * BulletExplosionComponent (no longer experimental) optionally detonates on world hit and despawn
+* Moved GameData module out of experimental status and into Core
 * Weapon ViewModel can be forced to always or never wait for lock time to do effect [Experimental]
 * Added subtitle convenience methods from Shattered 2 [Experimental]
 * Extended projectile and explosion handling for weapons [WIP]
 * Extended effects handling for sprite weapon view models [WIP]
+* Melee weapon damage can be delayed [WIP]
