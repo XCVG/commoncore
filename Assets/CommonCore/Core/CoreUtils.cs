@@ -8,6 +8,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Scripting;
+using CommonCore.GameData;
 
 namespace CommonCore
 {
@@ -81,6 +82,22 @@ namespace CommonCore
                 return ResourceManager.ContainsResource<T>(path);
             else
                 return CCBase.ResourceManager.ResourceExists<T>(path, false);
+        }
+
+        /// <summary>
+        /// Gets a chunk of game data by type through GameDataModule
+        /// </summary>
+        public static T GetGameData<T>()
+        {
+            return CCBase.GetModule<GameDataModule>().Get<T>();
+        }
+
+        /// <summary>
+        /// Gets a chunk of game data by type through GameDataModule
+        /// </summary>
+        public static object GetGameData(Type t)
+        {
+            return CCBase.GetModule<GameDataModule>().Get(t);
         }
 
         public static System.Random Random
