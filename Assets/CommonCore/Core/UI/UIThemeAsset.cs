@@ -30,6 +30,10 @@ namespace CommonCore.UI
         public Sprite Button;
         public Sprite ButtonContrasting;
 
+        [Header("Scrollbar")]
+        public Sprite ScrollbarFrame;
+        public Sprite ScrollbarHandle;
+
         [Header("Slider")]
         public Sprite Slider;
         public Sprite SliderHandle;

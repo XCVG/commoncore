@@ -123,6 +123,13 @@ namespace CommonCore.UI
 
         private static ElementClass DetermineElementClass(Transform element)
         {
+            var scrollBar = element.GetComponent<Scrollbar>();
+            if(scrollBar != null)
+            {
+                //scroll bar
+                return ElementClass.ScrollBar;
+            }
+
             var comboBox = element.GetComponent<Dropdown>();
             if(comboBox != null)
             {
@@ -235,6 +242,7 @@ namespace CommonCore.UI
                 case ElementClass.ToggleButton:
                 case ElementClass.ComboBox:
                 case ElementClass.InputField:
+                case ElementClass.ScrollBar:
                     return false;
                 default:
                     if (ConfigState.Instance.UseVerboseLogging && !ConfigState.Instance.SuppressThemeWarnings)
@@ -500,6 +508,20 @@ namespace CommonCore.UI
                                 inputfield.textComponent.font = theme.BodyFont;
                         }
                         break;
+                    case ElementClass.ScrollBar:
+                        {
+                            var backgroundImage = element.GetComponent<Image>();
+                            if (backgroundImage != null)
+                                backgroundImage.sprite = theme.ScrollbarFrame;
+
+                            var targetGraphic = element.GetComponent<Scrollbar>().targetGraphic;
+
+                            if(targetGraphic != null && targetGraphic is Image img)
+                            {
+                                img.sprite = theme.ScrollbarHandle;
+                            }
+                        }
+                        break;
                     case ElementClass.Container:
                         //nop
                         break;
@@ -538,7 +560,8 @@ namespace CommonCore.UI
         RadioButton,
         ToggleButton,
         ComboBox,
-        InputField
+        InputField,
+        ScrollBar
     }
 
     [Serializable]
