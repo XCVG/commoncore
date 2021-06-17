@@ -722,6 +722,8 @@ namespace CommonCore.ResourceManagement
         public object Resource => UntypedResource; //wait...
         protected virtual object UntypedResource { get; }
 
+        public virtual Type ResourceType { get; }
+
         protected ResourceHandle()
         {
             HandleID = CCBase.ResourceManager.NextResourceHandleID; // I don't like this backwards dependency but I don't hate it enough to remove it yet
@@ -732,6 +734,8 @@ namespace CommonCore.ResourceManagement
     {
         public new abstract T Resource { get; } //...whaaaaaa?
         protected sealed override object UntypedResource => Resource;
+
+        public sealed override Type ResourceType => typeof(T);
     }
 
     public class UnityResourceHandle<T> : ResourceHandle<T> where T : UnityEngine.Object

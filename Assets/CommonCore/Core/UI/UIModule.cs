@@ -55,6 +55,17 @@ namespace CommonCore.UI
             }
         }
 
+        public override void OnAddonLoaded(AddonLoadData data)
+        {
+            var themes = data.LoadedResources
+                .Where(kvp => kvp.Key.StartsWith("UI/Themes/", StringComparison.OrdinalIgnoreCase) && kvp.Value.Resource is UIThemeAsset)
+                .Select(kvp => kvp.Value.Resource as UIThemeAsset);
+            foreach(var theme in themes)
+            {
+                RegisterTheme(theme);
+            }
+        }
+
         /// <summary>
         /// Registers a panel to be displayed in the ingame menu
         /// </summary>
