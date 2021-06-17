@@ -154,9 +154,10 @@
 * Moved GameData module out of experimental status and into Core
 * Theme engine can now apply themes to scrollbars
 * ResourceHandle now has ResourceType property
-* Themes are now registered automatically upon loading from addons [Untested]
+* FacingSprite and BillboardSprite now has a "Bright" flag that draws at full brightness [Experimental]
 * Weapon ViewModel can be forced to always or never wait for lock time to do effect [Experimental]
 * Added subtitle convenience methods from Shattered 2 [Experimental]
 * Extended projectile and explosion handling for weapons [WIP]
 * Extended effects handling for sprite weapon view models [WIP]
 * Melee weapon damage can be delayed [WIP]
+* Themes are now registered automatically upon loading from addons [Untested]

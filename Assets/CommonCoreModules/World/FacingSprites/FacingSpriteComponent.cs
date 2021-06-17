@@ -87,10 +87,10 @@ namespace CommonCore.World
         protected abstract void UpdateSprite(float facingAngle);
         
 
-        protected void SetSpriteOnRenderer(Sprite sprite, bool mirror)
+        protected void SetSpriteOnRenderer(Sprite sprite, bool mirror, bool bright)
         {
             //thunk!
-            FacingSpriteUtils.SetSpriteOnQuad(Attachment, SpriteSizeMode, InitialRendererScale, SpriteScale, sprite, mirror);
+            FacingSpriteUtils.SetSpriteOnQuad(Attachment, SpriteSizeMode, InitialRendererScale, SpriteScale, sprite, mirror, bright);
         }
 
     }

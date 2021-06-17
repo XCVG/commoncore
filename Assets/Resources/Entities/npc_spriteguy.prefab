@@ -180,7 +180,7 @@ MonoBehaviour:
   LockAiState: 0
   Target: {fileID: 0}
   SavedTarget: 
-  Health: 40
+  Health: 200
   Invincible: 0
   DieImmediately: 0
   DestroyOnDeath: 0
@@ -204,6 +204,7 @@ MonoBehaviour:
   Defensive: 1
   Infighting: 0
   Relentless: 0
+  FleeHealthThreshold: 0.2
   UseLineOfSight: 0
   SearchRadius: 25
   SearchInterval: 70
@@ -216,6 +217,7 @@ MonoBehaviour:
   WanderThreshold: 1
   WanderTimeout: 10
   WanderRadius: {x: 10, y: 10}
+  DifficultyHandling: 1
 --- !u!114 &7911685004318270407
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -245,6 +247,9 @@ MonoBehaviour:
   DeadInteractionTarget: 
   DeadInteractionSpecial: {fileID: 0}
   InteractionDisabledByHit: 0
+  AllowIfNoFaction: 0
+  IgnoreRestrictionIfDead: 1
+  FactionRestriction: 0
   DisableTooltip: 0
   TooltipOverride: 
   CorpseItems:
@@ -312,6 +317,7 @@ MonoBehaviour:
   <MovementTarget>k__BackingField: {x: 0, y: 0, z: 0}
   <IsRunning>k__BackingField: 0
   <ControlRotation>k__BackingField: 1
+  <PhysicsVelocity>k__BackingField: {x: 0, y: 0, z: 0}
   NavComponent: {fileID: 5529337969061916353}
   CharController: {fileID: 5761539428192508049}
   ForceNavmeshOff: 0
@@ -321,6 +327,11 @@ MonoBehaviour:
   RotateSpeed: 90
   ShrinkColliderOnDeath: 0
   DisableColliderOnDeath: 1
+  EnablePhysics: 1
+  BrakeFactor: 2
+  CollidedBrakeFactor: 10
+  YBrakeFactor: 10
+  VelocityMultiplier: 1
 --- !u!143 &5761539428192508049
 CharacterController:
   m_ObjectHideFlags: 0
@@ -426,6 +437,7 @@ MonoBehaviour:
   BillboardCorpse: 0
   SpriteSizeMode: 1
   SpriteScale: 3
+  InvertBrightFlag: 0
   Animate: 1
   LoopIdle: 1
   AutoTransition: 1
@@ -434,53 +446,74 @@ MonoBehaviour:
   Idle:
   - Sprite: {fileID: 11400000, guid: 1b60fa40072c6bc479cd4b215e870472, type: 2}
     Duration: 0.28
+    Bright: 0
   - Sprite: {fileID: 11400000, guid: f535a5a3d1041654a9e073f0ba530fff, type: 2}
     Duration: 0.28
+    Bright: 0
   Dead:
   - Sprite: {fileID: 11400000, guid: 5b32b0078fc72bc4e86d7ce63166f651, type: 2}
     Duration: 1
+    Bright: 0
   Dying:
   - Sprite: {fileID: 11400000, guid: f647be5680d35a54985fb7ef8f144a12, type: 2}
     Duration: 0.14
+    Bright: 0
   - Sprite: {fileID: 11400000, guid: 865e31902b43fc746a6daba3b488b467, type: 2}
     Duration: 0.14
+    Bright: 0
   - Sprite: {fileID: 11400000, guid: 2f6a2a9f40972e446acf03b0dcc15141, type: 2}
     Duration: 0.14
+    Bright: 0
   - Sprite: {fileID: 11400000, guid: 17f38a759144a104a88efd80f6f69373, type: 2}
     Duration: 0.14
+    Bright: 0
   - Sprite: {fileID: 11400000, guid: 5b32b0078fc72bc4e86d7ce63166f651, type: 2}
     Duration: 0.14
+    Bright: 0
   Walking:
   - Sprite: {fileID: 11400000, guid: 1b60fa40072c6bc479cd4b215e870472, type: 2}
     Duration: 0.1
+    Bright: 0
   - Sprite: {fileID: 11400000, guid: f535a5a3d1041654a9e073f0ba530fff, type: 2}
     Duration: 0.1
+    Bright: 0
   - Sprite: {fileID: 11400000, guid: ad3d2b3a5265a5d4296650225a778c00, type: 2}
     Duration: 0.1
+    Bright: 0
   - Sprite: {fileID: 11400000, guid: fe0a1c96aed1dfd4fbbd2a00901f85ad, type: 2}
     Duration: 0.1
+    Bright: 0
   Running:
   - Sprite: {fileID: 11400000, guid: 1b60fa40072c6bc479cd4b215e870472, type: 2}
     Duration: 0.05
+    Bright: 0
   - Sprite: {fileID: 11400000, guid: f535a5a3d1041654a9e073f0ba530fff, type: 2}
     Duration: 0.05
+    Bright: 0
   - Sprite: {fileID: 11400000, guid: ad3d2b3a5265a5d4296650225a778c00, type: 2}
     Duration: 0.05
+    Bright: 0
   - Sprite: {fileID: 11400000, guid: fe0a1c96aed1dfd4fbbd2a00901f85ad, type: 2}
     Duration: 0.05
+    Bright: 0
   Hurting:
   - Sprite: {fileID: 11400000, guid: b62efbd1a8ef66c42b04a886064b36d6, type: 2}
     Duration: 0.17
+    Bright: 0
   Talking: []
   Shooting:
   - Sprite: {fileID: 11400000, guid: c103ca4ef36491748b0d9d7c5d146a2a, type: 2}
     Duration: 0.1
+    Bright: 0
   - Sprite: {fileID: 11400000, guid: 7ce78678f9e3767489b424bae002e283, type: 2}
     Duration: 0.1
+    Bright: 0
   - Sprite: {fileID: 11400000, guid: 1403318a591277747ba6532fd05591e8, type: 2}
     Duration: 0.2
+    Bright: 1
   - Sprite: {fileID: 11400000, guid: 7ce78678f9e3767489b424bae002e283, type: 2}
     Duration: 0.1
+    Bright: 0
   Punching: []
   ExtraAnimations: []
   ExtraDeathAnimations: []
@@ -538,10 +571,11 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9971567ca3d8c0747b01c545e0d86ac2, type: 2}
+  - {fileID: 2100000, guid: b8eb5ff6bd87c974f8cc3a9d75b47a76, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -549,6 +583,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0

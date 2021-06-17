@@ -72,15 +72,36 @@ namespace CommonCore.World
         /// <summary>
         /// Sets the sprite on a quad renderer and rescales/repositions based on offsets, scale, and scale options
         /// </summary>
-        public static void SetSpriteOnQuad(Renderer renderer, FacingSpriteSizeMode spriteSizeMode, Vector2 initialRendererScale, float spriteScale, Sprite sprite, bool mirror)
+        public static void SetSpriteOnQuad(Renderer renderer, FacingSpriteSizeMode spriteSizeMode, Vector2 initialRendererScale, float spriteScale, Sprite sprite, bool mirror, bool bright)
         {
             //UnityEngine.Profiling.Profiler.BeginSample("SetSpriteOnQuad");
             //this is not the _only_ expensive part, but it is an expensive part
 
             var texture = sprite.Ref()?.texture;
-            if (renderer.material.mainTexture != texture) //skip a bunch of stuff if we've already assigned the right texture
+            var material = renderer.material;
+
+            if (material.HasProperty("_EmissionColor"))
             {
-                renderer.material.mainTexture = texture;
+                var currentEmissionColor = material.GetColor("_EmissionColor");
+                if (bright && currentEmissionColor == Color.black)
+                {
+                    material.SetColor("_EmissionColor", Color.white);
+                    material.SetTexture("_EmissionMap", texture);
+                }
+                else if (!bright && currentEmissionColor != Color.black)
+                {
+                    material.SetColor("_EmissionColor", Color.black);
+                    renderer.material.SetTexture("_EmissionMap", null);
+                }
+            }
+            else if(bright)
+            {
+                Debug.LogWarning($"Material {material.name} on {renderer.name} does not support emission but bright flag is set");
+            }
+
+            if (material.mainTexture != texture) //skip a bunch of stuff if we've already assigned the right texture
+            {
+                material.mainTexture = texture;                
 
                 Vector2 newScale = new Vector2(Mathf.Abs(initialRendererScale.x), Mathf.Abs(initialRendererScale.y));
                 Vector2 newOffset = renderer.transform.localPosition;

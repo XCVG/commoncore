@@ -5924,6 +5924,7 @@ MonoBehaviour:
   SpriteSizeMode: 1
   SpriteScale: 1
   Sprites: {fileID: 11400000, guid: 1b60fa40072c6bc479cd4b215e870472, type: 2}
+  Bright: 0
 --- !u!4 &1047013200950817358
 Transform:
   m_ObjectHideFlags: 0

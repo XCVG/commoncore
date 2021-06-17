@@ -17,6 +17,7 @@ namespace CommonCore.World
         public FacingSpriteSizeMode SpriteSizeMode = default;
         [Tooltip("If >0, multiplies the sprite size by this value (exact effect depends on size mode)")]
         public float SpriteScale = 0;
+        public bool InvertBrightFlag = false;
 
         [Header("Animation Options")] //these are deliberately public
         public bool Animate = true;
@@ -65,7 +66,7 @@ namespace CommonCore.World
             if (sprite == null)
                 return;
 
-            FacingSpriteUtils.SetSpriteOnQuad(Renderer, SpriteSizeMode, InitialRendererScale, SpriteScale, sprite, false);
+            FacingSpriteUtils.SetSpriteOnQuad(Renderer, SpriteSizeMode, InitialRendererScale, SpriteScale, sprite, false, Frames[CurrentFrame].Bright ^ InvertBrightFlag);
 
             FrameChanged = false;
         }
@@ -94,6 +95,7 @@ namespace CommonCore.World
         {
             public Sprite Sprite;
             public float Duration;
+            public bool Bright;
         }
     }
 }

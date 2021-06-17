@@ -23,10 +23,11 @@ namespace CommonCore.RpgGame.World
         protected bool BillboardBothAxes = false;
         [SerializeField, Tooltip("If unset, dead state will not use billboard logic")]
         protected bool BillboardCorpse = true;
-
+        
         public FacingSpriteSizeMode SpriteSizeMode = default;
         [Tooltip("If >0, multiplies the sprite size by this value (exact effect depends on size mode)")]
         public float SpriteScale = 0;
+        public bool InvertBrightFlag = false;
 
         [Header("Animation Options")]
         public bool Animate = true;
@@ -145,13 +146,13 @@ namespace CommonCore.RpgGame.World
 
                 if (!BillboardCorpse && CurrentFrameSet == Dead)
                 {
-                    FacingSpriteUtils.SetSpriteOnQuad(Attachment, SpriteSizeMode, InitialRendererScale, SpriteScale, facingSprite.Front, false);
+                    FacingSpriteUtils.SetSpriteOnQuad(Attachment, SpriteSizeMode, InitialRendererScale, SpriteScale, facingSprite.Front, false, CurrentFrameSet[frameIndex].Bright ^ InvertBrightFlag);
                 }
                 else
                 {
                     var (sprite, mirror) = facingSprite.GetFacingSprite(facingAngle);
                     //SetSpriteOnRenderer(sprite, mirror);
-                    FacingSpriteUtils.SetSpriteOnQuad(Attachment, SpriteSizeMode, InitialRendererScale, SpriteScale, sprite, mirror);
+                    FacingSpriteUtils.SetSpriteOnQuad(Attachment, SpriteSizeMode, InitialRendererScale, SpriteScale, sprite, mirror, CurrentFrameSet[frameIndex].Bright ^ InvertBrightFlag);
                 }
             }
         }
@@ -383,6 +384,7 @@ namespace CommonCore.RpgGame.World
         {
             public FacingSpriteAsset Sprite;
             public float Duration;
+            public bool Bright;
         }
     }
 }

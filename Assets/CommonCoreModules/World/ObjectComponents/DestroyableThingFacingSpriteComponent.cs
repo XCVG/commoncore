@@ -12,6 +12,8 @@ namespace CommonCore.World
     [RequireComponent(typeof(DestroyableThingController))]
     public class DestroyableThingFacingSpriteComponent : FacingSpriteComponent
     {
+        public bool InvertBrightFlag = false;
+
         [Header("Animation Options")]
         public bool Animate = true;
         public bool LoopIdle = true;
@@ -61,7 +63,7 @@ namespace CommonCore.World
                 return;
 
             var (sprite, mirror) = facingSprite.GetFacingSprite(facingAngle);
-            SetSpriteOnRenderer(sprite, mirror);
+            SetSpriteOnRenderer(sprite, mirror, CurrentFrameSet[currentFrame].Bright ^ InvertBrightFlag);
         }
 
         private void UpdateAnimation()
@@ -130,6 +132,7 @@ namespace CommonCore.World
         {
             public FacingSpriteAsset Sprite;
             public float Duration;
+            public bool Bright;
         }
     }
 }

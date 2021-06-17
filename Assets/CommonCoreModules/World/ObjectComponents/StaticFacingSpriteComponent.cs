@@ -12,6 +12,7 @@ namespace CommonCore.World
     public class StaticFacingSpriteComponent : FacingSpriteComponent
     {
         public FacingSpriteAsset Sprites = null;
+        public bool Bright = false;
 
         protected override void Start()
         {
@@ -28,7 +29,7 @@ namespace CommonCore.World
         protected override void UpdateSprite(float facingAngle)
         {
             var (sprite, mirror) = Sprites.GetFacingSprite(facingAngle);
-            SetSpriteOnRenderer(sprite, mirror);
+            SetSpriteOnRenderer(sprite, mirror, Bright);
         }
     }
 }

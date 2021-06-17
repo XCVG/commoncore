@@ -14,6 +14,8 @@ namespace CommonCore.World
     {
         public SpriteFrame[] Frames = null;
 
+        public bool InvertBrightFlag = false;
+
         [Header("Animation Options")] //these are deliberately public
         public bool Animate = true;
         public float AnimationTimescale = 1;
@@ -56,7 +58,7 @@ namespace CommonCore.World
                 return;
 
             var (sprite, mirror) = facingSprite.GetFacingSprite(facingAngle);
-            SetSpriteOnRenderer(sprite, mirror);
+            SetSpriteOnRenderer(sprite, mirror, Frames[currentFrame].Bright ^ InvertBrightFlag);
         }
 
         private void UpdateAnimation()
@@ -82,6 +84,7 @@ namespace CommonCore.World
         {
             public FacingSpriteAsset Sprite;
             public float Duration;
+            public bool Bright;
         }
     }
 }
