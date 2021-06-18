@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using CommonCore.World;
+using CommonCore.Scripting;
 
 namespace CommonCore.RpgGame.World
 {
@@ -682,6 +683,8 @@ namespace CommonCore.RpgGame.World
                 //    Instantiate(MeleeEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
 
                 QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepFired"));
+                if(!string.IsNullOrEmpty(wim?.Scripts?.OnFire))
+                    ScriptingModule.Call(wim.Scripts.OnFire, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, wim);
             }
             else
             {
@@ -881,6 +884,9 @@ namespace CommonCore.RpgGame.World
                         DoReload();
                     }
 
+                    if (!string.IsNullOrEmpty(wim?.Scripts?.OnFire))
+                        ScriptingModule.Call(wim.Scripts.OnFire, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, wim);
+
                 }
                 else
                 {
@@ -1034,6 +1040,9 @@ namespace CommonCore.RpgGame.World
                         //    AudioPlayer.Instance.PlaySound(rwim.ReloadEffect, SoundType.Sound, false);
 
                         TimeToNext = Math.Max(rwim.ReloadTime * reloadRpgFactor, TimeToNext); //we take the longest time
+
+                        if (!string.IsNullOrEmpty(rwim?.Scripts?.OnReload))
+                            ScriptingModule.Call(rwim.Scripts.OnReload, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, rwim);
                     }
                 }
 

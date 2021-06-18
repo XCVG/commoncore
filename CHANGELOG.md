@@ -154,7 +154,8 @@
 * Moved GameData module out of experimental status and into Core
 * Theme engine can now apply themes to scrollbars
 * ResourceHandle now has ResourceType property
-* FacingSprite and BillboardSprite now has a "Bright" flag that draws at full brightness [Experimental]
+* Added OnFire and OnReload to item scripts (for weapons only)
+* FacingSprite and BillboardSprite now has a "Bright" flag that draws at full brightness
 * Weapon ViewModel can be forced to always or never wait for lock time to do effect [Experimental]
 * Added subtitle convenience methods from Shattered 2 [Experimental]
 * Extended projectile and explosion handling for weapons [WIP]

@@ -94,6 +94,18 @@ namespace CommonCore.RpgGame.Rpg
         //caller: inventory model
         //args: item model, item instance, old quantity, new quantity
         //return: void
+
+        [JsonProperty]
+        public string OnFire { get; private set; } //weapon items only
+        //caller: weapon controller
+        //args: item instance
+        //return: void
+
+        [JsonProperty]
+        public string OnReload { get; private set; } //ranged weapon items only
+        //caller: weapon controller
+        //args: item instance
+        //return: void
     }
 
     //an actual inventory item that the player has
