@@ -173,7 +173,7 @@ namespace CommonCore.UI
             if(text != null)
             {
                 //must be a text type
-                if (text.font != null && (text.fontStyle == FontStyle.Bold || text.font.name.IndexOf("bold", StringComparison.OrdinalIgnoreCase) >= 0) && text.fontSize > 20)
+                if (text.font != null && (text.fontStyle == FontStyle.Bold || text.font.name.IndexOf("bold", StringComparison.OrdinalIgnoreCase) >= 0) && text.fontSize >= 20)
                     return ElementClass.HeadingText;
                 return ElementClass.BodyText;
             }
