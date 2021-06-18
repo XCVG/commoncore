@@ -49,6 +49,11 @@ namespace CommonCore.World
                 MetaState.Instance.IntentsExecutePostload();
                 MetaState.Instance.IntentsRemoveInvalid();
             }
+            else
+            {
+                if (CoreParams.AlwaysPreactivateEntityPlaceholders)
+                    ActivateEntityPlaceholders();
+            }
 
             if (!string.IsNullOrEmpty(SetMusic))
             {

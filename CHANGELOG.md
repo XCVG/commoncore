@@ -159,6 +159,7 @@
 * Fixed heading font not applying to modal headings
 * Fixed BlankSceneController not added to script execution order
 * Implemented Generic Translate Script
+* Added flag to pre-activate entity placeholders in world scenes
 * Weapon ViewModel can be forced to always or never wait for lock time to do effect [Experimental]
 * Added subtitle convenience methods from Shattered 2 [Experimental]
 * Extended projectile and explosion handling for weapons [WIP]
