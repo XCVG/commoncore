@@ -101,7 +101,7 @@ namespace CommonCore
             await LoadResourcesFromPathAsync(context);
             await LoadAssembliesAsync(context);
 
-            onLoadedMethod(new AddonLoadData(context.LoadedAssemblies, context.LoadedResources));
+            onLoadedMethod(new AddonLoadData(context.LoadedAssemblies, context.LoadedResources, new string[] { }));
 
         }
 
@@ -408,6 +408,31 @@ namespace CommonCore
                     context.LoadedResources.Add(objectTargetPath, rh);
                 }
             }
+        }
+
+        /// <summary>
+        /// Registers default video paths into context
+        /// </summary>
+        public void RegisterDefaultVideoPaths(AddonLoadContext context)
+        {
+            //why is this not static? something something future optimization but really I just forgot
+            try
+            {                
+                var paths = Directory.EnumerateDirectories(context.Path)
+                    .Where(d => new DirectoryInfo(d).Name.Equals("video", StringComparison.OrdinalIgnoreCase));
+
+                context.VideoPaths.AddRange(paths);
+            }
+            catch(Exception e)
+            {
+                if (context.AbortOnSingleFileFailure)
+                    throw;
+
+                Debug.LogError($"[AddonManager] Failed to register video paths for addon \"{context.Manifest.Name}\" ({e.GetType().Name})");
+                if (ConfigState.Instance.UseVerboseLogging)
+                    Debug.LogException(e);
+            }
+
         }
 
         public string GetObjectNameFromBundledName(string bundledName)

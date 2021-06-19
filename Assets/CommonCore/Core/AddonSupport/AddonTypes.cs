@@ -15,11 +15,13 @@ namespace CommonCore
     {
         public IReadOnlyList<Assembly> LoadedAssemblies { get; private set; }
         public IReadOnlyDictionary<string, ResourceHandle> LoadedResources { get; private set; }
+        public IReadOnlyList<string> VideoPaths { get; private set; }
 
-        public AddonLoadData(IEnumerable<Assembly> assemblies, IDictionary<string, ResourceHandle> resources)
+        public AddonLoadData(IEnumerable<Assembly> assemblies, IDictionary<string, ResourceHandle> resources, IEnumerable<string> videoPaths)
         {
             LoadedAssemblies = assemblies.ToImmutableArray();
             LoadedResources = resources.ToImmutableDictionary();
+            VideoPaths = videoPaths.ToImmutableArray();
         }
     }
 
@@ -40,6 +42,7 @@ namespace CommonCore
         public List<Assembly> LoadedAssemblies { get; private set; } = new List<Assembly>();
         public Dictionary<string, ResourceHandle> LoadedResources { get; private set; } = new Dictionary<string, ResourceHandle>();
         public List<string> LoadedScenes { get; private set; } = new List<string>();
+        public List<string> VideoPaths { get; private set; } = new List<string>();
 
         //references
         public AddonManager AddonManager { get; set; }
