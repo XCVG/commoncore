@@ -160,6 +160,7 @@
 * Fixed BlankSceneController not added to script execution order
 * Implemented Generic Translate Script
 * Added flag to pre-activate entity placeholders in world scenes
+* Added UI sound type (PlayUISound now uses this sound type)
 * Weapon ViewModel can be forced to always or never wait for lock time to do effect [Experimental]
 * Added subtitle convenience methods from Shattered 2 [Experimental]
 * Added fade canvasgroup convenience methods [Experimental]

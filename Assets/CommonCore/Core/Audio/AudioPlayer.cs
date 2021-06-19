@@ -431,7 +431,7 @@ namespace CommonCore.Audio
         {
             try
             {
-                PlaySoundEx(sound, SoundType.Sound, true, true, false, false, 1.0f, Vector3.zero);
+                PlaySoundEx(sound, SoundType.UI, true, true, false, false, 1.0f, Vector3.zero);
             }
             catch (Exception e)
             {

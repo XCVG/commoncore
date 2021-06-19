@@ -10,7 +10,7 @@ namespace CommonCore.Audio
     /// </summary>
     public enum SoundType
     {
-        Any, Sound, Voice, Music, Root
+        Any, Sound, Voice, Music, Root, UI
     }
 
     /// <summary>
@@ -49,7 +49,9 @@ namespace CommonCore.Audio
             {
                 //attempt to load in order
                 clip = CoreUtils.LoadResource<AudioClip>("DynamicSound/" + name);
-                if(clip == null)
+                if (clip == null)
+                    clip = CoreUtils.LoadResource<AudioClip>("UI/Sound/" + name);
+                if (clip == null)
                     clip = CoreUtils.LoadResource<AudioClip>("Voice/" + name);
                 if(clip == null)
                     clip = CoreUtils.LoadResource<AudioClip>("DynamicMusic/" + name);
@@ -71,6 +73,9 @@ namespace CommonCore.Audio
                         break;
                     case SoundType.Root:
                         clip = CoreUtils.LoadResource<AudioClip>(name);
+                        break;
+                    case SoundType.UI:
+                        clip = CoreUtils.LoadResource<AudioClip>("UI/Sound/" + name);
                         break;
                 }
 
