@@ -133,7 +133,7 @@
 * Added startup metadata to PersistState
 * Added consistent support for both `av` and `actorvalue` in DialogueParser
 
-# 3.0.0 pNext
+# 3.0.0 Preview 6
 
 * Fixed editor file copy script not creating root dir
 * Added Reset functionality to SkippableTimerScript
