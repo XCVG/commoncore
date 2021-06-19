@@ -163,6 +163,7 @@
 * Added UI sound type (PlayUISound now uses this sound type)
 * Removed obsolete methods from AddonBase
 * Added VideoModule to provide addon-aware video management
+* Added VideoUtils to video module, containing video-related convenience methods
 * Weapon ViewModel can be forced to always or never wait for lock time to do effect [Experimental]
 * Added subtitle convenience methods from Shattered 2 [Experimental]
 * Added fade canvasgroup convenience methods [Experimental]

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Video;
 
 namespace CommonCore.Video
 {
@@ -70,7 +71,7 @@ namespace CommonCore.Video
         {
             string path = null;
 
-            foreach(var folder in SearchPaths)
+            foreach(var folder in ((IEnumerable<string>)SearchPaths).Reverse()) //awkward cast to force LINQ call
             {
                 if (!Directory.Exists(folder))
                     continue;
@@ -87,7 +88,6 @@ namespace CommonCore.Video
 
             return path;
         }
-
         
     }
 }
