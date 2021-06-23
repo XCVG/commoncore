@@ -1,4 +1,5 @@
 ﻿using CommonCore.DebugLog;
+using CommonCore.Messaging;
 using CommonCore.Scripting;
 using CommonCore.State;
 using Newtonsoft.Json;
@@ -691,6 +692,14 @@ namespace CommonCore.RpgGame.Rpg
                 return;
             }
 
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgInventoryModified", new Dictionary<string, object>() {
+                { "ChangeType", "QuantityChanged" },
+                { "InventoryModel", this },
+                { "InventoryItemInstance", instance },
+                { "InventoryItemModel", instance.ItemModel },
+                { "OldQuantity", oldQuantity },
+                { "NewQuantity", newQuantity ?? instance.Quantity },
+            }));
             ScriptingModule.Call(instance.ItemModel.Scripts.OnQuantityChange, new ScriptExecutionContext() { Caller = this }, instance.ItemModel, instance, oldQuantity, newQuantity ?? instance.Quantity);
         }
 
@@ -699,6 +708,12 @@ namespace CommonCore.RpgGame.Rpg
             if (string.IsNullOrEmpty(instance?.ItemModel?.Scripts?.OnAdd))
                 return;
 
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgInventoryModified", new Dictionary<string, object>() {
+                { "ChangeType", "Add" },
+                { "InventoryModel", this },
+                { "InventoryItemInstance", instance },
+                { "InventoryItemModel", instance.ItemModel }
+            }));
             ScriptingModule.Call(instance.ItemModel.Scripts.OnAdd, new ScriptExecutionContext() { Caller = this }, instance.ItemModel, instance);
         }
 
@@ -707,6 +722,12 @@ namespace CommonCore.RpgGame.Rpg
             if (string.IsNullOrEmpty(instance?.ItemModel?.Scripts?.OnRemove))
                 return;
 
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgInventoryModified", new Dictionary<string, object>() {
+                { "ChangeType", "Remove" },
+                { "InventoryModel", this },
+                { "InventoryItemInstance", instance },
+                { "InventoryItemModel", instance.ItemModel }
+            }));
             ScriptingModule.Call(instance.ItemModel.Scripts.OnRemove, new ScriptExecutionContext() { Caller = this }, instance.ItemModel, instance);
         }
 

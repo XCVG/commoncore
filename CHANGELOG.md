@@ -171,3 +171,7 @@
 * Extended effects handling for sprite weapon view models [WIP]
 * Melee weapon damage can be delayed [WIP]
 * Themes are now registered automatically upon loading from addons [Untested]
+
+# 3.0.0 pNext
+
+* Added RpgInventoryModified messages sent when inventory is changed
