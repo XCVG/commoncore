@@ -60,6 +60,13 @@ namespace CommonCore.RpgGame.World
         public Transform FireEffectPoint = null;
         public string FireEffectPrefab = null;
 
+        [Header("Reload Effects"), Tooltip("The rotation of this transform will be used for the magazine. The direction of its first child will be used as the ejection vector.")]
+        public Transform MagazineEjectPoint = null;
+        public string MagazinePrefab = default;
+        public float MagazineEjectDelay = 0;
+        public Transform ReloadEffectPoint = null;
+        public string ReloadEffectPrefab = null;
+
         private PlayerWeaponComponent WeaponComponent => Options.WeaponComponent;
 
         private Coroutine LightFlashCoroutine;
@@ -176,11 +183,13 @@ namespace CommonCore.RpgGame.World
                     break;
                 case ViewModelState.Reload:
                     ModelAnimator.Play(prefix + "Reload");
-                    if(ReloadSound != null)
+                    PlayReloadEffects();
+                    if (ReloadSound != null)
                     {
                         ReloadSound.pitch = 1f / timeScale;
                         ReloadSound.Play();
-                    }                    
+                    }
+                    PlayReloadEffects();
                     break;
                 case ViewModelState.Charge:
                     ModelAnimator.Play(prefix + "Charge");
@@ -268,6 +277,28 @@ namespace CommonCore.RpgGame.World
                 InstantiateFireEffect();
                 EjectShell();
             }
+        }
+
+        private void PlayReloadEffects()
+        {
+            if (!string.IsNullOrEmpty(ReloadEffectPrefab))
+            {
+                var t = ReloadEffectPoint.Ref() ?? ModelTransform.Ref() ?? transform;
+                WorldUtils.SpawnEffect(ReloadEffectPrefab, t.position, t.rotation, t, false);
+            }
+
+            if (!string.IsNullOrEmpty(MagazinePrefab))
+            {
+                if (MagazineEjectDelay > 0)
+                {
+                    StartCoroutine(CoDelayedEffect(MagazineEjectDelay, () => { ViewModelUtils.EjectShell(MagazineEjectPoint.Ref() ?? ModelTransform.Ref() ?? transform, MagazinePrefab, WeaponComponent); }));
+                }
+                else
+                {
+                    ViewModelUtils.EjectShell(MagazineEjectPoint.Ref() ?? ModelTransform.Ref() ?? transform, MagazinePrefab, WeaponComponent);
+                }
+            }
+
         }
 
         private void EjectShell()

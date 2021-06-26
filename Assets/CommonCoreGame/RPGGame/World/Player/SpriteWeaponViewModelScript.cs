@@ -78,9 +78,23 @@ namespace CommonCore.RpgGame.World
 
         [SerializeField, Header("Effects"), Tooltip("The rotation of this transform will be used for the shell. The direction of its first child will be used as the ejection vector.")]
         private Transform ShellEjectPoint = null;
+        [SerializeField]
         private string ShellPrefab = default;
+        [SerializeField]
         private Transform FireEffectPoint = null;
+        [SerializeField]
         private string FireEffectPrefab = null;
+
+        [SerializeField, Header("Reload Effects"), Tooltip("The rotation of this transform will be used for the magazine. The direction of its first child will be used as the ejection vector.")]
+        private Transform MagazineEjectPoint = null;
+        [SerializeField]
+        private string MagazinePrefab = default;
+        [SerializeField]
+        private float MagazineEjectDelay = 0;
+        [SerializeField]
+        private Transform ReloadEffectPoint = null;
+        [SerializeField]
+        private string ReloadEffectPrefab = null;
 
         //state
         private WeaponFrame[] CurrentFrameSet;
@@ -243,6 +257,7 @@ namespace CommonCore.RpgGame.World
                     case ViewModelState.Reload:
                         CurrentFrameSet = Reload;
                         ReloadSound.Ref()?.Play();
+                        PlayReloadEffects();
                         break;
                     case ViewModelState.Fire:
                         CurrentFrameSet = Fire;
@@ -282,6 +297,28 @@ namespace CommonCore.RpgGame.World
                 FireSound.Ref()?.Play();
                 ViewModelUtils.EjectShell(ShellEjectPoint, ShellPrefab, Options.WeaponComponent);
                 InstantiateFireEffect();
+            }
+
+        }
+
+        private void PlayReloadEffects()
+        {
+            if (!string.IsNullOrEmpty(ReloadEffectPrefab))
+            {
+                var t = ReloadEffectPoint.Ref() ?? transform;
+                WorldUtils.SpawnEffect(ReloadEffectPrefab, t.position, t.rotation, t, false);
+            }
+
+            if (!string.IsNullOrEmpty(MagazinePrefab))
+            {
+                if (MagazineEjectDelay > 0)
+                {
+                    StartCoroutine(CoDelayedEffect(MagazineEjectDelay, () => { ViewModelUtils.EjectShell(MagazineEjectPoint.Ref() ?? transform, MagazinePrefab, Options.WeaponComponent); }));
+                }
+                else
+                {
+                    ViewModelUtils.EjectShell(MagazineEjectPoint.Ref() ?? transform, MagazinePrefab, Options.WeaponComponent);
+                }
             }
 
         }

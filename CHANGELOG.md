@@ -178,4 +178,7 @@
 * Fixed OnFire and OnReload scripts being passed item model instead of item instance
 * Melee weapon damage can be delayed no longer WIP
 * Moved input lock and player in control checks in weapon controller to a more correct spot
+* Fixed some effect fields on SpriteWeaponViewModelScript not serialized
+* Added magazine and reload effect handling to SpriteWeaponViewModelScript and RangedWeaponViewModelScript
+* Added support for glue-to-bone to ranged weapon viewmodel [Experimental]
 * Added recock handling to weapons [WIP]
