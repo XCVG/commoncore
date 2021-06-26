@@ -180,5 +180,6 @@
 * Moved input lock and player in control checks in weapon controller to a more correct spot
 * Fixed some effect fields on SpriteWeaponViewModelScript not serialized
 * Added magazine and reload effect handling to SpriteWeaponViewModelScript and RangedWeaponViewModelScript
+* Redirect assets now support relative paths (and use these by default!)
 * Added support for glue-to-bone to ranged weapon viewmodel [Experimental]
 * Added recock handling to weapons [WIP]

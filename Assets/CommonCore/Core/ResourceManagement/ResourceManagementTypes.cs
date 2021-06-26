@@ -706,7 +706,8 @@ namespace CommonCore.ResourceManagement
             var redirectResource = Resources.Load<RedirectAsset>(path);
             if(redirectResource != null)
             {
-                var handle = new RedirectResourceHandle<T>(redirectResource.Path, CCBase.ResourceManager, priority); //TODO remove this weird backwards dependency, inject downwards on creation
+                string basePath = path.Substring(0, path.LastIndexOf('/')) + "/";
+                var handle = new RedirectResourceHandle<T>(redirectResource, basePath, CCBase.ResourceManager, priority); //TODO remove this weird backwards dependency, inject downwards on creation
                 return handle;
             }
 
@@ -794,9 +795,9 @@ namespace CommonCore.ResourceManagement
             }
         }
         
-        public RedirectResourceHandle(string path, ResourceManager resourceManager, ResourcePriority priority)
+        public RedirectResourceHandle(RedirectAsset redirectAsset, string basePath, ResourceManager resourceManager, ResourcePriority priority)
         {
-            Path = path;
+            Path = redirectAsset.Path.StartsWith("/") ? redirectAsset.Path.TrimStart('/') : basePath + redirectAsset.Path;
             Priority = priority;
             ResourceManagerReference = new WeakReference<ResourceManager>(resourceManager);
         }

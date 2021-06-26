@@ -14,6 +14,11 @@ namespace CommonCore.ResourceManagement
         /// <summary>
         /// The path to redirect to
         /// </summary>
+        /// <remarks>
+        /// <para>Understands leading '/' for absolute paths, does not understand other conventions</para>
+        /// </remarks>
+        [Tooltip("use leading '/' for absolute paths")]
         public string Path;
+
     }
 }
