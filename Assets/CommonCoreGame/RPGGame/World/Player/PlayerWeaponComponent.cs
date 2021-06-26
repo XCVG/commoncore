@@ -119,13 +119,9 @@ namespace CommonCore.RpgGame.World
 
             DidJustFire = false;
 
-            if (PlayerController.PlayerInControl && !LockPauseModule.IsInputLocked()) //this check should probably not be here
-            {
-                HandleWeapons();
-                HandleOffhandKick();
-            }
+            HandleWeapons();
+            HandleOffhandKick();
 
-            
         }
 
         /// <summary>
@@ -411,8 +407,8 @@ namespace CommonCore.RpgGame.World
                 }
             }
 
-
-            if (PlayerController.AttackEnabled && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoAttack) && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoWeapons) && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.TotallyFrozen))
+            //input handling
+            if (PlayerController.AttackEnabled && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoAttack) && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoWeapons) && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.TotallyFrozen) && PlayerController.PlayerInControl && !LockPauseModule.IsInputLocked())
             {
                 bool rightEquipped = GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.RightWeapon);
                 bool leftEquipped = GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.LeftWeapon);
@@ -541,7 +537,7 @@ namespace CommonCore.RpgGame.World
         {
             //Debug.Log("TryRefire");
 
-            if (!PlayerController.AttackEnabled || GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoAttack) || GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoWeapons) || GameState.Instance.PlayerFlags.Contains(PlayerFlags.TotallyFrozen))
+            if (!PlayerController.AttackEnabled || GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoAttack) || GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoWeapons) || GameState.Instance.PlayerFlags.Contains(PlayerFlags.TotallyFrozen) || !PlayerController.PlayerInControl || LockPauseModule.IsInputLocked())
             {
                 return false;
             }

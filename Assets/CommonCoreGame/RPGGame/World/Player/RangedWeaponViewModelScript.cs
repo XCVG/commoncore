@@ -24,6 +24,17 @@ namespace CommonCore.RpgGame.World
         [SerializeField]
         private ViewModelWaitForLockTime EffectWaitForLockTime = ViewModelWaitForLockTime.Unspecified;
 
+        [Header("Glue To Bone Options"), SerializeField]
+        private bool GlueToBone = false;
+        [SerializeField, Tooltip("This should be different from ModelTransform if CenterModelInAds is enabled")]
+        private Transform ModelGlueRoot = null;
+        [SerializeField, Tooltip("It is strongly recommended that you use either offset point or explicit offsets, not both")]
+        private Transform OffsetPoint = null;
+        [SerializeField]
+        private Vector3 OffsetTranslation = Vector3.zero;
+        [SerializeField]
+        private Vector3 OffsetRotation = Vector3.zero;
+
         //separate into another component?
         [Header("Hand Animations")]
         public RangedWeaponViewModelAnimations TwoHandAnimations = default;
@@ -69,7 +80,22 @@ namespace CommonCore.RpgGame.World
 
         protected override void Update()
         {
-            
+            if(GlueToBone)
+            {
+                var (newPos, newRot) = WeaponComponent.HandModel.HandBoneTransform;
+
+                Vector3 offset = Vector3.zero;
+                Quaternion offsetRotation = Quaternion.identity;
+
+                if (OffsetPoint)
+                {
+                    offset = -OffsetPoint.parent.TransformVector(OffsetPoint.localPosition);
+                    offsetRotation = Quaternion.Inverse(OffsetPoint.localRotation); //OffsetPoint.localRotation * Quaternion.AngleAxis(180, Vector3.up);
+                }
+
+                ModelGlueRoot.position = newPos + offset + OffsetTranslation;
+                ModelGlueRoot.rotation = newRot * offsetRotation;
+            }
         }
 
         public override void SetState(ViewModelState newState, ViewModelHandednessState handednessState, float timeScale)
