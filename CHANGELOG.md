@@ -176,3 +176,5 @@
 
 * Added RpgInventoryModified messages sent when inventory is changed
 * Fixed OnFire and OnReload scripts being passed item model instead of item instance
+* Melee weapon damage can be delayed no longer WIP
+* Added recock handling to weapons [WIP]

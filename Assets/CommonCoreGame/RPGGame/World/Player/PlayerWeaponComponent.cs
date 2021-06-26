@@ -87,6 +87,7 @@ namespace CommonCore.RpgGame.World
         private float AccumulatedRecoil;
         private bool DidJustFire;
         private int BurstCount;
+        private float PendingRecockTime;
         private bool PendingADSExit;
         private WeaponTransitionState TransitionState;
         private float OldWeaponLowerTime; //need to save this because we lose the item model before transition
@@ -118,7 +119,7 @@ namespace CommonCore.RpgGame.World
 
             DidJustFire = false;
 
-            if (PlayerController.PlayerInControl && !LockPauseModule.IsInputLocked())
+            if (PlayerController.PlayerInControl && !LockPauseModule.IsInputLocked()) //this check should probably not be here
             {
                 HandleWeapons();
                 HandleOffhandKick();
@@ -273,6 +274,11 @@ namespace CommonCore.RpgGame.World
                     SetModelsVisibility(true);
                 else if (!ShouldBeVisible && IsVisible)
                     SetModelsVisibility(false);
+            }
+
+            if(PendingRecockTime > 0)
+            {
+                HandlePendingRecock();
             }
 
             //this is completely fuxxored for dual-wielding... actually everything basically assumes one action at a time...
@@ -501,6 +507,34 @@ namespace CommonCore.RpgGame.World
                 PendingADSExit = false;
             }
 
+        }
+
+        private void HandlePendingRecock()
+        {
+            //handle recock
+            if (TimeToNext <= PendingRecockTime)
+            {
+                CharacterModel player = GameState.Instance.PlayerRpgState;
+                InventoryItemInstance wItem = player.Equipped[EquipSlot.RightWeapon];
+                RangedWeaponItemModel wim = wItem?.ItemModel as RangedWeaponItemModel;
+                if (wim == null)
+                {
+                    Debug.LogWarning($"[{nameof(PlayerWeaponComponent)}] Pending recock exists but there is no weapon model!");
+                    PendingRecockTime = 0;
+                    return;
+                }
+
+                float rateRpgFactor = RpgValues.GetWeaponRateFactor(player, wim);
+
+                if (RightViewModel != null)
+                {
+                    float timeScale = (wim.CheckFlag(ItemFlag.WeaponRecockIgnoreLevelledRate) || wim.CheckFlag(ItemFlag.WeaponUnscaledAnimations)) ? 1 : rateRpgFactor;
+                    RightViewModel.SetState(ViewModelState.Fire, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded, timeScale);
+                    Hands.SetState(ViewModelState.Fire, RightViewModel, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded, timeScale);
+                }
+
+                PendingRecockTime = 0;
+            }
         }
 
         private bool TryRefire()
@@ -842,6 +876,11 @@ namespace CommonCore.RpgGame.World
                     float rateRpgFactor = RpgValues.GetWeaponRateFactor(player, wim);
                     float fireInterval = BurstCount > 0 ? wim.BurstFireInterval : wim.FireInterval;
                     TimeToNext = (wim.CheckFlag(ItemFlag.WeaponIgnoreLevelledRate)) ? fireInterval : (fireInterval * rateRpgFactor);
+                    if(wim.CheckFlag(ItemFlag.WeaponHasRecock) && (player.AmmoInMagazine[slot] > 0 || !wim.CheckFlag(ItemFlag.WeaponRecockSkipOnEmpty)))
+                    {
+                        PendingRecockTime = TimeToNext;
+                        TimeToNext += (wim.CheckFlag(ItemFlag.WeaponRecockIgnoreLevelledRate)) ? wim.RecockTime : wim.RecockTime * rateRpgFactor;
+                    }
 
                     //GameObject fireEffect = null;
 
@@ -1100,6 +1139,7 @@ namespace CommonCore.RpgGame.World
             {
                 //needed?
                 IsReloading = false;
+                PendingRecockTime = 0;
                 TimeToNext = 0;
                 BurstCount = 0;
                 DelayedFiringAction = null; //should we?
@@ -1211,6 +1251,7 @@ namespace CommonCore.RpgGame.World
                 //only half works, natch
 
                 IsReloading = false;
+                PendingRecockTime = 0;
                 TimeToNext = 0;
 
                 //handle equip/unequip ranged weapon

@@ -39,7 +39,7 @@ namespace CommonCore.RpgGame.Rpg
         Unique,
 
         //weapon flags 
-        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponProjectileIsEntity, WeaponNeverRandomize, WeaponNeverHarmFriendly, WeaponAlwaysHarmFriendly, WeaponBurstSingleAnimation, WeaponEffectWaitsForLockTime, WeaponAlwaysUseEffectExplosion,
+        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponProjectileIsEntity, WeaponNeverRandomize, WeaponNeverHarmFriendly, WeaponAlwaysHarmFriendly, WeaponBurstSingleAnimation, WeaponEffectWaitsForLockTime, WeaponAlwaysUseEffectExplosion, WeaponRecockIgnoreLevelledRate, WeaponRecockSkipOnEmpty,
 
         //WeaponBurstSingleEffect, WeaponBurstRequireFullAmmo, WeaponBurstSucceedWithPartialAmmo, //not supported yet
 
@@ -442,6 +442,7 @@ namespace CommonCore.RpgGame.Rpg
         public readonly int AmmoPerShot;
         public readonly int ShotsPerBurst;
         public readonly float LockTime;
+        public readonly float RecockTime;
 
         public readonly int MagazineSize;       
         public readonly float ReloadTime;
@@ -460,7 +461,7 @@ namespace CommonCore.RpgGame.Rpg
             RangeEnvelope recoil, RangeEnvelope spread, RangeEnvelope adsRecoil, RangeEnvelope adsSpread,
             PulseEnvelope recoilImpulse, PulseEnvelope adsRecoilImpulse,
             float movementSpreadFactor, float movementRecoveryFactor, float crouchSpreadFactor, float crouchRecoveryFactor,
-            float fireInterval, float? burstFireInterval, int? projectilesPerShot, int? ammoPerShot, int? shotsPerBurst, float lockTime, int magazineSize, float reloadTime,
+            float fireInterval, float? burstFireInterval, int? projectilesPerShot, int? ammoPerShot, int? shotsPerBurst, float lockTime, float recockTime, int magazineSize, float reloadTime,
             string aType, DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType, string viewModel, string worldModel,
             string hitPuff, string projectile, float adsZoomFactor, float lowerTime, float raiseTime,
             RangedWeaponItemProjectileData projectileData, RangedWeaponItemExplosionData explosionData)
@@ -485,6 +486,7 @@ namespace CommonCore.RpgGame.Rpg
             ProjectilesPerShot = projectilesPerShot ?? 1;
             AmmoPerShot = ammoPerShot ?? 1;
             ShotsPerBurst = shotsPerBurst?? 1;
+            RecockTime = recockTime;
             LockTime = lockTime;
 
             MagazineSize = magazineSize;
