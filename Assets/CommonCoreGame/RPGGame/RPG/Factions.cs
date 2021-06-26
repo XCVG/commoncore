@@ -34,17 +34,17 @@ namespace CommonCore.RpgGame.Rpg
         {
             BaseModel = new FactionModel();
 
-            BaseModel.FactionTable = new Dictionary<string, Dictionary<string, FactionRelationStatus>>();
+            BaseModel.FactionTable = new Dictionary<string, Dictionary<string, FactionRelationStatus>>(StringComparer.OrdinalIgnoreCase);
 
             //load predefined factions
             //difference between None and Neutral is that Monsters will attack Neutral
             //None is a true non-alignment, whereas Neutral is meant for non-hostile NPCs and such
-            BaseModel.FactionTable.Add("None", new Dictionary<string, FactionRelationStatus>());
-            BaseModel.FactionTable.Add("Player", new Dictionary<string, FactionRelationStatus>() {
+            BaseModel.FactionTable.Add("None", new Dictionary<string, FactionRelationStatus>(StringComparer.OrdinalIgnoreCase));
+            BaseModel.FactionTable.Add("Player", new Dictionary<string, FactionRelationStatus>(StringComparer.OrdinalIgnoreCase) {
                 { "Monster", FactionRelationStatus.Hostile}
             });
-            BaseModel.FactionTable.Add("Neutral", new Dictionary<string, FactionRelationStatus>());
-            BaseModel.FactionTable.Add("Monster", new Dictionary<string, FactionRelationStatus>() {
+            BaseModel.FactionTable.Add("Neutral", new Dictionary<string, FactionRelationStatus>(StringComparer.OrdinalIgnoreCase));
+            BaseModel.FactionTable.Add("Monster", new Dictionary<string, FactionRelationStatus>(StringComparer.OrdinalIgnoreCase) {
                 { "Neutral", FactionRelationStatus.Hostile },
                 { "Player", FactionRelationStatus.Hostile }
             });
@@ -93,7 +93,7 @@ namespace CommonCore.RpgGame.Rpg
                 }
                 else
                 {
-                    BaseModel.FactionTable.Add(row.Key, row.Value);
+                    BaseModel.FactionTable.Add(row.Key, new Dictionary<string, FactionRelationStatus>(row.Value, StringComparer.OrdinalIgnoreCase));
                 }
             }
         }
@@ -102,12 +102,12 @@ namespace CommonCore.RpgGame.Rpg
         {
             FactionModel newModel = new FactionModel();
 
-            newModel.FactionTable = new Dictionary<string, Dictionary<string, FactionRelationStatus>>();
+            newModel.FactionTable = new Dictionary<string, Dictionary<string, FactionRelationStatus>>(StringComparer.OrdinalIgnoreCase);
 
             //deep copy faction model
             foreach(var outerKvp in original.FactionTable)
             {
-                Dictionary<string, FactionRelationStatus> outerValue = new Dictionary<string, FactionRelationStatus>();
+                Dictionary<string, FactionRelationStatus> outerValue = new Dictionary<string, FactionRelationStatus>(StringComparer.OrdinalIgnoreCase);
                 foreach(var innerKvp in outerKvp.Value)
                 {
                     outerValue.Add(innerKvp.Key, innerKvp.Value);
@@ -127,13 +127,13 @@ namespace CommonCore.RpgGame.Rpg
             // -factions are always hostile toward "Chaotic"
             // -otherwise, it's a lookup
 
-            if (self == target)
+            if (self.Equals(target, StringComparison.OrdinalIgnoreCase))
                 return FactionRelationStatus.Friendly;
 
-            if (self == "None" || target == "None")
+            if (self.Equals("None", StringComparison.OrdinalIgnoreCase) || target.Equals("None", StringComparison.OrdinalIgnoreCase))
                 return FactionRelationStatus.Neutral;
 
-            if (self == "Chaotic" || target == "Chaotic")
+            if (self.Equals("Chaotic", StringComparison.OrdinalIgnoreCase) || target.Equals("Chaotic", StringComparison.OrdinalIgnoreCase))
                 return FactionRelationStatus.Hostile;
 
             var selfEntry = FactionTable?.GetOrDefault(self);
@@ -150,7 +150,7 @@ namespace CommonCore.RpgGame.Rpg
 
         public void SetRelation(string self, string target, FactionRelationStatus relation)
         {
-            if (self == target)
+            if (self.Equals(target, StringComparison.OrdinalIgnoreCase))
                 throw new ArgumentException("cannot set a relation when self == target");
 
             var selfEntry = FactionTable?.GetOrDefault(self);
