@@ -593,6 +593,7 @@ namespace CommonCore.RpgGame.World
 
             //Debug.Log($"MeleeAttack {slot}");
 
+            InventoryItemInstance wItem = null;
             MeleeWeaponItemModel wim = null;
 
             CharacterModel player = GameState.Instance.PlayerRpgState;
@@ -609,7 +610,8 @@ namespace CommonCore.RpgGame.World
             }
             else
             {
-                wim = player.Equipped.GetOrDefault(slot, null)?.ItemModel as MeleeWeaponItemModel;
+                wItem = player.Equipped.GetOrDefault(slot, null);
+                wim = wItem?.ItemModel as MeleeWeaponItemModel;
             }
 
             
@@ -684,7 +686,7 @@ namespace CommonCore.RpgGame.World
 
                 QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepFired"));
                 if(!string.IsNullOrEmpty(wim?.Scripts?.OnFire))
-                    ScriptingModule.Call(wim.Scripts.OnFire, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, wim);
+                    ScriptingModule.Call(wim.Scripts.OnFire, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, wItem);
             }
             else
             {
@@ -737,8 +739,8 @@ namespace CommonCore.RpgGame.World
 
             if (player.Equipped.ContainsKey(slot))
             {
-
-                RangedWeaponItemModel wim = player.Equipped[slot].ItemModel as RangedWeaponItemModel;
+                InventoryItemInstance wItem = player.Equipped[slot];
+                RangedWeaponItemModel wim = wItem?.ItemModel as RangedWeaponItemModel;
                 if (wim != null)
                 {
                     bool useAmmo = wim.UseAmmo;
@@ -885,7 +887,7 @@ namespace CommonCore.RpgGame.World
                     }
 
                     if (!string.IsNullOrEmpty(wim?.Scripts?.OnFire))
-                        ScriptingModule.Call(wim.Scripts.OnFire, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, wim);
+                        ScriptingModule.Call(wim.Scripts.OnFire, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, wItem);
 
                 }
                 else
@@ -1042,7 +1044,7 @@ namespace CommonCore.RpgGame.World
                         TimeToNext = Math.Max(rwim.ReloadTime * reloadRpgFactor, TimeToNext); //we take the longest time
 
                         if (!string.IsNullOrEmpty(rwim?.Scripts?.OnReload))
-                            ScriptingModule.Call(rwim.Scripts.OnReload, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, rwim);
+                            ScriptingModule.Call(rwim.Scripts.OnReload, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, player.Equipped[slot]);
                     }
                 }
 

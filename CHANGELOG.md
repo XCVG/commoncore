@@ -175,3 +175,4 @@
 # 3.0.0 pNext
 
 * Added RpgInventoryModified messages sent when inventory is changed
+* Fixed OnFire and OnReload scripts being passed item model instead of item instance
