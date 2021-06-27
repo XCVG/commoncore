@@ -29,6 +29,7 @@ namespace CommonCore.RpgGame.Rpg
     public enum RestoreType
     {
         Add, Boost, //boost allows going over max, add does not
+        AddFractional, BoostFractional,
         Override //override replaces
     }
 
@@ -658,13 +659,26 @@ namespace CommonCore.RpgGame.Rpg
                         switch (rType)
                         {
                             case RestoreType.Add:
-                                float oldHealth = player.Health;
-                                player.Health = Math.Min(player.Health + amount, player.DerivedStats.MaxHealth);
-                                amountRestored = player.Health - oldHealth;
+                                {
+                                    float oldHealth = player.Health;
+                                    player.Health = Math.Min(player.Health + amount, player.DerivedStats.MaxHealth);
+                                    amountRestored = player.Health - oldHealth;
+                                }
                                 break;
                             case RestoreType.Boost:
                                 player.Health += amount;
                                 amountRestored = amount;
+                                break;
+                            case RestoreType.AddFractional:
+                                {
+                                    float oldHealth = player.Health;
+                                    player.Health = Math.Min(player.Health + (amount * player.DerivedStats.MaxHealth), player.DerivedStats.MaxHealth);
+                                    amountRestored = player.Health - oldHealth;
+                                }
+                                break;
+                            case RestoreType.BoostFractional:
+                                player.Health += amount * player.DerivedStats.MaxHealth;
+                                amountRestored = amount * player.DerivedStats.MaxHealth;
                                 break;
                             case RestoreType.Override:
                                 player.Health = amount;
@@ -680,13 +694,26 @@ namespace CommonCore.RpgGame.Rpg
                         switch (rType)
                         {
                             case RestoreType.Add:
-                                float oldEnergy = player.Energy;
-                                player.Energy = Math.Min(player.Energy + amount, player.DerivedStats.MaxEnergy);
-                                amountRestored = player.Energy - oldEnergy;
+                                {
+                                    float oldEnergy = player.Energy;
+                                    player.Energy = Math.Min(player.Energy + amount, player.DerivedStats.MaxEnergy);
+                                    amountRestored = player.Energy - oldEnergy;
+                                }
                                 break;
                             case RestoreType.Boost:
                                 player.Energy += amount;
                                 amountRestored = amount;
+                                break;
+                            case RestoreType.AddFractional:
+                                {
+                                    float oldEnergy = player.Energy;
+                                    player.Energy = Math.Min(player.Energy + amount * player.DerivedStats.MaxEnergy, player.DerivedStats.MaxEnergy);
+                                    amountRestored = player.Energy - oldEnergy;
+                                }
+                                break;
+                            case RestoreType.BoostFractional:
+                                player.Energy += amount * player.DerivedStats.MaxEnergy;
+                                amountRestored = amount * player.DerivedStats.MaxEnergy;
                                 break;
                             case RestoreType.Override:
                                 player.Energy = amount;
@@ -702,13 +729,26 @@ namespace CommonCore.RpgGame.Rpg
                         switch (rType)
                         {
                             case RestoreType.Add:
-                                float oldMagic = player.Magic;
-                                player.Magic = Math.Min(player.Magic + amount, player.DerivedStats.MaxMagic);
-                                amountRestored = player.Magic - oldMagic;
+                                {
+                                    float oldMagic = player.Magic;
+                                    player.Magic = Math.Min(player.Magic + amount, player.DerivedStats.MaxMagic);
+                                    amountRestored = player.Magic - oldMagic;
+                                }
                                 break;
                             case RestoreType.Boost:
                                 player.Magic += amount;
                                 amountRestored = amount;
+                                break;
+                            case RestoreType.AddFractional:
+                                {
+                                    float oldMagic = player.Magic;
+                                    player.Magic = Math.Min(player.Magic + amount * player.DerivedStats.MaxMagic, player.DerivedStats.MaxMagic);
+                                    amountRestored = player.Magic - oldMagic;
+                                }
+                                break;
+                            case RestoreType.BoostFractional:
+                                player.Magic += amount * player.DerivedStats.MaxMagic;
+                                amountRestored = amount * player.DerivedStats.MaxMagic;
                                 break;
                             case RestoreType.Override:
                                 player.Magic = amount;
@@ -724,13 +764,26 @@ namespace CommonCore.RpgGame.Rpg
                         switch (rType)
                         {
                             case RestoreType.Add:
-                                float oldShields = player.Shields;
-                                player.Shields = Math.Min(player.Shields + amount, player.DerivedStats.ShieldParams.MaxShields);
-                                amountRestored = player.Shields - oldShields;
+                                {
+                                    float oldShields = player.Shields;
+                                    player.Shields = Math.Min(player.Shields + amount, player.DerivedStats.ShieldParams.MaxShields);
+                                    amountRestored = player.Shields - oldShields;
+                                }
                                 break;
                             case RestoreType.Boost:
                                 player.Shields += amount;
                                 amountRestored = amount;
+                                break;
+                            case RestoreType.AddFractional:
+                                {
+                                    float oldShields = player.Shields;
+                                    player.Shields = Math.Min(player.Shields + amount * player.DerivedStats.ShieldParams.MaxShields, player.DerivedStats.ShieldParams.MaxShields);
+                                    amountRestored = player.Shields - oldShields;
+                                }
+                                break;
+                            case RestoreType.BoostFractional:
+                                player.Shields += amount * player.DerivedStats.ShieldParams.MaxShields;
+                                amountRestored = amount * player.DerivedStats.ShieldParams.MaxShields;
                                 break;
                             case RestoreType.Override:
                                 player.Shields = amount;
