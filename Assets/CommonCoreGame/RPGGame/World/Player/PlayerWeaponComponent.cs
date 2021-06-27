@@ -786,11 +786,16 @@ namespace CommonCore.RpgGame.World
                 {
                     foreach(var naHit in nonActorHits)
                     {
-                        //TODO improve this later
-                        if(defer)
-                            deferredActions.Add(() => { HitPuffScript.SpawnHitPuff(string.IsNullOrEmpty(wim.EnvironmentHitPuff) ? wim.EnvironmentHitPuff : wim.HitPuff, naHit.HitPoint, naHit.HitCollider is TerrainCollider ? (int)HitMaterial.Dirt : 0); });
-                        else
-                            HitPuffScript.SpawnHitPuff(string.IsNullOrEmpty(wim.EnvironmentHitPuff) ? wim.EnvironmentHitPuff : wim.HitPuff, naHit.HitPoint, naHit.HitCollider is TerrainCollider ? (int)HitMaterial.Dirt : 0);
+                        float distance = (naHit.HitPoint - shootPoint.position).magnitude;
+
+                        if(distance <= wim.Reach)
+                        {
+                            //TODO improve this later
+                            if (defer)
+                                deferredActions.Add(() => { HitPuffScript.SpawnHitPuff(string.IsNullOrEmpty(wim.EnvironmentHitPuff) ? wim.HitPuff : wim.EnvironmentHitPuff, naHit.HitPoint, naHit.HitCollider is TerrainCollider ? (int)HitMaterial.Dirt : 0); });
+                            else
+                                HitPuffScript.SpawnHitPuff(string.IsNullOrEmpty(wim.EnvironmentHitPuff) ? wim.HitPuff : wim.EnvironmentHitPuff, naHit.HitPoint, naHit.HitCollider is TerrainCollider ? (int)HitMaterial.Dirt : 0);
+                        }                        
                     }
 
                     if (wim.CheckFlag(ItemFlag.MeleeWeaponDistinctMultipleHits))
@@ -841,12 +846,9 @@ namespace CommonCore.RpgGame.World
             {
                 //run old codepath essentially unchanged
                 {
-                    if (wim.CheckFlag(ItemFlag.MeleeWeaponHitNonDamageable))
-                        Debug.LogError($"[{nameof(MeleeCastAndDealDamage)}] ItemFlag.MeleeWeaponHitNonDamageable is not implemented for single hit");
-
                     var (otherController, hitPoint, hitLocation, hitMaterial) = wim.CheckFlag(ItemFlag.MeleeWeaponUsePreciseCasting) ?
-                                    WorldUtils.RaycastAttackHit(shootPoint.position, shootPoint.forward, MeleeProbeDist, true, true, PlayerController) :
-                                    WorldUtils.SpherecastAttackHit(shootPoint.position, shootPoint.forward, MeleeBoxCastSize * 0.5f, MeleeProbeDist, true, false, PlayerController);
+                                    WorldUtils.RaycastAttackHit(shootPoint.position, shootPoint.forward, Math.Max(MeleeProbeDist, wim.Reach * 1.5f), true, true, PlayerController) :
+                                    WorldUtils.SpherecastAttackHit(shootPoint.position, shootPoint.forward, MeleeBoxCastSize * 0.5f, Math.Max(MeleeProbeDist, wim.Reach * 1.5f), true, false, PlayerController);
                     float distance = (hitPoint - shootPoint.position).magnitude;
 
                     if (distance <= wim.Reach)
@@ -866,7 +868,7 @@ namespace CommonCore.RpgGame.World
                             }
                             hitSingle = true;
                         }
-                    }
+                    }                    
                 }
 
                 if (!hitSingle && wim.CheckFlag(ItemFlag.MeleeWeaponUseContactHitHack))
@@ -886,12 +888,18 @@ namespace CommonCore.RpgGame.World
                             var hitbox = collider.GetComponent<IHitboxComponent>();
                             if(hitbox != null)
                             {
+                                if (hitbox.ParentController is PlayerController)
+                                    continue;
+
                                 bestCollider = collider;
                                 smallestAngle = angle;
                             }
                             var d = collider.GetComponent<ITakeDamage>();
                             if(d != null)
                             {
+                                if (d is PlayerController)
+                                    continue;
+
                                 bestCollider = collider;
                                 smallestAngle = angle;
                             }
@@ -922,6 +930,26 @@ namespace CommonCore.RpgGame.World
                         }
                     }
                    
+                }
+
+
+                if (!hitSingle && wim.CheckFlag(ItemFlag.MeleeWeaponHitNonDamageable))
+                {
+                    if(Physics.Raycast(shootPoint.position, shootPoint.forward, out var naHit, Math.Max(MeleeProbeDist, wim.Reach * 1.5f), WorldUtils.GetAttackLayerMask(), QueryTriggerInteraction.Ignore))
+                    {
+                        if(naHit.distance <= wim.Reach)
+                        {
+                            if (!wim.CheckFlag(ItemFlag.MeleeWeaponDelayCasting) && wim.DamageDelay > 0)
+                            {
+                                DelayedFiringAction = () => HitPuffScript.SpawnHitPuff(string.IsNullOrEmpty(wim.EnvironmentHitPuff) ? wim.HitPuff : wim.EnvironmentHitPuff, naHit.point, naHit.collider is TerrainCollider ? (int)HitMaterial.Dirt : 0);
+                                DelayedFiringTimeRemaining = wim.DamageDelay;
+                            }
+                            else
+                            {
+                                HitPuffScript.SpawnHitPuff(string.IsNullOrEmpty(wim.EnvironmentHitPuff) ? wim.HitPuff : wim.EnvironmentHitPuff, naHit.point, naHit.collider is TerrainCollider ? (int)HitMaterial.Dirt : 0);
+                            }
+                        }
+                    }
                 }
 
             }

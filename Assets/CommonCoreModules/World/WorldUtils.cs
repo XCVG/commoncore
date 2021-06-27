@@ -845,9 +845,18 @@ namespace CommonCore.World
 
             List<HitInfo> outHits = new List<HitInfo>();
 
-            foreach (var hit in hits)
+            foreach (var rHit in hits)
             {
+                var hit = rHit; //gross hack because we need to modify hit struct
+
                 RaycastHit closestHit = new RaycastHit() { distance = float.MaxValue };
+
+                //spherecastall returns this if it's within the sphere at the start of the sweep 😠
+                if(hit.distance == 0 && hit.point == Vector3.zero)
+                {
+                    hit.point = hit.collider.ClosestPointOnBounds(origin); //"best guess"
+                    hit.distance = (hit.point - origin).magnitude;
+                }
 
                 //reject bullets
                 if (rejectBullets && hit.collider.GetComponent<BulletScript>())

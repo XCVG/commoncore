@@ -18,9 +18,9 @@
 	  "ViewModel": "DemoSword",
 	  "LowerTime": 1.0,
 	  "RaiseTime": 1.0,	 
-      "Unique": false,
-      "Essential": false,
-	  "Flags": ["WeaponTwoHanded"]
+    "Unique": false,
+    "Essential": false,
+	  "Flags": ["WeaponTwoHanded", "MeleeWeaponHitNonDamageable", "MeleeWeaponAllowMultipleHits"]
     },
     "def": {
     "NiceName": "Demo Sword",
