@@ -1,0 +1,77 @@
+{
+  "boltrifle": {
+    "model": {
+      "$type": "CommonCore.RpgGame.Rpg.RangedWeaponItemModel, Assembly-CSharp",
+      "Damage": 15,
+	  "DamageSpread": 4,
+      "DamagePierce": 8,
+	  "DamagePierceSpread": 3,
+	  "DType": "Normal",
+	  "SkillType": "Guns",
+	  "HitPuff": "TestHitPuff",
+	  "ProjectileVelocity": 500,
+	  "Recoil": {
+		"min" : 0,
+		"max" : 5,
+		"gain" : 2,
+		"decay" : 14
+	  },
+      "Spread": {
+		"min" : 0.1,
+		"max" : 5,
+		"gain" : 1,
+		"decay" : 8
+	  },
+	  "ADSRecoil": {
+		"min" : 0,
+		"max" : 4,
+		"gain" : 1,
+		"decay" : 8
+	  },
+      "ADSSpread": {
+		"min" : 0.05,
+		"max" : 3,
+		"gain" : 1,
+		"decay" : 6
+	  },
+	  "RecoilImpulse": {
+		"intensity": 2,
+		"time": 0.2,
+		"violence": 0.66
+	  },
+	  "ADSRecoilImpulse": {
+		"intensity": 1,
+		"time": 0.15,
+		"violence": 0.66
+	  },
+	  "MovementSpreadFactor": 2.0,
+	  "CrouchSpreadFactor": 0.75,
+	  "MovementRecoveryFactor": 0.5,
+	  "CrouchRecoveryFactor": 0.75,
+	  "FireInterval": 0.2,
+	  "RecockTime": 0.5,
+	  "BurstFireInterval": 0.15,
+	  "ProjectilesPerShot": 1,
+	  "ShotsPerBurst": 1,
+      "MagazineSize": 32,	  
+      "ReloadTime": 2.5,
+      "AType": "Nato556",      
+	  "Projectile": "Bullet",
+	  "ViewModel": "DemoRifle",
+	  "ADSZoomFactor": 1.2,
+	  "LowerTime": 1.0,
+	  "RaiseTime": 1.0,	  
+      "Weight": 5,
+	  "Value": 500,
+      "MaxCondition": 1,
+      "Unique": false,
+      "Hidden": false,
+	  "Flags": ["WeaponHasADS", "WeaponTwoHanded", "WeaponFullAuto", "WeaponShake", "WeaponUseCrosshair", "WeaponProportionalMovement", "WeaponIgnoreLevelledRate", "WeaponHasRecock"]
+    },
+    "def": {
+    "NiceName": "Bolt Rifle",
+    "Image": "rifle",
+    "Description": "A rifle with a recock state."
+  }
+  }
+}

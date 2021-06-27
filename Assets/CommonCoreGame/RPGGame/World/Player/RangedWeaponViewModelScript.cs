@@ -23,6 +23,8 @@ namespace CommonCore.RpgGame.World
         private bool HandleCrosshair = false;
         [SerializeField]
         private ViewModelWaitForLockTime EffectWaitForLockTime = ViewModelWaitForLockTime.Unspecified;
+        [SerializeField]
+        private bool EjectShellOnRecock = false;
 
         [Header("Glue To Bone Options"), SerializeField]
         private bool GlueToBone = false;
@@ -41,12 +43,10 @@ namespace CommonCore.RpgGame.World
         public RangedWeaponViewModelAnimations OneHandAnimations = default;
         public RangedWeaponViewModelAnimations ADSAnimations = default;
 
-        //TODO 1hand, ADS, etc
-
-        //TODO sounds, effects, etc
         [Header("Sounds")]
         public AudioSource FireSound = null;
         public AudioSource ReloadSound = null;
+        public AudioSource RecockSound = null;
         public AudioSource RaiseSound = null;
         public AudioSource LowerSound = null;
 
@@ -59,6 +59,8 @@ namespace CommonCore.RpgGame.World
         public string ShellPrefab = default;
         public Transform FireEffectPoint = null;
         public string FireEffectPrefab = null;
+        public Transform RecockEffectPoint = null;
+        public string RecockEffectPrefab = null;
 
         [Header("Reload Effects"), Tooltip("The rotation of this transform will be used for the magazine. The direction of its first child will be used as the ejection vector.")]
         public Transform MagazineEjectPoint = null;
@@ -200,6 +202,7 @@ namespace CommonCore.RpgGame.World
                     break;
                 case ViewModelState.Recock:
                     ModelAnimator.Play(prefix + "Recock");
+                    PlayRecockEffects();
                     break;
                 default:
                     Debug.LogWarning($"Tried to put {name} into state {newState} which is not supported for {nameof(RangedWeaponViewModelScript)}");
@@ -275,8 +278,24 @@ namespace CommonCore.RpgGame.World
                 FireParticleSystem.Ref()?.Play();
                 FlashFireLight();
                 InstantiateFireEffect();
-                EjectShell();
+                if(!EjectShellOnRecock)
+                    EjectShell();
             }
+        }
+
+        private void PlayRecockEffects()
+        {
+            RecockSound.Ref()?.Play();
+
+            if (!string.IsNullOrEmpty(RecockEffectPrefab))
+            {
+                var t = RecockEffectPoint.Ref() ?? ModelTransform.Ref() ?? transform;
+                WorldUtils.SpawnEffect(RecockEffectPrefab, t.position, t.rotation, t, false);
+            }
+
+            if(EjectShellOnRecock)            
+                EjectShell();
+            
         }
 
         private void PlayReloadEffects()

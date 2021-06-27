@@ -184,7 +184,9 @@
 * Factions are now entirely case insensitive
 * Added multiple hit handling to melee weapons
 * Added fractional restore options for aid items
+* Demo weapon arm animations now have consistent length
+* Added recock handling to weapons
 * Added support for glue-to-bone to ranged weapon viewmodel [Experimental]
 * Added contact-hit hack to melee weapons [Experimental]
-* Added recock handling to weapons [WIP]
+
 

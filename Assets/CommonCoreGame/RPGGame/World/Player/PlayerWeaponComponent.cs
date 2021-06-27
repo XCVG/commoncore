@@ -529,8 +529,8 @@ namespace CommonCore.RpgGame.World
                 if (RightViewModel != null)
                 {
                     float timeScale = (wim.CheckFlag(ItemFlag.WeaponRecockIgnoreLevelledRate) || wim.CheckFlag(ItemFlag.WeaponUnscaledAnimations)) ? 1 : rateRpgFactor;
-                    RightViewModel.SetState(ViewModelState.Fire, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded, timeScale);
-                    Hands.SetState(ViewModelState.Fire, RightViewModel, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded, timeScale);
+                    RightViewModel.SetState(ViewModelState.Recock, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded, timeScale);
+                    Hands.SetState(ViewModelState.Recock, RightViewModel, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded, timeScale);
                 }
 
                 PendingRecockTime = 0;
@@ -1079,8 +1079,9 @@ namespace CommonCore.RpgGame.World
                     TimeToNext = (wim.CheckFlag(ItemFlag.WeaponIgnoreLevelledRate)) ? fireInterval : (fireInterval * rateRpgFactor);
                     if(wim.CheckFlag(ItemFlag.WeaponHasRecock) && (player.AmmoInMagazine[slot] > 0 || !wim.CheckFlag(ItemFlag.WeaponRecockSkipOnEmpty)))
                     {
-                        PendingRecockTime = TimeToNext;
+                        var oldTTN = TimeToNext;
                         TimeToNext += (wim.CheckFlag(ItemFlag.WeaponRecockIgnoreLevelledRate)) ? wim.RecockTime : wim.RecockTime * rateRpgFactor;
+                        PendingRecockTime = Mathf.Max(0, TimeToNext - oldTTN);
                     }
 
                     //GameObject fireEffect = null;

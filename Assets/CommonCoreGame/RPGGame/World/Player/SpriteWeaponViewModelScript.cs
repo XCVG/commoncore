@@ -27,6 +27,8 @@ namespace CommonCore.RpgGame.World
         private bool HandleCrosshair = false;
         [SerializeField]
         private ViewModelWaitForLockTime EffectWaitForLockTime = ViewModelWaitForLockTime.Unspecified;
+        [SerializeField]
+        private bool EjectShellOnRecock = false;
 
         [SerializeField, Header("Lighting Options")]
         private bool ApplyReportedLighting = true;
@@ -52,6 +54,8 @@ namespace CommonCore.RpgGame.World
         [SerializeField]
         private WeaponFrame[] Reload = null;
         [SerializeField]
+        private WeaponFrame[] Recock = null;
+        [SerializeField]
         private WeaponFrame[] Fire = null;
 
         [SerializeField, Header("ADS Frames")]
@@ -62,11 +66,15 @@ namespace CommonCore.RpgGame.World
         private WeaponFrame[] ADSLower = null;
         [SerializeField]
         private WeaponFrame[] ADSFire = null;
+        [SerializeField]
+        private WeaponFrame[] ADSRecock = null;
 
         [SerializeField, Header("Sounds")]
         private AudioSource FireSound = null;
         [SerializeField]
         private AudioSource ReloadSound = null;
+        [SerializeField]
+        private AudioSource RecockSound = null;
         [SerializeField]
         private AudioSource RaiseSound = null;
         [SerializeField]
@@ -84,6 +92,10 @@ namespace CommonCore.RpgGame.World
         private Transform FireEffectPoint = null;
         [SerializeField]
         private string FireEffectPrefab = null;
+        [SerializeField]
+        private Transform RecockEffectPoint = null;
+        [SerializeField]
+        private string RecockEffectPrefab = null;
 
         [SerializeField, Header("Reload Effects"), Tooltip("The rotation of this transform will be used for the magazine. The direction of its first child will be used as the ejection vector.")]
         private Transform MagazineEjectPoint = null;
@@ -231,6 +243,10 @@ namespace CommonCore.RpgGame.World
                         CurrentFrameSet = ADSFire;
                         PlayFireEffects();
                         break;
+                    case ViewModelState.Recock:
+                        CurrentFrameSet = ADSRecock;
+                        PlayRecockEffects();
+                        break;
                     default:
                         Debug.LogWarning($"Tried to put {name} into state {newState} which is not supported for {nameof(SpriteWeaponViewModelScript)}");
                         break;
@@ -262,6 +278,10 @@ namespace CommonCore.RpgGame.World
                     case ViewModelState.Fire:
                         CurrentFrameSet = Fire;
                         PlayFireEffects();
+                        break;
+                    case ViewModelState.Recock:
+                        CurrentFrameSet = Recock;
+                        PlayRecockEffects();
                         break;
                     default:
                         Debug.LogWarning($"Tried to put {name} into state {newState} which is not supported for {nameof(SpriteWeaponViewModelScript)}");
@@ -295,10 +315,25 @@ namespace CommonCore.RpgGame.World
             void playFireEffects()
             {
                 FireSound.Ref()?.Play();
-                ViewModelUtils.EjectShell(ShellEjectPoint, ShellPrefab, Options.WeaponComponent);
+                if(!EjectShellOnRecock)
+                    ViewModelUtils.EjectShell(ShellEjectPoint, ShellPrefab, Options.WeaponComponent);
                 InstantiateFireEffect();
             }
 
+        }
+
+        private void PlayRecockEffects()
+        {
+            RecockSound.Ref()?.Play();
+
+            if (!string.IsNullOrEmpty(RecockEffectPrefab))
+            {
+                var t = RecockEffectPoint.Ref() ?? transform;
+                WorldUtils.SpawnEffect(RecockEffectPrefab, t.position, t.rotation, t, false);
+            }
+
+            if (EjectShellOnRecock)
+                ViewModelUtils.EjectShell(ShellEjectPoint, ShellPrefab, Options.WeaponComponent);
         }
 
         private void PlayReloadEffects()
