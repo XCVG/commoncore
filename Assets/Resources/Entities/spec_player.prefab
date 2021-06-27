@@ -2160,6 +2160,8 @@ MonoBehaviour:
   OffhandKickPuff: TestHitPuff
   MeleeProbeDist: 3
   MeleeBoxCastSize: 0.5
+  MeleeContactHitRadius: 0.65
+  MeleeContactHitHeight: 1.5
   ADSZoomFadeTime: 0.1
   AutoaimWeakCastSize: 0.25
   AutoaimStrongCastSize: 1
@@ -3361,7 +3363,7 @@ Animator:
   m_GameObject: {fileID: 1749861873758050}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 7a1bf49f817d76e4187b0402089932b9, type: 3}
-  m_Controller: {fileID: 9100000, guid: d7dbe25864372ce48ad1ff4d5595e15e, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

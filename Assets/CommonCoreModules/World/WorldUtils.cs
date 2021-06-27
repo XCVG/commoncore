@@ -820,6 +820,126 @@ namespace CommonCore.World
             return new HitInfo(otherController, null, closestHit.collider, closestHit.point, 0, otherController?.HitMaterial ?? 0);
         }
 
+        /// <summary>
+        /// Raycasts and gets all hits on things that are hittable
+        /// </summary>
+        /// <remarks>
+        /// <para>Hits on originator will always be ignored. If you don't want to, leave originator blank</para>
+        /// </remarks>
+        public static IEnumerable<HitInfo> SpherecastAllAttackHits(Vector3 origin, Vector3 direction, float radius, float range, bool rejectBullets, BaseController originator, IList<HitInfo> nonActorHits = null)
+        {
+            var hits = Physics.SphereCastAll(origin, radius, direction, range, GetAttackLayerMask(), QueryTriggerInteraction.Collide);
+
+            //no hits, return default
+            if (hits.Length == 0)
+                return null;
+
+            return GetAllAttackHits(hits, origin, rejectBullets, originator, nonActorHits);
+        }
+
+        /// <summary>
+        /// Gets all valid hits on in a cast, including non-actor hits
+        /// </summary>
+        public static IEnumerable<HitInfo> GetAllAttackHits(IEnumerable<RaycastHit> hits, Vector3 origin, bool rejectBullets, BaseController originator, IList<HitInfo> nonActorHits = null)
+        {
+
+            List<HitInfo> outHits = new List<HitInfo>();
+
+            foreach (var hit in hits)
+            {
+                RaycastHit closestHit = new RaycastHit() { distance = float.MaxValue };
+
+                //reject bullets
+                if (rejectBullets && hit.collider.GetComponent<BulletScript>())
+                    continue;
+
+                var ihc = hit.collider.GetComponent<IHitboxComponent>();
+                bool hitSomething = false;
+                BaseController bc = null;
+                if (hit.collider.isTrigger) //if it's non-solid, it only counts if it's a hitbox
+                {
+                    if (ihc != null && (originator == null || ihc.ParentController != originator)) //handle originator
+                        hitSomething = true;
+                }
+                else //if it's solid, closer always counts
+                {
+                    if (originator != null)
+                    {
+                        if (ihc != null && ihc.ParentController == originator)
+                            continue;
+                        bc = hit.collider.GetComponent<BaseController>();
+                        if (bc != null && bc == originator)
+                            continue;
+
+                        hitSomething = true;
+                    }
+                    else
+                        hitSomething = true;
+                }
+
+                //possible hit, check for LoS
+                if (hitSomething && (ihc != null || bc != null))
+                {
+                    if (Physics.Raycast(hit.point, (origin - hit.point).normalized, out var losHit, hit.distance, WorldUtils.GetAttackLayerMask(), QueryTriggerInteraction.Ignore))
+                    {
+                        var hitbox = losHit.collider.GetComponent<IHitboxComponent>();
+                        if (hitbox != null)
+                        {
+                            if (hitbox.ParentController == originator)
+                                closestHit = hit;
+                            continue;
+                        }
+                        var c = losHit.collider.GetComponent<BaseController>();
+                        if (c == null)
+                            c = losHit.collider.GetComponentInParent<BaseController>();
+                        if (c != null)
+                        {
+                            if (c == originator)
+                                closestHit = hit;
+                            continue;
+                        }
+
+                    }
+                    else
+                    {
+                        closestHit = hit;
+                    }
+                }
+                else if (hitSomething && nonActorHits != null)
+                {
+                    if (Physics.Raycast(hit.point, (origin - hit.point).normalized, out var losHit, hit.distance, WorldUtils.GetAttackLayerMask(), QueryTriggerInteraction.Ignore))
+                    {
+                        if (losHit.collider != hit.collider)
+                        {
+                            continue;
+                        }
+
+                    }
+                    nonActorHits.Add(new HitInfo(null, null, hit.collider, hit.point, 0, 0));
+                }
+
+                if (closestHit.distance < float.MaxValue)
+                {
+                    var actorHitbox = closestHit.collider.GetComponent<IHitboxComponent>();
+                    if (actorHitbox != null)
+                    {
+                        outHits.Add(new HitInfo(actorHitbox.ParentController, actorHitbox, closestHit.collider, closestHit.point, actorHitbox.HitLocationOverride, actorHitbox.HitMaterial));
+                        continue;
+                    }
+
+                    //try to find a basecontroller
+                    var otherController = closestHit.collider.GetComponent<BaseController>();
+                    if (otherController == null)
+                        otherController = closestHit.collider.GetComponentInParent<BaseController>();
+
+                    outHits.Add(new HitInfo(otherController, null, closestHit.collider, closestHit.point, 0, otherController?.HitMaterial ?? 0));
+                }
+            }
+
+            return outHits;
+
+        }
+
 
     }
 }
