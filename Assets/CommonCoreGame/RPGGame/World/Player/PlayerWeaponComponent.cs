@@ -69,6 +69,7 @@ namespace CommonCore.RpgGame.World
         public float MeleeBoxCastSize = 0.5f;
         public float MeleeContactHitRadius = 0.5f;
         public float MeleeContactHitHeight = 1.5f;
+        public float MeleeContactMaxAngle = 45f;
         public float ADSZoomFadeTime = 0.2f;
 
         [Header("Autoaim Options")]
@@ -823,7 +824,7 @@ namespace CommonCore.RpgGame.World
                         //means we can hit entities we've already hit
                     }
 
-                    Debug.LogError($"[{nameof(MeleeCastAndDealDamage)}] ItemFlag.MeleeWeaponUseContactHitHack is not implemented");
+                    Debug.LogError($"[{nameof(MeleeCastAndDealDamage)}] ItemFlag.MeleeWeaponUseContactHitHack is not implemented when ItemFlag.MeleeWeaponDistinctMultipleHits is also set!");
                 }
 
                 if (defer)
@@ -839,37 +840,88 @@ namespace CommonCore.RpgGame.World
             else
             {
                 //run old codepath essentially unchanged
-
-                var (otherController, hitPoint, hitLocation, hitMaterial) = wim.CheckFlag(ItemFlag.MeleeWeaponUsePreciseCasting) ?
-                                WorldUtils.RaycastAttackHit(shootPoint.position, shootPoint.forward, MeleeProbeDist, true, true, PlayerController) :
-                                WorldUtils.SpherecastAttackHit(shootPoint.position, shootPoint.forward, MeleeBoxCastSize * 0.5f, MeleeProbeDist, true, false, PlayerController);
-                float distance = (hitPoint - shootPoint.position).magnitude;
-
-                if (distance <= wim.Reach)
                 {
-                    var hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, (int)wim.DType, (int)wim.Effector, harmFriendly, hitLocation, hitMaterial, PlayerController, PredefinedFaction.Player.ToString(), wim.HitPuff, hitPoint, wim.GetHitFlags());
+                    if (wim.CheckFlag(ItemFlag.MeleeWeaponHitNonDamageable))
+                        Debug.LogError($"[{nameof(MeleeCastAndDealDamage)}] ItemFlag.MeleeWeaponHitNonDamageable is not implemented for single hit");
 
-                    if (otherController is ITakeDamage itd)
+                    var (otherController, hitPoint, hitLocation, hitMaterial) = wim.CheckFlag(ItemFlag.MeleeWeaponUsePreciseCasting) ?
+                                    WorldUtils.RaycastAttackHit(shootPoint.position, shootPoint.forward, MeleeProbeDist, true, true, PlayerController) :
+                                    WorldUtils.SpherecastAttackHit(shootPoint.position, shootPoint.forward, MeleeBoxCastSize * 0.5f, MeleeProbeDist, true, false, PlayerController);
+                    float distance = (hitPoint - shootPoint.position).magnitude;
+
+                    if (distance <= wim.Reach)
                     {
-                        if (!wim.CheckFlag(ItemFlag.MeleeWeaponDelayCasting) && wim.DamageDelay > 0)
+                        var hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, (int)wim.DType, (int)wim.Effector, harmFriendly, hitLocation, hitMaterial, PlayerController, PredefinedFaction.Player.ToString(), wim.HitPuff, hitPoint, wim.GetHitFlags());
+
+                        if (otherController is ITakeDamage itd)
                         {
-                            DelayedFiringAction = () => MeleeDealDamage(hitInfo, itd);
-                            DelayedFiringTimeRemaining = wim.DamageDelay;
+                            if (!wim.CheckFlag(ItemFlag.MeleeWeaponDelayCasting) && wim.DamageDelay > 0)
+                            {
+                                DelayedFiringAction = () => MeleeDealDamage(hitInfo, itd);
+                                DelayedFiringTimeRemaining = wim.DamageDelay;
+                            }
+                            else
+                            {
+                                MeleeDealDamage(hitInfo, itd);
+                            }
+                            hitSingle = true;
                         }
-                        else
-                        {
-                            MeleeDealDamage(hitInfo, itd);
-                        }
-                        hitSingle = true;
                     }
                 }
 
                 if (!hitSingle && wim.CheckFlag(ItemFlag.MeleeWeaponUseContactHitHack))
                 {
-                    //TODO hit closest to center within 90 degrees of forward
+                    //hit closest to center within 90 degrees of forward
                     var colliders = Physics.OverlapCapsule(PlayerController.transform.position, PlayerController.transform.position + Vector3.up * MeleeContactHitHeight, MeleeContactHitRadius, WorldUtils.GetAttackLayerMask());
 
-                    Debug.LogError($"[{nameof(MeleeCastAndDealDamage)}] ItemFlag.MeleeWeaponUseContactHitHack is not implemented");
+                    Collider bestCollider = null;
+                    float smallestAngle = MeleeContactMaxAngle;
+                    foreach(var collider in colliders)
+                    {
+                        Vector2 vecPlayerToCollider = (collider.transform.position - shootPoint.position).GetFlatVector();
+                        Vector2 vecForward = shootPoint.forward.GetFlatVector();
+                        float angle = Vector2.Angle(vecPlayerToCollider, vecForward);
+                        if(angle < smallestAngle)
+                        {
+                            var hitbox = collider.GetComponent<IHitboxComponent>();
+                            if(hitbox != null)
+                            {
+                                bestCollider = collider;
+                                smallestAngle = angle;
+                            }
+                            var d = collider.GetComponent<ITakeDamage>();
+                            if(d != null)
+                            {
+                                bestCollider = collider;
+                                smallestAngle = angle;
+                            }
+                        }
+                    }
+
+                    if (bestCollider != null)
+                    {
+                        var hb = bestCollider.GetComponent<IHitboxComponent>();
+                        var oc = bestCollider.GetComponent<BaseController>();
+                        if (oc == null)
+                            oc = bestCollider.GetComponentInParent<BaseController>();
+
+                        var hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, (int)wim.DType, (int)wim.Effector, harmFriendly, hb?.HitLocationOverride ?? 0, hb?.HitMaterial ?? oc.HitMaterial, PlayerController, PredefinedFaction.Player.ToString(), wim.HitPuff, bestCollider.ClosestPoint(shootPoint.position), wim.GetHitFlags());
+
+                        if (oc is ITakeDamage itd)
+                        {
+                            if (!wim.CheckFlag(ItemFlag.MeleeWeaponDelayCasting) && wim.DamageDelay > 0)
+                            {
+                                DelayedFiringAction = () => MeleeDealDamage(hitInfo, itd);
+                                DelayedFiringTimeRemaining = wim.DamageDelay;
+                            }
+                            else
+                            {
+                                MeleeDealDamage(hitInfo, itd);
+                            }
+                            hitSingle = true;
+                        }
+                    }
+                   
                 }
 
             }

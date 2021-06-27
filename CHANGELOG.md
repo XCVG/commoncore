@@ -183,6 +183,6 @@
 * Redirect assets now support relative paths (and use these by default!)
 * Factions are now entirely case insensitive
 * Added support for glue-to-bone to ranged weapon viewmodel [Experimental]
+* Added contact-hit hack to melee weapons [Experimental]
 * Added recock handling to weapons [WIP]
 * Added multiple hit handling to melee weapons [WIP]
-* Added contact-hit hack to melee weapons [WIP]
