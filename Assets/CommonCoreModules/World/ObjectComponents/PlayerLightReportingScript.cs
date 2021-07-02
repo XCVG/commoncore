@@ -15,6 +15,9 @@ namespace CommonCore.World
 
         public bool Clamp = false;
 
+        [Tooltip("Used when a ReportedLightOverride is overriding reported lighting")]
+        public float OverrideBias = 1.5f;
+
         [Header("Calculated Mode")]
         public int CalculateInterval = 15;
         public float CalculatedAmbientWeight = 1.0f;
@@ -128,34 +131,50 @@ namespace CommonCore.World
         {
             Color ambientLight, directionalLight, light;
 
-            switch (RenderSettings.ambientMode)
-            {               
-                case UnityEngine.Rendering.AmbientMode.Trilight:
-                    ambientLight = (RenderSettings.ambientSkyColor + RenderSettings.ambientEquatorColor * 0.5f + RenderSettings.ambientGroundColor * 0.5f) / 2f;
-                    break;
-                case UnityEngine.Rendering.AmbientMode.Flat:
-                    ambientLight = RenderSettings.ambientLight;
-                    break;
-                case UnityEngine.Rendering.AmbientMode.Skybox:
-                case UnityEngine.Rendering.AmbientMode.Custom:
-                default:
-                    ambientLight = RenderSettings.ambientIntensity * Color.white; //TODO better solution for skyboxen?
-                    break;
-            }
-
-            var sun = RenderSettings.sun;
-            if(sun != null)
+            var rlo = ReportedLightOverride.Current;
+            if(rlo != null)
             {
-                directionalLight = sun.color * sun.intensity;
-
-                light = (ambientLight * CalculatedAmbientWeight + directionalLight * CalculatedDirectionalWeight) * (1f / (CalculatedAmbientWeight + CalculatedDirectionalWeight));
+                light = rlo.ReportedLight;
+                light *= OverrideBias;
             }
             else
             {
-                light = ambientLight;
-            }
+                switch (RenderSettings.ambientMode)
+                {
+                    case UnityEngine.Rendering.AmbientMode.Trilight:
+                        ambientLight = (RenderSettings.ambientSkyColor + RenderSettings.ambientEquatorColor * 0.5f + RenderSettings.ambientGroundColor * 0.5f) / 2f;
+                        break;
+                    case UnityEngine.Rendering.AmbientMode.Flat:
+                        ambientLight = RenderSettings.ambientLight;
+                        break;
+                    case UnityEngine.Rendering.AmbientMode.Skybox:
+                    case UnityEngine.Rendering.AmbientMode.Custom:
+                    default:
+                        ambientLight = RenderSettings.ambientIntensity * Color.white; //TODO better solution for skyboxen?
+                        break;
+                }
 
-            light *= CalculatedBias;
+                if (CalculatedDirectionalWeight > 0)
+                {
+                    var sun = RenderSettings.sun;
+                    if (sun != null)
+                    {
+                        directionalLight = sun.color * sun.intensity;
+
+                        light = (ambientLight * CalculatedAmbientWeight + directionalLight * CalculatedDirectionalWeight) * (1f / (CalculatedAmbientWeight + CalculatedDirectionalWeight));
+                    }
+                    else
+                    {
+                        light = ambientLight;
+                    }
+                }
+                else
+                {
+                    light = ambientLight;
+                }
+
+                light *= CalculatedBias;
+            }            
 
             if (Clamp)
             {
@@ -173,33 +192,46 @@ namespace CommonCore.World
 
         private void UpdateProbed()
         {
-            //dunno how much of this is necessary but we'll optimize it later
-            //based on a youtube video: https://www.youtube.com/watch?v=NYysvuyivc4
+            Color light;
 
-            RenderTexture tempRT = RenderTexture.GetTemporary(ProbeRenderTexture.width, ProbeRenderTexture.height, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Linear);
-            Graphics.Blit(ProbeRenderTexture, tempRT);
-            RenderTexture previous = RenderTexture.active;
-            RenderTexture.active = tempRT;
-
-            Texture2D tempTex = new Texture2D(ProbeRenderTexture.width, ProbeRenderTexture.height,TextureFormat.RGBA32, false, true);
-            tempTex.ReadPixels(new Rect(0, 0, tempRT.width, tempRT.height), 0, 0);
-            tempTex.Apply();
-
-            RenderTexture.active = previous;
-            RenderTexture.ReleaseTemporary(tempRT);
-
-            Color[] colors = tempTex.GetPixels();
-            Vector4 colorTotal = Vector4.zero;
-            for(int i = 0; i < colors.Length; i++)
+            var rlo = ReportedLightOverride.Current;
+            if(rlo != null && rlo.OverrideProbed)
             {
-                colorTotal += (Vector4)colors[i];
+                light = rlo.ReportedLight;
+                light *= OverrideBias;
             }
+            else
+            {
+                //dunno how much of this is necessary but we'll optimize it later
+                //based on a youtube video: https://www.youtube.com/watch?v=NYysvuyivc4
 
-            //Debug.Log(colors.ToNiceString());
+                RenderTexture tempRT = RenderTexture.GetTemporary(ProbeRenderTexture.width, ProbeRenderTexture.height, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Linear);
+                Graphics.Blit(ProbeRenderTexture, tempRT);
+                RenderTexture previous = RenderTexture.active;
+                RenderTexture.active = tempRT;
 
-            Color light = (Color)(colorTotal / colors.Length);
+                Texture2D tempTex = new Texture2D(ProbeRenderTexture.width, ProbeRenderTexture.height, TextureFormat.RGBA32, false, true);
+                tempTex.ReadPixels(new Rect(0, 0, tempRT.width, tempRT.height), 0, 0);
+                tempTex.Apply();
 
-            light *= ProbeBias;
+                RenderTexture.active = previous;
+                RenderTexture.ReleaseTemporary(tempRT);
+
+                Color[] colors = tempTex.GetPixels();
+                Vector4 colorTotal = Vector4.zero;
+                for (int i = 0; i < colors.Length; i++)
+                {
+                    colorTotal += (Vector4)colors[i];
+                }
+
+                Destroy(tempTex);
+
+                //Debug.Log(colors.ToNiceString());
+
+                light = (Color)(colorTotal / colors.Length);
+
+                light *= ProbeBias;
+            }            
 
             if (Clamp)
             {
@@ -210,9 +242,7 @@ namespace CommonCore.World
                 light.a = 1.0f;
             }
 
-            Light = light;
-
-            Destroy(tempTex);
+            Light = light;            
 
             //Debug.Log(light);
         }

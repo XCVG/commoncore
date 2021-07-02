@@ -473,6 +473,7 @@ GameObject:
   - component: {fileID: 175064700}
   - component: {fileID: 175064701}
   - component: {fileID: 175064702}
+  - component: {fileID: 175064703}
   m_Layer: 0
   m_Name: WorldRoot
   m_TagString: Untagged
@@ -593,6 +594,20 @@ MonoBehaviour:
     IconOverride: 
     WorldPoint: {x: 2.46, y: 0, z: -1.66}
     ForceShow: 0
+--- !u!114 &175064703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 175064699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f0312371f6a209438f51d532f998461, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OverrideProbed: 0
+  ReportedLight: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &197887800
 GameObject:
   m_ObjectHideFlags: 0

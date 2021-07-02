@@ -129,6 +129,7 @@ namespace CommonCore.RpgGame.World
         {
             HandleAnimation();
             HandleMovebob();
+            HandleLighting();
         }
 
         private void HandleAnimation()
