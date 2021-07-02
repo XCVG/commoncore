@@ -52,6 +52,11 @@ MonoBehaviour:
   AllowTimescale: 1
   LoopIdle: 1
   AutoTransition: 1
+  HandleCrosshair: 0
+  EffectWaitForLockTime: 0
+  EjectShellOnRecock: 0
+  ApplyReportedLighting: 1
+  ReportedLightingBias: 1
   AllowMovebob: 1
   CopyMovebob: 1
   MovebobYOffset: -50
@@ -59,48 +64,77 @@ MonoBehaviour:
   Idle:
   - Sprite: {fileID: 21300000, guid: 1a660cb2aa359e142a3a9f6a61afc09e, type: 3}
     Duration: -1
+    Bright: 0
   Raise:
   - Sprite: {fileID: 21300000, guid: 1a660cb2aa359e142a3a9f6a61afc09e, type: 3}
     Duration: 0
+    Bright: 0
   Lower:
   - Sprite: {fileID: 21300000, guid: 1a660cb2aa359e142a3a9f6a61afc09e, type: 3}
     Duration: 0
+    Bright: 0
   Reload:
   - Sprite: {fileID: 21300000, guid: 1a660cb2aa359e142a3a9f6a61afc09e, type: 3}
     Duration: 0.25
+    Bright: 0
   - Sprite: {fileID: 21300000, guid: be326ba4f52a29740b11e4fb6277006e, type: 3}
     Duration: 0.25
+    Bright: 0
   - Sprite: {fileID: 21300000, guid: fffa83301a12fb2408372f090dc6fcf3, type: 3}
     Duration: 0.25
+    Bright: 0
   - Sprite: {fileID: 21300000, guid: a1febd5afda3b604397de88418c21fde, type: 3}
     Duration: 0.25
+    Bright: 0
   - Sprite: {fileID: 21300000, guid: fffa83301a12fb2408372f090dc6fcf3, type: 3}
     Duration: 0.25
+    Bright: 0
   - Sprite: {fileID: 21300000, guid: be326ba4f52a29740b11e4fb6277006e, type: 3}
     Duration: 0.25
+    Bright: 0
   - Sprite: {fileID: 21300000, guid: b52f93605cb80cd42be99b0e9935d958, type: 3}
     Duration: 0.25
+    Bright: 0
   - Sprite: {fileID: 21300000, guid: 4c4fbbc8a67a3784da1157ed7a31599d, type: 3}
     Duration: 0.25
+    Bright: 0
+  Recock: []
   Fire:
   - Sprite: {fileID: 21300000, guid: 34a8ed09a9e65924db9afa378f238716, type: 3}
     Duration: 0.02
+    Bright: 1
   - Sprite: {fileID: 21300000, guid: 34a8ed09a9e65924db9afa378f238716, type: 3}
     Duration: 0.05
+    Bright: 1
   - Sprite: {fileID: 21300000, guid: 339685b9a42381a44a99bd91e93cb779, type: 3}
     Duration: 0.05
+    Bright: 1
   - Sprite: {fileID: 21300000, guid: 1a660cb2aa359e142a3a9f6a61afc09e, type: 3}
     Duration: 0.05
+    Bright: 0
   ADSIdle: []
   ADSRaise: []
   ADSLower: []
   ADSFire: []
+  ADSRecock: []
   FireSound: {fileID: 370814778710599125}
   ReloadSound: {fileID: 3737092070911255751}
+  RecockSound: {fileID: 0}
   RaiseSound: {fileID: 0}
   LowerSound: {fileID: 0}
   ADSRaiseSound: {fileID: 0}
   ADSLowerSound: {fileID: 0}
+  ShellEjectPoint: {fileID: 0}
+  ShellPrefab: 
+  FireEffectPoint: {fileID: 0}
+  FireEffectPrefab: 
+  RecockEffectPoint: {fileID: 0}
+  RecockEffectPrefab: 
+  MagazineEjectPoint: {fileID: 0}
+  MagazinePrefab: 
+  MagazineEjectDelay: 0
+  ReloadEffectPoint: {fileID: 0}
+  ReloadEffectPrefab: 
 --- !u!1 &2197988203905979591
 GameObject:
   m_ObjectHideFlags: 0
@@ -409,12 +443,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 6259924412615778813}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -427,6 +462,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &7554389714465525297
 GameObject:
   m_ObjectHideFlags: 0
@@ -495,7 +531,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7554389714465525297}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1980459831, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_UiScaleMode: 1

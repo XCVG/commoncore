@@ -188,6 +188,7 @@
 * Added recock handling to weapons
 * Added override component for sprite weapon lighting
 * Fixed sprite weapon lighting so it actually applies
+* Added Bright flag for sprite weapons (ignores reported lighting)
 * Added support for glue-to-bone to ranged weapon viewmodel [Experimental]
 * Added contact-hit hack to melee weapons [Experimental]
 

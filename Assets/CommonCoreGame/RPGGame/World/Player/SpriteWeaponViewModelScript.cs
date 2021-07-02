@@ -115,6 +115,7 @@ namespace CommonCore.RpgGame.World
         private float TimeInFrame;
 
         private bool MovebobCriticalError;
+        private bool Fullbright;
 
         private Coroutine EffectDelayedCoroutine;
 
@@ -205,7 +206,7 @@ namespace CommonCore.RpgGame.World
 
         private void HandleLighting()
         {
-            if (!ApplyReportedLighting)
+            if (!ApplyReportedLighting || Fullbright)
                 return;
 
             var reporter = Options.WeaponComponent.Ref()?.PlayerController.Ref()?.LightReporter;
@@ -382,7 +383,8 @@ namespace CommonCore.RpgGame.World
                 return;
             }
 
-            var sprite = frameSet[frameIndex].Sprite;
+            var frame = frameSet[frameIndex];
+            var sprite = frame.Sprite;
             if(sprite == null)
             {
                 Debug.LogWarning($"Can't set image on {name} because frame struct exists but sprite is null!");
@@ -401,6 +403,19 @@ namespace CommonCore.RpgGame.World
 
             WeaponImage.rectTransform.sizeDelta = new Vector2(spriteWidth, spriteHeight);
             WeaponImage.rectTransform.anchoredPosition = new Vector2(spriteXOffset, spriteYOffset);
+
+            Fullbright = frame.Bright;
+            if (Fullbright && ApplyReportedLighting)
+            {
+                var c = Color.white;
+                c.a = WeaponImage.color.a;
+                WeaponImage.color = c;
+            }
+            else
+            {
+                HandleLighting();
+            }
+
         }
 
         private IEnumerator CoDelayedEffect(float time, Action action)
@@ -415,6 +430,7 @@ namespace CommonCore.RpgGame.World
         {
             public Sprite Sprite;
             public float Duration;
+            public bool Bright;
         }
         
     }

@@ -607,7 +607,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OverrideProbed: 0
-  ReportedLight: {r: 1, g: 0, b: 0, a: 1}
+  ReportedLight: {r: 0.5, g: 0.3820755, b: 0.3820755, a: 1}
 --- !u!1 &197887800
 GameObject:
   m_ObjectHideFlags: 0
