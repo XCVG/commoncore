@@ -105,6 +105,12 @@ namespace CommonCore.RpgGame.Dialogue
 
         private void SelectButton(int index)
         {
+            if(index >= (CurrentButtons?.Count ?? 0))
+            {
+                Debug.LogWarning($"[{nameof(DialogueNavigator)}] tried to select button {index} when only {CurrentButtons?.Count} exists");
+                return;
+            }
+
             var button = CurrentButtons[index];
             button.Select();
             button.OnSelect(new BaseEventData(EventSystem));
