@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonCore.ResourceManagement;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,7 +20,7 @@ public class PostBuildGenerateResourceManifest : IPostprocessBuildWithReport //T
     {
         try
         {
-            var resourcesFolders = GetResourceFolders();
+            var resourcesFolders = EditorResourceManifest.GetResourceFolders();
             var targetFolder = Path.Combine(Path.GetDirectoryName(report.summary.outputPath), $"{Application.productName}_Data", "StreamingAssets");
 
             List<string> directories = new List<string>();
@@ -28,8 +29,8 @@ public class PostBuildGenerateResourceManifest : IPostprocessBuildWithReport //T
             foreach (var resourcesFolder in resourcesFolders)
             {
                 List<string> rDirectories = new List<string>();
-                EnumerateDirectories(resourcesFolder, rDirectories);
-                directories.AddRange(CleanDirectoryListing(resourcesFolder, rDirectories));
+                EditorResourceManifest.EnumerateDirectories(resourcesFolder, rDirectories);
+                directories.AddRange(EditorResourceManifest.CleanDirectoryListing(resourcesFolder, rDirectories));
                 foreach (var dir in rDirectories)
                 {
                     models.Add(BuildFolderModel(resourcesFolder, dir));
@@ -43,7 +44,6 @@ public class PostBuildGenerateResourceManifest : IPostprocessBuildWithReport //T
             };
 
             var targetFile = Path.Combine(targetFolder, "core_resources.json");
-            //File.WriteAllText(targetFile, string.Join("\n", directories.Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(d => d)));
             File.WriteAllText(targetFile, JsonConvert.SerializeObject(fullModel, Formatting.Indented));
 
             Debug.Log($"[{nameof(PostBuildGenerateResourceManifest)}] Generated resource manifest at {targetFile}!");
@@ -52,49 +52,6 @@ public class PostBuildGenerateResourceManifest : IPostprocessBuildWithReport //T
         {
             throw new UnityEditor.Build.BuildFailedException(e);
         }
-    }
-
-    private IEnumerable<string> GetResourceFolders()
-    {
-        var basePath = Application.dataPath;
-        List<string> resourceFolders = new List<string>();
-
-        EnumerateResourceFolders(basePath, resourceFolders);
-
-        return resourceFolders;
-    }
-
-    private void EnumerateResourceFolders(string baseDirectory, List<string> directories)
-    {
-        var dirs = Directory.EnumerateDirectories(baseDirectory).ToList();
-        foreach(var dir in dirs)
-        {
-            var dirName = Path.GetFileName(dir.TrimEnd('/', '\\'));
-
-            if (dirName.Equals("Resources", StringComparison.OrdinalIgnoreCase))
-            {
-                directories.Add(dir);
-            }
-            else
-            {
-                EnumerateResourceFolders(dir, directories);
-            }
-        }
-    }
-
-    private void EnumerateDirectories(string baseDirectory, List<string> directories)
-    {
-        var d = Directory.EnumerateDirectories(baseDirectory).ToList();
-        directories.AddRange(d);
-        foreach(var dir in d)
-        {
-            EnumerateDirectories(dir, directories);
-        }
-    }
-
-    private IEnumerable<string> CleanDirectoryListing(string basePath, IEnumerable<string> directories)
-    {
-        return directories.Select(d => d.Substring(basePath.Length).Replace('\\', '/'));
     }
 
     private ResourceFolderModel BuildFolderModel(string basePath, string directoryPath)

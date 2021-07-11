@@ -280,6 +280,36 @@ namespace CommonCore.TestModule
 
             //test redirection (all variants)
 
+            //test folders/manifest (presence)
+            {
+                if(rm.ResourceManifest != null)
+                {
+                    Debug.Log("[ResourceTests] Resource Manifest found");
+                    Debug.Log(string.Join("\n", rm.ResourceManifest.EnumerateFolders()));
+                }
+                else
+                {
+                    Debug.LogWarning("[ResourceTests] Resource Manifest not available");
+                }
+                
+            }
+
+            if (rm.ResourceManifest != null)
+            {
+                //test folders/manifest (subfolders)
+                {
+                    var subfolders = rm.GetSubfolders("Data");
+                    if(subfolders.Length > 0)
+                        Debug.Log($"[ResourceTests] GetSubfolders looks okay (got {subfolders.ToNiceString()})");
+                    else
+                        Debug.LogError($"[ResourceTests] GetSubfolders for Data returned no results");
+                }                
+            }
+            else
+            {
+                Debug.Log("[ResourceTests] Skipping Resource Manifest tests");
+            }
+
 
         }
 

@@ -15,6 +15,7 @@ namespace CommonCore.ResourceManagement
     public class ResourceManager
     {
         public ResourceLoader ResourceLoader { get; private set; }
+        public ResourceManifest ResourceManifest { get; private set; }
 
         public int NextResourceHandleID => ++CurrentResourceHandleID;
         private int CurrentResourceHandleID = 0;
@@ -26,9 +27,27 @@ namespace CommonCore.ResourceManagement
         public ResourceManager()
         {
             ResourceLoader = new ResourceLoader();
+            ResourceManifest = ResourceManifest.Load();
+
+            if (ResourceManifest == null && CoreParams.RequireResourceManifest)
+                throw new Exception("Resource Manifest is required but not available");
         }
 
         //TODO get handle (instead of resource) variants
+
+        /// <summary>
+        /// Gets resource handles for a resource object at a path
+        /// </summary>
+        public ResourceHandle<T>[] GetHandles<T>(string path) where T : UnityEngine.Object
+        {
+            if (path.StartsWith("Game/") || path.StartsWith("Core/"))
+            {
+                Debug.LogWarning($"Resource path starts with special folder, this case isn't currently handled! ({path})");
+            }
+
+            ResourceObject rObject = RetrieveResourceObject(path);
+            return rObject?.GetResourceHandles<T>();
+        }
 
         /// <summary>
         /// Gets a resource
@@ -116,7 +135,59 @@ namespace CommonCore.ResourceManagement
 
             return rObject.ExistsForType<T>(typeExact);
         }
-        
+
+        //TODO
+        //note that we can't just call through to resource manifest; we also need to handle redirection and known folders
+
+        /// <summary>
+        /// Gets subfolders in a resource folder
+        /// </summary>
+        public string[] GetSubfolders(string path)
+        {
+            path = path.Replace('\\', '/').Trim('/') + "/";
+
+            if (path.StartsWith("Game/") || path.StartsWith("Core/"))
+            {
+                Debug.LogWarning($"Resource path starts with special folder, this case isn't currently handled! ({path})");
+            }
+
+            List<string> subfolders = new List<string>();
+
+            {
+                int numSeparators = path.CountChar('/');
+                subfolders.AddRange(ResourceFolders.Keys.Where(k => k.StartsWith(path, StringComparison.OrdinalIgnoreCase) && k.CountChar('/') == numSeparators + 1));
+            }
+
+            subfolders.AddRange(ResourceManifest.GetFoldersInFolder(path).Select(f => f.Trim('/') + "/"));
+            subfolders.AddRange(ResourceManifest.GetFoldersInFolder("Game/" + path).Select(f => f.Trim('/').Substring(5) + "/"));
+            subfolders.AddRange(ResourceManifest.GetFoldersInFolder("Core/" + path).Select(f => f.Trim('/').Substring(5) + "/"));
+
+            return subfolders.Distinct().ToArray();
+        }
+
+        /// <summary>
+        /// Gets subfolders in a resource folder, including that folder's subfolders
+        /// </summary>
+        public string[] GetSubfoldersRecursive(string path)
+        {
+            path = path.Replace('\\', '/').Trim('/') + "/";
+
+            if (path.StartsWith("Game/") || path.StartsWith("Core/"))
+            {
+                Debug.LogWarning($"Resource path starts with special folder, this case isn't currently handled! ({path})");
+            }
+
+            List<string> subfolders = new List<string>();
+
+            subfolders.AddRange(ResourceFolders.Keys.Where(k => k.StartsWith(path, StringComparison.OrdinalIgnoreCase)));            
+
+            subfolders.AddRange(ResourceManifest.GetFoldersRecursive(path).Select(f => f.Trim('/') + "/"));
+            subfolders.AddRange(ResourceManifest.GetFoldersRecursive("Game/" + path).Select(f => f.Trim('/').Substring(5) + "/"));
+            subfolders.AddRange(ResourceManifest.GetFoldersRecursive("Core/" + path).Select(f => f.Trim('/').Substring(5) + "/"));
+
+            return subfolders.Distinct().ToArray();
+        }
+
         //WIP AddResourceX methods
         public ResourceHandle AddResource(string path, UnityEngine.Object resource, ResourcePriority priority)
         {

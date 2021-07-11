@@ -197,6 +197,7 @@
 * Added contact-hit hack to melee weapons [Experimental]
 * Implemented HUD scaling [Experimental]
 * Implemented resource manifest generated on build [Experimental]
+* Implemented GetFolders* APIs in ResourceManager using resource manifest [Experimental]
 * Fixed DialogueNavigator NRE [Untested]
 
 
