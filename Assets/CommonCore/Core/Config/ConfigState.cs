@@ -209,6 +209,7 @@ namespace CommonCore.Config
         public bool ShowFps { get; set; } = false;
         public float EffectDwellTime { get; set; } = 30;
         public float FieldOfView { get; set; } = 60;
+        public float HudScale { get; set; } = 1;
 
         //VIDEO CONFIG (EXTENDED)
         public QualityLevel ShadowQuality { get; set; } = QualityLevel.Medium;

@@ -1,4 +1,5 @@
-﻿using CommonCore.Messaging;
+﻿using CommonCore.Config;
+using CommonCore.Messaging;
 using CommonCore.StringSub;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,6 +23,8 @@ namespace CommonCore.UI
         private float SubtitleTimer;
         private int SubtitlePriority = int.MinValue;
 
+        private Vector2? BaseResolution = null;
+
         protected QdmsMessageInterface MessageInterface;
 
 
@@ -33,6 +36,7 @@ namespace CommonCore.UI
 
         protected virtual void Start()
         {
+            ApplyScale();
             MessageText.text = string.Empty;
             UpdateSubtitles();
         }
@@ -74,6 +78,10 @@ namespace CommonCore.UI
                 AppendHudMessage(Sub.Macro(((HUDPushMessage)message).Contents));
                 return true;
             }
+            else if (message is QdmsFlagMessage fm && fm.Flag == "ConfigChanged")
+            {
+                ApplyScale();
+            }
 
             return false;
         }
@@ -110,6 +118,30 @@ namespace CommonCore.UI
             MessageText.text = string.Empty;
             Canvas.ForceUpdateCanvases();
             MessageScrollRect.verticalNormalizedPosition = 0;
+        }
+
+        protected void ApplyScale()
+        {
+            float scale = ConfigState.Instance.HudScale;
+            var scaler = GetComponent<CanvasScaler>();
+
+            if(!Mathf.Approximately(scale, 1) && (scaler == null || scaler.uiScaleMode != CanvasScaler.ScaleMode.ScaleWithScreenSize))
+            {
+                Debug.LogWarning($"[{GetType().Name}] Cannot apply HUD scale because scaler is not in correct mode (expected {CanvasScaler.ScaleMode.ScaleWithScreenSize}, got {scaler.Ref()?.uiScaleMode.ToString() ?? "null"})");
+                return;
+            }
+
+            if(!BaseResolution.HasValue)
+            {
+                BaseResolution = scaler.referenceResolution;                
+            }
+
+            if(!Mathf.Approximately(scale, 1))
+            {
+                scaler.referenceResolution = BaseResolution.Value * scale;
+                Debug.Log($"[{GetType().Name}] Set HUD scale to {scale:F4} (virtual resolution {scaler.referenceResolution.x:F2}x{scaler.referenceResolution.y:F2})");
+                Canvas.ForceUpdateCanvases();
+            }
         }
     }
 }
