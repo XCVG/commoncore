@@ -14,6 +14,14 @@ namespace CommonCore.Experimental
     {
         public const float SubtitleWaitTime = 0.5f;
 
+        public static IEnumerator ShowDialogueSubtitle(string text, Color color, float holdTime) => ShowDialogueSubtitle(text, color, holdTime, SubtitleWaitTime);
+
+        public static IEnumerator ShowDialogueSubtitle(string text, Color color, float holdTime, float pauseTime) => ShowDialogueSubtitle(null, text, color, holdTime, pauseTime);
+
+        public static IEnumerator ShowDialogueSubtitle(ActorController actor, string text, Color color, float holdTime) => ShowDialogueSubtitle(actor, text, color, holdTime, SubtitleWaitTime);
+
+        public static IEnumerator ShowDialogueSubtitle(ActorController actor, string text, Color color, float holdTime, float pauseTime) => ShowDialogueSubtitle(actor, text, ColorUtility.ToHtmlStringRGBA(color), holdTime, SubtitleWaitTime);
+
         public static IEnumerator ShowDialogueSubtitle(string text, string color, float holdTime) => ShowDialogueSubtitle(text, color, holdTime, SubtitleWaitTime);
 
         public static IEnumerator ShowDialogueSubtitle(string text, string color, float holdTime, float pauseTime) => ShowDialogueSubtitle(null, text, color, holdTime, pauseTime);
@@ -26,7 +34,7 @@ namespace CommonCore.Experimental
 
             if (useActor)
                 actor.AnimationComponent.SetAnimation(ActorAnimState.Talking);
-            Subtitle.Show($"<color={color}>{text}</color>", holdTime);
+            Subtitle.Show(string.IsNullOrEmpty(color) ? text : $"<color={color}>{text}</color>", holdTime);
             yield return new WaitForSecondsEx(holdTime, true, PauseLockType.AllowCutscene, false);
 
             if (useActor)

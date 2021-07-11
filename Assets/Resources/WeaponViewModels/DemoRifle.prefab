@@ -5286,6 +5286,13 @@ MonoBehaviour:
   CenterModelInAds: 1
   ADSTransitionTime: 0.1
   HandleCrosshair: 0
+  EffectWaitForLockTime: 0
+  EjectShellOnRecock: 0
+  GlueToBone: 0
+  ModelGlueRoot: {fileID: 0}
+  OffsetPoint: {fileID: 0}
+  OffsetTranslation: {x: 0, y: 0, z: 0}
+  OffsetRotation: {x: 0, y: 0, z: 0}
   TwoHandAnimations:
     IdleAnim: RifleIdle
     ChargeAnim: 
@@ -5329,7 +5336,9 @@ MonoBehaviour:
     LowerAnim: 
     LowerAnimDuration: 0
   FireSound: {fileID: 370814778710599125}
+  RepeatFireSound: 1
   ReloadSound: {fileID: 3737092070911255751}
+  RecockSound: {fileID: 0}
   RaiseSound: {fileID: 0}
   LowerSound: {fileID: 0}
   FireParticleSystem: {fileID: 7849682504790199214}
@@ -5339,6 +5348,13 @@ MonoBehaviour:
   ShellPrefab: RifleShellCasing
   FireEffectPoint: {fileID: 0}
   FireEffectPrefab: 
+  RecockEffectPoint: {fileID: 0}
+  RecockEffectPrefab: 
+  MagazineEjectPoint: {fileID: 0}
+  MagazinePrefab: 
+  MagazineEjectDelay: 0
+  ReloadEffectPoint: {fileID: 0}
+  ReloadEffectPrefab: 
 --- !u!1 &2197988203905979591
 GameObject:
   m_ObjectHideFlags: 0

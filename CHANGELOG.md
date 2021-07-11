@@ -189,6 +189,10 @@
 * Added override component for sprite weapon lighting
 * Fixed sprite weapon lighting so it actually applies
 * Added Bright flag for sprite weapons (ignores reported lighting)
+* Added StringUtils with case-insensitive string contains
+* Added SetVelocity to PlayerMovementComponent
+* Added RepeatFireSound flag to ranged and sprite weapon viewmodels
+* ShowDialogueSubtitle can now take a Color for colour argument
 * Added support for glue-to-bone to ranged weapon viewmodel [Experimental]
 * Added contact-hit hack to melee weapons [Experimental]
 

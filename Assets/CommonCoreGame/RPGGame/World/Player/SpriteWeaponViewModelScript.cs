@@ -72,6 +72,8 @@ namespace CommonCore.RpgGame.World
         [SerializeField, Header("Sounds")]
         private AudioSource FireSound = null;
         [SerializeField]
+        private bool RepeatFireSound = false;
+        [SerializeField]
         private AudioSource ReloadSound = null;
         [SerializeField]
         private AudioSource RecockSound = null;
@@ -316,7 +318,18 @@ namespace CommonCore.RpgGame.World
 
             void playFireEffects()
             {
-                FireSound.Ref()?.Play();
+                if(FireSound != null)
+                {
+                    if(RepeatFireSound)
+                    {
+                        FireSound.PlayOneShot(FireSound.clip);
+                    }
+                    else
+                    {
+                        FireSound.Play();
+                    }
+                }
+                
                 if(!EjectShellOnRecock)
                     ViewModelUtils.EjectShell(ShellEjectPoint, ShellPrefab, Options.WeaponComponent);
                 InstantiateFireEffect();

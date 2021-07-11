@@ -45,6 +45,7 @@ namespace CommonCore.RpgGame.World
 
         [Header("Sounds")]
         public AudioSource FireSound = null;
+        public bool RepeatFireSound = false;
         public AudioSource ReloadSound = null;
         public AudioSource RecockSound = null;
         public AudioSource RaiseSound = null;
@@ -274,7 +275,17 @@ namespace CommonCore.RpgGame.World
 
             void playFireEffects()
             {
-                FireSound.Ref()?.Play();
+                if (FireSound != null)
+                {
+                    if (RepeatFireSound)
+                    {
+                        FireSound.PlayOneShot(FireSound.clip);
+                    }
+                    else
+                    {
+                        FireSound.Play();
+                    }
+                }
                 FireParticleSystem.Ref()?.Play();
                 FlashFireLight();
                 InstantiateFireEffect();

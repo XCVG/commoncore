@@ -875,13 +875,23 @@ namespace CommonCore.RpgGame.World
         /// <param name="instantaneousDisplacement"></param>
         public void Push(Vector3 instantaneousVelocity, Vector3 instantaneousDisplacement)
         {
-            Debug.Log($"Player pushed ({instantaneousVelocity}|{instantaneousDisplacement})");
+            //Debug.Log($"Player pushed ({instantaneousVelocity}|{instantaneousDisplacement})");
 
             if (GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoPhysics))
                 return;
 
             Velocity += instantaneousVelocity;
             CharController.Move(instantaneousDisplacement);
+        }
+
+        /// <summary>
+        /// Sets the velocity of the player
+        /// </summary>
+        public void SetVelocity(Vector3 velocity)
+        {
+            //we may put more logic here
+
+            Velocity = velocity;
         }
 
         /// <summary>
