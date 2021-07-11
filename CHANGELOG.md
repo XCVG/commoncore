@@ -196,6 +196,7 @@
 * Added support for glue-to-bone to ranged weapon viewmodel [Experimental]
 * Added contact-hit hack to melee weapons [Experimental]
 * Implemented HUD scaling [Experimental]
+* Implemented resource manifest generated on build [Experimental]
 * Fixed DialogueNavigator NRE [Untested]
 
 
