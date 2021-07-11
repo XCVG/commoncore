@@ -39,6 +39,11 @@ namespace CommonCore
         public static bool Terminated { get; private set; }
 
         /// <summary>
+        /// Whether the game has failed (CommonCore failed to start up or encountered a critical error)
+        /// </summary>
+        public static bool Failed { get; private set; }
+
+        /// <summary>
         /// The scene to load after completing initialization
         /// </summary>
         public static string LoadSceneAfterInit { get; private set; } = "MainMenuScene";
@@ -175,34 +180,44 @@ namespace CommonCore
         //synchronous startup method
         public static void Startup()
         {
-            Initializing = true;
-            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
-            stopwatch.Start();
+            try
+            {
+                Initializing = true;
+                System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+                stopwatch.Start();
 
-            Debug.Log("[Core] Starting up CommonCore...");
-            DoInitialSetup();                        
+                Debug.Log("[Core] Starting up CommonCore...");
+                DoInitialSetup();
 
-            var allModules = GetAllModuleTypes();
-            InitializeExplicitModules(allModules);
-            InitializeResourceManager();
-            PrintSystemData(); //we wait until the console is loaded so we can see it in the console
-            InitializeModules(allModules);
-            SetupModuleLookupTable();
-            ExecuteAllModulesLoaded();
+                var allModules = GetAllModuleTypes();
+                InitializeExplicitModules(allModules);
+                InitializeResourceManager();
+                PrintSystemData(); //we wait until the console is loaded so we can see it in the console
+                InitializeModules(allModules);
+                SetupModuleLookupTable();
+                ExecuteAllModulesLoaded();
 
-            //mod loading can't happen synchronously
-            AddonManager.WarnIfUnsupported();
-            AddonManager.WarnOnSyncLoad();
-            ExecuteAllAddonsLoaded();
+                //mod loading can't happen synchronously
+                AddonManager.WarnIfUnsupported();
+                AddonManager.WarnOnSyncLoad();
+                ExecuteAllAddonsLoaded();
 
-            CoreUtils.CollectGarbage(true);
+                CoreUtils.CollectGarbage(true);
 
-            Initialized = true;
-            Initializing = false;
+                Initialized = true;
+                Initializing = false;
 
-            stopwatch.Stop();
+                stopwatch.Stop();
 
-            Debug.Log($"[Core] ...done! ({stopwatch.Elapsed.TotalMilliseconds:F4} ms)");
+                Debug.Log($"[Core] ...done! ({stopwatch.Elapsed.TotalMilliseconds:F4} ms)");
+            }
+            catch(Exception e)
+            {
+                Failed = true;
+                Debug.LogError($"[Core] Fatal error in startup: {e.GetType().Name}");
+                Debug.LogException(e);
+                throw new StartupFailedException(e);
+            }
         }        
 
         //async startup method (not implemented)
@@ -237,18 +252,20 @@ namespace CommonCore
                 CoreUtils.CollectGarbage(true);
 
                 Initialized = true;
+                Initializing = false;
+
+                stopwatch.Stop();
+
+                Debug.Log($"[Core] ...done! ({stopwatch.Elapsed.TotalMilliseconds:F4} ms)");                
             }
             catch(Exception e)
             {
-                Debug.LogError("[Core] Fatal error");
+                Failed = true;
+                Debug.LogError($"[Core] Fatal error in startup: {e.GetType().Name}");
                 Debug.LogException(e);
+                throw new StartupFailedException(e);
             }
-            finally
-            {
-                stopwatch.Stop();
-                Debug.Log($"[Core] ...done! ({stopwatch.Elapsed.TotalMilliseconds:F4} ms)");
-                Initializing = false;
-            }
+
         }
 
         //sets up CoreParams, loads types, hooks some events and creates folders

@@ -193,6 +193,7 @@
 * Added SetVelocity to PlayerMovementComponent
 * Added RepeatFireSound flag to ranged and sprite weapon viewmodels
 * ShowDialogueSubtitle can now take a Color for colour argument
+* Added some handling for fatal errors during startup
 * Added support for glue-to-bone to ranged weapon viewmodel [Experimental]
 * Added contact-hit hack to melee weapons [Experimental]
 * Implemented HUD scaling [Experimental]

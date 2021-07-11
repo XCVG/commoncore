@@ -156,5 +156,13 @@ namespace CommonCore
         /// </summary>
         WinRTDotNET = 2
     }    
+
+    public class StartupFailedException : Exception
+    {
+        public StartupFailedException(Exception innerException): base("A fatal error occurred during CommonCore startup", innerException)
+        {
+
+        }
+    }
     
 }
