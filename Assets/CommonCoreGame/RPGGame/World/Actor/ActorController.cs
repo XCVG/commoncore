@@ -602,9 +602,16 @@ namespace CommonCore.RpgGame.World
 
         private void SetChaseDestination()
         {
+            if(AttackComponent != null && AttackComponent.HandlesChaseDestination)
+            {
+                MovementComponent.SetDestination(AttackComponent.GetChaseDestination());
+                return;
+            }
+
             if(Target == null)
             {
                 Debug.LogWarning($"[ActorController] {gameObject.name} can't set a chase destination because target is null!");
+                return;
             }
 
             if (ChaseOptimalDistance > 0)
@@ -634,6 +641,12 @@ namespace CommonCore.RpgGame.World
             if(TargetPicker != null)
             {
                 Target = TargetPicker();
+                return;
+            }
+
+            if(AttackComponent != null && AttackComponent.HandlesSelectTarget)
+            {
+                Target = AttackComponent.SelectTarget();
                 return;
             }
 

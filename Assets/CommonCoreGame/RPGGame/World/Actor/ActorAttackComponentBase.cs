@@ -1,4 +1,5 @@
 ﻿using CommonCore.Config;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -10,6 +11,9 @@ namespace CommonCore.RpgGame.World
     {
         [Header("Base"), SerializeField]
         protected ActorController ActorController;
+
+        public virtual bool HandlesChaseDestination => false;
+        public virtual bool HandlesSelectTarget => false;
 
         public virtual void Init()
         {
@@ -38,6 +42,11 @@ namespace CommonCore.RpgGame.World
 
         public abstract bool ReadyToAttack { get; }
 
-        //TODO chase handling (optional)
+        //optional functionality
+
+        public virtual Transform SelectTarget() => throw new NotSupportedException();
+
+        public virtual Vector3 GetChaseDestination() => throw new NotSupportedException();
     }
+
 }
