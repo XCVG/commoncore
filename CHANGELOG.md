@@ -195,6 +195,7 @@
 * ShowDialogueSubtitle can now take a Color for colour argument
 * Added some handling for fatal errors during startup
 * Added editor script that adds build info to build
+* ActorAttackComponent now derives from abstract base class
 * Added support for glue-to-bone to ranged weapon viewmodel [Experimental]
 * Added contact-hit hack to melee weapons [Experimental]
 * Implemented HUD scaling [Experimental]

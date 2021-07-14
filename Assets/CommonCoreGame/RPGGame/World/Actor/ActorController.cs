@@ -26,7 +26,7 @@ namespace CommonCore.RpgGame.World
         public Transform TargetPoint;
         public ActorAnimationComponentBase AnimationComponent;
         public ActorMovementComponentBase MovementComponent;
-        public ActorAttackComponent AttackComponent;
+        public ActorAttackComponentBase AttackComponent;
         public ActorInteractionComponent InteractionComponent;
         public ActorAudioComponent AudioComponent;
 
@@ -169,7 +169,7 @@ namespace CommonCore.RpgGame.World
                 CDebug.LogEx(name + " couldn't find MovementComponent", LogLevel.Error, this);
 
             if (AttackComponent == null)
-                AttackComponent = GetComponent<ActorAttackComponent>();
+                AttackComponent = GetComponent<ActorAttackComponentBase>();
             if (AttackComponent == null)
                 CDebug.LogEx(name + " couldn't find AttackComponent", LogLevel.Warning, this);
 
@@ -476,7 +476,7 @@ namespace CommonCore.RpgGame.World
                         break;
                     }
 
-                    if (AttackComponent != null && AttackComponent.ReadyToAttack && AttackComponent.TargetInRange)
+                    if (AttackComponent != null && AttackComponent.ReadyToAttack)
                     {
                         EnterState(ActorAiState.Attacking);
                         return;
@@ -486,6 +486,7 @@ namespace CommonCore.RpgGame.World
                         //set target
                         SetChaseDestination();
                     }
+
                     if (!Relentless)
                     {
                         //break off if we are too far away or too badly hurt
@@ -508,21 +509,10 @@ namespace CommonCore.RpgGame.World
                     break;
                 case ActorAiState.Attacking:
                     //wait...
-                    if (!AttackComponent.DidAttack && AttackComponent.WarmupIsDone)
-                    {
-                        AttackComponent.DoAttack(); //waaaaay too complicated to cram here                                               
-                    }
+                    AttackComponent.UpdateAttack();
                     if (AttackComponent.AttackIsDone)
                     {
-                        //just return
-                        if (!RpgWorldUtils.TargetIsAlive(Target))
-                        {
-                            EnterState(BaseAiState);
-                        }
-                        else
-                        {
-                            EnterState(ActorAiState.Chasing);
-                        }
+                        EnterState(AttackComponent.PostAttackState);
                     }
                     break;
                 case ActorAiState.Hurting:

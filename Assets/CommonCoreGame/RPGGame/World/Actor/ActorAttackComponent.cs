@@ -10,16 +10,14 @@ namespace CommonCore.RpgGame.World
     /// <summary>
     /// Handles the attacks of an Actor
     /// </summary>
-    public class ActorAttackComponent : MonoBehaviour
+    public class ActorAttackComponent : ActorAttackComponentBase
     {
         //can probably hold off on making this abstract for a while yet
-
-        [SerializeField]
-        private ActorController ActorController;
 
         //TODO add capability to have both melee and ranged attacks
 
         //TODO visibility etc
+        [Header("ActorAttackComponent")]
         public bool UseMelee = true;
         public bool UseSuicide = false;
         public bool AutoDamageEffector = true;
@@ -52,7 +50,7 @@ namespace CommonCore.RpgGame.World
             FindComponents();
         }
 
-        public void Init()
+        public override void Init()
         {
             FindComponents();
 
@@ -63,18 +61,7 @@ namespace CommonCore.RpgGame.World
             
         }
 
-        private void FindComponents()
-        {
-            if (ActorController == null)
-                ActorController = GetComponent<ActorController>();
-
-            if (ActorController == null)
-                Debug.LogError($"{nameof(ActorAttackComponent)} on {name} is missing ActorController!");
-
-
-        }
-
-        public void BeginAttack()
+        public override void BeginAttack()
         {
             ActorController.AnimationComponent.Ref()?.SetAnimation(UseMelee ? ActorAnimState.Punching : ActorAnimState.Shooting);
             ActorController.transform.forward = VectorUtils.GetFlatVectorToTarget(transform.position, ActorController.Target.position); //ugly but workable for now
@@ -85,35 +72,56 @@ namespace CommonCore.RpgGame.World
             }
         }
 
+        public override void UpdateAttack()
+        {
+            if (!DidAttack && WarmupIsDone)
+            {
+                DoAttack(); //waaaaay too complicated to cram here                                               
+            }
+        }
+
         /// <summary>
         /// Ends an attack if the Actor's attack state was exited
         /// </summary>
-        public void EndAttack()
+        public override void EndAttack()
         {
             DidAttack = false;
         }
 
+        public override bool ReadyToAttack => ReadyToAttackInternal && TargetInRange;
+
         /// <summary>
         /// If we are ready to attack again (attack interval)
         /// </summary>
-        public bool ReadyToAttack => (Time.time - LastAttackTime >= AttackInterval * (1f / ActorController.EffectiveAggression));
+        protected bool ReadyToAttackInternal => (Time.time - LastAttackTime >= AttackInterval * (1f / ActorController.EffectiveAggression));
 
         /// <summary>
         /// If our actor's target is within range of us
         /// </summary>
-        public bool TargetInRange => (ActorController.Target.position - transform.position).magnitude <= AttackRange;
+        protected bool TargetInRange => (ActorController.Target.position - transform.position).magnitude <= AttackRange;
 
         /// <summary>
         /// If we have a warmup and it is done (crude hack based on time in state for now)
         /// </summary>
-        public bool WarmupIsDone => AttackStateWarmup > 0 && ActorController.TimeInState >= AttackStateWarmup;
+        protected bool WarmupIsDone => AttackStateWarmup > 0 && ActorController.TimeInState >= AttackStateWarmup;
 
         /// <summary>
         /// If our attack is done (crude hack based on time in state for now)
         /// </summary>
-        public bool AttackIsDone => ActorController.TimeInState >= AttackStateDelay + AttackStateWarmup;
+        public override bool AttackIsDone => ActorController.TimeInState >= AttackStateDelay + AttackStateWarmup;
 
-        public void DoAttack()
+        public override ActorAiState PostAttackState
+        {
+            get
+            {
+                if (!RpgWorldUtils.TargetIsAlive(ActorController.Target))
+                    return ActorController.BaseAiState;
+                else
+                    return ActorAiState.Chasing;
+            }
+        }
+
+        protected void DoAttack()
         {
             Vector3 shootPos = ShootPoint == null ? (transform.position + (transform.forward * 0.6f) + (transform.up * 1.25f)) : ShootPoint.position;
 
