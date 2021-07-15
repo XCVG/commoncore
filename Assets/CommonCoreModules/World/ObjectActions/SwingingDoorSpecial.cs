@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonCore.World;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -31,10 +32,13 @@ namespace CommonCore.ObjectActions
         private Transform MirrorPivotTransform = null;
         [SerializeField]
         private Collider DoorCollider = null;
+        [SerializeField]
+        private bool OpenAwayFromActivator = false;
 
-        //TODO "rotate away from activator" logic?
-
+        private bool ReverseDisplacement = false;
         private float CurrentDisplacement;
+
+        private float EffectiveRotateDisplacement => RotateDisplacement * (ReverseDisplacement ? -1 : 1);
 
         protected override void Start()
         {
@@ -51,6 +55,43 @@ namespace CommonCore.ObjectActions
             base.Start();
         }
 
+        public override void Execute(ActionInvokerData data)
+        {
+            if (Locked || (!AllowInvokeWhenDisabled && !isActiveAndEnabled))
+                return;
+
+            ReverseIfNeeded(data.Activator);
+
+            ToggleDoor();
+            SaveState();
+
+            if (!Repeatable)
+                Locked = true;
+        }
+
+        private void ReverseIfNeeded(BaseController activator)
+        {
+            if(OpenAwayFromActivator && activator != null && !DoorOpen)
+            {
+                //reverse direction if needed
+
+                //first find if we rotate away from the forward vector by default, using logic which is probably correct but completely heinous
+                int defaultRotationSign = Mathf.RoundToInt(Mathf.Sign(PivotTransform.position.x) * Mathf.Sign(RotateAxis.y) * Mathf.Sign(RotateDisplacement));
+                //Debug.Log(defaultRotationSign);
+
+                bool defaultRotatesAway = defaultRotationSign > 0;
+
+                //then we decide if we're behind or in front of the door using the magic of vectors
+                float dot = Vector2.Dot((activator.transform.position - transform.position).GetFlatVector().normalized, transform.forward.GetFlatVector().normalized);
+
+                bool behindDoor = dot < 0;
+                //Debug.Log("behind door: " + behindDoor);
+
+                ReverseDisplacement = (defaultRotatesAway && behindDoor) || (!defaultRotatesAway && !behindDoor); //could have been done with XOR or XNOR?
+            }
+
+        }
+
         protected override IEnumerator CoOpenDoor()
         {
             PlayOpenSound();
@@ -59,7 +100,7 @@ namespace CommonCore.ObjectActions
             while (Mathf.Abs(CurrentDisplacement) < absRotateDisplacement)
             {
                 float remaining = absRotateDisplacement - Mathf.Abs(CurrentDisplacement);
-                int direction = Math.Sign(RotateDisplacement);
+                int direction = Math.Sign(EffectiveRotateDisplacement);
                 float rotateMagnitude = Mathf.Min(Mathf.Abs(RotateSpeed) * Time.deltaTime, remaining);
                 float rotate = direction * rotateMagnitude;
                 RotateDoors(rotate);
@@ -76,7 +117,7 @@ namespace CommonCore.ObjectActions
             while (Mathf.Abs(CurrentDisplacement) > 0)
             {
                 float remaining = Mathf.Abs(CurrentDisplacement);
-                int direction = -Math.Sign(RotateDisplacement);
+                int direction = -Math.Sign(EffectiveRotateDisplacement);
                 float rotateMagnitude = Mathf.Min(Mathf.Abs(RotateSpeed) * Time.deltaTime, remaining);
                 float rotate = direction * rotateMagnitude;
                 /* //doesn't work for swinging doors
@@ -124,10 +165,10 @@ namespace CommonCore.ObjectActions
 
         protected override void SetDoorOpen()
         {
-            if (Mathf.Approximately(CurrentDisplacement, RotateDisplacement))
+            if (Mathf.Approximately(CurrentDisplacement, EffectiveRotateDisplacement))
                 return;
 
-            RotateDoors(RotateDisplacement);
+            RotateDoors(EffectiveRotateDisplacement);
 
             CurrentDisplacement = RotateDisplacement;
         }
@@ -140,6 +181,29 @@ namespace CommonCore.ObjectActions
             RotateDoors(-CurrentDisplacement);
 
             CurrentDisplacement = 0;
+        }
+
+        protected override void RestoreState()
+        {
+            if (!PersistState)
+                return;
+
+            if (BaseSceneController.Current.LocalStore.TryGetValue(LocalStorePersistKey + "_ReverseDisplacement", out object reversedObj) && reversedObj is bool reversed)
+            {
+                ReverseDisplacement = reversed;
+            }
+
+            base.RestoreState();
+        }
+
+        protected override void SaveState()
+        {
+            if (!PersistState)
+                return;
+
+            BaseSceneController.Current.LocalStore[LocalStorePersistKey + "_ReverseDisplacement"] = ReverseDisplacement;
+
+            base.SaveState();
         }
     }
 }

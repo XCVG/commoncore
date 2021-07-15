@@ -197,6 +197,7 @@
 * Added editor script that adds build info to build
 * ActorAttackComponent now derives from abstract base class
 * ActorAttackComponentBase derivatives can optionally handle target selection and chase destination
+* Swinging doors can now open away from the activator
 * Added support for glue-to-bone to ranged weapon viewmodel [Experimental]
 * Added contact-hit hack to melee weapons [Experimental]
 * Implemented HUD scaling [Experimental]

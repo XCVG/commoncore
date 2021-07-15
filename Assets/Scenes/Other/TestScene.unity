@@ -2655,6 +2655,7 @@ MonoBehaviour:
   MirrorDoorTransform: {fileID: 0}
   MirrorPivotTransform: {fileID: 0}
   DoorCollider: {fileID: 958799780}
+  OpenAwayFromActivator: 0
 --- !u!114 &974391100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4097,7 +4098,7 @@ MonoBehaviour:
   UseSameSound: 0
   LoopSound: 0
   BlockedAction: 0
-  PersistState: 0
+  PersistState: 1
   PersistKey: 
   OpenSoundSource: {fileID: 1213349821}
   OpenSoundName: 
@@ -4111,6 +4112,7 @@ MonoBehaviour:
   MirrorDoorTransform: {fileID: 78125343}
   MirrorPivotTransform: {fileID: 2058644422}
   DoorCollider: {fileID: 0}
+  OpenAwayFromActivator: 1
 --- !u!114 &1392754317
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4125,7 +4127,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerCanActivate: 1
   NpcCanActivate: 0
-  Tooltip: Sliding Door
+  Tooltip: Swinging Door (dual)
   TooltipObject: {fileID: 0}
   TooltipFacesPlayer: 0
   TooltipSprite: {fileID: 0}

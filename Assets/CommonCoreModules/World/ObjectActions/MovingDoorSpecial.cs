@@ -37,8 +37,8 @@ namespace CommonCore.ObjectActions
         [SerializeField]
         protected string CloseSoundName = null;
 
-        private bool Locked;
-        private Coroutine DoorSequenceCoroutine = null;
+        protected bool Locked;
+        protected Coroutine DoorSequenceCoroutine = null;
         protected bool DoorOpen = false;
 
         protected string LocalStorePersistKey => string.IsNullOrEmpty(PersistKey) ? $"{this.gameObject.name}_{GetType().Name}" : PersistKey;
@@ -66,7 +66,7 @@ namespace CommonCore.ObjectActions
                 Locked = true;
         }
 
-        private void ToggleDoor()
+        protected void ToggleDoor()
         {
             //start sequence, handle "open wait close" case
             if(DoorOpen)
@@ -205,7 +205,7 @@ namespace CommonCore.ObjectActions
                 Debug.LogWarning($"{GetType().Name} on {gameObject.name} is set to loop sounds but uses dynamic sounds (looping dynamic sounds not supported)");
         }
 
-        protected void RestoreState()
+        protected virtual void RestoreState()
         {
             if (!PersistState)
                 return;
@@ -225,7 +225,7 @@ namespace CommonCore.ObjectActions
             }
         }
 
-        protected void SaveState()
+        protected virtual void SaveState()
         {
             if (!PersistState)
                 return;
