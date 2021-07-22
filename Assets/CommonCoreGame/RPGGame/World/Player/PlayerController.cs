@@ -111,6 +111,8 @@ namespace CommonCore.RpgGame.World
 
         float IAmTargetable.Detectability => RpgValues.DetectionChance(GameState.Instance.PlayerRpgState, MovementComponent.IsCrouching, MovementComponent.IsRunning);
 
+        Vector3 IAmTargetable.TargetPoint => TargetPoint.Ref()?.position ?? (MovementComponent.Ref()?.CharacterController == null ? null : (Vector3?)transform.TransformPoint(MovementComponent.CharacterController.center)) ?? transform.position;
+
         protected override bool DeferComponentInitToSubclass => true;
 
         public override void Awake()

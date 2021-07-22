@@ -199,6 +199,9 @@
 * ActorAttackComponentBase derivatives can optionally handle target selection and chase destination
 * Swinging doors can now open away from the activator
 * Added load-scene-directly cheat (WarpDirect)
+* Added CheckPositionReachable and IsStuck to ActorMovementComponent (limited implementations)
+* Added CheckLineOfSight function to ActorAttackComponentBase
+* Target point is now defined on IAmTargetable interface
 * Added support for glue-to-bone to ranged weapon viewmodel [Experimental]
 * Added contact-hit hack to melee weapons [Experimental]
 * Implemented HUD scaling [Experimental]

@@ -1,4 +1,6 @@
-﻿namespace CommonCore.World
+﻿using UnityEngine;
+
+namespace CommonCore.World
 {
     /// <summary>
     /// Interface representing something that can be targeted
@@ -22,6 +24,11 @@
         /// What is the faction of this target? (if you are using factions)
         /// </summary>
         string Faction { get; }
+
+        /// <summary>
+        /// Where to aim on this target (ie center mass)
+        /// </summary>
+        Vector3 TargetPoint { get; }
 
         
     }

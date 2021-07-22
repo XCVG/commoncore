@@ -276,5 +276,40 @@ namespace CommonCore.RpgGame.World
             base.SetVelocity(velocity * VelocityMultiplier);
         }
 
+        public override bool CheckLocationReachable(Vector3 location)
+        {
+            //use navmesh check if available
+            if (NavmeshEnabled)
+            {
+                return NavMesh.SamplePosition(location, out var _, TargetThreshold, NavMesh.AllAreas);
+            }
+
+            //otherwise, check for space
+
+            //based on https://roundwide.com/physics-overlap-capsule/
+            Vector3 center = transform.TransformPoint(CharController.center);
+            Vector3 size = transform.TransformVector(CharController.radius, CharController.height, CharController.radius);
+            Vector3 point0 = new Vector3(center.x, center.y - size.y / 2 + size.x, center.z);
+            Vector3 point1 = new Vector3(center.x, center.y + size.y / 2 - size.x, center.z);
+
+            var cols = Physics.OverlapCapsule(point0, point1, size.x, LayerMask.GetMask("Default", "BlockActors"));
+            bool blocked = false;
+            foreach(var col in cols)
+            {
+                if (col == CharController)
+                    continue;
+
+                if (!col.enabled || !col.gameObject.activeInHierarchy)
+                    continue;
+
+                blocked = true;
+                break;
+            }
+            return !blocked;
+          
+        }
+
+        public override bool IsStuck => false; //currently unhandled
+
     }
 }

@@ -145,6 +145,9 @@ namespace CommonCore.RpgGame.World
         [field: SerializeField]
         public bool Clipping { get; private set; } = true;
 
+        //used for target point and nothing else
+        public CharacterController CharacterController => CharController;
+
         // Start is called before the first frame update
         void Start()
         {

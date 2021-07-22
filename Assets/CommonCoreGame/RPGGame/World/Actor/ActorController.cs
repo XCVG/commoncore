@@ -19,10 +19,9 @@ namespace CommonCore.RpgGame.World
         //public string CharacterModelIdOverride; //does nothing lol
 
         [Header("Components")]
-        //public CharacterController CharController;
-        
+        public CharacterController CharController; //optional, only used for targeting
+
         public ActorInteractableComponent InteractComponent;
-        //public NavMeshAgent NavComponent;
         public Transform TargetPoint;
         public ActorAnimationComponentBase AnimationComponent;
         public ActorMovementComponentBase MovementComponent;
@@ -53,7 +52,7 @@ namespace CommonCore.RpgGame.World
         public bool DisableCollidersOnDeath = false;
         public bool DisableHitboxesOnDeath = false;
         public DamageResistanceNode[] DamageResistances = null;
-        public ActionSpecial OnDeathSpecial;        
+        public ActionSpecial OnDeathSpecial;
         public string DefaultHitPuff = "DefaultHitPuff";
         [Tooltip("If positive, intepret is multiplier of maxhealth. If negative, interpret as absolute value")]
         public float ExtremeDeathThreshold = 1;
@@ -87,7 +86,7 @@ namespace CommonCore.RpgGame.World
         [Tooltip("If this is larger than max attack range, the actor will not be able to attack!")]
         public float ChaseOptimalDistance = 0;
         public bool DisableInteractionOnHit = true;
-        
+
 
         [Header("Interaction")] //TODO move this out into ActorInteractionComponent
         public int GrantXpOnDeath;
@@ -142,6 +141,8 @@ namespace CommonCore.RpgGame.World
 
         float IAmTargetable.Detectability => Detectability;
 
+        Vector3 IAmTargetable.TargetPoint => TargetPoint.Ref()?.position ?? (CharController == null ? null : (Vector3?)transform.TransformPoint(CharController.center)) ?? transform.position;
+
         protected override bool DeferComponentInitToSubclass => true;
 
         public override void Awake()
@@ -185,7 +186,10 @@ namespace CommonCore.RpgGame.World
 
             InitialPosition = transform.position;
 
-            MovementComponent.Init();            
+            MovementComponent.Init();
+
+            if (CharController == null) //optional, only used for targeting
+                CharController = GetComponent<CharacterController>();
 
             if (InteractComponent == null)
                 InteractComponent = GetComponent<ActorInteractableComponent>();
@@ -353,7 +357,7 @@ namespace CommonCore.RpgGame.World
                         if (Target == null)
                             GetSwizzledTarget(); //fix for loading saves
 
-                        SetChaseDestination();
+                        SetChaseDestination(true);
                     }
                     break;
                 case ActorAiState.ScriptedMoveTo:
@@ -484,7 +488,7 @@ namespace CommonCore.RpgGame.World
                     else
                     {
                         //set target
-                        SetChaseDestination();
+                        SetChaseDestination(false);
                     }
 
                     if (!Relentless)
@@ -600,11 +604,11 @@ namespace CommonCore.RpgGame.World
             }
         }
 
-        private void SetChaseDestination()
+        private void SetChaseDestination(bool initial)
         {
             if(AttackComponent != null && AttackComponent.HandlesChaseDestination)
             {
-                MovementComponent.SetDestination(AttackComponent.GetChaseDestination());
+                MovementComponent.SetDestination(AttackComponent.GetChaseDestination(initial));
                 return;
             }
 

@@ -34,8 +34,7 @@ namespace CommonCore.RpgGame.World
         public string BulletPrefab;
         public string AttackEffectPrefab;
         public bool ParentAttackEffect = true;
-        public AudioSource AttackSound;
-        public Transform ShootPoint;
+        public AudioSource AttackSound;        
         public string AttackAnimationOverride;
 
         //fields
@@ -136,13 +135,9 @@ namespace CommonCore.RpgGame.World
 
                 Vector3 aimPoint = target.position;
 
-                var targetAC = target.GetComponent<ActorController>();
-                if (targetAC != null && targetAC.TargetPoint != null)
-                    aimPoint = targetAC.TargetPoint.position;
-
-                var targetPC = target.GetComponent<PlayerController>();
-                if (targetPC != null && targetPC.TargetPoint != null)
-                    aimPoint = targetPC.TargetPoint.position;
+                var targetIAT = target.GetComponent<IAmTargetable>();
+                if (targetIAT != null)
+                    aimPoint = targetIAT.TargetPoint;
 
                 aimPoint.y += UnityEngine.Random.Range(-AttackSpread, AttackSpread);
                 aimPoint.x += UnityEngine.Random.Range(-AttackSpread, AttackSpread);

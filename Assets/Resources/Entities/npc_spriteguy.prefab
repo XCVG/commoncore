@@ -1,5 +1,35 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4873899478637619878
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6400389941721334508}
+  m_Layer: 12
+  m_Name: TargetPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6400389941721334508
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4873899478637619878}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5621655867094505697}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5624204146588264287
 GameObject:
   m_ObjectHideFlags: 0
@@ -149,6 +179,7 @@ Transform:
   - {fileID: 5628218700155435225}
   - {fileID: 5628258314254578959}
   - {fileID: 6161069624574782826}
+  - {fileID: 6400389941721334508}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -168,6 +199,7 @@ MonoBehaviour:
   EntityTags: []
   HandleRestorableExtraData: 0
   HitMaterial: 6
+  CharController: {fileID: 0}
   InteractComponent: {fileID: 0}
   TargetPoint: {fileID: 0}
   AnimationComponent: {fileID: 6161069623857721628}
@@ -269,6 +301,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ActorController: {fileID: 5737222755212715997}
+  ShootPoint: {fileID: 5628258314254578959}
   UseMelee: 0
   UseSuicide: 0
   AutoDamageEffector: 1
@@ -298,7 +331,6 @@ MonoBehaviour:
   AttackEffectPrefab: 
   ParentAttackEffect: 1
   AttackSound: {fileID: 6161069624574782821}
-  ShootPoint: {fileID: 5628258314254578959}
   AttackAnimationOverride: 
 --- !u!114 &8815026076913120822
 MonoBehaviour:

@@ -186,5 +186,12 @@ namespace CommonCore.RpgGame.World
 
         public override float DistToTarget => (MovementTarget.GetFlatVector() - transform.position.GetFlatVector()).magnitude;
 
+        public override bool CheckLocationReachable(Vector3 location)
+        {
+            //TODO eventually actually check if we can fit
+            return true;
+        }
+
+        public override bool IsStuck => false; //cannot get stuck
     }
 }

@@ -19,6 +19,7 @@ namespace CommonCore.World
         public bool Invincible = false;
         public bool IsTarget = false;
         public string Faction;
+        public Transform TargetPoint;
         [SerializeField]
         private float Detectability = 1;
         //public bool Reversible = false;
@@ -91,11 +92,14 @@ namespace CommonCore.World
 
         float IAmTargetable.Detectability => Detectability;
 
+        Vector3 IAmTargetable.TargetPoint => TargetPoint.Ref()?.position ?? transform.position;
+
         private bool IsDead = false;
         private bool ForceDeadState = false;
         private BaseController LastDamageDealer = null;
 
         protected override bool DeferComponentInitToSubclass => true;
+        
 
         public override void Start()
         {

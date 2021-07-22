@@ -95,6 +95,16 @@ namespace CommonCore.RpgGame.World
         public virtual void AddVelocity(Vector3 velocity) => PhysicsVelocity += velocity;
 
         /// <summary>
+        /// Checks if this actor can reach the specified location
+        /// </summary>
+        public abstract bool CheckLocationReachable(Vector3 location);
+
+        /// <summary>
+        /// If this actor is stuck and cannot continue to move toward its target
+        /// </summary>
+        public abstract bool IsStuck { get; }
+
+        /// <summary>
         /// The speed factor from the difficulty selection
         /// </summary>
         protected float DifficultySpeedFactor => ActorController.EffectiveAggression;
