@@ -150,6 +150,15 @@ public static class SharedConsoleCommands
     }
 
     /// <summary>
+    /// Changes scenes directly (unsafe)
+    /// </summary>
+    [Command]
+    static void WarpDirect(string scene)
+    {
+        SceneManager.LoadScene(scene);
+    }
+
+    /// <summary>
     /// Reloads the current scene
     /// </summary>
     [Command]
