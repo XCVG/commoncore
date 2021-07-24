@@ -17,7 +17,7 @@ namespace CommonCore.RpgGame.World
         //TODO add capability to have both melee and ranged attacks
 
         //TODO visibility etc
-        [Header("ActorAttackComponent")]
+        [Header("ActorAttackComponent")]        
         public bool UseMelee = true;
         public bool UseSuicide = false;
         public bool AutoDamageEffector = true;
@@ -36,10 +36,14 @@ namespace CommonCore.RpgGame.World
         public bool ParentAttackEffect = true;
         public AudioSource AttackSound;        
         public string AttackAnimationOverride;
+        [Tooltip("Experimental. Will check LoS and try to maneuver to get a clear shot")]
+        public bool UseLosChase = false;
+        [Tooltip("Experimental, works with UseLosChase")]
+        public float LosChaseDestinationRadius = 4f;
 
         //fields
 
-
+        private Vector3? LastChaseDestination;
         private float LastAttackTime = -1;
         public bool DidAttack { get; private set; }
         
@@ -53,15 +57,23 @@ namespace CommonCore.RpgGame.World
         {
             FindComponents();
 
-            if(ActorController.ChaseOptimalDistance > 0 && ActorController.ChaseOptimalDistance > AttackRange)
+            if(ChaseOptimalDistance > 0 && ChaseOptimalDistance > AttackRange)
             {
-                Debug.LogWarning($"[ActorAttackComponent] {ActorController.gameObject.name} has ChaseOptimalDistance set to greater than attack range and will never be able to attack!");
+                Debug.LogWarning($"[{nameof(ActorAttackComponent)}] {ActorController.gameObject.name} has ChaseOptimalDistance set to greater than attack range and will never be able to attack!");
+            }
+
+            if(UseLosChase && (ChaseOptimalDistance <= 0 || UseMelee))
+            {
+                Debug.LogWarning($"[{nameof(ActorAttackComponent)}] {ActorController.gameObject.name} has invalid settings for UseLosChase (ChaseOptimalDistance must be non-zero and UseMelee must be false), UseLosChase has been disabled.");
+                UseLosChase = false;
             }
             
         }
 
         public override void BeginAttack()
         {
+            LastChaseDestination = null; //needed?
+
             ActorController.AnimationComponent.Ref()?.SetAnimation(UseMelee ? ActorAnimState.Punching : ActorAnimState.Shooting);
             ActorController.transform.forward = VectorUtils.GetFlatVectorToTarget(transform.position, ActorController.Target.position); //ugly but workable for now
             if (AttackStateWarmup <= 0)
@@ -87,7 +99,7 @@ namespace CommonCore.RpgGame.World
             DidAttack = false;
         }
 
-        public override bool ReadyToAttack => ReadyToAttackInternal && TargetInRange;
+        public override bool ReadyToAttack => ReadyToAttackInternal && (UseLosChase ? LosTargetInRange : TargetInRange);
 
         /// <summary>
         /// If we are ready to attack again (attack interval)
@@ -234,6 +246,93 @@ namespace CommonCore.RpgGame.World
 
             DidAttack = true;
             LastAttackTime = Time.time;
+        }
+
+        public override bool HandlesChaseDestination => UseLosChase;
+
+        public override Vector3 GetChaseDestination(bool initial)
+        {
+            if(initial || !LastChaseDestination.HasValue || !CheckLineOfSight(ShootPoint.position, ActorController.Target) || !checkDestinationInRange(LastChaseDestination.Value))
+            {
+                LastChaseDestination = null;
+
+                Vector3 defaultDestination = getDefaultDestination();
+                if (checkDestinationLineOfSight(defaultDestination))
+                {
+                    //destination has line of sight, 
+                    LastChaseDestination = defaultDestination;
+                }
+                else
+                {
+                    //find a chase destination that works
+                    for (int i = 0; i < 6; i++) //6 iterations is a completely arbitrary number
+                    {
+                        float displacement = Mathf.Min(LosChaseDestinationRadius, UnityEngine.Random.Range(0f, LosChaseDestinationRadius) * i);
+                        float angle = UnityEngine.Random.Range(0, 360f);
+                        Vector3 displacementVector = (Quaternion.AngleAxis(angle, Vector3.up) * Vector3.right) * displacement;
+                        var destination = defaultDestination + displacementVector;
+
+                        if(ActorController.MovementComponent != null)
+                        {
+                            if (!ActorController.MovementComponent.CheckLocationReachable(destination)) //must be reachable (we really need that implemented better for this to work right)
+                                continue;
+                        }
+
+                        if (checkDestinationInRange(destination) && checkDestinationLineOfSight(destination)) //must be able to hit target from it
+                        {
+                            LastChaseDestination = destination;
+                            break;
+                        }
+                    }
+                }
+
+                //if we can't find a destination that works, stay in place
+                if(!LastChaseDestination.HasValue)
+                    LastChaseDestination = transform.position;
+            }
+
+            return LastChaseDestination.Value;
+
+            //TODO probably move these all out into the class
+
+            bool checkDestinationInRange(Vector3 destination)
+            {
+                float dist = (ActorController.Target.position - destination).magnitude;
+                return dist <= AttackRange;
+            }
+
+            bool checkDestinationLineOfSight(Vector3 destination)
+            {
+                Vector3 vecToShootPoint = ShootPoint.position - ActorController.transform.position;
+                Vector3 destShootPoint = destination + vecToShootPoint;
+
+                return CheckLineOfSight(destShootPoint, ActorController.Target);
+            }
+
+            Vector3 getDefaultDestination()
+            {
+                //copied from ActorController for now
+                Vector2 vecToTarget = (ActorController.Target.position - ActorController.transform.position).GetFlatVector();
+                float distToTarget = vecToTarget.magnitude;
+                float distToDestination = Mathf.Min(distToTarget, ChaseOptimalDistance);
+                Vector2 dirToTarget = vecToTarget.normalized;
+                Vector2 destination2d = transform.position.GetFlatVector() + dirToTarget * distToDestination;
+                Vector3 destination = new Vector3(destination2d.x, ActorController.transform.position.y, destination2d.y);
+                return destination;
+            }
+        }
+
+        private bool LosTargetInRange
+        {
+            get
+            {
+                if (!UseLosChase)
+                    return false;
+
+                //Debug.Log("LosTargetInRange: " + CheckLineOfSight(ShootPoint.position, ActorController.Target));
+
+                return TargetInRange && CheckLineOfSight(ShootPoint.position, ActorController.Target);
+            }
         }
 
         [Serializable]

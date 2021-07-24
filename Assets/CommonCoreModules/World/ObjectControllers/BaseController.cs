@@ -15,6 +15,7 @@ namespace CommonCore.World
         [SerializeField]
         protected string[] EntityTags;
 
+        [Tooltip("May be deferred to subclass and have no effect")]
         public bool HandleRestorableExtraData = false;
 
         public int HitMaterial = 0;

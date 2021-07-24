@@ -207,6 +207,7 @@
 * Implemented HUD scaling [Experimental]
 * Implemented resource manifest generated on build [Experimental]
 * Implemented GetFolders* APIs in ResourceManager using resource manifest [Experimental]
+* Added optional line of sight check to ActorAttackComponent [Experimental]
 * Fixed DialogueNavigator NRE [Untested]
 
 

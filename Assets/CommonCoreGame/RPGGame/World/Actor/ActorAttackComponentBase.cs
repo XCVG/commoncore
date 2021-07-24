@@ -14,6 +14,8 @@ namespace CommonCore.RpgGame.World
         protected ActorController ActorController;
 
         public Transform ShootPoint;
+        [Tooltip("If this is larger than max attack range, the actor will not be able to attack!")]
+        public float ChaseOptimalDistance = 0;
 
         public virtual bool HandlesChaseDestination => false;
         public virtual bool HandlesSelectTarget => false;
@@ -35,10 +37,16 @@ namespace CommonCore.RpgGame.World
         }
 
         /// <summary>
-        /// Checks if this actor has line of sight between ShootPoint and the target
+        /// Checks if this actor has line of sight between specified shootPoint and the target
         /// </summary>
-        protected bool CheckLineOfSight(Transform target)
+        protected bool CheckLineOfSight(Vector3 shootPoint, Transform target)
         {
+            if(target == null)
+            {
+                Debug.LogWarning($"[{GetType().Name}] {nameof(CheckLineOfSight)} cannot perform check because target is null!");
+                return false;
+            }
+
             Vector3 targetPos = target.position;
 
             //closest point on collider would probably be better but we use center mass for everything else
@@ -48,11 +56,11 @@ namespace CommonCore.RpgGame.World
                 targetPos = iat.TargetPoint;
             }
 
-            Vector3 vecToTarget = targetPos - ShootPoint.position;
+            Vector3 vecToTarget = targetPos - shootPoint;
             Vector3 dirToTarget = vecToTarget.normalized;
             float distToTarget = vecToTarget.magnitude;
 
-            var hits = Physics.RaycastAll(ShootPoint.position, dirToTarget, distToTarget + 1, WorldUtils.GetAttackLayerMask(), QueryTriggerInteraction.Collide);
+            var hits = Physics.RaycastAll(shootPoint, dirToTarget, distToTarget + 1, WorldUtils.GetAttackLayerMask(), QueryTriggerInteraction.Collide);
             RaycastHit? targetHit = null;
             float closestHitDist = float.MaxValue;
             foreach (var hit in hits)

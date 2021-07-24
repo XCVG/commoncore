@@ -83,8 +83,6 @@ namespace CommonCore.RpgGame.World
         public bool UseLineOfSight = false;
         public float SearchRadius = 25.0f;
         public int SearchInterval = 70;
-        [Tooltip("If this is larger than max attack range, the actor will not be able to attack!")]
-        public float ChaseOptimalDistance = 0;
         public bool DisableInteractionOnHit = true;
 
 
@@ -618,11 +616,11 @@ namespace CommonCore.RpgGame.World
                 return;
             }
 
-            if (ChaseOptimalDistance > 0)
+            if (AttackComponent != null && AttackComponent.ChaseOptimalDistance > 0)
             {
                 Vector2 vecToTarget = (Target.position - transform.position).GetFlatVector();
                 float distToTarget = vecToTarget.magnitude;
-                float distToDestination = Mathf.Min(distToTarget, ChaseOptimalDistance);
+                float distToDestination = Mathf.Min(distToTarget, AttackComponent.ChaseOptimalDistance);
                 Vector2 dirToTarget = vecToTarget.normalized;
                 Vector2 destination2d = transform.position.GetFlatVector() + dirToTarget * distToDestination;
                 Vector3 destination = new Vector3(destination2d.x, transform.position.y, destination2d.y);
