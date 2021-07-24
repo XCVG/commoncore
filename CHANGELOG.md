@@ -172,7 +172,7 @@
 * Melee weapon damage can be delayed [WIP]
 * Themes are now registered automatically upon loading from addons [Untested]
 
-# 3.0.0 pNext
+# 3.0.0 Preview 7
 
 * Added RpgInventoryModified messages sent when inventory is changed
 * Fixed OnFire and OnReload scripts being passed item model instead of item instance
