@@ -210,4 +210,8 @@
 * Added optional line of sight check to ActorAttackComponent [Experimental]
 * Fixed DialogueNavigator NRE [Untested]
 
+# 3.0.0 pNext
+
+* Fixed ExtraData on InventoryItemModels not being loaded
+
 

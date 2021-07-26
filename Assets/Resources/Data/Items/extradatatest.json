@@ -1,0 +1,23 @@
+{
+  "extradatatest": {
+    "model": {
+		"$type": "CommonCore.RpgGame.Rpg.AidItemModel, Assembly-CSharp",
+		"AType": "Health",
+		"RType": "Add",
+		"Amount": 5.0,
+		"Value": 5.0,
+		"WorldModel": "item_drink",
+		"Weight": 0.5,
+		"MaxCondition": 1.0,
+		"Unique": false,
+		"Essential": false,
+		"Hidden": true,
+		"ExtraData": {
+			"blargl": true,
+			"empty": "",
+			"null": null,
+			"words": "words"
+		}
+    }
+  }
+}
