@@ -213,5 +213,6 @@
 # 3.0.0 pNext
 
 * Fixed ExtraData on InventoryItemModels not being loaded
+* Fixed swinging door away from activator not working at some angles
 
 

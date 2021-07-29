@@ -76,7 +76,7 @@ namespace CommonCore.ObjectActions
                 //reverse direction if needed
 
                 //first find if we rotate away from the forward vector by default, using logic which is probably correct but completely heinous
-                int defaultRotationSign = Mathf.RoundToInt(Mathf.Sign(PivotTransform.position.x) * Mathf.Sign(RotateAxis.y) * Mathf.Sign(RotateDisplacement));
+                int defaultRotationSign = Mathf.RoundToInt(-Mathf.Sign(PivotTransform.localPosition.x) * Mathf.Sign(RotateAxis.y) * Mathf.Sign(RotateDisplacement));
                 //Debug.Log(defaultRotationSign);
 
                 bool defaultRotatesAway = defaultRotationSign > 0;
