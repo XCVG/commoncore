@@ -278,21 +278,29 @@ namespace CommonCore.RpgGame.World
                     case "RpgChangeWeapon":
                         {
                             var kvm = message as QdmsKeyValueMessage;
-                                
-                            if(kvm != null && kvm.HasValue<EquipSlot>("Slot"))
+
+                            if(kvm != null && kvm.GetValue<CharacterModel>("CharacterModel").IsPlayer)
                             {
-                                WeaponComponent.HandleWeaponChange(kvm.GetValue<EquipSlot>("Slot"), false);
-                            }
-                            else
-                            {
-                                WeaponComponent.HandleWeaponChange(EquipSlot.None, false);
-                            }
+                                if (kvm.HasValue<EquipSlot>("Slot"))
+                                {
+                                    WeaponComponent.HandleWeaponChange(kvm.GetValue<EquipSlot>("Slot"), false);
+                                }
+                                else
+                                {
+                                    WeaponComponent.HandleWeaponChange(EquipSlot.None, false);
+                                }
+                            }                               
                                 
                         }                        
                         break;
                     case "RpgStatsUpdated":
                         {
-                            ShieldComponent.Ref()?.SignalEquipmentChanged();
+                            var kvm = message as QdmsKeyValueMessage;
+
+                            if (kvm != null && kvm.GetValue<CharacterModel>("CharacterModel").IsPlayer)
+                            {
+                                ShieldComponent.Ref()?.SignalEquipmentChanged();
+                            }                            
                         }
                         break;
                 }

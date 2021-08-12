@@ -218,4 +218,4 @@
 * Cleaned up some use of obsolete APIs and unused variables
 * Moved DragonAIController out of RPGGame
 * CharacterModel messages now include reference to the specific CharacterModel
-
+* Receivers of CharacterModel messages now check if it refers to the player CharacterModel
