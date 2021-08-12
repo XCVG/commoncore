@@ -145,6 +145,9 @@ namespace CommonCore.RpgGame.Rpg
         [JsonProperty(ItemTypeNameHandling = TypeNameHandling.All)]
         public Dictionary<string, object> ExtraData { get; private set; }
 
+        [JsonIgnore]
+        public bool IsPlayer => GameState.Instance.PlayerRpgState == this;
+
         public CharacterModel() //TODO with a model base parameter
         {
             HealthFraction = 1.0f;
@@ -237,7 +240,7 @@ namespace CommonCore.RpgGame.Rpg
         {
             RecalculateStats();
 
-            QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgStatsUpdated"));
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgStatsUpdated", "CharacterModel", this));
 
         }
 
@@ -281,7 +284,12 @@ namespace CommonCore.RpgGame.Rpg
 
             UpdateStats();
 
-            QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgChangeWeapon", "Slot", slot));
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgChangeWeapon", new Dictionary<string, object>() {
+                { "Slot", slot },
+                { "InventoryItemInstance", item },
+                { "ChangeType", "Equip" },
+                { "CharacterModel", this },
+            }));
         }
 
         public InventoryItemInstance UnequipItem(EquipSlot slot)
@@ -328,7 +336,12 @@ namespace CommonCore.RpgGame.Rpg
             UpdateStats();
 
             if (postMessage)
-                QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgChangeWeapon", "Slot", slot));
+                QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgChangeWeapon", new Dictionary<string, object>() {
+                    { "Slot", slot },
+                    { "InventoryItemInstance", item },
+                    { "ChangeType", "Unequip" },
+                    { "CharacterModel", this },
+                }));
         }
 
         public void SetAV(string av, object value)
@@ -536,7 +549,7 @@ namespace CommonCore.RpgGame.Rpg
         {
             if (Experience >= RpgValues.XPToNext(Level))
             {
-                QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("RpgLevelUp"));
+                QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgLevelUp", "CharacterModel", this));
                 QdmsMessageBus.Instance.PushBroadcast(new HUDPushMessage("<l:RPG_MESSAGE:LevelUp>"));
             }
         }

@@ -217,4 +217,5 @@
 * Subtitle time now advances when game is in AllowCutscene pause state
 * Cleaned up some use of obsolete APIs and unused variables
 * Moved DragonAIController out of RPGGame
+* CharacterModel messages now include reference to the specific CharacterModel
 
