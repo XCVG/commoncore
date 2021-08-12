@@ -8,9 +8,11 @@ using CommonCore.World;
 using CommonCore.Audio;
 using CommonCore.State;
 using CommonCore.Config;
+using CommonCore.RpgGame;
 using CommonCore.RpgGame.Rpg;
+using CommonCore.RpgGame.World;
 
-namespace CommonCore.RpgGame.World
+namespace CommonCore.Experimental
 {
 
     /// <summary>
