@@ -215,6 +215,6 @@
 * Fixed ExtraData on InventoryItemModels not being loaded
 * Fixed swinging door away from activator not working at some angles
 * Subtitle time now advances when game is in AllowCutscene pause state
-
+* Cleaned up some use of obsolete APIs and unused variables
 
 

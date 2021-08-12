@@ -220,7 +220,7 @@ namespace CommonCore.RpgGame.World
                     //bullet path (shoot)
                     //var bullet = Instantiate<GameObject>(BulletPrefab, shootPos + (shootVec * 0.25f), Quaternion.identity, transform.root);
                     Quaternion bulletRotation = Quaternion.LookRotation(shootVec.normalized, Vector3.up);
-                    var bullet = WorldUtils.SpawnEffect(BulletPrefab, shootPos + (shootVec * 0.25f), bulletRotation.eulerAngles, transform.root);
+                    var bullet = WorldUtils.SpawnEffect(BulletPrefab, shootPos + (shootVec * 0.25f), bulletRotation.eulerAngles, transform.root, false);
                     var bulletRigidbody = bullet.GetComponent<Rigidbody>();
                     bulletRigidbody.velocity = (shootVec * BulletSpeed);
                     var bulletScript = bullet.GetComponent<BulletScript>();
@@ -236,7 +236,7 @@ namespace CommonCore.RpgGame.World
             //show the effect, if applicable            
             if (!string.IsNullOrEmpty(AttackEffectPrefab))
             {
-                WorldUtils.SpawnEffect(AttackEffectPrefab, shootPos, Vector3.zero, ParentAttackEffect ? (ShootPoint == null ? transform : ShootPoint) : null);
+                WorldUtils.SpawnEffect(AttackEffectPrefab, shootPos, Vector3.zero, ParentAttackEffect ? (ShootPoint == null ? transform : ShootPoint) : null, false);
                 //Instantiate(AttackEffectPrefab, shootPos, Quaternion.identity, (ShootPoint == null ? transform : ShootPoint));
             }
             if(AttackSound != null)

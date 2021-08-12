@@ -76,7 +76,7 @@ public class PostBuildGenerateResourceManifest : IPostprocessBuildWithReport //T
         {
             return AssetDatabase.GetMainAssetTypeAtPath(shortenedPath).ToString();
         }
-        catch(Exception e)
+        catch(Exception)
         {
             return "";
         }

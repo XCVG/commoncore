@@ -52,7 +52,7 @@ namespace CommonCore.ObjectActions
             Vector3 position = OverrideTransform ? OverridePosition : transform.position;
             Vector3 rotation = OverrideTransform ? OverrideRotation : transform.eulerAngles;
 
-            var go = WorldUtils.SpawnEffect(EffectId, position, rotation, parent);
+            var go = WorldUtils.SpawnEffect(EffectId, position, rotation, parent, true);
 
             go.SetActive(ActivateObject);
 

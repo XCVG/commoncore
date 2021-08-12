@@ -33,7 +33,7 @@ namespace CommonCore.World
             {
                 if (!string.IsNullOrEmpty(effect))
                 {
-                    puff = WorldUtils.SpawnEffect(effect, position, Vector3.zero, CoreUtils.GetWorldRoot());
+                    puff = WorldUtils.SpawnEffect(effect, position, Vector3.zero, CoreUtils.GetWorldRoot(), false);
 
                     if (puff != null)
                     {

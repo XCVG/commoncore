@@ -59,7 +59,7 @@ namespace CommonCore.ObjectActions
             go.SetActive(ActivateObject);
 
             if (!string.IsNullOrEmpty(EffectId))
-                WorldUtils.SpawnEffect(EffectId, position, rotation, parent);
+                WorldUtils.SpawnEffect(EffectId, position, rotation, parent, true);
 
             OnSpawnEvent.Invoke(go, this);
         }

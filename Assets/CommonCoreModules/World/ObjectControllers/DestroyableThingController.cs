@@ -224,7 +224,7 @@ namespace CommonCore.World
 
                 //effect
                 if(!string.IsNullOrEmpty(DeathEffect))
-                    WorldUtils.SpawnEffect(DeathEffect, effectSpawnPoint.position, effectSpawnPoint.eulerAngles, null);
+                    WorldUtils.SpawnEffect(DeathEffect, effectSpawnPoint.position, effectSpawnPoint.eulerAngles, null, false);
 
                 DeathSpecial.Ref()?.Execute(new ActionInvokerData() { Activator = LastDamageDealer, Caller = this });
 
@@ -304,7 +304,7 @@ namespace CommonCore.World
             PainSoundSource.Ref()?.Play();
 
             if (!string.IsNullOrEmpty(PainEffect))
-                WorldUtils.SpawnEffect(PainEffect, effectSpawnPoint.position, effectSpawnPoint.eulerAngles, null);
+                WorldUtils.SpawnEffect(PainEffect, effectSpawnPoint.position, effectSpawnPoint.eulerAngles, null, false);
         }
 
         public override Dictionary<string, object> CommitEntityData()

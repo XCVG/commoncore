@@ -22,7 +22,7 @@ namespace CommonCore.World
         {
             if(Variants == null || Variants.Count == 0)
             {
-                WorldUtils.SpawnEffect(FallbackEffect, transform.position, transform.eulerAngles, CoreUtils.GetWorldRoot());
+                WorldUtils.SpawnEffect(FallbackEffect, transform.position, transform.eulerAngles, CoreUtils.GetWorldRoot(), false);
                 return;
             }
 
@@ -37,9 +37,9 @@ namespace CommonCore.World
             }
 
             if (!string.IsNullOrEmpty(foundEffect))
-                WorldUtils.SpawnEffect(foundEffect, transform.position, transform.eulerAngles, CoreUtils.GetWorldRoot());
+                WorldUtils.SpawnEffect(foundEffect, transform.position, transform.eulerAngles, CoreUtils.GetWorldRoot(), false);
             else
-                WorldUtils.SpawnEffect(FallbackEffect, transform.position, transform.eulerAngles, CoreUtils.GetWorldRoot());
+                WorldUtils.SpawnEffect(FallbackEffect, transform.position, transform.eulerAngles, CoreUtils.GetWorldRoot(), false);
 
             if (DestroyAfterSpawn)
                 Destroy(this.gameObject);

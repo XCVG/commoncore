@@ -22,7 +22,7 @@ public class RampScript : MonoBehaviour
 
         PlayerController pc = null;
 
-        var ahc = other.gameObject.GetComponent<ActorHitboxComponent>();
+        var ahc = other.gameObject.GetComponent<IHitboxComponent>();
         if (ahc != null)
             pc = ahc.ParentController as PlayerController;
         else if (other.gameObject.GetComponent<BaseController>() is PlayerController playerController)
