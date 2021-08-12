@@ -1,4 +1,5 @@
 ﻿using CommonCore.Config;
+using CommonCore.LockPause;
 using CommonCore.Messaging;
 using CommonCore.StringSub;
 using System.Collections;
@@ -96,7 +97,8 @@ namespace CommonCore.UI
             }
             else
             {
-                SubtitleTimer -= Time.deltaTime;
+                if((LockPauseModule.GetPauseLockState() ?? PauseLockType.AllowCutscene) >= PauseLockType.AllowCutscene)
+                    SubtitleTimer -= Time.unscaledDeltaTime * (Mathf.Approximately(Time.timeScale, 0) ? 1 : Time.timeScale);
             }
         }
 
