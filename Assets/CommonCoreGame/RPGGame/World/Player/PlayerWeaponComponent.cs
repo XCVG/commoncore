@@ -581,10 +581,10 @@ namespace CommonCore.RpgGame.World
                 //we don't need to handle dual-wielding or 1H/2H
                 //note that a pistol is 2-handed here; 1-handed means dual-wieldable and dual-wielded
 
-                if (RightViewModel is RangedWeaponViewModelScript rwvms && rwvms.HasADSExitAnim)
+                if (RightViewModel is IWeaponViewModelCanHaveADSAnimations rwvms && rwvms.HasADSExitAnim)
                 {
-                    RightViewModel.SetState(ViewModelState.Raise, ViewModelHandednessState.ADS, 1);
-                    Hands.SetState(ViewModelState.Raise, RightViewModel, ViewModelHandednessState.ADS, 1);
+                    RightViewModel.SetState(ViewModelState.Lower, ViewModelHandednessState.ADS, 1);
+                    Hands.SetState(ViewModelState.Lower, RightViewModel, ViewModelHandednessState.ADS, 1);
                 }
                 else
                 {
@@ -600,7 +600,7 @@ namespace CommonCore.RpgGame.World
             {
                 IsADS = true;
 
-                if(RightViewModel is RangedWeaponViewModelScript rwvms && rwvms.HasADSEnterAnim)
+                if(RightViewModel is IWeaponViewModelCanHaveADSAnimations rwvms && rwvms.HasADSEnterAnim)
                 {
                     RightViewModel.SetState(ViewModelState.Raise, ViewModelHandednessState.ADS, 1);
                     Hands.SetState(ViewModelState.Raise, RightViewModel, ViewModelHandednessState.ADS, 1);

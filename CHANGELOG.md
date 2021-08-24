@@ -219,3 +219,8 @@
 * Moved DragonAIController out of RPGGame
 * CharacterModel messages now include reference to the specific CharacterModel
 * Receivers of CharacterModel messages now check if it refers to the player CharacterModel
+* Original colors of health/shield/energy/magic bars in RpgHUDController are now publically visible
+* Placeholder text for ammo/weapon in RpgHUDController can now be disabled
+* Generalized ADS enter/leave state handling in PlayerWeaponComponent/WeaponViewModelScript
+* Fixed SpriteWeaponViewModelScript not being put into ADSRaise/ADSLower state
+* Fixed RangedWeaponViewModelScript being put into ADSRaise when it should be put into ADSLower

@@ -41,6 +41,7 @@ namespace CommonCore.RpgGame.UI
         public Text RightAmmoText;
         public Text RightAmmoReserveText;
         public Text RightAmmoTypeText;
+        public bool RightBarNoPlaceholderText;
 
         [Header("Misc")]
         public Canvas Canvas;
@@ -84,16 +85,16 @@ namespace CommonCore.RpgGame.UI
 
         private float? LastTriggeredHealthFraction = null;
         private float LastFrameHealthFraction = 1;
-        private Color? HealthOriginalColor = null;
+        public Color? HealthOriginalColor = null;
         private Coroutine HealthFlashCoroutine = null;
 
-        private Color? ShieldOriginalColor = null;
+        public Color? ShieldOriginalColor = null;
         private Coroutine ShieldFlashCoroutine = null;
 
-        private Color? EnergyOriginalColor = null;
+        public Color? EnergyOriginalColor = null;
         private Coroutine EnergyFlashCoroutine = null;
 
-        private Color? MagicOriginalColor = null;
+        public Color? MagicOriginalColor = null;
         private Coroutine MagicFlashCoroutine = null;
 
         private float DamageFadeIntensityTarget = 0;
@@ -685,16 +686,16 @@ namespace CommonCore.RpgGame.UI
                 }
                 else
                 {
-                    RightAmmoText.text = "-";
-                    RightAmmoReserveText.text = "-";
+                    RightAmmoText.text = RightBarNoPlaceholderText ? "" : "-";
+                    RightAmmoReserveText.text = RightBarNoPlaceholderText ? "" : "-";
                     RightAmmoTypeText.text = "";
                 }
             }
             else
             {
-                RightWeaponText.text = "No Weapon";
-                RightAmmoText.text = "-";
-                RightAmmoReserveText.text = "-";
+                RightWeaponText.text = RightBarNoPlaceholderText ? "" : "No Weapon";
+                RightAmmoText.text = RightBarNoPlaceholderText ? "" : "-";
+                RightAmmoReserveText.text = RightBarNoPlaceholderText ? "" : "-";
                 RightAmmoTypeText.text = "";
             }
 

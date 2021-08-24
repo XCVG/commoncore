@@ -160,4 +160,10 @@ namespace CommonCore.RpgGame.World
         public abstract (string, float) GetHandAnimation(ViewModelState newState, ViewModelHandednessState handedness);
 
     }
+
+    public interface IWeaponViewModelCanHaveADSAnimations
+    {
+        bool HasADSEnterAnim { get; }
+        bool HasADSExitAnim { get; }
+    }
 }

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace CommonCore.RpgGame.World
 {
 
-    public class SpriteWeaponViewModelScript : WeaponViewModelScript
+    public class SpriteWeaponViewModelScript : WeaponViewModelScript, IWeaponViewModelCanHaveADSAnimations
     {
         [SerializeField, Header("Components")]
         private Image WeaponImage = null;
@@ -123,6 +123,10 @@ namespace CommonCore.RpgGame.World
 
         public override bool ViewHandlesCrosshair => HandleCrosshair;
 
+        public bool HasADSEnterAnim => ADSRaise != null && ADSRaise.Length > 0;
+
+        public bool HasADSExitAnim => ADSLower != null && ADSLower.Length > 0;
+
         protected override void Start()
         {
             //throw new System.NotImplementedException();
@@ -159,7 +163,7 @@ namespace CommonCore.RpgGame.World
                     {
                         CurrentFrameIndex = 0;
                     }
-                    else if(AutoTransition && CurrentFrameSet == Fire || CurrentFrameSet == Raise || CurrentFrameSet == Reload) //autotransition (non-ADS)
+                    else if(AutoTransition && CurrentFrameSet == Fire || CurrentFrameSet == Raise || CurrentFrameSet == Reload || CurrentFrameSet == ADSLower) //autotransition (non-ADS)
                     {
                         CurrentFrameSet = Idle;
                         CurrentFrameIndex = 0;

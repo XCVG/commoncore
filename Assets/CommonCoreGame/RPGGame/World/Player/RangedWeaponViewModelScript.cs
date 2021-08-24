@@ -7,7 +7,7 @@ using UnityEngine;
 namespace CommonCore.RpgGame.World
 {
 
-    public class RangedWeaponViewModelScript : WeaponViewModelScript
+    public class RangedWeaponViewModelScript : WeaponViewModelScript, IWeaponViewModelCanHaveADSAnimations
     {
         [Header("Ranged View Model Options"), SerializeField, Tooltip("In ADS, will copy the relative position and rotation of this transform")]
         private Transform ADSOffsetPoint = null;
