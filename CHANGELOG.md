@@ -224,3 +224,8 @@
 * Generalized ADS enter/leave state handling in PlayerWeaponComponent/WeaponViewModelScript
 * Fixed SpriteWeaponViewModelScript not being put into ADSRaise/ADSLower state
 * Fixed RangedWeaponViewModelScript being put into ADSRaise when it should be put into ADSLower
+* Fixed noclip up/down movement not working
+* Fixed quest stage text not being cleared when quest selected
+* Fixed facing sprites not handling Bright flag and emissive texture properly
+* Fixed Tags recursively calling its own getter in BaseController/ActorController
+* Removed stray GetGameplayConfig in ConfigState

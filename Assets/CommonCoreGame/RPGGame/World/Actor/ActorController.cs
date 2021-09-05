@@ -126,7 +126,7 @@ namespace CommonCore.RpgGame.World
                     _Tags = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
                     _Tags.Add("Actor");
                     if (EntityTags != null && EntityTags.Length > 0)
-                        Tags.UnionWith(EntityTags);
+                        _Tags.UnionWith(EntityTags);
                 }
 
                 return _Tags;

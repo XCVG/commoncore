@@ -101,6 +101,7 @@ namespace CommonCore.RpgGame.UI
             SelectedImage.texture = null;
             SelectedTitle.text = string.Empty;
             SelectedDescription.text = string.Empty;
+            SelectedStageDescription.text = string.Empty;
         }
     }
 }

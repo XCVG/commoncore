@@ -54,11 +54,6 @@ namespace CommonCore.Config
             MigrateLastMigratedVersion(Instance);
         }
 
-        public static float GetGameplayConfig()
-        {
-            throw new NotImplementedException();
-        }
-
         public static void Save()
         {
             Instance.CurrentVersion = CoreParams.GetCurrentVersion();

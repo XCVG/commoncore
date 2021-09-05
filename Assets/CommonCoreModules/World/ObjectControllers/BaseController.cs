@@ -34,7 +34,7 @@ namespace CommonCore.World
                     _Tags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
                     if (EntityTags != null && EntityTags.Length > 0)
-                        Tags.UnionWith(EntityTags);
+                        _Tags.UnionWith(EntityTags);
                 }
 
                 return _Tags;

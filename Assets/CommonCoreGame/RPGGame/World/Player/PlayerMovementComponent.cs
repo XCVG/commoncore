@@ -371,6 +371,8 @@ namespace CommonCore.RpgGame.World
                 }
 
                 float moveY = MappedInput.GetAxis(DefaultControls.Jump) - MappedInput.GetAxis(DefaultControls.Crouch);
+                moveY += MappedInput.GetButton(DefaultControls.Jump) ? 1f : 0;
+                moveY += MappedInput.GetButton(DefaultControls.Crouch) ? -1f : 0;
                 if (Mathf.Abs(moveY) > InputDeadzone)
                 {
                     moveVector += (Vector3.up * moveY * velocity.y * Time.deltaTime);

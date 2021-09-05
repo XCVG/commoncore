@@ -86,12 +86,16 @@ namespace CommonCore.World
                 if (bright && currentEmissionColor == Color.black)
                 {
                     material.SetColor("_EmissionColor", Color.white);
-                    material.SetTexture("_EmissionMap", texture);
                 }
                 else if (!bright && currentEmissionColor != Color.black)
                 {
                     material.SetColor("_EmissionColor", Color.black);
-                    renderer.material.SetTexture("_EmissionMap", null);
+                    material.SetTexture("_EmissionMap", null);
+                }
+
+                if(material.GetTexture("_EmissionMap") != texture)
+                {
+                    material.SetTexture("_EmissionMap", texture);
                 }
             }
             else if(bright)
