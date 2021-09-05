@@ -99,6 +99,9 @@ namespace CommonCore.RpgGame.World
         {
             if (GameState.Instance.PlayerRpgState.HealthFraction <= 0)
                 return;
+
+            if (GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoShieldRecharge))
+                return;
             
             switch (RechargeState)
             {
@@ -237,7 +240,7 @@ namespace CommonCore.RpgGame.World
             }
         }
 
-        private void SetRechargeState(ShieldRechargeState newState)
+        public void SetRechargeState(ShieldRechargeState newState)
         {
             RechargeState = newState;
 
@@ -246,7 +249,7 @@ namespace CommonCore.RpgGame.World
             playerModel.ExtraData["ShieldRechargeState"] = newState;            
         }
 
-        private void PlayHitEffect()
+        public void PlayHitEffect()
         {
             if (HitAudioSource != null)
                 HitAudioSource.Play();
@@ -258,7 +261,7 @@ namespace CommonCore.RpgGame.World
                 WorldUtils.SpawnEffect(HitEffect, transform.position, transform.rotation, null, false);
         }
 
-        private void PlayRechargeEffect()
+        public void PlayRechargeEffect()
         {
             if (RechargeAudioSource != null)
             {
@@ -279,7 +282,7 @@ namespace CommonCore.RpgGame.World
                 WorldUtils.SpawnEffect(RechargeEffect, transform.position, transform.rotation, null, false);
         }
 
-        private void PlayWarningEffect()
+        public void PlayWarningEffect()
         {
             if (WarningAudioSource != null && !WarningAudioSource.isPlaying)
             {
@@ -303,7 +306,7 @@ namespace CommonCore.RpgGame.World
             }
         }
 
-        private void StopRechargeSoundLoop()
+        public void StopRechargeSoundLoop()
         {
             if(RechargeAudioSource != null)
                 RechargeAudioSource.loop = false;
@@ -316,7 +319,7 @@ namespace CommonCore.RpgGame.World
             
         }
 
-        private void StopWarningSoundLoop()
+        public void StopWarningSoundLoop()
         {
             if (WarningAudioSource != null)
                 WarningAudioSource.loop = false;

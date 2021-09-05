@@ -234,3 +234,5 @@
 * FindObjectByTID and FindEntityByTID now uses CoreUtils.GetWorldRoot
 * FindEntityByTID logic now completely ignores non-entity objects (previously could cause problems if name/TID was the same)
 * Deprecated SceneUtils.FindAllGameObjects (logic is not safe)
+* Added NoShieldRecharge PlayerFlag
+* Made several methods of PlayerShieldComponent public
