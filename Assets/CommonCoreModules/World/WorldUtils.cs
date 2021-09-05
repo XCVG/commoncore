@@ -146,7 +146,7 @@ namespace CommonCore.World
         /// </summary>
         public static GameObject FindObjectByTID(string TID)
         {
-            var targetTransform = GameObject.Find("WorldRoot").transform.FindDeepChild(TID);
+            var targetTransform = CoreUtils.GetWorldRoot().transform.FindDeepChild(TID);
             if (targetTransform != null)
                 return targetTransform.gameObject;
             return null;
@@ -157,13 +157,14 @@ namespace CommonCore.World
         /// </summary>
         public static BaseController FindEntityByTID(string TID)
         {
-            var targetTransform = GameObject.Find("WorldRoot").transform.FindDeepChild(TID);
-            if (targetTransform != null)
+            foreach (BaseController c in CoreUtils.GetWorldRoot().gameObject.GetComponentsInChildren<BaseController>(true))
             {
-                var bc = targetTransform.GetComponent<BaseController>();
-                if (bc != null)
-                    return bc;
+                if (c.name == TID)
+                {
+                    return c;
+                }
             }
+
             return null;
         }
 

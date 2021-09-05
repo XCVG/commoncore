@@ -66,6 +66,7 @@ namespace CommonCore
         /// <summary>
         /// Finds all game objects with a given name. No, I don't know what it's for either.
         /// </summary>
+        [Obsolete]
         public static List<GameObject> FindAllGameObjects(string name)
         {
             var goList = new List<GameObject>();

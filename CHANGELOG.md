@@ -231,3 +231,6 @@
 * Removed stray GetGameplayConfig in ConfigState
 * HandleRestorableExtraData now defaults to true
 * Action Triggers now default to repeatable
+* FindObjectByTID and FindEntityByTID now uses CoreUtils.GetWorldRoot
+* FindEntityByTID logic now completely ignores non-entity objects (previously could cause problems if name/TID was the same)
+* Deprecated SceneUtils.FindAllGameObjects (logic is not safe)
