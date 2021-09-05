@@ -16,7 +16,7 @@ namespace CommonCore.World
         protected string[] EntityTags;
 
         [Tooltip("May be deferred to subclass and have no effect")]
-        public bool HandleRestorableExtraData = false;
+        public bool HandleRestorableExtraData = true;
 
         public int HitMaterial = 0;
 

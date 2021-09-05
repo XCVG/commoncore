@@ -229,3 +229,5 @@
 * Fixed facing sprites not handling Bright flag and emissive texture properly
 * Fixed Tags recursively calling its own getter in BaseController/ActorController
 * Removed stray GetGameplayConfig in ConfigState
+* HandleRestorableExtraData now defaults to true
+* Action Triggers now default to repeatable

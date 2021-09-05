@@ -8,7 +8,7 @@ namespace CommonCore.ObjectActions
     public abstract class ActionTrigger : MonoBehaviour
     {
         public bool Persistent = false;
-        public bool Repeatable = false;
+        public bool Repeatable = true;
         [Tooltip("Set this to something unique for saving if the object isn't uniquely named")]
         public string SaveTag = string.Empty;
 
