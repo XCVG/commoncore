@@ -341,8 +341,21 @@ namespace CommonCore.UI
                             var texts = element.GetComponentsInChildren<Text>(true);
                             foreach (Text text in texts)
                             {
-                                text.font = theme.BodyFont;
-                                text.color = textColor;
+                                if (text.GetComponent<NonThemableElement>() != null)
+                                    continue;
+
+                                var el = text.GetComponent<ThemableElement>();
+                                if(el != null)
+                                {
+                                    ApplyThemeToElement(text.transform, theme);
+                                }
+                                else
+                                {
+                                    text.font = theme.BodyFont;
+                                    if (elementColorClass != ElementColorClass.None)
+                                        text.color = textColor;
+                                }
+                                
                             }
                         }
                         break;

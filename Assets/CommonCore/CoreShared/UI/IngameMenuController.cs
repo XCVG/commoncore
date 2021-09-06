@@ -64,6 +64,20 @@ namespace CommonCore.UI
                     buttonGO.name = "Button_" + name;
                     buttonGO.GetComponentInChildren<Text>().text = panel.NiceName;
                     buttonGO.GetComponentInChildren<Button>().onClick.AddListener(() => OnClickSelectButton(name));
+
+                    if (ApplyTheme && CoreParams.UIThemeMode == UIThemePolicy.Auto)
+                    {
+                        if (!string.IsNullOrEmpty(OverrideTheme))
+                        {
+                            uiModule.ApplyThemeRecurse(panelGO.transform, uiModule.GetThemeByName(OverrideTheme));
+                            uiModule.ApplyThemeRecurse(buttonGO.transform, uiModule.GetThemeByName(OverrideTheme));
+                        }
+                        else
+                        {
+                            uiModule.ApplyThemeRecurse(panelGO.transform);
+                            uiModule.ApplyThemeRecurse(buttonGO.transform);
+                        }
+                    }
                 }
             }
             catch(Exception e)
