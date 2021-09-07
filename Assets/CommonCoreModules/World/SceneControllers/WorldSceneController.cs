@@ -62,8 +62,10 @@ namespace CommonCore.World
             }
 
             ScriptingModule.CallHooked(ScriptHook.AfterSceneLoad, this);
-            if(AutosaveOnEnter && MetaState.Instance.TransitionType != SceneTransitionType.LoadGame)
-                SaveUtils.DoAutoSave();
+
+            GameState.Instance.PlayerWorldState = null;
+            if (AutosaveOnEnter && MetaState.Instance.TransitionType != SceneTransitionType.LoadGame)
+                SaveUtils.DoAutoSave(AutoCommit);
         }
 
         public override void Update()

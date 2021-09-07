@@ -57,6 +57,8 @@ namespace CommonCore
             if (ConfigState.Instance.UseVerboseLogging)
                 Debug.Log("Base Scene Controller Awake");
 
+            GameState.Instance.CurrentScene = SceneManager.GetActiveScene().name;
+
             MessageInterface = new QdmsMessageInterface(this.gameObject);
             MessageInterface.SubscribeReceiver((m) => HandleMessage(m));
 

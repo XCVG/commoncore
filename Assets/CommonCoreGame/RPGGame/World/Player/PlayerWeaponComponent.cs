@@ -81,11 +81,11 @@ namespace CommonCore.RpgGame.World
         public WeaponViewModelScript RightViewModel { get; private set; }
 
         private float TimeToNext;
-        private bool IsReloading;
+        public bool IsReloading { get; private set; }
         public bool IsADS { get; private set; }
 
-        private bool ShouldBeVisible;
-        private bool IsVisible;
+        public bool ShouldBeVisible { get; private set; }
+        public bool IsVisible { get; private set; }
 
         private float AccumulatedSpread;
         private float AccumulatedRecoil;
