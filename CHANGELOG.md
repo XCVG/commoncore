@@ -241,4 +241,5 @@
 * Exposed a few state fields in PlayerWeaponComponent as read only properties
 * Fixed AutosaveOnEnter saving inconsistent state
 * Improved a few edge cases in ActorFollowerTetherEx
+* PlayMusic no longer restarts songs if they are already playing
 * Fixed ThemeableElement and NonThemeableElement being ignored on child components of complex elements [WIP]

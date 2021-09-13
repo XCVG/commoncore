@@ -598,12 +598,13 @@ namespace CommonCore.Audio
         /// <param name="loop">Whether to loop the music</param>
         /// <param name="retain">Whether to retain the music across scene loads</param>
         /// <remarks>
-        /// <para>Equivalent to calling SetMusic followed by StartMusic</para>
+        /// <para>Equivalent to calling SetMusic, followed by StartMusic iff IsMusicPlaying is false</para>
         /// </remarks>
         public void PlayMusic(string sound, MusicSlot slot, float volume, bool loop, bool retain)
         {
             SetMusic(sound, slot, volume, loop, retain);
-            StartMusic(slot);
+            if(!IsMusicPlaying(slot))
+                StartMusic(slot);
         }
 
         /// <summary>
@@ -615,12 +616,13 @@ namespace CommonCore.Audio
         /// <param name="loop">Whether to loop the music</param>
         /// <param name="retain">Whether to retain the music across scene loads</param>
         /// <remarks>
-        /// <para>Equivalent to calling SetMusic followed by StartMusic</para>
+        /// <para>Equivalent to calling SetMusic, followed by StartMusic iff IsMusicPlaying is false</para>
         /// </remarks>
         public void PlayMusic(AudioClip clip, MusicSlot slot, float volume, bool loop, bool retain)
         {
             SetMusic(clip, slot, volume, loop, retain);
-            StartMusic(slot);
+            if (!IsMusicPlaying(slot))
+                StartMusic(slot);
         }
 
         /// <summary>
