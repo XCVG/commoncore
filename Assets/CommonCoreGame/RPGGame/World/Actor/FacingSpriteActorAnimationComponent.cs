@@ -159,7 +159,7 @@ namespace CommonCore.RpgGame.World
 
         private void UpdateAnimation()
         {
-            if (!Animate || AnimationTimescale == 0 || CurrentFrame >= CurrentFrameSet.Length)
+            if (!Animate || AnimationTimescale == 0 || CurrentFrameSet == null || CurrentFrame >= CurrentFrameSet.Length)
                 return;
 
             TimeInFrame += (AnimateInRealtime ? Time.unscaledDeltaTime : Time.deltaTime) * AnimationTimescale;
