@@ -243,5 +243,6 @@
 * Improved a few edge cases in ActorFollowerTetherEx
 * PlayMusic no longer restarts songs if they are already playing
 * Fixed NRE when reloading save on SpriteActorAnimationComponent
+* Added HasVideo API to VideoModule
 * Fixed ThemeableElement and NonThemeableElement being ignored on child components of complex elements [Untested]
 * Fixed dialogue reactivating hidden objects even if they were initially inactive [Untested]

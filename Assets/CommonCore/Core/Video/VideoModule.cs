@@ -37,6 +37,11 @@ namespace CommonCore.Video
                 PrecacheAllPaths();
         }
 
+        public bool HasVideo(string videoName)
+        {
+            return !string.IsNullOrEmpty(GetPathForVideo(videoName));
+        }
+
         public string GetPathForVideo(string videoName)
         {
             if (LookupCache.TryGetValue(videoName, out var path))
