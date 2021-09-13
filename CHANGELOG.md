@@ -240,4 +240,5 @@
 * Fixed Button text going invisible when element color class is overridden to None
 * Exposed a few state fields in PlayerWeaponComponent as read only properties
 * Fixed AutosaveOnEnter saving inconsistent state
+* Improved a few edge cases in ActorFollowerTetherEx
 * Fixed ThemeableElement and NonThemeableElement being ignored on child components of complex elements [WIP]
