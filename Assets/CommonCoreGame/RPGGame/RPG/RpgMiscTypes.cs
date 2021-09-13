@@ -267,19 +267,22 @@ namespace CommonCore.RpgGame.Rpg
         public float RechargeCancelDamage { get; private set; }
         [JsonProperty]
         public float LeakRate { get; private set; }
+        [JsonProperty]
+        public float MaxChargeFraction { get; private set; } = 1f;
 
         public ShieldParams()
         {
 
         }
 
-        public ShieldParams(float maxShields, float rechargeRate, float rechargeDelay, float rechargeCancelDamage, float leakRate)
+        public ShieldParams(float maxShields, float rechargeRate, float rechargeDelay, float rechargeCancelDamage, float leakRate, float maxChargeFraction)
         {
             MaxShields = maxShields;
             RechargeRate = rechargeRate;
             RechargeDelay = rechargeDelay;
             RechargeCancelDamage = rechargeCancelDamage;
             LeakRate = leakRate;
+            MaxChargeFraction = maxChargeFraction;
         }
     }
 

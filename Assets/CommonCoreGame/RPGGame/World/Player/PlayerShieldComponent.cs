@@ -83,7 +83,7 @@ namespace CommonCore.RpgGame.World
             {
                 //start waiting to recharge if needed
                 var player = GameState.Instance.PlayerRpgState;
-                if (player.ShieldsFraction < 1)
+                if (player.ShieldsFraction < player.DerivedStats.ShieldParams.MaxChargeFraction)
                 {
                     if (player.DerivedStats.ShieldParams.MaxShields > 0)
                     {
@@ -132,7 +132,7 @@ namespace CommonCore.RpgGame.World
 
                         playerModel.Shields = Mathf.Min(playerModel.DerivedStats.ShieldParams.MaxShields, playerModel.Shields + rechargeRate * Time.deltaTime);
 
-                        if (Mathf.Approximately(playerModel.ShieldsFraction, 1.0f))
+                        if (Mathf.Approximately(playerModel.ShieldsFraction, playerModel.DerivedStats.ShieldParams.MaxChargeFraction))
                         {
                             SetRechargeState(ShieldRechargeState.Idle);
                             StopRechargeSoundLoop();
@@ -157,7 +157,7 @@ namespace CommonCore.RpgGame.World
             }
 
             var player = GameState.Instance.PlayerRpgState;
-            if(player.ShieldsFraction < 1)
+            if(player.ShieldsFraction < player.DerivedStats.ShieldParams.MaxChargeFraction)
             {
                 if(player.DerivedStats.ShieldParams.MaxShields > 0)
                 {

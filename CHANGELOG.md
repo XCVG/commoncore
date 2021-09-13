@@ -251,3 +251,4 @@
 * StatusPanelController now properly supports all builtin gender values
 * Fixed ThemeableElement and NonThemeableElement being ignored on child components of complex elements [Untested]
 * Fixed dialogue reactivating hidden objects even if they were initially inactive [Untested]
+* Added MaxChargeFraction to ShieldParams [Untested]
