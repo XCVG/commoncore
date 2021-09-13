@@ -388,10 +388,10 @@ namespace CommonCore.RpgGame.Dialogue
                 UnhideObjects(hiddenObjectsToShow);
 
                 var newObjectsToHide = objectsToHide.Except(HiddenObjects);
-                HideObjects(newObjectsToHide);
+                var objectsActuallyHidden = HideObjects(newObjectsToHide);
 
-                HiddenObjects.Clear();
-                HiddenObjects.UnionWith(objectsToHide);
+                HiddenObjects.ExceptWith(hiddenObjectsToShow);
+                HiddenObjects.UnionWith(objectsActuallyHidden);
             }
             else
             {
@@ -750,13 +750,18 @@ namespace CommonCore.RpgGame.Dialogue
             }
         }
 
-        private void HideObjects(IEnumerable<string> objects)
+        private IEnumerable<string> HideObjects(IEnumerable<string> objects)
         {
+            List<string> objectsActuallyHidden = new List<string>();
             foreach (var obj in objects)
             {
                 try
                 {
                     var go = WorldUtils.FindObjectByTID(ResolveSpecialObjectName(obj));
+                    if(go != null && go.activeSelf)
+                    {
+                        objectsActuallyHidden.Add(obj);
+                    }
                     go.SetActive(false);
                 }
                 catch (Exception e)
@@ -766,6 +771,8 @@ namespace CommonCore.RpgGame.Dialogue
                         Debug.LogException(e);
                 }
             }
+
+            return objectsActuallyHidden;
         }
 
         private void UnhideObjects(IEnumerable<string> objects)
