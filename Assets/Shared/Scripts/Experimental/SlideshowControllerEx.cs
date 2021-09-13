@@ -1,0 +1,89 @@
+﻿using CommonCore;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class SlideshowControllerEx : MonoBehaviour
+{
+    private Canvas RootCanvas = null;
+    private AspectRatioFitter AspectRatioFitter = null;
+    private Image SlideshowImage = null;
+
+    private static SlideshowControllerEx _Instance;
+
+    public static SlideshowControllerEx GetInstance()
+    {
+        if(_Instance == null)
+        {
+            var go = new GameObject("SlideshowExperiment");
+            go.transform.SetParent(CoreUtils.GetUIRoot());
+            _Instance = go.AddComponent<SlideshowControllerEx>();
+            _Instance.Initialize();
+        }
+
+        return _Instance;
+    }
+
+    public bool HideHud
+    {
+        get
+        {
+            return RootCanvas.sortingOrder < 100;
+        }
+        set
+        {
+            RootCanvas.sortingOrder = value ? 110 : 1;
+        }
+    }
+
+    public void ShowImage(string imageName)
+    {
+        if (string.IsNullOrEmpty(imageName))
+        {
+            Debug.LogWarning("Please use the ClearImage method instead of passing null/empty to ShowImage");
+            ClearImage();
+            return;
+        }
+
+        var sprite = CoreUtils.LoadResource<Sprite>("Sequences/" + imageName);
+        if (sprite == null)
+            Debug.LogError($"Failed to load sprite \"Sequences/{imageName}\"");
+
+        AspectRatioFitter.aspectRatio = sprite.bounds.size.x / sprite.bounds.size.y;
+        SlideshowImage.sprite = sprite;
+        SlideshowImage.color = Color.white;        
+    }
+
+    public void ClearImage()
+    {
+        SlideshowImage.sprite = null;
+        SlideshowImage.color = new Color(0, 0, 0, 0);
+    }
+
+    private void Initialize()
+    {
+        RootCanvas = gameObject.AddComponent<Canvas>();
+        RootCanvas.sortingOrder = 1;
+
+        var cs = gameObject.AddComponent<CanvasScaler>();
+        cs.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        cs.referenceResolution = new Vector2(1920, 1080);
+        cs.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
+
+        var imageObj = new GameObject("Image", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(AspectRatioFitter));
+        imageObj.transform.SetParent(RootCanvas.transform);
+
+        AspectRatioFitter = imageObj.GetComponent<AspectRatioFitter>();
+        AspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+        AspectRatioFitter.aspectRatio = 16f / 9f;
+
+        var imageRT = (RectTransform)imageObj.transform;
+        imageRT.anchorMin = Vector2.zero;
+        imageRT.anchorMax = Vector2.one;
+        imageRT.pivot = new Vector2(0.5f, 0.5f);
+
+        SlideshowImage = imageObj.GetComponent<Image>();
+        SlideshowImage.color = new Color(0, 0, 0, 0);
+    }
+}

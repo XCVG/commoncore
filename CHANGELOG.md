@@ -252,3 +252,4 @@
 * Fixed ThemeableElement and NonThemeableElement being ignored on child components of complex elements [Untested]
 * Fixed dialogue reactivating hidden objects even if they were initially inactive [Untested]
 * Added MaxChargeFraction to ShieldParams [Untested]
+* Added generalized "slide show" for scripted sequences [WIP]
