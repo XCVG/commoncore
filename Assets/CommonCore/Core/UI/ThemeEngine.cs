@@ -320,7 +320,6 @@ namespace CommonCore.UI
                         break;
                     case ElementClass.Button:
                         {
-                            //button is a little more complicated because we have to style the children also
                             var button = element.GetComponent<Button>();
 
                             Color textColor = default;
@@ -362,21 +361,63 @@ namespace CommonCore.UI
                     case ElementClass.Slider:
                         {
                             var slider = element.GetComponent<Slider>();
+
                             var backgroundElement = element.Find("Background").Ref() ?? element.Find("background");
                             if (backgroundElement != null)
                             {
-                                var backgroundImage = backgroundElement.GetComponent<Image>();
-                                if (backgroundImage != null)
-                                    backgroundImage.sprite = theme.Slider;
+                                if (backgroundElement.GetComponent<NonThemableElement>() == null)
+                                {
+                                    var el = backgroundElement.GetComponent<ThemableElement>();
+                                    if(el != null)
+                                    {
+                                        ApplyThemeToElement(backgroundElement, theme);
+                                    }
+                                    else
+                                    {
+                                        var backgroundImage = backgroundElement.GetComponent<Image>();
+                                        if (backgroundImage != null)
+                                            backgroundImage.sprite = theme.Slider;
+                                    }
+
+                                }
+  
                             }
 
                             var fill = slider.fillRect.Ref()?.GetComponentInChildren<Image>();
                             if (fill != null)
-                                fill.sprite = theme.SliderFill;
+                            {
+                                if(fill.GetComponent<NonThemableElement>() == null)
+                                {
+                                    var el = fill.GetComponent<ThemableElement>();
+                                    if(el != null)
+                                    {
+                                        ApplyThemeToElement(fill.transform, theme);
+                                    }
+                                    else
+                                    {
+                                        fill.sprite = theme.SliderFill;
+                                    }
+                                    
+                                }
+                            }                                
 
                             var handle = slider.handleRect.Ref()?.GetComponentInChildren<Image>();
                             if (handle != null)
-                                handle.sprite = theme.SliderHandle;
+                            {
+                                if(handle.GetComponent<NonThemableElement>() == null)
+                                {
+                                    var el = handle.GetComponent<NonThemableElement>();
+                                    if(el != null)
+                                    {
+                                        ApplyThemeToElement(handle.transform, theme);
+                                    }
+                                    else
+                                    {
+                                        handle.sprite = theme.SliderHandle;
+                                    }
+                                }
+                            }
+                                
                         }
                         break;
                     case ElementClass.Bar:
@@ -388,15 +429,40 @@ namespace CommonCore.UI
                                 var backgroundElement = element.Find("Background").Ref() ?? element.Find("background").Ref() ?? element.GetChild(0);
                                 if (backgroundElement != null)
                                 {
-                                    var backgroundImage = backgroundElement.GetComponent<Image>();
-                                    if (backgroundImage != null)
-                                        backgroundImage.sprite = theme.Bar;
+                                    if(backgroundElement.GetComponent<NonThemableElement>() == null)
+                                    {
+                                        var el = backgroundElement.GetComponent<ThemableElement>();
+                                        if(el != null)
+                                        {
+                                            ApplyThemeToElement(backgroundElement, theme);
+                                        }
+                                        else
+                                        {
+                                            var backgroundImage = backgroundElement.GetComponent<Image>();
+                                            if (backgroundImage != null)
+                                                backgroundImage.sprite = theme.Bar;
+                                        }
+                                    }                                    
                                 }
                             }
 
                             var fill = slider.fillRect.Ref()?.GetComponentInChildren<Image>();
                             if (fill != null)
-                                fill.sprite = theme.BarFill;
+                            {
+                                if (fill.GetComponent<NonThemableElement>() == null)
+                                {
+                                    var el = fill.GetComponent<ThemableElement>();
+                                    if (el != null)
+                                    {
+                                        ApplyThemeToElement(fill.transform, theme);
+                                    }
+                                    else
+                                    {
+                                        fill.sprite = theme.BarFill;
+                                    }
+
+                                }
+                            }
                         }
                         break;
                     case ElementClass.RadioButton:
@@ -404,16 +470,38 @@ namespace CommonCore.UI
                             var toggle = element.GetComponent<Toggle>();
                             if (toggle.targetGraphic.Ref() is Image targetGraphicImage)
                             {
-                                targetGraphicImage.sprite = theme.RadioButton;
+                                if(targetGraphicImage.GetComponent<NonThemableElement>() == null)
+                                {
+                                    var el = targetGraphicImage.GetComponent<ThemableElement>();
+                                    if(el != null)
+                                    {
+                                        ApplyThemeToElement(targetGraphicImage.transform, theme);
+                                    }
+                                    else
+                                    {
+                                        targetGraphicImage.sprite = theme.RadioButton;
+                                    }
+                                }                                
                             }
                             else
                             {
                                 var backgroundElement = element.Find("Background").Ref() ?? element.Find("background");
                                 if (backgroundElement != null)
                                 {
-                                    var backgroundImage = backgroundElement.GetComponent<Image>();
-                                    if (backgroundImage != null)
-                                        backgroundImage.sprite = theme.RadioButton;
+                                    if(backgroundElement.GetComponent<NonThemableElement>() == null)
+                                    {
+                                        var el = backgroundElement.GetComponent<NonThemableElement>();
+                                        if(el != null)
+                                        {
+                                            ApplyThemeToElement(backgroundElement.transform, theme);
+                                        }
+                                        else
+                                        {
+                                            var backgroundImage = backgroundElement.GetComponent<Image>();
+                                            if (backgroundImage != null)
+                                                backgroundImage.sprite = theme.RadioButton;
+                                        }
+                                    }                                    
                                 }
                             }
 
@@ -421,7 +509,18 @@ namespace CommonCore.UI
                             {
                                 if (toggle.graphic is Image graphicImage)
                                 {
-                                    graphicImage.sprite = theme.RadioButtonCheck;
+                                    if(toggle.graphic.GetComponent<NonThemableElement>() == null)
+                                    {
+                                        var el = toggle.graphic.GetComponent<ThemableElement>();
+                                        if(el != null)
+                                        {
+                                            ApplyThemeToElement(toggle.graphic.transform, theme);
+                                        }
+                                        else
+                                        {
+                                            graphicImage.sprite = theme.RadioButtonCheck;
+                                        }
+                                    }
                                 }
                             }
 
@@ -430,7 +529,20 @@ namespace CommonCore.UI
                             {
                                 var labelText = labelElement.GetComponentInChildren<Text>();
                                 if (labelText != null)
-                                    labelText.font = theme.BodyFont;
+                                {
+                                    if(labelText.GetComponent<NonThemableElement>() == null)
+                                    {
+                                        var el = labelText.GetComponent<ThemableElement>();
+                                        if(el != null)
+                                        {
+                                            ApplyThemeToElement(labelText.transform, theme);
+                                        }
+                                        else
+                                        {
+                                            labelText.font = theme.BodyFont;
+                                        }
+                                    }
+                                }
                             }
                         }
                         break;
@@ -439,16 +551,38 @@ namespace CommonCore.UI
                             var toggle = element.GetComponent<Toggle>();
                             if (toggle.targetGraphic.Ref() is Image targetGraphicImage)
                             {
-                                targetGraphicImage.sprite = theme.ToggleButton;
+                                if (targetGraphicImage.GetComponent<NonThemableElement>() == null)
+                                {
+                                    var el = targetGraphicImage.GetComponent<ThemableElement>();
+                                    if (el != null)
+                                    {
+                                        ApplyThemeToElement(targetGraphicImage.transform, theme);
+                                    }
+                                    else
+                                    {
+                                        targetGraphicImage.sprite = theme.ToggleButton;
+                                    }
+                                }
                             }
                             else
                             {
                                 var backgroundElement = element.Find("Background").Ref() ?? element.Find("background");
                                 if (backgroundElement != null)
                                 {
-                                    var backgroundImage = backgroundElement.GetComponent<Image>();
-                                    if (backgroundImage != null)
-                                        backgroundImage.sprite = theme.ToggleButton;
+                                    if (backgroundElement.GetComponent<NonThemableElement>() == null)
+                                    {
+                                        var el = backgroundElement.GetComponent<NonThemableElement>();
+                                        if (el != null)
+                                        {
+                                            ApplyThemeToElement(backgroundElement.transform, theme);
+                                        }
+                                        else
+                                        {
+                                            var backgroundImage = backgroundElement.GetComponent<Image>();
+                                            if (backgroundImage != null)
+                                                backgroundImage.sprite = theme.ToggleButton;
+                                        }
+                                    }
                                 }
                             }
 
@@ -456,16 +590,40 @@ namespace CommonCore.UI
                             {
                                 if (toggle.graphic is Image graphicImage)
                                 {
-                                    graphicImage.sprite = theme.ToggleButtonCheck;
+                                    if (toggle.graphic.GetComponent<NonThemableElement>() == null)
+                                    {
+                                        var el = toggle.graphic.GetComponent<ThemableElement>();
+                                        if (el != null)
+                                        {
+                                            ApplyThemeToElement(toggle.graphic.transform, theme);
+                                        }
+                                        else
+                                        {
+                                            graphicImage.sprite = theme.ToggleButtonCheck;
+                                        }
+                                    }
                                 }
                             }
 
                             var labelElement = element.Find("Label").Ref() ?? element.Find("label");
-                            if(labelElement != null)
+                            if (labelElement != null)
                             {
                                 var labelText = labelElement.GetComponentInChildren<Text>();
                                 if (labelText != null)
-                                    labelText.font = theme.BodyFont;
+                                {
+                                    if (labelText.GetComponent<NonThemableElement>() == null)
+                                    {
+                                        var el = labelText.GetComponent<ThemableElement>();
+                                        if (el != null)
+                                        {
+                                            ApplyThemeToElement(labelText.transform, theme);
+                                        }
+                                        else
+                                        {
+                                            labelText.font = theme.BodyFont;
+                                        }
+                                    }
+                                }
                             }
                         }
                         break;
@@ -474,12 +632,41 @@ namespace CommonCore.UI
                             var dropdown = element.GetComponent<Dropdown>();
 
                             if (dropdown.captionText)
-                                dropdown.captionText.font = theme.BodyFont;
-
+                            {
+                                if(dropdown.captionText.GetComponent<NonThemableElement>() == null)
+                                {
+                                    var el = dropdown.captionText.GetComponent<ThemableElement>();
+                                    if(el != null)
+                                    {
+                                        ApplyThemeToElement(dropdown.captionText.transform, theme);
+                                    }
+                                    else
+                                    {
+                                        dropdown.captionText.font = theme.BodyFont;
+                                    }
+                                }
+                            }
+                            
                             if (dropdown.itemText)
-                                dropdown.itemText.font = theme.BodyFont;
+                            {
+                                if (dropdown.itemText.GetComponent<NonThemableElement>() == null)
+                                {
+                                    var el = dropdown.itemText.GetComponent<ThemableElement>();
+                                    if (el != null)
+                                    {
+                                        ApplyThemeToElement(dropdown.itemText.transform, theme);
+                                    }
+                                    else
+                                    {
+                                        dropdown.itemText.font = theme.BodyFont;
+                                    }
+                                }
+                            }
+
+                            //TODO captionImage?
 
                             var backgroundImage = element.GetComponent<Image>();
+                            //since this is on the element itself, searching for components would be a pointless nop
                             if (backgroundImage != null)
                             {
                                 backgroundImage.sprite = theme.ComboBox;
@@ -488,21 +675,43 @@ namespace CommonCore.UI
                             var templateElement = dropdown.template;
                             if (templateElement)
                             {
-                                var templateImage = templateElement.GetComponent<Image>();
-                                if (templateImage)
-                                    templateImage.sprite = theme.ComboBoxList;
+                                if(templateElement.GetComponent<NonThemableElement>() == null)
+                                {
+                                    var el = templateElement.GetComponent<ThemableElement>();
+                                    if(el != null)
+                                    {
+                                        ApplyThemeToElement(templateElement, theme);
+                                    }
+                                    else
+                                    {
+                                        var templateImage = templateElement.GetComponent<Image>();
+                                        if (templateImage)
+                                            templateImage.sprite = theme.ComboBoxList;
+                                    }
+                                }
                             }
 
                             var arrowElement = element.Find("Arrow").Ref() ?? element.Find("arrow");
                             if (arrowElement != null)
                             {
-                                var arrowImage = arrowElement.GetComponent<Image>();
-                                if (arrowImage != null)
-                                    arrowImage.sprite = theme.ComboBoxArrow;
+                                if(arrowElement.GetComponent<NonThemableElement>() == null)
+                                {
+                                    var el = arrowElement.GetComponent<ThemableElement>();
+                                    if(el != null)
+                                    {
+                                        ApplyThemeToElement(arrowElement, theme);
+                                    }
+                                    else
+                                    {
+                                        var arrowImage = arrowElement.GetComponent<Image>();
+                                        if (arrowImage != null)
+                                            arrowImage.sprite = theme.ComboBoxArrow;
 
-                                var arrowText = arrowElement.GetComponent<Text>();
-                                if (arrowText != null)
-                                    arrowText.font = theme.MonospaceFont;
+                                        var arrowText = arrowElement.GetComponent<Text>();
+                                        if (arrowText != null)
+                                            arrowText.font = theme.MonospaceFont;
+                                    }
+                                }
                             }
                         }
                         break;
@@ -515,10 +724,36 @@ namespace CommonCore.UI
                                 backgroundImage.sprite = theme.InputField;
 
                             if (inputfield.placeholder.Ref() is Text inputfieldPlaceholderText)
-                                inputfieldPlaceholderText.font = theme.BodyFont;
-
+                            {
+                                if(inputfield.placeholder.GetComponent<NonThemableElement>() == null)
+                                {
+                                    var el = inputfield.placeholder.GetComponent<ThemableElement>();
+                                    if(el != null)
+                                    {
+                                        ApplyThemeToElement(inputfield.placeholder.transform, theme);
+                                    }
+                                    else
+                                    {
+                                        inputfieldPlaceholderText.font = theme.BodyFont;
+                                    }
+                                }
+                            }
+                                
                             if (inputfield.textComponent)
-                                inputfield.textComponent.font = theme.BodyFont;
+                            {
+                                if (inputfield.textComponent.GetComponent<NonThemableElement>() == null)
+                                {
+                                    var el = inputfield.textComponent.GetComponent<ThemableElement>();
+                                    if (el != null)
+                                    {
+                                        ApplyThemeToElement(inputfield.textComponent.transform, theme);
+                                    }
+                                    else
+                                    {
+                                        inputfield.textComponent.font = theme.BodyFont;
+                                    }
+                                }
+                            }
                         }
                         break;
                     case ElementClass.ScrollBar:
@@ -529,9 +764,22 @@ namespace CommonCore.UI
 
                             var targetGraphic = element.GetComponent<Scrollbar>().targetGraphic;
 
-                            if(targetGraphic != null && targetGraphic is Image img)
+                            if(targetGraphic != null)
                             {
-                                img.sprite = theme.ScrollbarHandle;
+                                if(targetGraphic.GetComponent<NonThemableElement>() == null)
+                                {
+                                    var el = targetGraphic.GetComponent<ThemableElement>();
+                                    if(el != null)
+                                    {
+                                        ApplyThemeToElement(targetGraphic.transform, theme);
+                                    }
+                                    else
+                                    {
+                                        if(targetGraphic is Image img)
+                                            img.sprite = theme.ScrollbarHandle;
+                                    }
+                                }
+                                
                             }
                         }
                         break;
