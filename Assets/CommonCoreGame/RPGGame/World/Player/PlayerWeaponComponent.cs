@@ -1092,14 +1092,15 @@ namespace CommonCore.RpgGame.World
                     if (wim.CheckFlag(ItemFlag.WeaponShake))
                     {
                         float recoilScale = ConfigState.Instance.GetGameplayConfig().RecoilEffectScale;
+                        float wimRecoilScale = IsADS ? wim.ADSRecoilEffectScale : wim.RecoilEffectScale;
 
                         //factor in the actual fire vector, but only a little bit
                         Quaternion fireRotation = Quaternion.LookRotation(ViewShakeScript.transform.parent.InverseTransformDirection(rFireVec));
-                        Quaternion scaledFireRotation = Quaternion.SlerpUnclamped(Quaternion.identity, fireRotation, RecoilFireVecFactor * recoilScale);
+                        Quaternion scaledFireRotation = Quaternion.SlerpUnclamped(Quaternion.identity, fireRotation, RecoilFireVecFactor * recoilScale * wimRecoilScale);
 
                         //scaledFireRotation = Quaternion.identity;
        
-                        Vector3 rawRecoilAngle = new Vector3(-(IsADS ? wim.ADSRecoilImpulse.Intensity : wim.RecoilImpulse.Intensity) * recoilScale, 0, 0);
+                        Vector3 rawRecoilAngle = new Vector3(-(IsADS ? wim.ADSRecoilImpulse.Intensity : wim.RecoilImpulse.Intensity) * recoilScale * wimRecoilScale, 0, 0);
                         Quaternion recoilRotation = Quaternion.Euler(rawRecoilAngle);
 
                         Vector3 recoilAngle = (recoilRotation * scaledFireRotation).eulerAngles;

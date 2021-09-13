@@ -440,6 +440,9 @@ namespace CommonCore.RpgGame.Rpg
         public readonly PulseEnvelope RecoilImpulse;
         public readonly PulseEnvelope ADSRecoilImpulse;
 
+        public readonly float RecoilEffectScale;
+        public readonly float ADSRecoilEffectScale;
+
         public readonly float MovementSpreadFactor;
         public readonly float MovementRecoveryFactor;
         public readonly float CrouchSpreadFactor;
@@ -456,7 +459,7 @@ namespace CommonCore.RpgGame.Rpg
         public readonly int MagazineSize;       
         public readonly float ReloadTime;
 
-        public readonly float ADSZoomFactor;
+        public readonly float ADSZoomFactor;        
 
         public readonly string AType; 
         public readonly string Projectile;
@@ -469,6 +472,7 @@ namespace CommonCore.RpgGame.Rpg
             float damage, float damagePierce, float damageSpread, float damagePierceSpread, float projectileVelocity,
             RangeEnvelope recoil, RangeEnvelope spread, RangeEnvelope adsRecoil, RangeEnvelope adsSpread,
             PulseEnvelope recoilImpulse, PulseEnvelope adsRecoilImpulse,
+            float? recoilEffectScale, float? adsRecoilEffectScale,
             float movementSpreadFactor, float movementRecoveryFactor, float crouchSpreadFactor, float crouchRecoveryFactor,
             float fireInterval, float? burstFireInterval, int? projectilesPerShot, int? ammoPerShot, int? shotsPerBurst, float lockTime, float recockTime, int magazineSize, float reloadTime,
             string aType, DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType, string viewModel, string worldModel,
@@ -484,6 +488,9 @@ namespace CommonCore.RpgGame.Rpg
             ADSSpread = adsSpread;
             RecoilImpulse = recoilImpulse;
             ADSRecoilImpulse = adsRecoilImpulse;
+
+            RecoilEffectScale = recoilEffectScale ?? 1f;
+            ADSRecoilEffectScale = adsRecoilEffectScale ?? 1f;
 
             MovementSpreadFactor = movementSpreadFactor;
             MovementRecoveryFactor = movementRecoveryFactor;

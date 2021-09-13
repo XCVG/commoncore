@@ -249,6 +249,7 @@
 * Added handling for shields, energy, and armor to StatusPanelController
 * StatusPanelController will now (generally) try substitution lists for terms
 * StatusPanelController now properly supports all builtin gender values
+* Added RecoilEffectScale/ADSRecoilEffectScale to ranged weapon item models
 * Fixed ThemeableElement and NonThemeableElement being ignored on child components of complex elements [Untested]
 * Fixed dialogue reactivating hidden objects even if they were initially inactive [Untested]
 * Added MaxChargeFraction to ShieldParams [Untested]
