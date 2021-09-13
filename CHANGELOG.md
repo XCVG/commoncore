@@ -246,5 +246,8 @@
 * Added HasVideo API to VideoModule
 * Added ConditionalFilter that filters action special triggers by evaluating a Conditional
 * Added explicit EndQuest API (SetQuestStage no longer sends "quest finished" message on negative quest stages)
+* Added handling for shields, energy, and armor to StatusPanelController
+* StatusPanelController will now (generally) try substitution lists for terms
+* StatusPanelController now properly supports all builtin gender values
 * Fixed ThemeableElement and NonThemeableElement being ignored on child components of complex elements [Untested]
 * Fixed dialogue reactivating hidden objects even if they were initially inactive [Untested]

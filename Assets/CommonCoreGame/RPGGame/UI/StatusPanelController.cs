@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using CommonCore.UI;
 using CommonCore.State;
 using CommonCore.RpgGame.Rpg;
+using UnityEngine.Serialization;
+using CommonCore.StringSub;
 
 namespace CommonCore.RpgGame.UI
 {
@@ -12,12 +14,17 @@ namespace CommonCore.RpgGame.UI
     /// </summary>
     public class StatusPanelController : PanelController
     {
+        private const string SubList = "RPG_AV";
+
         public bool CheckLevelUp = true;
 
         public RawImage CharacterImage;
         public Text HealthText;
-        public Text ArmorText;
-        public Text AmmoText;
+        public Text ShieldsText;
+        public Text EnergyText;
+        public Text MagicText;
+        public Text LevelText;
+        public Text EquipText;
         public Button LevelUpButton;
 
         public override void SignalPaint()
@@ -25,20 +32,53 @@ namespace CommonCore.RpgGame.UI
             CharacterModel pModel = GameState.Instance.PlayerRpgState;
             //PlayerControl pControl = PlayerControl.Instance;
 
-            //repaint 
-            HealthText.text = string.Format("Health: {0}/{1}", (int) pModel.Health, (int) pModel.DerivedStats.MaxHealth);
-            ArmorText.text = string.Format("Level: {0} ({1}/{2} XP)\n", pModel.Level, pModel.Experience, RpgValues.XPToNext(pModel.Level));
+            //realistically, I can't see anyone using most of these, especially since their 
+            if(HealthText != null)
+                HealthText.text = string.Format("{2}: {0}/{1}", (int) pModel.Health, (int) pModel.DerivedStats.MaxHealth, Sub.Replace("Health", SubList));
 
-            string equipText = string.Format("Armor: {0}\nLH Weapon: {1}\nRH Weapon: {2}", 
+            if(LevelText != null)
+                LevelText.text = string.Format("{3}: {0} ({1}/{2} XP)\n", pModel.Level, pModel.Experience, RpgValues.XPToNext(pModel.Level), Sub.Replace("Level", SubList));
+
+            if (ShieldsText != null)
+                ShieldsText.text = string.Format("{2}: {0}/{1}", (int)pModel.Shields, (int)pModel.DerivedStats.ShieldParams.MaxShields, Sub.Replace("Shields", SubList));
+
+            if (EnergyText != null)
+                EnergyText.text = string.Format("{2}: {0}/{1}", (int)pModel.Energy, (int)pModel.DerivedStats.MaxEnergy, Sub.Replace("Energy", SubList));
+
+            if (MagicText != null)
+                MagicText.text = string.Format("{2}: {0}/{1}", (int)pModel.Magic, (int)pModel.DerivedStats.MaxMagic, Sub.Replace("Magic", SubList));
+
+            if(EquipText != null)
+            {
+                EquipText.text = string.Format("Armor: {0}\nLH Weapon: {1}\nRH Weapon: {2}",
                 GetNameForSlot(EquipSlot.Body, pModel), GetNameForSlot(EquipSlot.LeftWeapon, pModel), GetNameForSlot(EquipSlot.RightWeapon, pModel));
+            }
 
-            AmmoText.text = equipText;
-
-            LevelUpButton.interactable = !GameState.Instance.MenuGameStateLocked;
+            if(LevelUpButton != null)
+                LevelUpButton.interactable = !GameState.Instance.MenuGameStateLocked;
 
             //this is now somewhat broken because there are more choices in the struct
-            string rid = pModel.Gender == Sex.Female ? "portrait_f" : "portrait_m";
-            CharacterImage.texture = CoreUtils.LoadResource<Texture2D>("UI/Portraits/" + rid);
+            if(CharacterImage != null)
+            {
+                string rid;
+                switch (pModel.Gender)
+                {
+                    case Sex.Female:
+                        rid = "portrait_f";
+                        break;
+                    case Sex.Male:
+                        rid = "portrait_m";
+                        break;
+                    case Sex.Other:
+                        rid = "portrait_o";
+                        break;
+                    default:
+                        rid = "portrait";
+                        break;
+                }
+                CharacterImage.texture = CoreUtils.LoadResource<Texture2D>("UI/Portraits/" + rid);
+            }
+            
         }
 
         //will generalize and move this
