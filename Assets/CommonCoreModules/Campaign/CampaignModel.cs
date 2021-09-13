@@ -162,9 +162,6 @@ namespace CommonCore.State
 
         //***** Quest accessors
 
-        //quests don't actually trigger anything... yet.
-        //it's not planned until maybe Downwarren (v4)
-
         public int GetQuestStage(string questName)
         {
             int stage = 0;
@@ -175,12 +172,8 @@ namespace CommonCore.State
         public void SetQuestStage(string questName, int questStage)
         {
             Quests[questName] = questStage;
-
-            //honestly this is super hacky and I don't like it
-            if(questStage < 0)
-                QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgQuestEnded", "Quest", questName));
         }
-
+        
         //StartQuest only starts a quest if it is not started
         public void StartQuest(string questName)
         {
@@ -195,11 +188,28 @@ namespace CommonCore.State
             {
                 Quests[questName] = initialStage;
 
-                //honestly this is super hacky and I don't like it
                 QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgQuestStarted", "Quest", questName));
             }
             
         }
+
+        public void EndQuest(string questName)
+        {
+            EndQuest(questName, -1);
+        }
+
+        public void EndQuest(string questName, int finalStage)
+        {
+            int oldStage = 0;
+            Quests.TryGetValue(questName, out oldStage);
+            if (oldStage > 0)
+            {
+                Quests[questName] = finalStage;
+
+                QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgQuestEnded", "Quest", questName));
+            }
+        }
+
 
         public bool HasQuest(string questName)
         {

@@ -330,7 +330,7 @@ namespace CommonCore.RpgGame.State
                     else if (Action == MicroscriptAction.Finish)
                     {
                         if (GameState.Instance.CampaignState.IsQuestStarted(Target))
-                            GameState.Instance.CampaignState.SetQuestStage(Target, Convert.ToInt32(Value));
+                            GameState.Instance.CampaignState.EndQuest(Target, Convert.ToInt32(Value));
                     }
                     break;
                 case MicroscriptType.ActorValue:
