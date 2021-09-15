@@ -96,13 +96,17 @@ public class SlideshowControllerEx : MonoBehaviour
         cs.referenceResolution = new Vector2(1920, 1080);
         cs.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
 
-        var bgObj = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        var bgObj = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(AspectRatioFitter));
         bgObj.transform.SetParent(RootCanvas.transform);
 
         var bgRT = (RectTransform)bgObj.transform;
         bgRT.anchorMin = Vector2.zero;
         bgRT.anchorMax = Vector2.one;
         bgRT.pivot = new Vector2(0.5f, 0.5f);
+
+        var bgArf = bgObj.GetComponent<AspectRatioFitter>(); //hacky way of doing things
+        bgArf.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
+        bgArf.aspectRatio = 16f / 9f;
 
         BackgroundImage = bgObj.GetComponent<Image>();
         BackgroundImage.sprite = null;

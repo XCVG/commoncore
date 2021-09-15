@@ -252,7 +252,7 @@
 * Added RecoilEffectScale/ADSRecoilEffectScale to ranged weapon item models
 * Added generalized "slide show" for scripted sequences
 * Dialogue backgrounds are now fit to rather than enveloping screen (intended behaviour, previous setting was an error)
+* Fixed dialogue reactivating hidden objects even if they were initially inactive
 * Added NavigationNodeEx script [Experimental]
 * Fixed ThemeableElement and NonThemeableElement being ignored on child components of complex elements [Untested]
-* Fixed dialogue reactivating hidden objects even if they were initially inactive [Untested]
 * Added MaxChargeFraction to ShieldParams [Untested]

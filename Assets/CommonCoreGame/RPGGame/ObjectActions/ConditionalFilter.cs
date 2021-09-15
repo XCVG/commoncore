@@ -23,8 +23,6 @@ namespace CommonCore.RpgGame.ObjectActions
         private bool EvaluateNonPlayerAction = false;
         [SerializeField]
         private EditorConditional Conditional = default;
-        [SerializeField]
-        private bool Consume = false;
         [SerializeField, Tooltip("If set, will disable non-repeatable action even if the condition failed.")]
         private bool LockEvenOnFail = false;
 
