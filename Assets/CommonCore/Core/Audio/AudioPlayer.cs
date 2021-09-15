@@ -603,7 +603,7 @@ namespace CommonCore.Audio
         public void PlayMusic(string sound, MusicSlot slot, float volume, bool loop, bool retain)
         {
             SetMusic(sound, slot, volume, loop, retain);
-            if(!IsMusicPlaying(slot))
+            if (!IsMusicPlaying(slot))
                 StartMusic(slot);
         }
 
@@ -689,7 +689,7 @@ namespace CommonCore.Audio
                 CurrentUserMusicComponent.ReportClipReleased(oldClip);
             }
 
-            var musicInfo = new MusicInfo() { Clip = clip, Name = name, Volume = volume, Loop = loop, Retain = retain, Playing = wasPlaying, Time = 0 };
+            var musicInfo = new MusicInfo() { Clip = clip, Name = name, Volume = volume, Loop = loop, Retain = retain, Playing = wasPlaying, Time = null };
             CurrentMusics[slot] = musicInfo;
 
             HandleMusicChanged();
@@ -843,7 +843,7 @@ namespace CommonCore.Audio
         /// </summary>
         public float? GetMusicVolume(MusicSlot slot)
         {
-            if(CurrentMusics.ContainsKey(slot))
+            if (CurrentMusics.ContainsKey(slot))
             {
                 return CurrentMusics[slot].Volume;
             }
@@ -874,7 +874,7 @@ namespace CommonCore.Audio
         /// </summary>
         public bool MusicHasClip(MusicSlot slot)
         {
-            if(CurrentMusics.ContainsKey(slot))
+            if (CurrentMusics.ContainsKey(slot))
             {
                 if (slot == MusicSlot.User || CurrentMusics[slot].Playing)
                     return true;
