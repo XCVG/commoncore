@@ -64,9 +64,30 @@ namespace CommonCore
         }
 
         /// <summary>
+        /// Find all children by name, recursively
+        /// </summary>
+        public static List<Transform> FindDeepChildren(this Transform aParent, string aName)
+        {
+            List<Transform> list = new List<Transform>();
+            findDeepChildren(aName, aParent, list);
+            return list;
+
+            void findDeepChildren(string name, Transform t, List<Transform> lst)
+            {
+                if (t.name == name)
+                    lst.Add(t);
+                foreach (Transform c in t)
+                    findDeepChildren(name, c, lst);
+            }
+        }
+
+        /// <summary>
         /// Finds all game objects with a given name. No, I don't know what it's for either.
         /// </summary>
-        [Obsolete]
+        /// <remarks>
+        /// <para>Obsolete, consider <see cref="FindDeepChildren(Transform, string)"/> instead</para>
+        /// </remarks>
+        [Obsolete("Consider FindDeepChildren instead")]
         public static List<GameObject> FindAllGameObjects(string name)
         {
             var goList = new List<GameObject>();
