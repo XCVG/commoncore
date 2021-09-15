@@ -256,6 +256,7 @@
 * Added new FindDeepChildren to SceneUtils and deprecated semi-broken FindAllGameObjects
 * Added new FindDeepChildrenIgnorePlaceholders to WorldUtils
 * Some WorldUtils utility methods now return concrete List<T> instead of IList<T>
+* ActorController now uses FindDeepChildren instead of FindAllGameObjects to unswizzle target after loading a save
 * Added NavigationNodeEx script [Experimental]
 * Fixed ThemeableElement and NonThemeableElement being ignored on child components of complex elements [Untested]
 * Added MaxChargeFraction to ShieldParams [Untested]

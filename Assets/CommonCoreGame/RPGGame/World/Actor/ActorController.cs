@@ -584,7 +584,7 @@ namespace CommonCore.RpgGame.World
         {
             if (!string.IsNullOrEmpty(SavedTarget))
             {
-                var goList = SceneUtils.FindAllGameObjects(SavedTarget);
+                var goList = SceneUtils.FindDeepChildren(CoreUtils.GetWorldRoot(), SavedTarget);
                 if (goList.Count == 1)
                 {
                     Target = goList[0].transform;
