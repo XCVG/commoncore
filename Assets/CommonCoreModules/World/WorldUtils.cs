@@ -142,6 +142,27 @@ namespace CommonCore.World
         }
 
         /// <summary>
+        /// Finds all children by name, recursively, and ignores placeholders
+        /// </summary>
+        public static List<Transform> FindDeepChildrenIgnorePlaceholders(this Transform aParent, string aName)
+        {
+            List<Transform> list = new List<Transform>();
+            findDeepChildren(aName, aParent, list);
+            return list;
+
+            void findDeepChildren(string name, Transform t, List<Transform> lst)
+            {
+                if (t.GetComponent<IPlaceholderComponent>() != null)
+                    return;
+
+                if (t.name == name)
+                    lst.Add(t);
+                foreach (Transform c in t)
+                    findDeepChildren(name, c, lst);
+            }
+        }
+
+        /// <summary>
         /// Finds an object by thing ID (name)
         /// </summary>
         public static GameObject FindObjectByTID(string TID)
@@ -171,7 +192,7 @@ namespace CommonCore.World
         /// <summary>
         /// Finds all entities with form ID (entity name)
         /// </summary>
-        public static IList<BaseController> FindEntitiesWithFormID(string formID)
+        public static List<BaseController> FindEntitiesWithFormID(string formID)
         {
             List<BaseController> foundObjects = new List<BaseController>();
             foreach (BaseController c in CoreUtils.GetWorldRoot().gameObject.GetComponentsInChildren<BaseController>(true))
@@ -188,7 +209,7 @@ namespace CommonCore.World
         /// <summary>
         /// Finds all entities with CommonCore tag
         /// </summary>
-        public static IList<BaseController> FindEntitiesWithTag(string tag)
+        public static List<BaseController> FindEntitiesWithTag(string tag)
         {
             List<BaseController> foundObjects = new List<BaseController>();
             foreach (BaseController c in CoreUtils.GetWorldRoot().gameObject.GetComponentsInChildren<BaseController>(true))

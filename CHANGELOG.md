@@ -254,6 +254,8 @@
 * Dialogue backgrounds are now fit to rather than enveloping screen (intended behaviour, previous setting was an error)
 * Fixed dialogue reactivating hidden objects even if they were initially inactive
 * Added new FindDeepChildren to SceneUtils and deprecated semi-broken FindAllGameObjects
+* Added new FindDeepChildrenIgnorePlaceholders to WorldUtils
+* Some WorldUtils utility methods now return concrete List<T> instead of IList<T>
 * Added NavigationNodeEx script [Experimental]
 * Fixed ThemeableElement and NonThemeableElement being ignored on child components of complex elements [Untested]
 * Added MaxChargeFraction to ShieldParams [Untested]

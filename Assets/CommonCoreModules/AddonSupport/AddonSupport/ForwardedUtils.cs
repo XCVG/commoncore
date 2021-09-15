@@ -258,6 +258,14 @@ namespace CommonCore.AddonSupport
         }
 
         /// <summary>
+        /// Finds all children by name, recursively, and ignores placeholders
+        /// </summary>
+        public static Transform FindDeepChildrenIgnorePlaceholders(Transform aParent, string aName)
+        {
+            return (Transform)ProxyUtils.InvokeStaticProxied(WorldUtilsTypeName, "FindDeepChildrenIgnorePlaceholders", aParent, aName);
+        }
+
+        /// <summary>
         /// Finds an object by thing ID (name)
         /// </summary>
         public static GameObject FindObjectByTID(string TID)
