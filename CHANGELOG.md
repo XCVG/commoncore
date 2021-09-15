@@ -250,8 +250,9 @@
 * StatusPanelController will now (generally) try substitution lists for terms
 * StatusPanelController now properly supports all builtin gender values
 * Added RecoilEffectScale/ADSRecoilEffectScale to ranged weapon item models
+* Added generalized "slide show" for scripted sequences
+* Dialogue backgrounds are now fit to rather than enveloping screen (intended behaviour, previous setting was an error)
 * Added NavigationNodeEx script [Experimental]
 * Fixed ThemeableElement and NonThemeableElement being ignored on child components of complex elements [Untested]
 * Fixed dialogue reactivating hidden objects even if they were initially inactive [Untested]
 * Added MaxChargeFraction to ShieldParams [Untested]
-* Added generalized "slide show" for scripted sequences [WIP]

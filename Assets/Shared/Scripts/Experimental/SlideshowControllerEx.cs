@@ -8,6 +8,7 @@ public class SlideshowControllerEx : MonoBehaviour
 {
     private Canvas RootCanvas = null;
     private AspectRatioFitter AspectRatioFitter = null;
+    private Image BackgroundImage = null;
     private Image SlideshowImage = null;
 
     private static SlideshowControllerEx _Instance;
@@ -25,6 +26,15 @@ public class SlideshowControllerEx : MonoBehaviour
         return _Instance;
     }
 
+    public static void ClearInstance()
+    {
+        if(_Instance != null)
+        {
+            Destroy(_Instance.gameObject);
+            _Instance = null;
+        }
+    }
+
     public bool HideHud
     {
         get
@@ -34,6 +44,18 @@ public class SlideshowControllerEx : MonoBehaviour
         set
         {
             RootCanvas.sortingOrder = value ? 110 : 1;
+        }
+    }
+
+    public bool UseBackground
+    {
+        get
+        {
+            return BackgroundImage.gameObject.activeSelf;
+        }
+        set
+        {
+            BackgroundImage.gameObject.SetActive(value);
         }
     }
 
@@ -52,7 +74,7 @@ public class SlideshowControllerEx : MonoBehaviour
 
         AspectRatioFitter.aspectRatio = sprite.bounds.size.x / sprite.bounds.size.y;
         SlideshowImage.sprite = sprite;
-        SlideshowImage.color = Color.white;        
+        SlideshowImage.color = Color.white;
     }
 
     public void ClearImage()
@@ -64,12 +86,29 @@ public class SlideshowControllerEx : MonoBehaviour
     private void Initialize()
     {
         RootCanvas = gameObject.AddComponent<Canvas>();
-        RootCanvas.sortingOrder = 1;
+        //these need to be called in this specific order and I do not know why
+        RootCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        RootCanvas.gameObject.layer = 5;
+        RootCanvas.sortingOrder = 1;            
 
         var cs = gameObject.AddComponent<CanvasScaler>();
         cs.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         cs.referenceResolution = new Vector2(1920, 1080);
         cs.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
+
+        var bgObj = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        bgObj.transform.SetParent(RootCanvas.transform);
+
+        var bgRT = (RectTransform)bgObj.transform;
+        bgRT.anchorMin = Vector2.zero;
+        bgRT.anchorMax = Vector2.one;
+        bgRT.pivot = new Vector2(0.5f, 0.5f);
+
+        BackgroundImage = bgObj.GetComponent<Image>();
+        BackgroundImage.sprite = null;
+        BackgroundImage.color = Color.black;
+
+        bgObj.SetActive(false);
 
         var imageObj = new GameObject("Image", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(AspectRatioFitter));
         imageObj.transform.SetParent(RootCanvas.transform);
@@ -85,5 +124,7 @@ public class SlideshowControllerEx : MonoBehaviour
 
         SlideshowImage = imageObj.GetComponent<Image>();
         SlideshowImage.color = new Color(0, 0, 0, 0);
+
+        Debug.Log(RootCanvas.transform.position);
     }
 }
