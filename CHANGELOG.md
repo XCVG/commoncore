@@ -210,7 +210,7 @@
 * Added optional line of sight check to ActorAttackComponent [Experimental]
 * Fixed DialogueNavigator NRE [Untested]
 
-# 3.0.0 pNext
+# 3.0.0 Preview 8
 
 * Fixed ExtraData on InventoryItemModels not being loaded
 * Fixed swinging door away from activator not working at some angles
@@ -261,3 +261,5 @@
 * Added NavigationNodeEx script [Experimental]
 * Fixed ThemeableElement and NonThemeableElement being ignored on child components of complex elements [Untested]
 * Added MaxChargeFraction to ShieldParams [Untested]
+
+# 3.0.0 pNext
