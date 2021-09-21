@@ -257,6 +257,7 @@
 * Added new FindDeepChildrenIgnorePlaceholders to WorldUtils
 * Some WorldUtils utility methods now return concrete List<T> instead of IList<T>
 * ActorController now uses FindDeepChildren instead of FindAllGameObjects to unswizzle target after loading a save
+* Fixed incorrect target path for resource manifest when building for macOS
 * Added NavigationNodeEx script [Experimental]
 * Fixed ThemeableElement and NonThemeableElement being ignored on child components of complex elements [Untested]
 * Added MaxChargeFraction to ShieldParams [Untested]

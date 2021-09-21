@@ -21,7 +21,10 @@ public class PostBuildGenerateResourceManifest : IPostprocessBuildWithReport //T
         try
         {
             var resourcesFolders = EditorResourceManifest.GetResourceFolders();
+
             var targetFolder = Path.Combine(Path.GetDirectoryName(report.summary.outputPath), $"{Application.productName}_Data", "StreamingAssets");
+            if (report.summary.platform == BuildTarget.StandaloneOSX)
+                targetFolder = Path.Combine(report.summary.outputPath, "Contents", "Resources", "Data", "StreamingAssets");
 
             List<string> directories = new List<string>();
             List<ResourceFolderModel> models = new List<ResourceFolderModel>();
