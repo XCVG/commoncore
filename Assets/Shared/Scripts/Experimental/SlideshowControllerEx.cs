@@ -129,6 +129,6 @@ public class SlideshowControllerEx : MonoBehaviour
         SlideshowImage = imageObj.GetComponent<Image>();
         SlideshowImage.color = new Color(0, 0, 0, 0);
 
-        Debug.Log(RootCanvas.transform.position);
+        //Debug.Log(RootCanvas.transform.position);
     }
 }
