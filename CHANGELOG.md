@@ -263,3 +263,5 @@
 * Added MaxChargeFraction to ShieldParams [Untested]
 
 # 3.0.0 pNext
+
+* Addon loading now ignores all files starting with . and all .meta files

@@ -98,8 +98,8 @@ namespace CommonCore
             context.ResourcePriority = ResourcePriority.Streaming;
             context.AbortOnSingleFileFailure = false;
 
-            await LoadResourcesFromPathAsync(context);
             await LoadAssembliesAsync(context);
+            await LoadResourcesFromPathAsync(context);            
 
             onLoadedMethod(new AddonLoadData(context.LoadedAssemblies, context.LoadedResources, new string[] { }));
 
@@ -295,6 +295,11 @@ namespace CommonCore
             var files = Directory.EnumerateFiles(folderPath);
             foreach(var file in files)
             {
+                if (Path.GetFileName(file).StartsWith("."))
+                    continue;
+                if (Path.GetExtension(file).Equals(".meta", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
                 string fileTargetPath = getTargetPath(file);
 
                 try
