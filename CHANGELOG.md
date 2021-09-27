@@ -265,3 +265,5 @@
 # 3.0.0 pNext
 
 * Addon loading now ignores all files starting with . and all .meta files
+* Fixed incorrect logic for chase destination range in ActorController and ActorAttackComponent
+* Fixed unstable/incorrect closest hit detection in ActorAttackComponentBase.CheckLineOfSight

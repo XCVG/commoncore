@@ -311,12 +311,11 @@ namespace CommonCore.RpgGame.World
 
             Vector3 getDefaultDestination()
             {
-                //copied from ActorController for now
                 Vector2 vecToTarget = (ActorController.Target.position - ActorController.transform.position).GetFlatVector();
                 float distToTarget = vecToTarget.magnitude;
-                float distToDestination = Mathf.Min(distToTarget, ChaseOptimalDistance);
+                float distFromDestination = Mathf.Min(distToTarget, ChaseOptimalDistance); //fixed backwards logic, note name, note also this is different from ActorController now
                 Vector2 dirToTarget = vecToTarget.normalized;
-                Vector2 destination2d = transform.position.GetFlatVector() + dirToTarget * distToDestination;
+                Vector2 destination2d = ActorController.Target.position.GetFlatVector() + -dirToTarget * distFromDestination;
                 Vector3 destination = new Vector3(destination2d.x, ActorController.transform.position.y, destination2d.y);
                 return destination;
             }

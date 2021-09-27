@@ -620,7 +620,7 @@ namespace CommonCore.RpgGame.World
             {
                 Vector2 vecToTarget = (Target.position - transform.position).GetFlatVector();
                 float distToTarget = vecToTarget.magnitude;
-                float distToDestination = Mathf.Min(distToTarget, AttackComponent.ChaseOptimalDistance);
+                float distToDestination = Mathf.Max(0, distToTarget - AttackComponent.ChaseOptimalDistance);
                 Vector2 dirToTarget = vecToTarget.normalized;
                 Vector2 destination2d = transform.position.GetFlatVector() + dirToTarget * distToDestination;
                 Vector3 destination = new Vector3(destination2d.x, transform.position.y, destination2d.y);

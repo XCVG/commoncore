@@ -68,14 +68,14 @@ namespace CommonCore.RpgGame.World
                 if (hit.collider.GetComponentInParent<ActorController>() == ActorController)
                     continue;
 
-                if (hit.transform == target || hitTargetHitbox(hit) || hitTargetEntity(hit))
-                {
-                    targetHit = hit;
-                }
-
-                if(hit.distance < closestHitDist)
+                if (hit.distance < closestHitDist)
                 {
                     closestHitDist = hit.distance;
+
+                    if (hit.transform == target || hitTargetHitbox(hit) || hitTargetEntity(hit))
+                    {
+                        targetHit = hit;
+                    }
                 }
             }
 
