@@ -262,7 +262,7 @@
 * Fixed ThemeableElement and NonThemeableElement being ignored on child components of complex elements [Untested]
 * Added MaxChargeFraction to ShieldParams [Untested]
 
-# 3.0.0 pNext
+# 3.0.0
 
 * Addon loading now ignores all files starting with . and all .meta files
 * Fixed incorrect logic for chase destination range in ActorController and ActorAttackComponent
