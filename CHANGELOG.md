@@ -270,3 +270,4 @@
 
 # 4.0.0 pNext
 
+* Updated CREDITS

@@ -5,11 +5,8 @@ While CommonCore makes use of many external third-party assets, the base library
 Most dependencies are included. A few of them are pulled in automatically as Unity packages:
 
 - Post-Processing Stack (https://docs.unity3d.com/Packages/com.unity.postprocessing@2.1/manual/index.html)
-- ProBuilder (https://docs.unity3d.com/Packages/com.unity.probuilder@3.0/manual/index.html)
 
-A basic command console is included; the third party DevConsole 2 asset is no longer required. You can still use it if you want by installing the SickDevConsoleIntegration module and importing the DevConsole 2 asset from the Asset Store.
-
-You can get the extra CommonCore modules at https://github.com/XCVG/commoncore-modules
+You can get the extra CommonCore modules at (https://github.com/XCVG/commoncore-modules). Some modules do have third-party dependencies.
 
 There is no dependency on the Unity Standard Assets but you can bring them in if you need to.
 
