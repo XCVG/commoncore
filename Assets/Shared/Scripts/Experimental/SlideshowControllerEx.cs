@@ -73,7 +73,12 @@ namespace CommonCore.Experimental
 
             var sprite = CoreUtils.LoadResource<Sprite>("Sequences/" + imageName);
             if (sprite == null)
+            {
                 Debug.LogError($"Failed to load sprite \"Sequences/{imageName}\"");
+                SlideshowImage.sprite = null;
+                SlideshowImage.color = Color.white;
+                return;
+            }
 
             AspectRatioFitter.aspectRatio = sprite.bounds.size.x / sprite.bounds.size.y;
             SlideshowImage.sprite = sprite;
