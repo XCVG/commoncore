@@ -45,13 +45,13 @@ namespace CommonCore.RpgGame.Dialogue
                 return;            
 
             //this probably won't work, but it's supposed to reselect after a return from the menu
-            if(EventSystem.currentSelectedGameObject == null || !EventSystem.currentSelectedGameObject.activeInHierarchy)
+            if((EventSystem.currentSelectedGameObject == null || !EventSystem.currentSelectedGameObject.activeInHierarchy) && SelectedButton >= 0)
             {
                 SelectButton(SelectedButton);
             }            
 
             //update our view of SelectedButton
-            if(EventSystem.currentSelectedGameObject != CurrentButtons[SelectedButton].gameObject)
+            if(SelectedButton >= 0 && SelectedButton < (CurrentButtons?.Count ?? 0) && EventSystem.currentSelectedGameObject != CurrentButtons[SelectedButton].gameObject)
             {
                 int newIndex = CurrentButtons.IndexOf(EventSystem.currentSelectedGameObject.GetComponent<Button>());
                 if(newIndex >= 0)

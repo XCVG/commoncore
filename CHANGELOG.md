@@ -268,6 +268,12 @@
 * Fixed incorrect logic for chase destination range in ActorController and ActorAttackComponent
 * Fixed unstable/incorrect closest hit detection in ActorAttackComponentBase.CheckLineOfSight
 
+# 3.0.0 pNext
+
+* DialogueNavigator now fails gracefully (no error spam) when a dialogue does not exist
+* SlideshowControllerEx no longer throws if a slide cannot be found
+
 # 4.0.0 pNext
 
 * Updated CREDITS
+
