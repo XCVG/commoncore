@@ -34,6 +34,7 @@ namespace CommonCore
         public static bool UseRandomDamage { get; private set; } = true;
         public static bool UseFriendlyFire { get; private set; } = true; //note that this can be overridden by player weapons and actor attack components
         public static float DamageFlashThreshold { get; private set; } = 0.01f; //very small because health is reported as a fraction
+        public static bool UseLegacyReequipShieldRecharge { get; private set; } = true; //use (bugged) Citadel behaviour for handling shield recharge state after item equip
 
         public static bool AutoQuestNotifications { get; private set; } = true;
 
