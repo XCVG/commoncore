@@ -53,7 +53,7 @@ namespace CommonCore.Config
         }
 
         /// <summary>
-        /// Registers a config panel to be displayed in options menus
+        /// Registers a config panel to be displayed in options menus (prefab variant)
         /// </summary>
         public void RegisterConfigPanel(string name, int priority, GameObject prefab)
         {
@@ -66,7 +66,21 @@ namespace CommonCore.Config
                 ConfigPanels.Remove(name);
             }
 
-            ConfigPanels.Add(name, new ConfigPanelData(priority, prefab));
+            ConfigPanels.Add(name, new ConfigPanelData(priority, (t) => GameObject.Instantiate(prefab, t)));
+        }
+
+        /// <summary>
+        /// Registers a config panel to be displayed in options menus (build function variant)
+        /// </summary>
+        public void RegisterConfigPanel(string name, int priority, Func<Transform, GameObject> builder)
+        {
+            if (ConfigPanels.ContainsKey(name))
+            {
+                LogWarning($"A config panel \"{name}\" is already registered");
+                ConfigPanels.Remove(name);
+            }
+
+            ConfigPanels.Add(name, new ConfigPanelData(priority, builder));
         }
 
         /// <summary>
@@ -78,9 +92,9 @@ namespace CommonCore.Config
         }
 
         /// <summary>
-        /// A sorted view (highest to lowest priority) of the config panel prefabs
+        /// A sorted view (highest to lowest priority) of the config panel builders
         /// </summary>
-        public IReadOnlyList<GameObject> SortedConfigPanels => ConfigPanels.Select(kvp => kvp.Value).OrderByDescending(d => d.Priority).Select(d => d.Prefab).ToArray();
+        public IReadOnlyList<Func<Transform, GameObject>> SortedConfigPanelBuilders => ConfigPanels.Select(kvp => kvp.Value).OrderByDescending(d => d.Priority).Select(d => d.Builder).ToArray();
 
         /// <summary>
         /// Apply the current ConfigState configuration to the game
@@ -173,12 +187,12 @@ namespace CommonCore.Config
         private struct ConfigPanelData
         {
             public int Priority;
-            public GameObject Prefab;
+            public Func<Transform, GameObject> Builder;
 
-            public ConfigPanelData(int priority, GameObject prefab)
+            public ConfigPanelData(int priority, Func<Transform, GameObject> builder)
             {
                 Priority = priority;
-                Prefab = prefab;
+                Builder = builder;
             }
         }
 

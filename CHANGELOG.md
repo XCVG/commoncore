@@ -276,4 +276,5 @@
 # 4.0.0 pNext
 
 * Updated CREDITS
-
+* Options panel now displays game name and versions of game, core, and engine
+* Options subpanels can be added with a builder function instead of prefab (and always use a build func internally)

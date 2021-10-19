@@ -27,6 +27,8 @@ namespace CommonCore.UI
         private RectTransform PanelContainer = null;
         [SerializeField]
         private Text StatusText = null;
+        [SerializeField]
+        private Text VersionText = null;
 
         [Header("Input")]
         public Dropdown InputDropdown;
@@ -73,10 +75,10 @@ namespace CommonCore.UI
             base.SignalInitialPaint();
 
             //initialize subpanels
-            var subpanels = ConfigModule.Instance.SortedConfigPanels;
-            foreach(var subpanel in subpanels)
+            var subpanelBuilders = ConfigModule.Instance.SortedConfigPanelBuilders;
+            foreach(var subpanelBuilder in subpanelBuilders)
             {
-                var subpanelGO = Instantiate(subpanel, PanelContainer);
+                var subpanelGO = subpanelBuilder(PanelContainer);
                 subpanelGO.SetActive(true);
 
                 if (ApplyTheme)
@@ -158,6 +160,7 @@ namespace CommonCore.UI
             }
 
             PaintStatusText();
+            PaintVersionText();
         }
 
         public void OnInputDropdownChanged()
@@ -332,6 +335,11 @@ namespace CommonCore.UI
                 sb.AppendLine("The game must be restarted to fully apply settings changes");
 
             StatusText.text = sb.ToString();
+        }
+
+        private void PaintVersionText()
+        {
+            VersionText.text = $"{CoreParams.GameName} {CoreParams.GameVersion.ToString(3)} C{CoreParams.VersionCode.ToString(3)} E{CoreParams.UnityVersion.ToString(3)}";
         }
 
     }
