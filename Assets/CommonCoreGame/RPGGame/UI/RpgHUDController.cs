@@ -144,7 +144,7 @@ namespace CommonCore.RpgGame.UI
             {
                 switch (kvmessage.Flag)
                 {
-                    case "RpgChangeWeapon":
+                    case "RpgEquipmentChanged":
                         if(kvmessage.GetValue<CharacterModel>("CharacterModel").IsPlayer)
                             UpdateWeaponDisplay();
                         break;

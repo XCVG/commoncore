@@ -275,7 +275,7 @@ namespace CommonCore.RpgGame.World
                 string flag = ((QdmsFlagMessage)message).Flag;
                 switch (flag)
                 {
-                    case "RpgChangeWeapon":
+                    case "RpgEquipmentChanged":
                         {
                             var kvm = message as QdmsKeyValueMessage;
 
@@ -284,10 +284,6 @@ namespace CommonCore.RpgGame.World
                                 if (kvm.HasValue<EquipSlot>("Slot"))
                                 {
                                     WeaponComponent.HandleWeaponChange(kvm.GetValue<EquipSlot>("Slot"), false);
-                                }
-                                else
-                                {
-                                    WeaponComponent.HandleWeaponChange(EquipSlot.None, false);
                                 }
                             }                               
                                 
@@ -299,7 +295,7 @@ namespace CommonCore.RpgGame.World
 
                             if (kvm != null && kvm.GetValue<CharacterModel>("CharacterModel").IsPlayer)
                             {
-                                ShieldComponent.Ref()?.SignalEquipmentChanged();
+                                ShieldComponent.Ref()?.SignalStatsUpdated();
                             }                            
                         }
                         break;

@@ -144,7 +144,7 @@ namespace CommonCore.RpgGame.World
         }
 
         //handles recharge-on-equipment-change
-        public void SignalEquipmentChanged()
+        public void SignalStatsUpdated()
         {
             //Debug.Log("PlayerShieldComponent received SignalEquipmentChanged");
 

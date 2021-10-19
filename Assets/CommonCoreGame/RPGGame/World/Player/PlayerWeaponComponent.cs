@@ -1330,6 +1330,9 @@ namespace CommonCore.RpgGame.World
 
         public void HandleWeaponChange(EquipSlot slot, bool skipAnimations)
         {
+            if (slot != EquipSlot.LeftWeapon && slot != EquipSlot.RightWeapon) //do not handle non-weapon equipment
+                return;
+
             //we should probably cache this at a higher level but it's probably not safe
             var player = GameState.Instance.PlayerRpgState;
 

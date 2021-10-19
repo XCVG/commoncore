@@ -284,7 +284,7 @@ namespace CommonCore.RpgGame.Rpg
 
             UpdateStats();
 
-            QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgChangeWeapon", new Dictionary<string, object>() {
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgEquipmentChanged", new Dictionary<string, object>() {
                 { "Slot", slot },
                 { "InventoryItemInstance", item },
                 { "ChangeType", "Equip" },
@@ -336,7 +336,7 @@ namespace CommonCore.RpgGame.Rpg
             UpdateStats();
 
             if (postMessage)
-                QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgChangeWeapon", new Dictionary<string, object>() {
+                QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgEquipmentChanged", new Dictionary<string, object>() {
                     { "Slot", slot },
                     { "InventoryItemInstance", item },
                     { "ChangeType", "Unequip" },
