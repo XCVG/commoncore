@@ -40,11 +40,14 @@ namespace CommonCore.RpgGame.World
         public bool UseLosChase = false;
         [Tooltip("Experimental, works with UseLosChase")]
         public float LosChaseDestinationRadius = 4f;
+        [Tooltip("Experimental. Will attempt to immediately reenter attack state if >0")]
+        public int MaxRepeatCount = 0;
 
         //fields
 
         private Vector3? LastChaseDestination;
         private float LastAttackTime = -1;
+        private int Repeats = 0;
         public bool DidAttack { get; private set; }
         
 
@@ -79,6 +82,7 @@ namespace CommonCore.RpgGame.World
             if (AttackStateWarmup <= 0)
             {
                 DoAttack(); //waaaaay too complicated to cram here
+                Repeats++;
                 LastAttackTime = Time.time;
             }
         }
@@ -88,6 +92,7 @@ namespace CommonCore.RpgGame.World
             if (!DidAttack && WarmupIsDone)
             {
                 DoAttack(); //waaaaay too complicated to cram here                                               
+                Repeats++;
             }
         }
 
@@ -97,6 +102,9 @@ namespace CommonCore.RpgGame.World
         public override void EndAttack()
         {
             DidAttack = false;
+
+            if (Repeats >= MaxRepeatCount)
+                Repeats = 0;
         }
 
         public override bool ReadyToAttack => ReadyToAttackInternal && (UseLosChase ? LosTargetInRange : TargetInRange);
@@ -127,6 +135,8 @@ namespace CommonCore.RpgGame.World
             {
                 if (!RpgWorldUtils.TargetIsAlive(ActorController.Target))
                     return ActorController.BaseAiState;
+                else if (MaxRepeatCount > 0 && (UseLosChase ? LosTargetInRange : TargetInRange) && Repeats < MaxRepeatCount)
+                    return ActorAiState.Attacking;
                 else
                     return ActorAiState.Chasing;
             }
@@ -302,7 +312,7 @@ namespace CommonCore.RpgGame.World
             }
 
             bool checkDestinationLineOfSight(Vector3 destination)
-            {
+            { 
                 Vector3 vecToShootPoint = ShootPoint.position - ActorController.transform.position;
                 Vector3 destShootPoint = destination + vecToShootPoint;
 
@@ -328,7 +338,7 @@ namespace CommonCore.RpgGame.World
                 if (!UseLosChase)
                     return false;
 
-                //Debug.Log("LosTargetInRange: " + CheckLineOfSight(ShootPoint.position, ActorController.Target));
+                //Debug.Log("LosTargetInRange: " + CheckLineOfSight(ShootPoint.position, ActorController.Target) + $" ({(ActorController.Target.position - transform.position).magnitude.ToString("F2")})");
 
                 return TargetInRange && CheckLineOfSight(ShootPoint.position, ActorController.Target);
             }
