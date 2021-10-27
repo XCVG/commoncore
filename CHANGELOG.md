@@ -279,3 +279,4 @@
 * Options panel now displays game name and versions of game, core, and engine
 * Options subpanels can be added with a builder function instead of prefab (and always use a build func internally)
 * RpgChangeWeapon message is now RpgEquipmentChanged, more accurately reflecting its actual function
+* PlayerShieldComponent now properly handles separate cases of stats changed and shield equipment changed

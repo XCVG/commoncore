@@ -146,10 +146,43 @@ namespace CommonCore.RpgGame.World
         //handles recharge-on-equipment-change
         public void SignalStatsUpdated()
         {
-            //Debug.Log("PlayerShieldComponent received SignalEquipmentChanged");
+            Debug.Log("PlayerShieldComponent received SignalStatsUpdated");
+
+            var previousState = RechargeState;
+
+            var player = GameState.Instance.PlayerRpgState;
+
+            if (previousState == ShieldRechargeState.Recharging && player.DerivedStats.ShieldParams.MaxShields > 0 && player.ShieldsFraction < player.DerivedStats.ShieldParams.MaxChargeFraction)
+            {
+                SetRechargeState(ShieldRechargeState.Recharging);
+            }
+            else
+            {
+                if (player.ShieldsFraction < player.DerivedStats.ShieldParams.MaxChargeFraction && player.DerivedStats.ShieldParams.MaxShields > 0)
+                {
+                    SetRechargeState(ShieldRechargeState.Waiting); //now waiting (or still waiting) to recharge
+                    //ElapsedSinceLastDamage = 0;
+                }
+                else
+                {
+                    SetRechargeState(ShieldRechargeState.Idle);
+                    StopWarningSoundLoop();
+                }
+
+                if (previousState == ShieldRechargeState.Recharging)
+                {
+                    StopRechargeSoundLoop();
+                    QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("PlayerShieldsRechargingDone"));
+                }
+            }
+        }
+
+        public void SignalEquipmentChanged()
+        {
+            Debug.Log("PlayerShieldComponent received SignalEquipmentChanged");
 
             //stop recharging if we're recharging
-            if(RechargeState == ShieldRechargeState.Recharging)
+            if (RechargeState == ShieldRechargeState.Recharging)
             {
                 SetRechargeState(ShieldRechargeState.Idle);
                 StopRechargeSoundLoop();
@@ -157,16 +190,16 @@ namespace CommonCore.RpgGame.World
             }
 
             var player = GameState.Instance.PlayerRpgState;
-            if(player.ShieldsFraction < player.DerivedStats.ShieldParams.MaxChargeFraction)
+            if (player.ShieldsFraction < player.DerivedStats.ShieldParams.MaxChargeFraction)
             {
-                if(player.DerivedStats.ShieldParams.MaxShields > 0)
+                if (player.DerivedStats.ShieldParams.MaxShields > 0)
                 {
                     SetRechargeState(ShieldRechargeState.Waiting); //now waiting to recharge
                     ElapsedSinceLastDamage = 0;
                 }
             }
 
-            if(player.DerivedStats.ShieldParams.MaxShields == 0)
+            if (player.DerivedStats.ShieldParams.MaxShields == 0)
             {
                 SetRechargeState(ShieldRechargeState.Idle);
             }

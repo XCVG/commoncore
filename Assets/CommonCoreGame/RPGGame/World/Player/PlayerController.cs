@@ -284,6 +284,10 @@ namespace CommonCore.RpgGame.World
                                 if (kvm.HasValue<EquipSlot>("Slot"))
                                 {
                                     WeaponComponent.HandleWeaponChange(kvm.GetValue<EquipSlot>("Slot"), false);
+
+                                    var arim = kvm.GetValue<InventoryItemInstance>("InventoryItemInstance")?.ItemModel as ArmorItemModel;
+                                    if (arim != null && arim.Shields != null)
+                                        ShieldComponent.Ref()?.SignalEquipmentChanged();
                                 }
                             }                               
                                 
