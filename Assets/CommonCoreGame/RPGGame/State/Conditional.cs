@@ -134,7 +134,19 @@ namespace CommonCore.RpgGame.State
             if (value0 == null || value1 == null)
                 return false; //assume null = false
 
-            if(TypeUtils.IsNumericType(value0.GetType()) && TypeUtils.IsNumericType(value1.GetType()))
+            if(System.Type.GetTypeCode(value0.GetType()) == TypeCode.UInt64 && System.Type.GetTypeCode(value1.GetType()) == TypeCode.UInt64)
+            {
+                //if both are ulong, compare as ulong
+                value0 = Convert.ToUInt64(value0);
+                value1 = Convert.ToUInt64(value1);
+            }
+            else if(TypeUtils.IsIntegerType(value0.GetType()) && TypeUtils.IsIntegerType(value1.GetType()) && System.Type.GetTypeCode(value0.GetType()) != TypeCode.UInt64 && System.Type.GetTypeCode(value1.GetType()) != TypeCode.UInt64)
+            {
+                //if both are integral and not ulong, compare as long
+                value0 = Convert.ToInt64(value0);
+                value1 = Convert.ToInt64(value1);
+            }
+            else if(TypeUtils.IsNumericType(value0.GetType()) && TypeUtils.IsNumericType(value1.GetType()))
             {
                 //if both are numeric, compare as decimal
                 value0 = Convert.ToDecimal(value0);
