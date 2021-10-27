@@ -272,6 +272,8 @@
 
 * DialogueNavigator now fails gracefully (no error spam) when a dialogue does not exist
 * SlideshowControllerEx no longer throws if a slide cannot be found
+* More logical handling of shield recharge after item equip (behind a GameParams flag)
+* Added attack repeat functionality to ActorAttackComponent [Experimental]
 
 # 4.0.0 pNext
 
