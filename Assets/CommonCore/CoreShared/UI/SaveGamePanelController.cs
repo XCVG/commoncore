@@ -200,19 +200,19 @@ namespace CommonCore.UI
                     try
                     {
                         SharedUtils.SaveGame(saveFileName, true, false);
-                        Modal.PushMessageModal(Sub.Replace("SaveSuccessMessage", SubList), Sub.Replace("SaveSuccess", SubList), null, null);
+                        Modal.PushMessageModal(Sub.Replace("SaveSuccessMessage", SubList), Sub.Replace("SaveSuccess", SubList), null, null, true);
                     }
                     catch(Exception e)
                     {
                         Debug.LogError($"Save failed! ({e.GetType().Name})");
                         Debug.LogException(e);
-                        Modal.PushMessageModal(e.Message, Sub.Replace("SaveFail", SubList), null, null);
+                        Modal.PushMessageModal(e.Message, Sub.Replace("SaveFail", SubList), null, null, true);
                     }
                     SignalPaint();
                 }
                 else
                 {
-                    Modal.PushMessageModal(Sub.Replace("SaveBadFilenameMessage", SubList), Sub.Replace("SaveFail", SubList), null, null);
+                    Modal.PushMessageModal(Sub.Replace("SaveBadFilenameMessage", SubList), Sub.Replace("SaveFail", SubList), null, null, true);
                 }
 
             }
@@ -220,7 +220,7 @@ namespace CommonCore.UI
             {
                 //can't save!
 
-                Modal.PushMessageModal(Sub.Replace("SaveNotAllowedMessage", SubList), Sub.Replace("SaveNotAllowed", SubList), null, null);
+                Modal.PushMessageModal(Sub.Replace("SaveNotAllowedMessage", SubList), Sub.Replace("SaveNotAllowed", SubList), null, null, true);
             }
         }
     }

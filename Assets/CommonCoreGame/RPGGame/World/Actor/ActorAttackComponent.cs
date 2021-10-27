@@ -144,6 +144,13 @@ namespace CommonCore.RpgGame.World
 
         protected void DoAttack()
         {
+            if (ActorController.Target == null)
+            {
+                DidAttack = true;
+                LastAttackTime = Time.time;
+                return;
+            }
+
             Vector3 shootPos = ShootPoint == null ? (transform.position + (transform.forward * 0.6f) + (transform.up * 1.25f)) : ShootPoint.position;
 
             if (UseSuicide)
