@@ -285,3 +285,4 @@
 * Options subpanels can be added with a builder function instead of prefab (and always use a build func internally)
 * RpgChangeWeapon message is now RpgEquipmentChanged, more accurately reflecting its actual function
 * PlayerShieldComponent now properly handles separate cases of stats changed and shield equipment changed
+* Updated jilleJr/Newtonsoft.Json-for-Unity to 12.0.302
