@@ -276,6 +276,7 @@
 * Save game messages now use ephemeral modals
 * Added guard against target going null in ActorAttackComponent.DoAttack
 * Integral values are now compared as integers in Conditionals
+* Fixed shields recharging past limit when MaxChargeFraction < 1
 * Added attack repeat functionality to ActorAttackComponent [Experimental]
 
 # 4.0.0 pNext
