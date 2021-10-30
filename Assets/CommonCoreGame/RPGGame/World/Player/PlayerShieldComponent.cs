@@ -130,9 +130,9 @@ namespace CommonCore.RpgGame.World
                         if (UseRPGRecharge)
                             rechargeRate *= GameState.Instance.PlayerRpgState.DerivedStats.ShieldParams.RechargeRate;
 
-                        playerModel.Shields = Mathf.Min(playerModel.DerivedStats.ShieldParams.MaxShields, playerModel.Shields + rechargeRate * Time.deltaTime);
+                        playerModel.Shields = Mathf.Min(playerModel.DerivedStats.ShieldParams.MaxShields * playerModel.DerivedStats.ShieldParams.MaxChargeFraction, playerModel.Shields + rechargeRate * Time.deltaTime);
 
-                        if (Mathf.Approximately(playerModel.ShieldsFraction, playerModel.DerivedStats.ShieldParams.MaxChargeFraction))
+                        if (Mathf.Approximately(playerModel.ShieldsFraction, playerModel.DerivedStats.ShieldParams.MaxChargeFraction) || playerModel.ShieldsFraction > playerModel.DerivedStats.ShieldParams.MaxChargeFraction)
                         {
                             SetRechargeState(ShieldRechargeState.Idle);
                             StopRechargeSoundLoop();
