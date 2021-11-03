@@ -287,3 +287,4 @@
 * RpgChangeWeapon message is now RpgEquipmentChanged, more accurately reflecting its actual function
 * PlayerShieldComponent now properly handles separate cases of stats changed and shield equipment changed
 * Updated jilleJr/Newtonsoft.Json-for-Unity to 12.0.302
+* Added Humanizer library
