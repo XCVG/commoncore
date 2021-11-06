@@ -296,4 +296,5 @@
 * Added PlaySound overloads with more params (like PlaySoundEx, but does not throw)
 * Added options to not receive messages on inactive components (QdmsMessageInterface and QdmsMessageComponent)
 * Deprecated PlayerController PlayerInControl and AttackEnabled fields
+* Revised player spawn logic
 * QdmsMessageComponent can now translate and rebroadcast as Unity messages [Experimental]

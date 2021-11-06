@@ -79,13 +79,47 @@ namespace CommonCore.World
         /// <summary>
         /// Finds the default player spawn point
         /// </summary>
-        public static GameObject FindPlayerSpawn() => FindPlayerSpawn("DefaultPlayerSpawn");
+        /// <remarks>
+        /// <para>Selects "DefaultPlayerSpawn" from active PlayerSpawnPoints, then "DefaultPlayerSpawn" from active without PlayerSpawnPoint, then any active PlayerSpawnPoint</para>
+        /// </remarks>
+        public static GameObject FindDefaultPlayerSpawn()
+        {
+            Transform[] transforms = CoreUtils.GetWorldRoot().GetComponentsInChildren<Transform>(true);
+            var potentialSpawnPoints = transforms
+                .Select(t => t.gameObject)
+                .Where(g => g.name == "DefaultPlayerSpawn");
+
+            PlayerSpawnPoint spawnPoint = potentialSpawnPoints
+                .Where(g => g.activeInHierarchy)
+                .Select(g => g.GetComponent<PlayerSpawnPoint>())
+                .Where(p => p != null)
+                .FirstOrDefault();
+            if (spawnPoint != null)
+                return spawnPoint.gameObject;
+
+            GameObject spawnPointObject = potentialSpawnPoints
+                .Where(g => g.activeInHierarchy)
+                .FirstOrDefault();
+            if (spawnPointObject != null)
+                return spawnPointObject;
+
+            PlayerSpawnPoint fallbackSpawnPoint = transforms
+                .Select(t => t.gameObject)
+                .Where(g => g.activeInHierarchy)
+                .Select(g => g.GetComponent<PlayerSpawnPoint>())
+                .Where(p => p != null)
+                .FirstOrDefault();
+            if (fallbackSpawnPoint != null)
+                return fallbackSpawnPoint.gameObject;
+
+            return null;
+        }
 
         /// <summary>
         /// Finds the player spawn point by name
         /// </summary>
         /// <remarks>
-        /// <para>Selects from active PlayerSpawnPoints, then active without PlayerSpawnPoint, then inactive without PlayerSpawnPoint</para>
+        /// <para>Selects from active PlayerSpawnPoints, then active without PlayerSpawnPoint</para>
         /// </remarks>
         public static GameObject FindPlayerSpawn(string spawnPointName)
         {
@@ -95,9 +129,6 @@ namespace CommonCore.World
             if (spawnPoint != null)
                 return spawnPoint.gameObject;
             GameObject spawnPointObject = potentialSpawnPoints.Where(g => g.activeInHierarchy).FirstOrDefault();
-            if (spawnPointObject != null)
-                return spawnPointObject;
-            spawnPointObject = potentialSpawnPoints.Where(g => g.GetComponent<PlayerSpawnPoint>() == null).FirstOrDefault();
             if (spawnPointObject != null)
                 return spawnPointObject;
 

@@ -670,7 +670,7 @@ namespace CommonCore.RpgGame.World
                     Debug.LogWarning("Player out of bounds, teleporting!");
 
                     Vector3 teleportPoint = sceneController.WorldBounds.center + new Vector3(0, 2f, 0);
-                    GameObject spawnPoint = WorldUtils.FindPlayerSpawn();
+                    GameObject spawnPoint = WorldUtils.FindDefaultPlayerSpawn();
                     if (spawnPoint != null)
                     {
                         teleportPoint = spawnPoint.transform.position;

@@ -456,7 +456,7 @@ namespace CommonCore.World
                 }
                 else if(mgs.PlayerIntent.SpawnPoint != null) //not null, but is empty
                 {
-                    GameObject spawnPoint = WorldUtils.FindPlayerSpawn();
+                    GameObject spawnPoint = WorldUtils.FindDefaultPlayerSpawn();
                     if(spawnPoint != null)
                     {
                         player.transform.position = spawnPoint.transform.position;
@@ -477,7 +477,7 @@ namespace CommonCore.World
 
             {
 
-                GameObject spawnPoint = WorldUtils.FindPlayerSpawn();
+                GameObject spawnPoint = WorldUtils.FindDefaultPlayerSpawn();
                 if (spawnPoint != null)
                 {
                     player.transform.position = spawnPoint.transform.position;
