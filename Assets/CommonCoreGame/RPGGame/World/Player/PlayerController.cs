@@ -22,6 +22,7 @@ namespace CommonCore.RpgGame.World
         public bool AutoinitHud = true;
 
         [Header("Interactivity")]
+        [Obsolete("Use PlayerFlags instead"), Tooltip("Obsolete")]
         public bool PlayerInControl;
 
         public float MaxProbeDist;
@@ -68,6 +69,7 @@ namespace CommonCore.RpgGame.World
         public AudioSource DeathSound;
 
         [Header("Shooting")]
+        [Obsolete("Use PlayerFlags instead"), Tooltip("Obsolete")]
         public bool AttackEnabled = true;
 
         [Header("Options")]
