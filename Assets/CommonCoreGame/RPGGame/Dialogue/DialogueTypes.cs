@@ -8,6 +8,7 @@ using CommonCore.RpgGame.State;
 using CommonCore.State;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using UnityEngine;
 
 namespace CommonCore.RpgGame.Dialogue
 {
@@ -446,25 +447,48 @@ namespace CommonCore.RpgGame.Dialogue
             ExtraData = extraData ?? new Dictionary<string, object>();
         }
 
-        public string EvaluateConditional()
+        public string EvaluateConditional(bool handleExceptions)
         {
             for(int i = NextConditional.Length-1; i >= 0; i--)
             {
                 var nc = NextConditional[i];
-                if (nc.Evaluate())
-                    return nc.Next;
+                try
+                {
+                    if (nc.Evaluate())
+                        return nc.Next;
+                }
+                catch(Exception e)
+                {
+                    if (!handleExceptions)
+                        throw;
+
+                    Debug.LogError($"Failed to evaluate conditional ({e.GetType().Name})");
+                    Debug.LogException(e);
+                }
+                
             }
             return null;
         }
 
-        public void EvaluateMicroscript()
+        public void EvaluateMicroscript(bool handleExceptions)
         {
             if (NextMicroscript == null || NextMicroscript.Length < 1)
                 return;
 
             foreach (MicroscriptNode mn in NextMicroscript)
-            {
-                mn.Execute();
+            {                
+                try
+                {
+                    mn.Execute();
+                }
+                catch (Exception e)
+                {
+                    if (!handleExceptions)
+                        throw;
+
+                    Debug.LogError($"Failed to evaluate conditional ({e.GetType().Name})");
+                    Debug.LogException(e);
+                }
             }
         }
     }

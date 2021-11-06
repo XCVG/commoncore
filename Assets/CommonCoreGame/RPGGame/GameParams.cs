@@ -23,6 +23,8 @@ namespace CommonCore
         public static bool DialogueVerboseLogging { get; private set; } = false;
         public static ChoicePanelHeight DialoguePanelHeight { get; private set; } = ChoicePanelHeight.Full;
         public static bool DialogueHideHud { get; private set; } = true;
+        public static bool DialogueHandleMicroscriptExceptions { get; private set; } = true;
+        public static bool DialogueHandleConditionalExceptions { get; private set; } = false;
 
         public static bool UseCustomLeveling { get; private set; } = true;
         public static bool UseDerivedSkills { get; private set; } = true;

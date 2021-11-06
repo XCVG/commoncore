@@ -595,7 +595,7 @@ namespace CommonCore.RpgGame.Dialogue
                 }
                 if (GameParams.DialogueAlwaysExecuteFrameMicroscript && cf.NextMicroscript != null)
                 {
-                    cf.EvaluateMicroscript();
+                    cf.EvaluateMicroscript(GameParams.DialogueHandleMicroscriptExceptions);
                 }
 
                 //handle trace
@@ -611,13 +611,13 @@ namespace CommonCore.RpgGame.Dialogue
             else
             {
                 if (CurrentFrameObject.NextConditional != null && CurrentFrameObject.NextConditional.Length > 0)
-                    choice = CurrentFrameObject.EvaluateConditional();
+                    choice = CurrentFrameObject.EvaluateConditional(GameParams.DialogueHandleConditionalExceptions);
                 else
                     choice = CurrentFrameObject.Next;
 
                 if (CurrentFrameObject.NextMicroscript != null)
                 {
-                    CurrentFrameObject.EvaluateMicroscript();
+                    CurrentFrameObject.EvaluateMicroscript(GameParams.DialogueHandleMicroscriptExceptions);
                 }
 
                 //handle trace

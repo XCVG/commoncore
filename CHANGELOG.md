@@ -290,3 +290,4 @@
 * Added Humanizer library
 * Split WorldUtils.IsAlive into separately named methods
 * Removed obsolete GameParams
+* Added exception handling for dialogue microscripts and conditionals (behind GameParam)
