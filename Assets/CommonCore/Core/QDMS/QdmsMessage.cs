@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CommonCore.Messaging
@@ -90,6 +91,11 @@ namespace CommonCore.Messaging
         public object this[string i]
         {
             get { return _Dictionary[i]; }
+        }
+
+        public IEnumerable<KeyValuePair<string, object>> EnumerateValues()
+        {
+            return _Dictionary.ToArray();
         }
     }
 
