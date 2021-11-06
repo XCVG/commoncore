@@ -720,7 +720,7 @@ namespace CommonCore.RpgGame.World
 
                 QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepFired"));
                 if(!string.IsNullOrEmpty(wim?.Scripts?.OnFire))
-                    ScriptingModule.Call(wim.Scripts.OnFire, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, wItem);
+                    ScriptingModule.Call(wim.Scripts.OnFire, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, wItem, wItem.ItemModel);
             }
             else
             {
@@ -1129,7 +1129,7 @@ namespace CommonCore.RpgGame.World
                     }
 
                     if (!string.IsNullOrEmpty(wim?.Scripts?.OnFire))
-                        ScriptingModule.Call(wim.Scripts.OnFire, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, wItem);
+                        ScriptingModule.Call(wim.Scripts.OnFire, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, wItem, wItem.ItemModel);
 
                 }
                 else
@@ -1286,7 +1286,7 @@ namespace CommonCore.RpgGame.World
                         TimeToNext = Math.Max(rwim.ReloadTime * reloadRpgFactor, TimeToNext); //we take the longest time
 
                         if (!string.IsNullOrEmpty(rwim?.Scripts?.OnReload))
-                            ScriptingModule.Call(rwim.Scripts.OnReload, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, player.Equipped[slot]);
+                            ScriptingModule.Call(rwim.Scripts.OnReload, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, player.Equipped[slot], player.Equipped[slot]?.ItemModel);
                     }
                 }
 

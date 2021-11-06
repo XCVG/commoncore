@@ -291,3 +291,6 @@
 * Split WorldUtils.IsAlive into separately named methods
 * Removed obsolete GameParams
 * Added exception handling for dialogue microscripts and conditionals (behind GameParam)
+* SlideshowControllerEx now tries to use dialogue characters and backgrounds as slides
+* OnFire and OnReload scripts are now passed item model in addition to instance
+* Added PlaySound overloads with more params (like PlaySoundEx, but does not throw)

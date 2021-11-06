@@ -538,6 +538,58 @@ namespace CommonCore.Audio
         /// <param name="volume">The volume to play the sound at</param>
         /// <param name="position">The position to play the sound at (if it is positional)</param>
         /// <returns>A struct that defines the playing sound</returns>
+        public SoundInfo PlaySound(string sound, SoundType type, bool retain, bool ignorePause, bool loop, bool positional, float volume, Vector3 position)
+        {
+            try
+            {
+                return PlaySoundEx(sound, type, retain, ignorePause, loop, positional, volume, position);
+            }
+            catch(Exception e)
+            {
+                Debug.LogWarning($"Failed to play sound {e.GetType().Name}");
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Plays an audio clip with many available options
+        /// </summary>
+        /// <param name="clip">The audio clip to play</param>
+        /// <param name="retain">Whether to retain the sound on scene transition</param>
+        /// <param name="ignorePause">Whether to ignore listener/game pause</param>
+        /// <param name="loop">Whether to loop the sound</param>
+        /// <param name="positional">Whether to play the sound positionally or ambiently</param>
+        /// <param name="volume">The volume to play the sound at</param>
+        /// <param name="position">The position to play the sound at (if it is positional)</param>
+        /// <returns>A struct that defines the playing sound</returns>
+        public SoundInfo PlaySound(AudioClip clip, bool retain, bool ignorePause, bool loop, bool positional, float volume, Vector3 position)
+        {
+            try
+            {
+                return PlaySoundEx(clip, retain, ignorePause, loop, positional, volume, position);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"Failed to play sound {e.GetType().Name}");
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Plays a sound with many available options
+        /// </summary>
+        /// <param name="sound">The sound to play</param>
+        /// <param name="type">The type of sound</param>
+        /// <param name="retain">Whether to retain the sound on scene transition</param>
+        /// <param name="ignorePause">Whether to ignore listener/game pause</param>
+        /// <param name="loop">Whether to loop the sound</param>
+        /// <param name="positional">Whether to play the sound positionally or ambiently</param>
+        /// <param name="volume">The volume to play the sound at</param>
+        /// <param name="position">The position to play the sound at (if it is positional)</param>
+        /// <returns>A struct that defines the playing sound</returns>
+        /// <remarks>Throws an exception on failure</remarks>
         public SoundInfo PlaySoundEx(string sound, SoundType type, bool retain, bool ignorePause, bool loop, bool positional, float volume, Vector3 position)
         {
             //get clip
@@ -562,6 +614,7 @@ namespace CommonCore.Audio
         /// <param name="volume">The volume to play the sound at</param>
         /// <param name="position">The position to play the sound at (if it is positional)</param>
         /// <returns>A struct that defines the playing sound</returns>
+        /// <remarks>Throws an exception on failure</remarks>
         public SoundInfo PlaySoundEx(AudioClip clip, bool retain, bool ignorePause, bool loop, bool positional, float volume, Vector3 position)
         {
             //generate object

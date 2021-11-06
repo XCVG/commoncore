@@ -463,7 +463,8 @@ namespace CommonCore.RpgGame.Dialogue
                         throw;
 
                     Debug.LogError($"Failed to evaluate conditional ({e.GetType().Name})");
-                    Debug.LogException(e);
+                    if (ConfigState.Instance.UseVerboseLogging)
+                        Debug.LogException(e);
                 }
                 
             }
@@ -487,7 +488,8 @@ namespace CommonCore.RpgGame.Dialogue
                         throw;
 
                     Debug.LogError($"Failed to evaluate conditional ({e.GetType().Name})");
-                    Debug.LogException(e);
+                    if(ConfigState.Instance.UseVerboseLogging)
+                        Debug.LogException(e);
                 }
             }
         }

@@ -71,7 +71,7 @@ namespace CommonCore.Experimental
                 return;
             }
 
-            var sprite = CoreUtils.LoadResource<Sprite>("Sequences/" + imageName);
+            var sprite = TryLoadSprite(imageName);
             if (sprite == null)
             {
                 Debug.LogError($"Failed to load sprite \"Sequences/{imageName}\"");
@@ -89,6 +89,16 @@ namespace CommonCore.Experimental
         {
             SlideshowImage.sprite = null;
             SlideshowImage.color = new Color(0, 0, 0, 0);
+        }
+
+        private Sprite TryLoadSprite(string imageName)
+        {
+            var sprite = CoreUtils.LoadResource<Sprite>("Sequences/" + imageName);
+            if(sprite == null)
+                CoreUtils.LoadResource<Sprite>("Dialogue/char/" + imageName);
+            if (sprite == null)
+                CoreUtils.LoadResource<Sprite>("Dialogue/bg/" + imageName);
+            return sprite;
         }
 
         private void Initialize()
