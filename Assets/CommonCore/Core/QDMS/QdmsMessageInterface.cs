@@ -35,10 +35,18 @@ namespace CommonCore.Messaging
         public bool KeepMessagesInQueue { get; set; } = false;
 
         /// <summary>
+        /// Whether to receive message when the attached UnityEngine.Object is inactive
+        /// </summary>
+        /// <remarks>
+        /// This will have no effect if this receiver does not have an attachment or is not of a type that can be considered inactive
+        /// </remarks>
+        public bool ReceiveIfAttachmentInactive { get; set; } = true;
+
+        /// <summary>
         /// Whether this message receiver is valid
         /// </summary>
         /// <remarks>Actual validity reported to bus is "has no attachment or attachment exists AND this is valid"</remarks>
-        public bool IsValid { get; set; } = true;
+        public bool IsValid { get; set; } = true;        
 
         private List<Action<QdmsMessage>> ReceiveActions = new List<Action<QdmsMessage>>();
 
@@ -119,6 +127,18 @@ namespace CommonCore.Messaging
         /// <remarks>Interface implementation.</remarks>
         public void ReceiveMessage(QdmsMessage msg)
         {
+            if(HasAttachment && !ReceiveIfAttachmentInactive)
+            {
+                if (Attachment == null)
+                    return;
+                if (Attachment is GameObject go && !go.activeInHierarchy)
+                    return;
+                if (Attachment is Behaviour b && !b.isActiveAndEnabled)
+                    return;
+                if (Attachment is Component c && c.gameObject != null && !c.gameObject.activeInHierarchy)
+                    return;
+            }
+
             bool handledMessage = HandleMessage(msg);
 
             if(!handledMessage || KeepMessagesInQueue)

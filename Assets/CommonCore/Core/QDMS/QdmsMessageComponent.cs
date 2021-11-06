@@ -20,12 +20,16 @@ namespace CommonCore.Messaging
 #pragma warning disable CS0649
         [SerializeField]
         private QdmsMessageEvent MessageEvent;
-        private QdmsMessageInterface MessageInterface;
 #pragma warning restore CS0649
+        [SerializeField]
+        private bool ReceiveIfInactive = true;
+
+        private QdmsMessageInterface MessageInterface;        
 
         void Awake()
         {
             MessageInterface = new QdmsMessageInterface(gameObject);
+            MessageInterface.ReceiveIfAttachmentInactive = ReceiveIfInactive;
 
             if (MessageEvent.GetPersistentEventCount() > 0)
                 MessageInterface.SubscribeReceiver(HandleMessage);
