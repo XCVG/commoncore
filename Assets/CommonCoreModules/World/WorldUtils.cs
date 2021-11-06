@@ -222,35 +222,84 @@ namespace CommonCore.World
 
             return foundObjects;
         }
+        
+        /// <summary>
+        /// Checks if an ITakeDamage is considered alive
+        /// </summary>
+        public static bool IsDamageableAlive(this ITakeDamage itd)
+        {
+            if (itd == null)
+                return false;
 
+            if (itd is Component c && !c.gameObject.activeInHierarchy)
+                return false;
+
+            if (itd.Health <= 0)
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if an entity is considered alive
+        /// </summary>
+        public static bool IsEntityAlive(this BaseController entity)
+        {
+            if (entity == null)
+                return false;
+
+            if (!entity.gameObject.activeInHierarchy)
+                return false;
+
+            if (entity is ITakeDamage itd && itd.Health <= 0)
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if an object is considered alive
+        /// </summary>
+        public static bool IsObjectAlive(GameObject obj)
+        {
+            if (obj == null)
+                return false;
+
+            if (!obj.activeInHierarchy)
+                return false;
+
+            var entity = obj.GetComponent<BaseController>();
+            if (entity != null)
+                return entity.IsEntityAlive();
+
+            var itd = obj.GetComponent<ITakeDamage>();
+            if (itd != null)
+                return itd.IsDamageableAlive();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if an object is considered alive
+        /// </summary>
+        public static bool IsObjectAlive(Transform transform)
+        {
+            return IsObjectAlive(transform.gameObject);
+        }
+
+        [Obsolete("Use IsDamageableAlive instead")]
         public static bool IsAlive(this ITakeDamage target)
         {
-            if (target == null)
-                return false;
-
-            if (target is Component c && !c.gameObject.activeInHierarchy)
-                return false;
-
-            if (target.Health <= 0)
-                return false;
-
-            return true;
+            return IsDamageableAlive(target);
         }
 
+        [Obsolete("Use IsEntityAlive instead")]
         public static bool IsAlive(this BaseController target)
         {
-            if (target == null)
-                return false;
-
-            if (!target.gameObject.activeInHierarchy)
-                return false;
-
-            if (target is ITakeDamage itd && itd.Health <= 0)
-                return false;
-
-            return true;
+            return IsEntityAlive(target);
         }
 
+        [Obsolete("Use IsObjectAlive instead")]
         public static bool IsAlive(GameObject target)
         {
             if (target == null)
@@ -266,6 +315,7 @@ namespace CommonCore.World
             return true;
         }
 
+        [Obsolete("Use IsObjectAlive instead")]
         public static bool IsAlive(Transform target)
         {
             return IsAlive(target.gameObject);
@@ -356,6 +406,22 @@ namespace CommonCore.World
         /// </summary>
         [Obsolete] //we want to force clients to make a decision about using a unique ID
         public static GameObject SpawnEffect(string effectID, Vector3 position, Vector3 rotation, Transform parent) => SpawnEffect(effectID, position, rotation, parent, false);
+
+        /// <summary>
+        /// Returns the entity this transform is attached to, or null if it is not part of an entity
+        /// </summary>
+        public static BaseController GetEntity(this Transform transform)
+        {
+            return transform.gameObject.GetEntity();
+        }
+
+        /// <summary>
+        /// Returns the entity this gameobject is attached to, or null if it is not part of an entity
+        /// </summary>
+        public static BaseController GetEntity(this GameObject gameObject)
+        {
+            return gameObject.GetComponentInParent<BaseController>();
+        }
 
         /// <summary>
         /// Check if this object is considered a CommonCore Entity

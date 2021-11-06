@@ -288,3 +288,5 @@
 * PlayerShieldComponent now properly handles separate cases of stats changed and shield equipment changed
 * Updated jilleJr/Newtonsoft.Json-for-Unity to 12.0.302
 * Added Humanizer library
+* Split WorldUtils.IsAlive into separately named methods
+* Removed obsolete GameParams

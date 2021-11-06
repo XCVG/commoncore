@@ -130,7 +130,7 @@ namespace CommonCore.World
             var entities = CoreUtils.GetWorldRoot().GetComponentsInChildren<BaseController>(true);
             foreach(var entity in entities)
             {
-                sb.AppendLine($"{entity.gameObject.name} ({entity.FormID ?? entity.EditorFormID} : {entity.GetType().Name}) [{entity.transform.position.ToString("F2")}] {(entity.isActiveAndEnabled ? "" : "(disabled)")} {(entity is ITakeDamage && WorldUtils.IsAlive(entity) ? "" : "(dead)")}");
+                sb.AppendLine($"{entity.gameObject.name} ({entity.FormID ?? entity.EditorFormID} : {entity.GetType().Name}) [{entity.transform.position.ToString("F2")}] {(entity.isActiveAndEnabled ? "" : "(disabled)")} {(entity.IsEntityAlive() ? "" : "(dead)")}");
             }
 
             ConsoleModule.WriteLine(sb.ToString());
