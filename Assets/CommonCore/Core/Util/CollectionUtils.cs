@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace CommonCore
@@ -13,9 +14,22 @@ namespace CommonCore
     {
         //slightly horrifying dictionary helpers
 
-        public static TOut GetAs<TOut, TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
+        //deliberately not an extension method so it doesn't clobber other things
+        public static bool TryGetValue<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> dCollection, TKey key, out TValue value)
         {
-            if (dictionary.TryGetValue(key, out TValue val))
+            if (dCollection is IDictionary<TKey, TValue> dictionary)
+                return dictionary.TryGetValue(key, out value);
+            if (dCollection is IReadOnlyDictionary<TKey, TValue> rDictionary)
+                return rDictionary.TryGetValue(key, out value);
+
+            var fCollection = dCollection.Where(kvp => kvp.Key.Equals(key));
+            value = fCollection.FirstOrDefault().Value;
+            return fCollection.Any();
+        }
+
+        public static TOut GetAs<TOut, TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> dCollection, TKey key)
+        {
+            if (TryGetValue(dCollection, key, out TValue val))
             {
                 if (typeof(TOut).IsAssignableFrom(val.GetType()))
                     return (TOut)(object)val;
@@ -25,16 +39,9 @@ namespace CommonCore
             return default;
         }
 
-        public static T GetAs<T>(this IDictionary<string, object> dictionary, string key)
+        public static T GetAs<T>(this IEnumerable<KeyValuePair<string, object>> dCollection, string key)
         {
-            if(dictionary.TryGetValue(key, out object val))
-            {
-                if (typeof(T).IsAssignableFrom(val.GetType()))
-                    return (T)val;
-                else
-                    return TypeUtils.CoerceValue<T>(val);
-            }
-            return default;
+            return GetAs<T, string, object>(dCollection, key);
         }
 
         /// <summary>
@@ -71,23 +78,22 @@ namespace CommonCore
             }
         }
 
-        public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
+        public static TValue GetOrDefault<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> dCollection, TKey key)
         {
-            return GetOrDefault(dictionary, key, default);
+            return GetOrDefault(dCollection, key, default);
         }
 
-        public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue def)
+        public static TValue GetOrDefault<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> dCollection, TKey key, TValue def)
         {
-            TValue result;
-            if (dictionary.TryGetValue(key, out result))
+            if (TryGetValue(dCollection, key, out var result))
                 return result;
 
             return def;
         }
 
-        public static TKey GetKeyForValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TValue value)
+        public static TKey GetKeyForValue<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> dCollection, TValue value)
         {
-            foreach(var kvp in dictionary)
+            foreach(var kvp in dCollection)
             {
                 if (kvp.Value.Equals(value)) //safe?
                     return kvp.Key;
@@ -96,9 +102,9 @@ namespace CommonCore
             return default;
         }
 
-        public static TKey GetKeyForValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TValue value, out bool duplicateValuesExist)
+        public static TKey GetKeyForValue<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> dCollection, TValue value, out bool duplicateValuesExist)
         {
-            var keys = dictionary.GetKeysForValue(value);
+            var keys = dCollection.GetKeysForValue(value);
             if (keys.Count > 1)
                 duplicateValuesExist = true;
             else
@@ -110,11 +116,11 @@ namespace CommonCore
                 return keys[0];
         }
 
-        public static List<TKey> GetKeysForValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TValue value)
+        public static List<TKey> GetKeysForValue<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> dCollection, TValue value)
         {
             List<TKey> keys = new List<TKey>();
 
-            foreach(var kvp in dictionary)
+            foreach(var kvp in dCollection)
             {
                 if (kvp.Value.Equals(value))
                     keys.Add(kvp.Key);
@@ -126,12 +132,12 @@ namespace CommonCore
         /// <summary>
         /// Gets the first value for a key from a dictionary, ignoring the case of the key
         /// </summary>
-        public static T GetIgnoreCase<T>(this IDictionary<string, T> dictionary, string key)
+        public static T GetIgnoreCase<T>(this IEnumerable<KeyValuePair<string, T>> dCollection, string key)
         {
-            if (dictionary.TryGetValue(key, out var val)) //try to just get it as a shortcut
+            if (TryGetValue(dCollection, key, out var val)) //try to just get it as a shortcut
                 return val;
 
-            foreach(var kvp in dictionary)
+            foreach(var kvp in dCollection)
             {
                 if (kvp.Key.Equals(key, StringComparison.OrdinalIgnoreCase))
                     return kvp.Value;

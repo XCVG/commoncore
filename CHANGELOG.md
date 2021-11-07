@@ -297,4 +297,5 @@
 * Added options to not receive messages on inactive components (QdmsMessageInterface and QdmsMessageComponent)
 * Deprecated PlayerController PlayerInControl and AttackEnabled fields
 * Revised player spawn logic
+* CollectionUtils dictionary methods can now handle IReadOnlyDictionary<T> as well
 * QdmsMessageComponent can now translate and rebroadcast as Unity messages [Experimental]
