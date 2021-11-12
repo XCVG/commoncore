@@ -298,4 +298,9 @@
 * Deprecated PlayerController PlayerInControl and AttackEnabled fields
 * Revised player spawn logic
 * CollectionUtils dictionary methods can now handle IReadOnlyDictionary<T> as well
+* Added script hooks to config panel open/render
+* DestroyableThingFacingSpriteComponent no longer needs to be on same object as DestroyableThing
+* Added IReceiveDamageableEntityEvents with DamageTaken and Killed called by damageable entities
+* IGUI panels can be added with a builder function instead of prefab
+* Base config panel now informs user about pending changes
 * QdmsMessageComponent can now translate and rebroadcast as Unity messages [Experimental]

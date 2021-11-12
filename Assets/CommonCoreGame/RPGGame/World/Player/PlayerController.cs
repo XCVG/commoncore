@@ -461,6 +461,7 @@ namespace CommonCore.RpgGame.World
                 WeaponComponent.Ref()?.RequestHideWeapon();
                 DeathSound.Ref()?.Play();
                 DeathComponent.Ref()?.Die();
+                TryExecuteOnComponents(component => (component as IReceiveDamageableEntityEvents)?.Killed());
             }
         }
 
@@ -568,6 +569,8 @@ namespace CommonCore.RpgGame.World
                 };
                 MessageInterface.PushToBus(new QdmsKeyValueMessage("PlayerTookDamage", damageValues));
             }
+
+            TryExecuteOnComponents(component => (component as IReceiveDamageableEntityEvents)?.DamageTaken(data));
 
         }
 

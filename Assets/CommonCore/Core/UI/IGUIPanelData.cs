@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace CommonCore.UI
 {
@@ -6,13 +7,21 @@ namespace CommonCore.UI
     {
         public string NiceName;
         public int Priority;
-        public GameObject Prefab;
+        public Func<Transform, GameObject> Builder;
 
+        [Obsolete]
         internal IGUIPanelData(int priority, string niceName, GameObject prefab)
         {
             Priority = priority;
             NiceName = niceName;
-            Prefab = prefab;
+            Builder = (t) => GameObject.Instantiate(prefab, t);
+        }
+
+        internal IGUIPanelData(int priority, string niceName, Func<Transform, GameObject> builder)
+        {
+            Priority = priority;
+            NiceName = niceName;
+            Builder = builder;
         }
     }
 }

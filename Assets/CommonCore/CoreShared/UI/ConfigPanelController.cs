@@ -11,6 +11,7 @@ using CommonCore.Input;
 using CommonCore.StringSub;
 using CommonCore.State;
 using System.Text;
+using CommonCore.Scripting;
 
 namespace CommonCore.UI
 {
@@ -60,6 +61,9 @@ namespace CommonCore.UI
         public Slider MusicVolumeSlider;
         public Dropdown ChannelDropdown;
 
+        //a bit of a hack
+        private bool IgnoreValueChanges = false;
+
         //backing data for dropdowns
         private List<string> InputMappers = null;
         private List<Vector2Int> Resolutions = null;
@@ -73,6 +77,8 @@ namespace CommonCore.UI
         public override void SignalInitialPaint()
         {
             base.SignalInitialPaint();
+
+            ScriptingModule.CallHooked(ScriptHook.OnConfigPanelOpen, this);
 
             //initialize subpanels
             var subpanelBuilders = ConfigModule.Instance.SortedConfigPanelBuilders;
@@ -92,7 +98,9 @@ namespace CommonCore.UI
                     subpanelController.SignalPendingChanges = SignalPendingChanges;
                 }
             }
-            
+
+            ScriptingModule.CallHooked(ScriptHook.OnConfigPanelRendered, this);
+
         }
 
         public override void SignalPaint()
@@ -104,6 +112,7 @@ namespace CommonCore.UI
 
         private void PaintValues()
         {
+            IgnoreValueChanges = true;
             InputMappers = MappedInput.AvailableMappers.ToList();
             InputDropdown.ClearOptions();
             InputDropdown.AddOptions(InputMappers.Select(m => Sub.Replace(m, "CFG_MAPPERS")).ToList());
@@ -161,6 +170,8 @@ namespace CommonCore.UI
 
             PaintStatusText();
             PaintVersionText();
+
+            IgnoreValueChanges = false;
         }
 
         public void OnInputDropdownChanged()
@@ -250,6 +261,14 @@ namespace CommonCore.UI
         public void OnClickConfigureInput()
         {
             MappedInput.ConfigureMapper();
+        }
+
+        public void OnAnyChanged()
+        {
+            if (IgnoreValueChanges)
+                return;
+
+            SignalPendingChanges(PendingChangesFlags.None);
         }
 
         private void OnConfirmed(ModalStatusCode status, string tag)

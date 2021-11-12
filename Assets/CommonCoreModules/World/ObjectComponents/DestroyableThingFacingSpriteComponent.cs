@@ -9,7 +9,6 @@ namespace CommonCore.World
     /// <summary>
     /// Component that allows DestroyableThing to use FacingSprite animation
     /// </summary>
-    [RequireComponent(typeof(DestroyableThingController))]
     public class DestroyableThingFacingSpriteComponent : FacingSpriteComponent
     {
         public bool InvertBrightFlag = false;

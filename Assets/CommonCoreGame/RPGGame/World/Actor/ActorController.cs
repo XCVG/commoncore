@@ -326,6 +326,8 @@ namespace CommonCore.RpgGame.World
                             && GrantXpOnDeath > 0
                            )
                             GameState.Instance.PlayerRpgState.GrantXPScaled(GrantXpOnDeath);
+
+                        TryExecuteOnComponents(component => (component as IReceiveDamageableEntityEvents)?.Killed());
                     }
                     break;
                 case ActorAiState.Wandering:
@@ -931,6 +933,8 @@ namespace CommonCore.RpgGame.World
             }
             else if (FeelPain && didTakePain && (PainStateAllowRestart || CurrentAiState != ActorAiState.Hurting) && CurrentAiState != ActorAiState.ScriptedAction && CurrentAiState != ActorAiState.ScriptedMoveTo)
                 EnterState(ActorAiState.Hurting);
+
+            TryExecuteOnComponents(component => (component as IReceiveDamageableEntityEvents)?.DamageTaken(data));
         }
 
         public void SetInitialPosition(Vector3 newInitialPosition)

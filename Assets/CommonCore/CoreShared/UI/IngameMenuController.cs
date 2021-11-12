@@ -51,13 +51,12 @@ namespace CommonCore.UI
                     string name = pkvp.Key;
                     var panel = pkvp.Value;
 
-                    var prefab = panel.Prefab;
-                    if (prefab == null)
+                    if (panel.Builder == null)
                     {
-                        Debug.LogError($"Prefab for {name} does not exist!");
+                        Debug.LogError($"Build function for {name} does not exist!");
                         continue;
                     }
-                    var panelGO = Instantiate(prefab, ContainerPanel.transform);
+                    var panelGO = panel.Builder(ContainerPanel.transform);
                     panelGO.name = name;
 
                     var buttonGO = Instantiate(buttonPrefab, ButtonPanel.transform);

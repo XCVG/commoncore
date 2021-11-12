@@ -235,6 +235,8 @@ namespace CommonCore.World
                     Destroy(gameObject);
 
                 IsDead = true;
+
+                TryExecuteOnComponents(component => (component as IReceiveDamageableEntityEvents)?.Killed());
             }
         }
 
@@ -283,6 +285,8 @@ namespace CommonCore.World
                     EnterPainState();
 
             }
+
+            TryExecuteOnComponents(component => (component as IReceiveDamageableEntityEvents)?.DamageTaken(data));
 
         }
 

@@ -69,6 +69,23 @@ namespace CommonCore.UI
         /// <summary>
         /// Registers a panel to be displayed in the ingame menu
         /// </summary>
+        public void RegisterIGUIPanel(string name, int priority, string niceName, Func<Transform, GameObject> builder)
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder), "Builder must be non-null!");
+
+            if (IGUIPanels.ContainsKey(name))
+            {
+                LogWarning($"A IGUI panel \"{name}\" is already registered and will be replaced");
+                IGUIPanels.Remove(name);
+            }
+
+            IGUIPanels.Add(name, new IGUIPanelData(priority, niceName, builder));
+        }
+
+        /// <summary>
+        /// Registers a panel to be displayed in the ingame menu
+        /// </summary>
         public void RegisterIGUIPanel(string name, int priority, string niceName, GameObject prefab)
         {
             if (prefab == null)
@@ -76,11 +93,11 @@ namespace CommonCore.UI
 
             if (IGUIPanels.ContainsKey(name))
             {
-                LogWarning($"A IGUI panel \"{name}\" is already registered");
+                LogWarning($"A IGUI panel \"{name}\" is already registered and will be replaced");
                 IGUIPanels.Remove(name);
             }
 
-            IGUIPanels.Add(name, new IGUIPanelData(priority, niceName, prefab));
+            IGUIPanels.Add(name, new IGUIPanelData(priority, niceName, (t) => GameObject.Instantiate(prefab, t)));
         }
 
         /// <summary>

@@ -23,4 +23,22 @@ namespace CommonCore.World
         //TODO CONCEPTUAL entity-related things like "onkilled"?
 
     }
+
+    /// <summary>
+    /// Interface representing a component on an object that receives destroyable entity event calls
+    /// </summary>
+    public interface IReceiveDamageableEntityEvents : IReceiveEntityEvents
+    {
+        void DamageTaken(ActorHitInfo data);
+
+        void Killed();
+    }
+
+    /// <summary>
+    /// Interface representing a component on an object that receives actor entity event calls
+    /// </summary>
+    public interface IReceiveActorEntityEvents : IReceiveDamageableEntityEvents
+    {
+
+    }
 }
