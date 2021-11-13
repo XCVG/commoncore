@@ -51,8 +51,12 @@ namespace CommonCore.UI
         [Header("Options"), SerializeField]
         private float ShadowDistanceSliderScale = 5f;
 
+        private bool IgnoreValueChanges = false;
+
         public override void PaintValues()
         {
+            IgnoreValueChanges = true;
+
             CanvasGroup.interactable = ConfigState.Instance.UseCustomVideoSettings;
 
             ShadowQualitySlider.value = (int)ConfigState.Instance.ShadowQuality;
@@ -72,6 +76,8 @@ namespace CommonCore.UI
             HandleAnisotropicFilteringChanged();
             HandleRenderingQualityChanged();
             HandleLightReportingChanged();
+
+            IgnoreValueChanges = false;
         }
 
         public override void UpdateValues()
@@ -92,42 +98,58 @@ namespace CommonCore.UI
         //handlers to update text when sliders are moved
         public void HandleShadowQualityChanged()
         {
+            MaybeSignalPendingChanges();
             ShadowQualityLabel.text = GetTextForQualityValue(ShadowQualitySlider.value);
         }
 
         public void HandleShadowDistanceChanged()
         {
+            MaybeSignalPendingChanges();
             ShadowDistanceLabel.text = Mathf.RoundToInt((ShadowDistanceSlider.value * ShadowDistanceSliderScale)).ToString();
         }
 
         public void HandleLightingQualityChanged()
         {
+            MaybeSignalPendingChanges();
             LightingQualityLabel.text = GetTextForQualityValue(LightingQualitySlider.value);
         }
 
         public void HandleMeshQualityChanged()
         {
+            MaybeSignalPendingChanges();
             MeshQualityLabel.text = GetTextForQualityValue(MeshQualitySlider.value);
         }
 
         public void HandleTextureScaleChanged()
         {
+            MaybeSignalPendingChanges();
             TextureScaleLabel.text = ((TextureScale)(int)TextureScaleSlider.value).ToString();
         }
 
         public void HandleAnisotropicFilteringChanged()
         {
+            MaybeSignalPendingChanges();
             AnisotropicFilteringLabel.text = ((AnisotropicFiltering)(int)AnisotropicFilteringSlider.value).ToString();
         }
 
         public void HandleRenderingQualityChanged()
         {
+            MaybeSignalPendingChanges();
             RenderingQualityLabel.text = GetTextForQualityValue(RenderingQualitySlider.value);
         }
 
         public void HandleLightReportingChanged()
         {
+            MaybeSignalPendingChanges();
             LightReportingLabel.text = ((PlayerLightReportingType)(int)LightReportingSlider.value).ToString();
+        }
+
+        private void MaybeSignalPendingChanges()
+        {
+            if (IgnoreValueChanges)
+                return;
+
+            SignalPendingChanges(PendingChangesFlags.None);
         }
 
         private string GetTextForQualityValue(float value)

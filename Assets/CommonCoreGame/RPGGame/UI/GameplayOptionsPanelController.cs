@@ -64,8 +64,12 @@ namespace CommonCore.RpgGame.UI
 
         //IGUI_GAMEPLAYOPTIONS
 
+        private bool IgnoreValueChanges = false;
+
         public override void PaintValues()
         {
+            IgnoreValueChanges = true;
+
             ConfigState.Instance.AddCustomVarIfNotExists("GameplayConfig", () => new GameplayConfig());
             var gameplayConfig = ConfigState.Instance.CustomConfigVars["GameplayConfig"] as GameplayConfig;
 
@@ -89,6 +93,8 @@ namespace CommonCore.RpgGame.UI
 
             //setup sub-difficulty sliders
             SetupDifficultyParameterSliders();
+
+            IgnoreValueChanges = false;
         }
 
         public override void UpdateValues()
@@ -138,6 +144,14 @@ namespace CommonCore.RpgGame.UI
         public void HandleGameSpeedChanged()
         {
             GameSpeedLabel.text = $"{Mathf.RoundToInt(GameSpeedSlider.value * 10)}%";
+        }
+
+        public void HandleAnyChanged()
+        {
+            if (IgnoreValueChanges)
+                return;
+
+            SignalPendingChanges(PendingChangesFlags.None);
         }
 
         private float GetGameSpeedValue()

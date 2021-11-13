@@ -302,5 +302,5 @@
 * DestroyableThingFacingSpriteComponent no longer needs to be on same object as DestroyableThing
 * Added IReceiveDamageableEntityEvents with DamageTaken and Killed called by damageable entities
 * IGUI panels can be added with a builder function instead of prefab
-* Base config panel now informs user about pending changes
+* Config panels now inform user about pending changes
 * QdmsMessageComponent can now translate and rebroadcast as Unity messages [Experimental]
