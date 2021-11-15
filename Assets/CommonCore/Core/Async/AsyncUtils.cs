@@ -1,5 +1,6 @@
 ﻿using CommonCore.LockPause;
 using System;
+using System.Collections;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -11,6 +12,22 @@ namespace CommonCore.Async
     /// </summary>
     public static class AsyncUtils
     {
+
+        /// <summary>
+        /// Runs a coroutine in the ambient context
+        /// </summary>
+        public static Coroutine RunCoroutine(Func<IEnumerator> coroutine)
+        {
+            return AsyncCoroutineRunner.Instance.StartCoroutine(coroutine());
+        }
+
+        /// <summary>
+        /// Stops a coroutine in the ambient context
+        /// </summary>
+        public static void StopCoroutine(Coroutine coroutine)
+        {
+            AsyncCoroutineRunner.Instance.StopCoroutine(coroutine);
+        }
 
         /// <summary>
         /// Runs an async method and logs an exception if one is thrown

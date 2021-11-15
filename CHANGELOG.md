@@ -303,4 +303,5 @@
 * Added IReceiveDamageableEntityEvents with DamageTaken and Killed called by damageable entities
 * IGUI panels can be added with a builder function instead of prefab
 * Config panels now inform user about pending changes
+* Added Coroutine methods to AsyncUtils
 * QdmsMessageComponent can now translate and rebroadcast as Unity messages [Experimental]
