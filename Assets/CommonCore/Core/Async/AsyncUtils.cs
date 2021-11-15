@@ -30,6 +30,57 @@ namespace CommonCore.Async
         }
 
         /// <summary>
+        /// Runs an action on the main thread and waits for it to complete
+        /// </summary>
+        public static Task RunOnMainThread(Action action)
+        {
+            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+
+            IEnumeratorAwaitExtensions.RunOnUnityScheduler(() =>
+            {
+                try
+                {
+                    action();
+                    tcs.SetResult(true);
+                }
+                catch(Exception e)
+                {
+                    tcs.SetException(e);
+                }
+            });
+
+            return tcs.Task;
+        }
+
+        /// <summary>
+        /// Runs an async action on the main thread and waits for it to complete
+        /// </summary>
+        public static Task RunOnMainThread(Func<Task> asyncAction)
+        {
+            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+
+            IEnumeratorAwaitExtensions.RunOnUnityScheduler(() =>
+            {
+                runTask();
+            });
+
+            return tcs.Task;
+
+            async void runTask()
+            {
+                try
+                {
+                    await asyncAction();
+                    tcs.SetResult(true);
+                }
+                catch (Exception e)
+                {
+                    tcs.SetException(e);
+                }
+            }
+        }
+
+        /// <summary>
         /// Runs an async method and logs an exception if one is thrown
         /// </summary>
         /// <remarks>Use this instead of async void methods</remarks>
@@ -49,6 +100,7 @@ namespace CommonCore.Async
         /// Runs a task and logs an exception if one is thrown
         /// </summary>
         /// <remarks>Use this instead of async void methods</remarks>
+        [Obsolete]
         public static async void RunWithExceptionHandling(Task asyncTask)
         {
             try

@@ -51,7 +51,7 @@ namespace CommonCore.Async
             return new AwaitableCoroutineShim(coroutine);
         }
 
-        static void RunOnUnityScheduler(Action action)
+        internal static void RunOnUnityScheduler(Action action)
         {
             if (SynchronizationContext.Current == SyncContextUtil.UnitySynchronizationContext)
             {
