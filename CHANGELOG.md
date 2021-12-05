@@ -278,3 +278,4 @@
 * Integral values are now compared as integers in Conditionals
 * Fixed shields recharging past limit when MaxChargeFraction < 1
 * Added attack repeat functionality to ActorAttackComponent [Experimental]
+* Added AudioClipAssignScript [Experimental]
