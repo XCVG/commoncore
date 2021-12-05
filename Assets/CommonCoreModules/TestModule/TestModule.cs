@@ -17,6 +17,7 @@ namespace CommonCore.TestModule
         public TestModule()
         {
             Log("Test module loaded!");
+            Log("Test module params: \n" + DebugUtils.JsonStringify(CoreParams.GetParamsForModule<TestModule>()));
         }
 
         public override void Dispose()

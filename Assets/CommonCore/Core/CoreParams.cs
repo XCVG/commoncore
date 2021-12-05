@@ -77,6 +77,14 @@ namespace CommonCore
         public static bool ForcePlayerLightReporting { get; set; } = false; //forces spriteweapon/player light probe on, if available
         public static bool AlwaysPreactivateEntityPlaceholders { get; set; } = false; //forces ActivateEntityPlaceholders to run in world scenes even if Restore() is not called
 
+        //*****module params (interim)
+        public static IReadOnlyDictionary<string, object> ModuleParams { get; private set; } = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase) {
+            { "TestModuleTest1", 1 },
+            { "TestModule.Test2", "Two" },
+            { "TestModule-Test3", 3.0f },
+            { "TestModule", "this should be ignored" }
+        }.ToImmutableDictionary(StringComparer.OrdinalIgnoreCase); //TODO should this be ignoring case?
+
         //*****path variables (some hackery to provide thread-safeish versions)
         public static string DataPath { get; private set; }
         public static string GameFolderPath { get; private set; }
@@ -318,6 +326,40 @@ namespace CommonCore
         public static VersionInfo GetCurrentVersion()
         {
             return new VersionInfo(GameVersion, VersionCode, UnityVersion);
+        }
+
+        //***** module params getters (experimental/WIP)
+
+        public static IReadOnlyDictionary<string, object> GetParamsForModule<T>()
+        {
+            return GetParamsForModule(typeof(T));
+        }
+
+        public static IReadOnlyDictionary<string, object> GetParamsForModule(Type moduleType)
+        {
+            return GetParamsForModule(moduleType.Name);
+        }
+
+        public static IReadOnlyDictionary<string, object> GetParamsForModule(string moduleName)
+        {
+            var dictionary = new Dictionary<string, object>();
+            foreach(var kvp in ModuleParams)
+            {
+                if(kvp.Key.Equals(moduleName, StringComparison.OrdinalIgnoreCase))
+                {
+                    if(kvp.Value is IEnumerable<KeyValuePair<string, object>> col)
+                    {
+                        dictionary.AddRange(col);
+                    }
+                    //TODO should we handle params-given-as-json?
+                }
+                else if(kvp.Key.StartsWith(moduleName, StringComparison.OrdinalIgnoreCase))
+                {                    
+                    string key = kvp.Key.Substring(moduleName.Length).TrimStart('.', '_', '-');
+                    dictionary[key] = kvp.Value;
+                }
+            }
+            return dictionary;
         }
     }
 
