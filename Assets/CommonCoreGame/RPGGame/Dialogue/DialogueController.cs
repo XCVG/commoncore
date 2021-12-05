@@ -64,6 +64,7 @@ namespace CommonCore.RpgGame.Dialogue
         private Coroutine WaitAndAdvanceCoroutine = null;
 
         private HashSet<string> HiddenObjects = new HashSet<string>();
+        private bool MusicChanged = false;
 
         private SetPlayerFlagsSource PlayerFlagsSource = new SetPlayerFlagsSource();
 
@@ -118,7 +119,8 @@ namespace CommonCore.RpgGame.Dialogue
             ScriptingModule.CallNamedHooked("DialogueOnClose", this);
             CurrentDialogue = null;
             LockPauseModule.UnpauseGame(this.gameObject);
-            AudioPlayer.Instance.ClearMusic(MusicSlot.Cinematic);
+            if(MusicChanged)
+                AudioPlayer.Instance.ClearMusic(MusicSlot.Cinematic);
             if (CameraController)
                 Destroy(CameraController.gameObject);
             UnhideAllObjects();
@@ -188,11 +190,13 @@ namespace CommonCore.RpgGame.Dialogue
                 {
                     AudioPlayer.Instance.SetMusic(f.Music, MusicSlot.Cinematic, 1.0f, true, false);
                     AudioPlayer.Instance.StartMusic(MusicSlot.Cinematic);
+                    MusicChanged = true;
                 }
             }
             else if (f.Music != null) //null = no change, empty = no music
             {
                 AudioPlayer.Instance.ClearMusic(MusicSlot.Cinematic);
+                MusicChanged = true;
             }
 
             //present audio
