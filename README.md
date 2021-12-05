@@ -1,5 +1,5 @@
 # CommonCore RPG Libraries for Unity
-### Version 3.0.0 _Citadel_
+### Version 3.1.0 _Citadel_
 ### For Unity 2019.4+
 
 ## Introduction
