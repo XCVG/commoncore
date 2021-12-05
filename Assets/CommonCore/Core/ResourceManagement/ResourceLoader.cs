@@ -91,7 +91,7 @@ namespace CommonCore.ResourceManagement
                 }
             }
 
-            return null;
+            throw new NoImporterFoundException(context);
         }
 
         public object Load(string path, ResourceLoadContext context)
@@ -113,14 +113,29 @@ namespace CommonCore.ResourceManagement
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"[ResourceLoader] Exception in asset importer {context.ResourceImporter.GetType().Name}");
-                    Debug.LogException(e);
-                    throw e;
+                    if(ConfigState.Instance.UseVerboseLogging)
+                    {
+                        Debug.LogError($"[ResourceLoader] Exception in asset importer {context.ResourceImporter.GetType().Name}");
+                        Debug.LogException(e);
+                    }
+                    throw new ImporterFailedException(context, e);
                 }
             }
 
             //attempt to load builtin
-            return LoadFromFileBuiltin(path, context.ResourceType);
+            try
+            {
+                return LoadFromFileBuiltin(path, context.ResourceType);
+            }
+            catch (Exception e)
+            {
+                if (ConfigState.Instance.UseVerboseLogging)
+                {
+                    Debug.LogError($"[ResourceLoader] Exception in builtin asset importer");
+                    Debug.LogException(e);
+                }
+                throw new ImporterFailedException(context, e);
+            }
 
         }
 
@@ -143,14 +158,29 @@ namespace CommonCore.ResourceManagement
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"[ResourceLoader] Exception in asset importer {context.ResourceImporter.GetType().Name}");
-                    Debug.LogException(e);
-                    throw e;
+                    if (ConfigState.Instance.UseVerboseLogging)
+                    {
+                        Debug.LogError($"[ResourceLoader] Exception in asset importer {context.ResourceImporter.GetType().Name}");
+                        Debug.LogException(e);
+                    }
+                    throw new ImporterFailedException(context, e);
                 }
             }
 
-            //attempt to load builtin
-            return await LoadFromFileBuiltinAsync(path, context.ResourceType);
+            //attempt to load builtin            
+            try
+            {
+                return await LoadFromFileBuiltinAsync(path, context.ResourceType);
+            }
+            catch (Exception e)
+            {
+                if (ConfigState.Instance.UseVerboseLogging)
+                {
+                    Debug.LogError($"[ResourceLoader] Exception in builtin asset importer");
+                    Debug.LogException(e);
+                }
+                throw new ImporterFailedException(context, e);
+            }
 
         }
 
@@ -191,14 +221,29 @@ namespace CommonCore.ResourceManagement
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"[ResourceLoader] Exception in asset importer {context.ResourceImporter.GetType().Name}");
-                    Debug.LogException(e);
-                    throw e;
+                    if (ConfigState.Instance.UseVerboseLogging)
+                    {
+                        Debug.LogError($"[ResourceLoader] Exception in asset importer {context.ResourceImporter.GetType().Name}");
+                        Debug.LogException(e);
+                    }
+                    throw new ImporterFailedException(context, e);
                 }
             }
 
             //attempt to load builtin
-            return LoadFromFileBuiltin(path, context.ResourceType);
+            try
+            {
+                return LoadFromFileBuiltin(path, context.ResourceType);
+            }
+            catch (Exception e)
+            {
+                if (ConfigState.Instance.UseVerboseLogging)
+                {
+                    Debug.LogError($"[ResourceLoader] Exception in builtin asset importer");
+                    Debug.LogException(e);
+                }
+                throw new ImporterFailedException(context, e);
+            }            
         }
 
         //replacement for LoadFromFile, probably
@@ -232,90 +277,29 @@ namespace CommonCore.ResourceManagement
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"[ResourceLoader] Exception in asset importer {context.ResourceImporter.GetType().Name}");
-                    Debug.LogException(e);
-                    throw e;
+                    if (ConfigState.Instance.UseVerboseLogging)
+                    {
+                        Debug.LogError($"[ResourceLoader] Exception in asset importer {context.ResourceImporter.GetType().Name}");
+                        Debug.LogException(e);
+                    }
+                    throw new ImporterFailedException(context, e);
                 }
             }
 
             //attempt to load builtin
-            return await LoadFromFileBuiltinAsync(path, context.ResourceType);
-        }
-
-        //TODO remove the below
-
-        [Obsolete]
-        public T LoadFromFile<T>(string path, ResourceLoadContext context)
-        {
-            foreach (var importer in Importers)
+            try
             {
-                try
+                return await LoadFromFileBuiltinAsync(path, context.ResourceType);
+            }
+            catch (Exception e)
+            {
+                if (ConfigState.Instance.UseVerboseLogging)
                 {
-                    if (importer.CanLoadSync && importer.CanLoadResource(path, context))
-                    {
-                        return (T)importer.LoadResource(path, typeof(T), context);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"[ResourceLoader] Exception in asset importer {importer.GetType().Name}");
+                    Debug.LogError($"[ResourceLoader] Exception in builtin asset importer");
                     Debug.LogException(e);
                 }
-            }
-
-            byte[] bytes = File.ReadAllBytes(path);
-            T resource = LoadFromBytes<T>(bytes, context);
-
-            if (resource is UnityEngine.Object obj)
-                obj.name = Path.GetFileNameWithoutExtension(path);
-
-            return resource;
-        }
-
-        [Obsolete]
-        public async Task<T> LoadFromFileAsync<T>(string path, ResourceLoadContext context)
-        {
-            foreach (var importer in Importers)
-            {
-                try
-                {
-                    if (importer.CanLoadResource(path, context))
-                    {
-                        return (T) await importer.LoadResourceAsync(path, typeof(T), context);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"[ResourceLoader] Exception in asset importer {importer.GetType().Name}");
-                    Debug.LogException(e);
-                }
-            }
-
-            byte[] bytes = null;
-            await Task.Run(() => {
-                bytes = File.ReadAllBytes(path);
-            });
-
-            T resource = await LoadFromBytesAsync<T>(bytes, context);
-            if (resource is UnityEngine.Object obj)
-                obj.name = Path.GetFileNameWithoutExtension(path);
-
-            return resource;
-        }
-
-        [Obsolete]
-        private T LoadFromBytes<T>(byte[] data, ResourceLoadContext context)
-        {
-            return (T)LoadFromBytesBuiltin(data, typeof(T));
-        }
-
-        [Obsolete]
-        private async Task<T> LoadFromBytesAsync<T>(byte[] data, ResourceLoadContext context)
-        {
-            //TODO actual async implementations
-
-            await Task.Yield();
-            return (T)LoadFromBytesBuiltin(data, typeof(T));
+                throw new ImporterFailedException(context, e);
+            }            
         }
 
         //basic builtin loaders

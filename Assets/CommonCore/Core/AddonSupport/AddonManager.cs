@@ -309,7 +309,8 @@ namespace CommonCore
                     else
                     {
                         var rh = await CCBase.ResourceManager.AddResourceFromFileAsync(fileTargetPath, file, context.ResourcePriority);
-                        context.LoadedResources.Add(fileTargetPath, rh);
+                        if(rh != null)
+                            context.LoadedResources.Add(fileTargetPath, rh);
                     }
                 }
                 catch(Exception e)

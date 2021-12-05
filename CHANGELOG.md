@@ -307,5 +307,6 @@
 * Added Coroutine methods to AsyncUtils
 * Fixed GameOverScene using incorrect handler for Reload button
 * Dialogue controller no longer resets music if it does not actually change music
+* Improved error handling in addon/resource loading
 * Added RunOnMainThread methods to AsyncUtils [Experimental]
 * QdmsMessageComponent can now translate and rebroadcast as Unity messages [Experimental]

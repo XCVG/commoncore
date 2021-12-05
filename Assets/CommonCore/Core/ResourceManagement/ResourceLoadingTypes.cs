@@ -41,4 +41,34 @@ namespace CommonCore.ResourceManagement
         
     }
 
+    public abstract class ResourceLoadException : Exception
+    {
+        public ResourceLoadException(ResourceLoadContext context, Exception innerException) : base(string.Empty, innerException)
+        {
+            Context = context;
+        }
+
+        protected ResourceLoadContext Context { get; }
+    }
+
+    public class NoImporterFoundException : ResourceLoadException
+    {
+        public NoImporterFoundException(ResourceLoadContext context) : base(context, null)
+        {
+
+        }
+
+        public override string Message => $"Failed to find an importer for \"{Context.TargetPath}\" ({Context.ResourceType})";
+    }
+
+    public class ImporterFailedException : ResourceLoadException
+    {
+        public ImporterFailedException(ResourceLoadContext context, Exception innerException) : base(context, innerException)
+        {
+        }
+
+        public override string Message => $"Importer {Context.ResourceImporter?.GetType()?.Name} failed to import resource \"{Context.TargetPath}\" ({InnerException?.GetType()?.Name})";
+    }
+
+
 }

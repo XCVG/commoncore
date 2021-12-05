@@ -248,6 +248,11 @@ namespace CommonCore.ResourceManagement
         {
             ResourceLoadContext context = new ResourceLoadContext() { AttemptingSyncLoad = true, ResourceManager = this, ResourceLoader = ResourceLoader, TargetPath = targetPath };
             var resource = ResourceLoader.Load(filePath, context);
+            if(resource == null)
+            {
+                Debug.LogWarning($"Resource \"{targetPath}\" was not loaded from \"{filePath}\" (load completed without errors, but returned null)");
+                return null;
+            }
 
             var ro = RetrieveResourceObject(targetPath);
             var handleType = typeof(FileResourceHandle<>).MakeGenericType(context.ResourceType);
@@ -260,6 +265,11 @@ namespace CommonCore.ResourceManagement
         {
             ResourceLoadContext context = new ResourceLoadContext() { AttemptingSyncLoad = false, ResourceManager = this, ResourceLoader = ResourceLoader, TargetPath = targetPath };
             var resource = await ResourceLoader.LoadAsync(filePath, context);
+            if (resource == null)
+            {
+                Debug.LogWarning($"Resource \"{targetPath}\" was not loaded from \"{filePath}\" (load completed without errors, but returned null)");
+                return null;
+            }
 
             var ro = RetrieveResourceObject(targetPath);
             var handleType = typeof(FileResourceHandle<>).MakeGenericType(context.ResourceType);
