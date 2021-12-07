@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace CommonCore.Config
 {
-    public class ConfigState
+    public class ConfigState : IMigratable
     {
         private static string Path => System.IO.Path.Combine(CoreParams.PersistentDataPath, (CoreParams.UseSeparateEditorConfigFile && CoreParams.IsEditor) ? "config.editor.json" : "config.json");
 
@@ -168,6 +168,8 @@ namespace CommonCore.Config
         /// </summary>
         [JsonProperty]
         public VersionInfo CurrentVersion { get; private set; } = CoreParams.GetCurrentVersion();
+
+        Version IMigratable.LastMigratedVersion => LastMigratedVersion.GameVersion;
 
         //actual config data here (WIP)
 
@@ -357,6 +359,7 @@ namespace CommonCore.Config
             get => AddonConfigVars.GetFullJObject();
             set => AddonConfigVars = new LazyLooseDictionary(value);
         }
+        
     }
 
 

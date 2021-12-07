@@ -165,10 +165,14 @@ namespace CommonCore
         }
     }
 
+    /// <summary>
+    /// Defines an entity class as one that can be migrated
+    /// </summary>
     public interface IMigratable
     {
-        VersionInfo LastMigratedVersion { get; }
-        VersionInfo CurrentVersion { get; }
+        //migration system can actually tolerate a VersionInfo, though only GameVersion will be considered
+        Version LastMigratedVersion { get; }
     }
+    //TODO split this into IMigratable, IVersionMigratable, IVersionInfoMigratable. Maybe.
     
 }

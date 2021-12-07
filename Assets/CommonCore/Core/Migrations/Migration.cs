@@ -41,6 +41,6 @@ namespace CommonCore.Migrations
     /// </summary>
     public abstract class Migration<T> : Migration where T : IMigratable
     {
-         
+
     }
 }

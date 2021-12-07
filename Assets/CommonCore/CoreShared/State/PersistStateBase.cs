@@ -14,7 +14,7 @@ namespace CommonCore.State
     /// <remarks>
     /// Note that persist state is explicitly loaded and saved by state module.
     /// </remarks>
-    public sealed partial class PersistState
+    public sealed partial class PersistState : IMigratable
     {
 
         private static readonly string Path = CoreParams.PersistentDataPath + "/persist.json";
@@ -81,6 +81,8 @@ namespace CommonCore.State
         [JsonProperty]
         public VersionInfo CurrentVersion { get; private set; } = CoreParams.GetCurrentVersion();
 
+        Version IMigratable.LastMigratedVersion => LastMigratedVersion.GameVersion;
+
         //actual instance data (shared across game types)
 
         /// <summary>
@@ -114,5 +116,6 @@ namespace CommonCore.State
         /// Last path this application was started from
         /// </summary>
         public string LastApplicationPath { get; set; } = null;
+        
     }
 }

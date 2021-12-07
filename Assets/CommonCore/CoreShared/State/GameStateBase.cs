@@ -17,7 +17,7 @@ namespace CommonCore.State
     /// <summary>
     /// Represents the entire state of the game
     /// </summary>
-    public partial class GameState
+    public partial class GameState : IMigratable
     {
         private static GameState instance;
 
@@ -224,6 +224,8 @@ namespace CommonCore.State
         /// </summary>
         [JsonProperty]
         public VersionInfo CurrentVersion { get; private set; } = CoreParams.GetCurrentVersion();
+
+        Version IMigratable.LastMigratedVersion => LastMigratedVersion.GameVersion;
 
         //should these be accessible?
         [JsonProperty]
