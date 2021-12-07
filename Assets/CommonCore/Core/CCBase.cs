@@ -1,4 +1,5 @@
-﻿using CommonCore.ResourceManagement;
+﻿using CommonCore.Migrations;
+using CommonCore.ResourceManagement;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -275,6 +276,7 @@ namespace CommonCore
             CoreParams.SetInitial();
             CoreParams.LoadOverrides();
             LoadGameTypes();
+            MigrationsManager.Instance.LoadMigrationsFromTypes(BaseGameTypes);
             HookMonobehaviourEvents();
             HookQuitEvent();
             HookSceneEvents();
@@ -531,6 +533,9 @@ namespace CommonCore
 
         private static void ExecuteAddonLoaded(AddonLoadData data)
         {
+            //a bit ugly, but this is where it has to go
+            MigrationsManager.Instance.LoadMigrationsFromAssemblies(data.LoadedAssemblies);
+
             foreach (var m in Modules)
             {
                 try

@@ -164,5 +164,11 @@ namespace CommonCore
 
         }
     }
+
+    public interface IMigratable
+    {
+        VersionInfo LastMigratedVersion { get; }
+        VersionInfo CurrentVersion { get; }
+    }
     
 }

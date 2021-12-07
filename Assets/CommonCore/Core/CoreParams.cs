@@ -15,8 +15,8 @@ namespace CommonCore
     {
 
         //*****system version info
-        public static Version VersionCode { get; private set; } = new Version(3, 0, 0); //3.0.0
-        public static string VersionName { get; private set; } = "Citadel";
+        public static Version VersionCode { get; private set; } = new Version(4, 0, 0); //4.0.0
+        public static string VersionName { get; private set; } = "Downwarren";
         public static Version UnityVersion { get; private set; } //auto-set
         public static string UnityVersionName { get; private set; } //auto-set
         public static RuntimePlatform Platform { get; private set; } //auto-set

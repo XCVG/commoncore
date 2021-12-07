@@ -311,3 +311,5 @@
 * Added interim ModuleParams to CoreParams [Experimental]
 * Added RunOnMainThread methods to AsyncUtils [Experimental]
 * QdmsMessageComponent can now translate and rebroadcast as Unity messages [Experimental]
+
+# 4.0.0 pNext
