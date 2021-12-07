@@ -280,7 +280,7 @@
 * Added attack repeat functionality to ActorAttackComponent [Experimental]
 * Added AudioClipAssignScript [Experimental]
 
-# 4.0.0 pNext
+# 4.0.0 Preview 1
 
 * Updated CREDITS
 * Options panel now displays game name and versions of game, core, and engine
