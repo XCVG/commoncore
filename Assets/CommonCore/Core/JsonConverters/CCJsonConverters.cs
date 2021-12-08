@@ -50,7 +50,7 @@ namespace CCJsonConverters
             {
                 return new List<JsonConverter>() { new Vector2Converter(), new Vector2IntConverter(),
                     new Vector3Converter(), new Vector3IntConverter(), new Vector4Converter(),
-                    new QuaternionConverter(), new ColorConverter()};
+                    new QuaternionConverter(), new ColorConverter(), new VersionConverter()};
             }
         }
     }

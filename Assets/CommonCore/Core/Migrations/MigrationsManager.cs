@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEngine;
 using CommonCore.DebugLog;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace CommonCore.Migrations
 {
@@ -48,15 +49,32 @@ namespace CommonCore.Migrations
             throw new NotImplementedException();
 
             //logic will be something like this:
-            //-get current version
+            //-get last migrated version
             //-go through our list of migrations
-            //-check for a migration 
+            //-check for a migration that can migrate that version
+            //-run that migration
+            //-remove that migration from the list and repeat
         }
 
         private Version ParseLastMigratedVersion(JObject inputObject)
         {
-            //TODO look for LastMigratedVersion, might be a Version, might be a VersionInfo
-            throw new NotImplementedException();
+            var lmv = inputObject["LastMigratedVersion"];
+
+            if(lmv.Type == JTokenType.String)
+            {
+                return lmv.ToObject<Version>(JsonSerializer.Create(CoreParams.DefaultJsonSerializerSettings));
+            }
+            else if(lmv.Type == JTokenType.Object && ((JObject)lmv).ContainsKey("Major"))
+            {
+                return lmv.ToObject<Version>(JsonSerializer.Create(CoreParams.DefaultJsonSerializerSettings));
+            }
+            else if(lmv.Type == JTokenType.Object && ((JObject)lmv).ContainsKey("GameVersion"))
+            {
+                var vInfo = lmv.ToObject<VersionInfo>(JsonSerializer.Create(CoreParams.DefaultJsonSerializerSettings));
+                return vInfo.GameVersion;
+            }
+
+            throw new NotSupportedException(); //TODO better exception
         }
 
         public void LoadMigrationsFromAssemblies(IEnumerable<Assembly> assemblies)

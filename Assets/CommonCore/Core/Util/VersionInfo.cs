@@ -9,11 +9,11 @@ namespace CommonCore
     /// </summary>
     public sealed class VersionInfo
     {
-        [JsonProperty, JsonConverter(typeof(VersionConverter))]
+        [JsonProperty]
         public Version GameVersion { get; private set; }
-        [JsonProperty, JsonConverter(typeof(VersionConverter))]
+        [JsonProperty]
         public Version FrameworkVersion { get; private set; }
-        [JsonProperty, JsonConverter(typeof(VersionConverter))]
+        [JsonProperty]
         public Version EngineVersion { get; private set; }
 
         public VersionInfo(Version gameVersion, Version frameworkVersion, Version engineVersion)
