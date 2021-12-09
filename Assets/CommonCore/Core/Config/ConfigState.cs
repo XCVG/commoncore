@@ -1,4 +1,5 @@
 ﻿using CommonCore.DebugLog;
+using CommonCore.Migrations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -31,7 +32,17 @@ namespace CommonCore.Config
                     
                 }
 
-                Instance = CoreUtils.LoadExternalJson<ConfigState>(Path);
+                //handle migrations
+                var rawConfig = CoreUtils.ReadExternalJson(Path) as JObject;
+                rawConfig = MigrationsManager.Instance.MigrateToLatest<ConfigState>(rawConfig, true, out bool didMigrate);
+                if(didMigrate)
+                {
+                    Debug.Log("[Config] Config file was migrated successfully");
+                    Directory.CreateDirectory(System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups"));
+                    File.Copy(Path, System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups" , $"config.migrated.{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.json"), true);
+                    //CoreUtils.WriteExternalJson(Path, rawConfig);
+                }
+                Instance = CoreUtils.InterpretJson<ConfigState>(rawConfig);
             }
             catch(Exception e)
             {                
@@ -51,7 +62,7 @@ namespace CommonCore.Config
             if (Instance == null)
                 Instance = new ConfigState();
 
-            MigrateLastMigratedVersion(Instance);
+            //MigrateLastMigratedVersion(Instance);
         }
 
         public static void Save()

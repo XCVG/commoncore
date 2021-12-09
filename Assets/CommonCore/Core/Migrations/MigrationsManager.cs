@@ -39,21 +39,79 @@ namespace CommonCore.Migrations
 
         }
 
-        public JObject MigrateToLatest<T>(JObject inputObject)
+        public JObject MigrateToLatest<T>(JObject inputObject, bool allowIncompleteMigration, out bool didMigrate)
         {
-            return MigrateToLatest(inputObject, typeof(T));
+            return MigrateToLatest(inputObject, typeof(T), allowIncompleteMigration, out didMigrate);
         }
 
-        public JObject MigrateToLatest(JObject inputObject, Type type)
+        public JObject MigrateToLatest(JObject inputObject, Type type, bool allowIncompleteMigration, out bool didMigrate)
         {
-            throw new NotImplementedException();
-
             //logic will be something like this:
             //-get last migrated version
             //-go through our list of migrations
             //-check for a migration that can migrate that version
             //-run that migration
             //-remove that migration from the list and repeat
+
+            List<Type> migrations = Migrations[type].ToList();
+            List<Type> appliedMigrations = new List<Type>();
+            bool migrationPossible = true;
+            didMigrate = false;
+            JObject currentObject = inputObject;
+
+            try
+            {
+                do
+                {
+                    Version currentVersion = ParseLastMigratedVersion(currentObject);
+                    var migration = migrations
+                        .Except(appliedMigrations)
+                        .Select(t => (Migration)Activator.CreateInstance(t))
+                        .FirstOrDefault(m => CheckMigrationPossible(currentVersion, m));
+
+                    if (migration != null)
+                    {
+                        currentObject = migration.Migrate(currentObject, new MigrationContext() { JsonSerializer = JsonSerializer.Create(CoreParams.DefaultJsonSerializerSettings) });
+                        appliedMigrations.Add(migration.GetType());
+                        didMigrate = true;
+                    }
+                    else
+                    {
+                        migrationPossible = false;
+                    }
+
+                } while (migrationPossible);
+            }
+            catch(Exception e)
+            {
+                throw new MigrationFailedException($"Failed to migrate {type?.Name}", e);
+            }
+
+            Version resultVersion = ParseLastMigratedVersion(currentObject);
+            if (!allowIncompleteMigration && resultVersion < CoreParams.GameVersion)
+                throw new MigrationIncompleteException(CoreParams.GameVersion, resultVersion, type);
+
+            return currentObject;
+        }
+
+        private bool CheckMigrationPossible(Version currentVersion, Migration migration)
+        {
+            if(migration.MinInputVersion != null && currentVersion < migration.MinInputVersion)
+            {
+                return false;
+            }
+
+            if(migration.MaxInputVersion != null && migration.MigrateMaxVersion && currentVersion > migration.MaxInputVersion)
+            {
+                return false;
+            }
+
+            if (migration.MaxInputVersion != null && !migration.MigrateMaxVersion && currentVersion >= migration.MaxInputVersion)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private Version ParseLastMigratedVersion(JObject inputObject)
@@ -75,7 +133,7 @@ namespace CommonCore.Migrations
             }
 
             throw new NotSupportedException(); //TODO better exception
-        }
+        }        
 
         public void LoadMigrationsFromAssemblies(IEnumerable<Assembly> assemblies)
         {

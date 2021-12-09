@@ -33,7 +33,7 @@ namespace CommonCore.Migrations
         /// <para>Always set LastMigratedVersion to this migration's result version</para>
         /// <para>It is allowable to modify the input object and return the same object</para>
         /// </remarks>
-        public abstract JObject Migrate(JObject inputObject);
+        public abstract JObject Migrate(JObject inputObject, MigrationContext context);
     }
 
     /// <summary>

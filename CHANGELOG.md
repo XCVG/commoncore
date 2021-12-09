@@ -313,3 +313,7 @@
 * QdmsMessageComponent can now translate and rebroadcast as Unity messages [Experimental]
 
 # 4.0.0 pNext
+
+* Added custom VersionConverter JsonConverter to CCJsonConverters
+* Added more JSON handling methods to CoreUtils
+* Implemented migrations for loading data from earlier versions [WIP]

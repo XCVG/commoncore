@@ -22,7 +22,7 @@ public class ConfigStateUnifiedMigration : Migration<ConfigState>
 
     public override bool MigrateMaxVersion => true;
 
-    public override JObject Migrate(JObject inputObject)
+    public override JObject Migrate(JObject inputObject, MigrationContext context)
     {
         //set last migrated version
         var version = CoreParams.GetCurrentVersion();

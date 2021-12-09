@@ -44,6 +44,7 @@ namespace CommonCore
         private static WindowsPersistentDataPath PersistentDataPathWindows = WindowsPersistentDataPath.Roaming;
         private static bool CorrectWindowsLocalDataPath = false; //if set, use AppData/Local/* instead of AppData/LocalLow/* for LocalDataPath
         private static bool UseGlobalScreenshotFolder = true; //ignored on UWP and probably other platforms
+        public static bool UseMigrationBackups { get; private set; } = true; //if set, will save backups before migrating
 
         public static bool SetSafeResolutionOnExit { get; private set; } = true;
         public static Vector2Int SafeResolution { get; private set; } = new Vector2Int(1280, 720);

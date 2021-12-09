@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Scripting;
 using CommonCore.GameData;
+using Newtonsoft.Json.Linq;
 
 namespace CommonCore
 {
@@ -112,6 +113,42 @@ namespace CommonCore
         }
 
         private static System.Random _random;
+
+        public static JToken ReadExternalJson(string path)
+        {
+            if (!File.Exists(path))
+            {
+                return null;
+            }
+            string text = File.ReadAllText(path);
+            return ReadJson(text);
+        }
+
+        public static JToken ReadJson(string text)
+        {
+            return JToken.Parse(text);
+        }
+
+        public static void WriteExternalJson(string path, JToken jt)
+        {
+            string json = WriteJson(jt);
+            File.WriteAllText(path, json);
+        }
+
+        public static string WriteJson(JToken jt)
+        {
+            return jt.ToString(Formatting.Indented);
+        }
+
+        public static T InterpretJson<T>(JToken jt)
+        {
+            return jt.ToObject<T>(JsonSerializer.Create(CoreParams.DefaultJsonSerializerSettings));
+        }
+
+        public static JToken ConstructJson(object obj)
+        {
+            return JToken.FromObject(obj, JsonSerializer.Create(CoreParams.DefaultJsonSerializerSettings));
+        }
 
         public static T LoadExternalJson<T>(string path)
         {
