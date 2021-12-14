@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 using System;
+using CommonCore.Migrations;
+using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace CommonCore.State
 {
@@ -26,7 +29,18 @@ namespace CommonCore.State
         /// </summary>
         public static void Load()
         {
-            Instance = CoreUtils.LoadExternalJson<PersistState>(Path);
+            //handle migrations
+            var raw = CoreUtils.ReadExternalJson(Path) as JObject;
+            raw = MigrationsManager.Instance.MigrateToLatest<PersistState>(raw, true, out bool didMigrate);
+            if (didMigrate)
+            {
+                Debug.Log("[PersistState] Persist state was migrated successfully");
+                Directory.CreateDirectory(System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups"));
+                File.Copy(Path, System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups", $"persist.migrated.{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.json"), true);
+                CoreUtils.WriteExternalJson(Path, raw);
+            }
+            Instance = CoreUtils.InterpretJson<PersistState>(raw);
+
             if (Instance == null)
             {
                 Instance = new PersistState();
@@ -35,8 +49,6 @@ namespace CommonCore.State
             {
                 Instance.IsFirstRun = false;                
             }
-
-            MigrateLastMigratedVersion(Instance);
         }
 
         /// <summary>

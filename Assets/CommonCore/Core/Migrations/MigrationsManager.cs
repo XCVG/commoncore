@@ -53,7 +53,7 @@ namespace CommonCore.Migrations
             //-run that migration
             //-remove that migration from the list and repeat
 
-            List<Type> migrations = Migrations[type].ToList();
+            List<Type> migrations = Migrations.ContainsKey(type) ? Migrations[type].ToList() : new List<Type>();
             List<Type> appliedMigrations = new List<Type>();
             bool migrationPossible = true;
             didMigrate = false;

@@ -316,4 +316,6 @@
 
 * Added custom VersionConverter JsonConverter to CCJsonConverters
 * Added more JSON handling methods to CoreUtils
-* Implemented migrations for loading data from earlier versions [WIP]
+* Implemented generalized migration handling
+* Implemented migration for ConfigState
+* Implemented migration for PersistState

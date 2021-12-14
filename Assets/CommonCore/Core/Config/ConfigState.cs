@@ -40,7 +40,7 @@ namespace CommonCore.Config
                     Debug.Log("[Config] Config file was migrated successfully");
                     Directory.CreateDirectory(System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups"));
                     File.Copy(Path, System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups" , $"config.migrated.{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.json"), true);
-                    //CoreUtils.WriteExternalJson(Path, rawConfig);
+                    CoreUtils.WriteExternalJson(Path, rawConfig);
                 }
                 Instance = CoreUtils.InterpretJson<ConfigState>(rawConfig);
             }
@@ -76,16 +76,6 @@ namespace CommonCore.Config
         private ConfigState()
         {
 
-        }
-
-        //our first "migration": sets LastMigratedVersion if not already set
-        private static void MigrateLastMigratedVersion(ConfigState cs)
-        {
-            if (cs.LastMigratedVersion == null)
-            {
-                cs.LastMigratedVersion = CoreParams.GetCurrentVersion();
-                Debug.Log($"[ConfigState] Migrated to {cs.LastMigratedVersion} ({nameof(MigrateLastMigratedVersion)})");
-            }
         }
 
         /// <summary>

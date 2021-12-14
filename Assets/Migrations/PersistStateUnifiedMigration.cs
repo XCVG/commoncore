@@ -1,16 +1,16 @@
 ﻿using CommonCore;
-using CommonCore.Config;
 using CommonCore.Migrations;
+using CommonCore.State;
 using Newtonsoft.Json.Linq;
 using System;
 
 /// <summary>
-/// ConfigState migration
+/// PersistState migration
 /// </summary>
 /// <remarks>
 /// <para>This is an example of the single-migration migration strategy</para>
 /// </remarks>
-public class ConfigStateUnifiedMigration : Migration<ConfigState>
+public class PersistStateUnifiedMigration : Migration<PersistState>
 {
     public override Version MinInputVersion => null;
 
