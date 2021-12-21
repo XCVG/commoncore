@@ -1,5 +1,6 @@
 ﻿using CommonCore.Config;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -305,6 +306,19 @@ namespace CommonCore.State
         /// </summary>
         [JsonProperty]
         public float CurrentTimescale { get; set; } = 1.0f;
+
+        /// <summary>
+        /// Lazy-deserialized data for addons
+        /// </summary>
+        [JsonIgnore]
+        public LazyLooseDictionary AddonState { get; private set; } = new LazyLooseDictionary();
+
+        [JsonProperty(PropertyName = nameof(AddonState))]
+        private JObject AddonStateSerializable
+        {
+            get => AddonState.GetFullJObject();
+            set => AddonState = new LazyLooseDictionary(value);
+        }
 
         /// <summary>
         /// Decorate methods with this atrribute to have them run on GameState initialization. Higher priority is sooner.

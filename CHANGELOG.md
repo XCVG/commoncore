@@ -319,3 +319,6 @@
 * Implemented generalized migration handling
 * Implemented migration for ConfigState
 * Implemented migration for PersistState
+* Added init function run only on first create to ConfigState
+* Added AddonData LazyLooseDictionary to GameState
+* Implemented previously unimplemented methods in LazyLooseDictionary

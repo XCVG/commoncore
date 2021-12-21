@@ -60,9 +60,11 @@ namespace CommonCore.Config
             }
 
             if (Instance == null)
+            {
                 Instance = new ConfigState();
+                Instance.Init();
+            }
 
-            //MigrateLastMigratedVersion(Instance);
         }
 
         public static void Save()
@@ -71,9 +73,16 @@ namespace CommonCore.Config
             CoreUtils.SaveExternalJson(Path, Instance);
         }
 
-        //set defaults in constructor
         [JsonConstructor]
         private ConfigState()
+        {
+
+        }
+
+        /// <summary>
+        /// Will run on create but not before deserializing an existing config file. Set defaults in collections here
+        /// </summary>
+        private void Init()
         {
 
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -9,7 +10,6 @@ namespace CommonCore
     /// <summary>
     /// Lazy-loading dictionary referencing a JObject
     /// </summary>
-    /// <remarks>At this point it's incredibly halfassed with most of the API not implemented</remarks>
     public class LazyLooseDictionary : IDictionary<string, object>, IReadOnlyDictionary<string, object>
     {
 
@@ -78,17 +78,13 @@ namespace CommonCore
             }
         }
 
-        public ICollection<string> Keys => throw new NotImplementedException();
+        public ICollection<string> Keys => BackingDictionary.Keys
+            .Union(((IDictionary<string, JToken>)BackingJObject).Keys)
+            .ToArray();
 
         public ICollection<object> Values => throw new NotImplementedException();
 
-        public int Count
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public int Count => Keys.Count;
 
         public bool IsReadOnly => false;
 
@@ -114,7 +110,12 @@ namespace CommonCore
 
         public bool Contains(KeyValuePair<string, object> item)
         {
-            throw new NotImplementedException();
+            if (BackingDictionary.ContainsKey(item.Key))
+                return BackingDictionary[item.Key] == item.Value;
+            if (BackingJObject.ContainsKey(item.Key))
+                return GetObjectFromToken(BackingJObject[item.Key]) == item.Value;
+
+            return false;
         }
 
         public bool ContainsKey(string key)
@@ -135,7 +136,12 @@ namespace CommonCore
 
         public bool Remove(KeyValuePair<string, object> item)
         {
-            throw new NotImplementedException();
+            if (BackingDictionary.ContainsKey(item.Key) && BackingDictionary[item.Key] == item.Value)
+                return BackingDictionary.Remove(item.Key);
+            if (BackingJObject.ContainsKey(item.Key) && GetObjectFromToken(BackingJObject[item.Key]) == item.Value)
+                return BackingJObject.Remove(item.Key);
+
+            return false;
         }
 
         public bool TryGetValue(string key, out object value)
@@ -154,7 +160,10 @@ namespace CommonCore
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
-            throw new NotImplementedException();
+            foreach (string key in Keys)
+            {
+                yield return new KeyValuePair<string, object>(key, this[key]);
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
