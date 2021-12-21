@@ -19,7 +19,7 @@ namespace CommonCore.RpgGame.Rpg
      * This is a complete character model, right now used only for players
      * Members can be smartly accessed by name via reflection
      */
-    public class CharacterModel : IPlayerFlagsSource
+    public partial class CharacterModel : IPlayerFlagsSource
     {
         public string FormID { get; set; }
         public string DisplayName { get; set; }
@@ -116,15 +116,16 @@ namespace CommonCore.RpgGame.Rpg
         public Dictionary<EquipSlot, int> AmmoInMagazine { get; set; }
 
         [JsonIgnore]
-        public IDictionary<EquipSlot, InventoryItemInstance> Equipped { get; private set; }
+        public IEquippedDictionaryProxy Equipped { get; private set; }
         [JsonProperty(PropertyName = "Equipped")]
+        [Obsolete]
         private Dictionary<EquipSlot, InventoryItemInstance> EquippedJsonParseable //hack for parsing old saves and old RPG defs
         {
             set
             {
                 if (value != null && value.Count > 0)
                 {
-                    Debug.LogWarning("Loading equipped items through legacy object-ref parsing");
+                    Debug.LogError("Loading equipped items through legacy object-ref parsing");
                     foreach (var kvp in value)
                     {
                         if (kvp.Value.InstanceUID == 0)
@@ -132,14 +133,14 @@ namespace CommonCore.RpgGame.Rpg
                             Debug.LogError($"Cannot equip item instance ({kvp.Value}) because it has no UID");
                             continue;
                         }
-                        EquippedIDs[kvp.Key] = kvp.Value.InstanceUID;
+                        EquippedIDs[(int)kvp.Key] = kvp.Value.InstanceUID;
                     }
                 }
 
             }
-        }
+        } //will be removed soon, use Migrations if you need to load old saves
         [JsonProperty]
-        private Dictionary<EquipSlot, long> EquippedIDs { get; set; } = new Dictionary<EquipSlot, long>();
+        private Dictionary<int, long> EquippedIDs { get; set; } = new Dictionary<int, long>();
 
         //mostly for addons/game-specific stuff
         [JsonProperty(ItemTypeNameHandling = TypeNameHandling.All)]
@@ -575,93 +576,6 @@ namespace CommonCore.RpgGame.Rpg
         {
             return false; //nop for now
         }
-
-
-        //how equipped items are now handled
-        private class EquippedDictionaryProxy : IDictionary<EquipSlot, InventoryItemInstance>
-        {
-            private CharacterModel CharacterModel;
-
-            public EquippedDictionaryProxy(CharacterModel characterModel)
-            {
-                CharacterModel = characterModel;
-            }
-
-            public InventoryItemInstance this[EquipSlot key] { 
-                get => CharacterModel.Inventory.GetItem(CharacterModel.EquippedIDs[key]);
-                set => CharacterModel.EquippedIDs[key] = value.InstanceUID; 
-            }
-
-            public ICollection<EquipSlot> Keys => CharacterModel.EquippedIDs.Keys;
-
-            public ICollection<InventoryItemInstance> Values => CharacterModel.EquippedIDs.Values.Select(v => CharacterModel.Inventory.GetItem(v)).ToArray();
-
-            public int Count => CharacterModel.EquippedIDs.Count;
-
-            public bool IsReadOnly => false;
-
-            public void Add(EquipSlot key, InventoryItemInstance value)
-            {
-                CharacterModel.EquippedIDs.Add(key, value.InstanceUID);
-            }
-
-            public void Add(KeyValuePair<EquipSlot, InventoryItemInstance> item)
-            {
-                CharacterModel.EquippedIDs.Add(item.Key, item.Value.InstanceUID);
-            }
-
-            public void Clear()
-            {
-                CharacterModel.EquippedIDs.Clear();
-            }
-
-            public bool Contains(KeyValuePair<EquipSlot, InventoryItemInstance> item)
-            {
-                throw new NotImplementedException();
-            }
-
-            public bool ContainsKey(EquipSlot key)
-            {
-                return CharacterModel.EquippedIDs.ContainsKey(key);
-            }
-
-            public void CopyTo(KeyValuePair<EquipSlot, InventoryItemInstance>[] array, int arrayIndex)
-            {
-                throw new NotImplementedException();
-            }
-
-            public IEnumerator<KeyValuePair<EquipSlot, InventoryItemInstance>> GetEnumerator()
-            {
-                return CharacterModel.EquippedIDs.Select(kvp => new KeyValuePair<EquipSlot, InventoryItemInstance>(kvp.Key, CharacterModel.Inventory.GetItem(kvp.Value))).GetEnumerator();
-            }
-
-            public bool Remove(EquipSlot key)
-            {
-                return CharacterModel.EquippedIDs.Remove(key);
-            }
-
-            public bool Remove(KeyValuePair<EquipSlot, InventoryItemInstance> item)
-            {
-                throw new NotImplementedException();
-            }
-
-            public bool TryGetValue(EquipSlot key, out InventoryItemInstance value)
-            {
-                if(CharacterModel.EquippedIDs.TryGetValue(key, out long id))
-                {
-                    value = CharacterModel.Inventory.GetItem(id);
-                    return true;
-                }
-                value = default;
-                return false;
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return this.GetEnumerator();
-            }
-        }
-
 
     }
 }
