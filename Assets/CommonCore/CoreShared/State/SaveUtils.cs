@@ -1,4 +1,6 @@
-﻿using CommonCore.Config;
+﻿using CommonCore;
+using CommonCore.Config;
+using CommonCore.Scripting;
 using CommonCore.StringSub;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -9,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CommonCore.State
 {
@@ -34,31 +37,17 @@ namespace CommonCore.State
     /// <summary>
     /// Struct representing a save file
     /// </summary>
+    /// <remarks>
+    /// <para>Used by save and load panels</para>
+    /// <para>Not what's actually stored, that's <see cref="SaveMetadata"/></para>
+    /// </remarks>
     public struct SaveGameInfo
     {
         public string NiceName { get; set; }
+        public string ShortName { get; set; }
         public string FileName { get; set; }
         public SaveGameType Type { get; set; }        
         public DateTime Date { get; set; }
-
-        public string Location { get; set; }
-        public byte[] ImageData { get; set; } 
-        public string CampaignHash { get; set; }
-
-        /// <summary>
-        /// Create a SaveGameInfo from parameters
-        /// </summary>
-        public SaveGameInfo(string niceName, string fileName, SaveGameType type, DateTime date)
-        {
-            NiceName = niceName;
-            FileName = fileName;
-            Type = type;            
-            Date = date;
-
-            ImageData = null;
-            Location = null;
-            CampaignHash = null;
-        }
 
         /// <summary>
         /// Create a SaveGameInfo from a file via FileInfo object
@@ -66,48 +55,38 @@ namespace CommonCore.State
         public SaveGameInfo(FileInfo fileInfo)
         {
             SaveGameType type = SaveGameType.Manual;
-            string niceName = Path.GetFileNameWithoutExtension(fileInfo.Name);
-            if (niceName.Contains("_"))
+            string shortName = Path.GetFileNameWithoutExtension(fileInfo.Name);
+            if (shortName.Contains("_"))
             {
                 //split nicename
-                string[] splitName = niceName.Split('_');
+                string[] splitName = shortName.Split('_');
                 if (splitName.Length >= 2)
                 {
-                    niceName = niceName.Substring(niceName.IndexOf('_') + 1);
+                    shortName = shortName.Substring(shortName.IndexOf('_') + 1);
                     if (splitName[0] == "q")
                     {
-                        niceName = $"{Sub.Replace("Quicksave", "IGUI_SAVE")}";
+                        shortName = $"{Sub.Replace("Quicksave", "IGUI_SAVE")}";
                         type = SaveGameType.Quick;
                     }
                     else if (splitName[0] == "a")
                     {
-                        niceName = $"{Sub.Replace("Autosave", "IGUI_SAVE")} {(splitName.Length > 2 ? splitName[2] : "?")}";
+                        shortName = $"{Sub.Replace("Autosave", "IGUI_SAVE")} {(splitName.Length > 2 ? splitName[2] : "?")}";
                         type = SaveGameType.Auto;
                     }
                     else if (splitName[0] == "m")
                         type = SaveGameType.Manual;
                     else
-                        niceName = Path.GetFileNameWithoutExtension(fileInfo.Name); //undo our oopsie if it turns out someone is trolling with prefixes
+                        shortName = Path.GetFileNameWithoutExtension(fileInfo.Name); //undo our oopsie if it turns out someone is trolling with prefixes
                 }
 
             }
 
-            NiceName = niceName;
+            NiceName = shortName; //for now?
+            ShortName = shortName;
             FileName = fileInfo.Name;
             Type = type;
             Date = fileInfo.CreationTime;
 
-            ImageData = null;
-            Location = null;
-            CampaignHash = null;
-        }
-
-        /// <summary>
-        /// Loads metadata from the save file
-        /// </summary>
-        public void LoadMetadata()
-        {
-            //nop for now
         }
     }
 
@@ -148,6 +127,90 @@ namespace CommonCore.State
                 return saveFInfo.Name;
             else
                 return null;
+        }
+
+        /// <summary>
+        /// Gets the clean save path given a save name which may or may not contain a path and may or may not contain an extension
+        /// </summary>
+        public static string GetCleanSavePath(string saveName)
+        {
+            string path;
+            if (Path.IsPathRooted(saveName))
+                path = saveName;
+            else
+                path = Path.Combine(CoreParams.SavePath, saveName);
+
+            if (string.IsNullOrEmpty(Path.GetExtension(path)))
+                path = path + ".json";
+
+            return path;
+        }
+
+        /// <summary>
+        /// Gets the clean metadata path given a save name which may or may not contain a path and may or may not contain an extension
+        /// </summary>
+        //TODO remove this, unused as we are embedding metadata
+        public static string GetCleanMetadataPath(string saveName)
+        {
+            string path;
+            if (Path.IsPathRooted(saveName))
+                path = saveName;
+            else
+                path = Path.Combine(CoreParams.SavePath, saveName);
+
+            if (string.IsNullOrEmpty(Path.GetExtension(path)) || path.EndsWith(".meta.json", StringComparison.OrdinalIgnoreCase))
+                path = path.Substring(0, path.Length - 10);
+            else
+                path = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path));
+
+            path = path + ".meta.json";
+
+            return path;
+        }
+
+        public static SaveMetadata CreateDefaultMetadata(string niceName)
+        {
+            var sm = new SaveMetadata()
+            {
+                NiceName = niceName,
+                CampaignIdentifier = GameState.Instance.CampaignIdentifier,
+                LocationRaw = SceneManager.GetActiveScene().name,
+                CompanyName = CoreParams.CompanyName,
+                GameName = CoreParams.GameName,
+                GameVersion = CoreParams.GetCurrentVersion()                
+            };
+
+            sm.Location = Sub.Exists(sm.LocationRaw, "LOCATION") ? Sub.Replace(sm.LocationRaw, "LOCATION") : null;
+
+            //very loosely coupled thumbnail
+            try
+            {
+                if (ScriptingModule.CheckScript("GetSaveThumbnail"))
+                    sm.ThumbnailImage = (byte[])ScriptingModule.CallForResult("GetSaveThumbnail", new ScriptExecutionContext());
+            }
+            catch(Exception e)
+            {
+                Debug.LogError($"An error occurred when trying to get the save thumbnail ({e.GetType().Name}: {e.Message})");
+                if(ConfigState.Instance.UseVerboseLogging)                
+                    Debug.LogException(e);
+                
+            }
+
+            return sm;
+        }
+
+        public static SaveMetadata LoadSaveMetadata(string saveName)
+        {
+            string path = SaveUtils.GetCleanSavePath(saveName);
+
+            var jo = (JObject)CoreUtils.ReadExternalJson(path);
+
+            if(!jo["Metadata"].IsNullOrEmpty())
+            {
+                return CoreUtils.InterpretJson<SaveMetadata>(jo["Metadata"]);
+            }
+
+            return null;
         }
 
         //all non-Ex should be "safe" (log errors instead of throwing) and check conditions themselves
@@ -204,10 +267,10 @@ namespace CommonCore.State
             //since we aren't supporting campaign-unique autosaves yet, hash will just be 0
 
             string campaignId = "0";
-            string saveFileName = $"q_{campaignId}.json";
+            string saveFileName = $"q_{campaignId}";
             //string saveFilePath = Path.Combine(CoreParams.SavePath, saveFileName);
 
-            SharedUtils.SaveGame(saveFileName, true, false);
+            SharedUtils.SaveGame(saveFileName, true, false, CreateDefaultMetadata("Quicksave"));
 
             Debug.Log($"Quicksave complete ({saveFileName})");
 
@@ -366,8 +429,8 @@ namespace CommonCore.State
             }
 
             //save this autosave
-            string newSaveName = $"a_{campaignId}_{highestSaveId + 1}.json";
-            SharedUtils.SaveGame(newSaveName, commit, false);
+            string newSaveName = $"a_{campaignId}_{highestSaveId + 1}";
+            SharedUtils.SaveGame(newSaveName, commit, false, CreateDefaultMetadata($"Autosave {highestSaveId + 1}"));
 
             //remove old autosaves
             //this I think is the broken part

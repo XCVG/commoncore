@@ -31,7 +31,7 @@ namespace CommonCore.State
         {
             //handle migrations
             var raw = CoreUtils.ReadExternalJson(Path) as JObject;
-            raw = MigrationsManager.Instance.MigrateToLatest<PersistState>(raw, true, out bool didMigrate);
+            var nRaw = MigrationsManager.Instance.MigrateToLatest<PersistState>(raw, true, out bool didMigrate);
             if (didMigrate)
             {
                 Debug.Log("[PersistState] Persist state was migrated successfully");
@@ -39,7 +39,7 @@ namespace CommonCore.State
                 File.Copy(Path, System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups", $"persist.migrated.{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.json"), true);
                 CoreUtils.WriteExternalJson(Path, raw);
             }
-            Instance = CoreUtils.InterpretJson<PersistState>(raw);
+            Instance = CoreUtils.InterpretJson<PersistState>(nRaw ?? raw);
 
             if (Instance == null)
             {

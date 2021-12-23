@@ -1,5 +1,7 @@
-﻿using CommonCore.State;
+﻿using CommonCore.Migrations;
+using CommonCore.State;
 using CommonCore.UI;
+using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using UnityEngine;
@@ -90,9 +92,10 @@ namespace CommonCore
         }
 
         /// <summary>
-        /// Loads a saved game to state and transitions to its scene
+        /// Loads a saved game and transitions to its scene
         /// </summary>
-        /// <param name="saveName">The name of the save file, with prefix and extension but without path</param>
+        /// <param name="saveName">The name of the save file</param>
+        /// <remarks>This begins the loading process, but does not handle the actual loading of data</remarks>
         public static void LoadGame(string saveName, bool force)
         {
             if (!force && !CoreParams.AllowSaveLoad)
@@ -107,20 +110,50 @@ namespace CommonCore
         }
 
         /// <summary>
+        /// Loads a save game to stte
+        /// </summary>
+        /// <param name="saveName">The save name, which may be an absolute or relative path, and may contain an extension</param>
+        /// <remarks>This handles the actual loading of data</remarks>
+        public static void LoadGameStateFromFile(string saveName)
+        {
+            string path = SaveUtils.GetCleanSavePath(saveName);
+
+            var raw = (JObject)CoreUtils.ReadExternalJson(path);
+
+            var newRaw = MigrationsManager.Instance.MigrateToLatest<GameState>(raw, true, out bool didMigrate);
+            if (didMigrate)
+            {
+                Debug.Log($"Save file \"{path}\" was migrated successfully");
+                Directory.CreateDirectory(System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups"));
+                File.Copy(path, Path.Combine(CoreParams.PersistentDataPath, "migrationbackups", $"{Path.GetFileNameWithoutExtension(path)}.migrated.{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.json"), true);
+                CoreUtils.WriteExternalJson(path, raw);
+            }
+
+            GameState.DeserializeFromJObject(newRaw ?? raw);
+            PersistState.Instance.LastCampaignIdentifier = GameState.Instance.CampaignIdentifier;
+            MetaState.Instance.NextScene = GameState.Instance.CurrentScene;
+        }
+
+        /// <summary>
         /// Saves the current state to file
         /// </summary>
         /// <param name="saveName">The name of the save file, with prefix and extension but without path</param>
         /// <param name="commit">Whether to commit or not</param>
-        public static void SaveGame(string saveName, bool commit, bool force)
+        public static void SaveGame(string saveName, bool commit, bool force, SaveMetadata metadata)
         {
             if (!force && !CoreParams.AllowSaveLoad)
                 throw new NotSupportedException("Save/Load is disabled in core params!");
 
-            string savePath = CoreParams.SavePath + Path.DirectorySeparatorChar + saveName;
+            string savePath = SaveUtils.GetCleanSavePath(saveName);
             if(commit)
                 BaseSceneController.Current.Commit();
             DateTime savePoint = DateTime.Now;
-            GameState.SerializeToFile(savePath);
+
+            var jo = GameState.SerializeToJObject();
+            if(metadata != null)
+                jo["Metadata"] = CoreUtils.ConstructJson(metadata); //null check?
+
+            CoreUtils.WriteExternalJson(savePath, jo);
             File.SetCreationTime(savePath, savePoint);
         }
 

@@ -49,9 +49,7 @@ namespace CommonCore.State
                 else if (MetaState.Instance.TransitionType == SceneTransitionType.LoadGame)
                 {
                     //we are loading a game, so load the game data and then load the next scene (which is part of save data)
-                    GameState.DeserializeFromFile(CoreParams.SavePath + Path.DirectorySeparatorChar + MetaState.Instance.LoadSave);
-                    PersistState.Instance.LastCampaignIdentifier = GameState.Instance.CampaignIdentifier;
-                    MetaState.Instance.NextScene = GameState.Instance.CurrentScene;
+                    SharedUtils.LoadGameStateFromFile(MetaState.Instance.LoadSave);
                     ScriptingModule.CallHooked(ScriptHook.OnGameLoad, this);
                     StartCoroutine(LoadNextSceneAsync());
                 }

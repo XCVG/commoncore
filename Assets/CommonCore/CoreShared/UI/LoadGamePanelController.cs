@@ -88,7 +88,7 @@ namespace CommonCore.UI
             {
                 var save = Saves[i];
                 GameObject saveGO = Instantiate<GameObject>(SaveItemPrefab, ScrollContent);
-                saveGO.GetComponentInChildren<Text>().text = save.NiceName;
+                saveGO.GetComponentInChildren<Text>().text = save.ShortName;
                 Button b = saveGO.GetComponent<Button>();
                 int lexI = i;
                 b.onClick.AddListener(delegate { OnSaveSelected(lexI, b); }); //scoping is weird here
@@ -107,9 +107,9 @@ namespace CommonCore.UI
 
             //TODO read metadata, handle different save types differently
 
-            DetailName.text = selectedSave.NiceName;
+            DetailName.text = selectedSave.ShortName;
             DetailType.text = selectedSave.Type.ToString();
-            DetailLocation.text = selectedSave.Location;
+            //DetailLocation.text = selectedSave.Location;
             DetailDate.text = selectedSave.Date.ToString();
 
             LoadButton.interactable = true;

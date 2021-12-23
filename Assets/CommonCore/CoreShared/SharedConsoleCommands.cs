@@ -126,7 +126,7 @@ public static class SharedConsoleCommands
     [Command]
     static void Save(string name)
     {
-        SharedUtils.SaveGame(name, true, true);
+        SharedUtils.SaveGame(name, true, true, SaveUtils.CreateDefaultMetadata(name));
     }
 
     /// <summary>

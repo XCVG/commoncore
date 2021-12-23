@@ -63,6 +63,15 @@ namespace CommonCore.State
         }
 
         /// <summary>
+        /// Serializes the current game state to a JObject
+        /// </summary>
+        public static JObject SerializeToJObject()
+        {
+            Instance.CurrentVersion = CoreParams.GetCurrentVersion();
+            return JObject.FromObject(Instance, JsonSerializer.Create(CoreParams.DefaultJsonSerializerSettings));
+        }
+
+        /// <summary>
         /// Serializes the current game state to a string
         /// </summary>
         public static string Serialize()
@@ -82,14 +91,20 @@ namespace CommonCore.State
         }
 
         /// <summary>
+        /// Loads a JObject into the current game state
+        /// </summary>
+        public static void DeserializeFromJObject(JObject jObject)
+        {
+            instance = jObject.ToObject<GameState>(JsonSerializer.Create(CoreParams.DefaultJsonSerializerSettings));
+        }
+
+        /// <summary>
         /// Deserializes a string and replaces the current game state
         /// </summary>
         public static void Deserialize(string data)
         {
             instance = JsonConvert.DeserializeObject<GameState>(data,
             CoreParams.DefaultJsonSerializerSettings);
-
-            MigrateLastMigratedVersion(instance);
         }
 
         /// <summary>
@@ -203,6 +218,7 @@ namespace CommonCore.State
         }
 
         //our first "migration": sets LastMigratedVersion if not already set
+        [Obsolete] //TODO use actual migrations
         private static void MigrateLastMigratedVersion(GameState gs)
         {
             if (gs.LastMigratedVersion == null)
@@ -319,6 +335,9 @@ namespace CommonCore.State
             get => AddonState.GetFullJObject();
             set => AddonState = new LazyLooseDictionary(value);
         }
+
+        [JsonExtensionData]
+        public IDictionary<string, JToken> AdditionalData { get; set; }
 
         /// <summary>
         /// Decorate methods with this atrribute to have them run on GameState initialization. Higher priority is sooner.

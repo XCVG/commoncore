@@ -34,7 +34,7 @@ namespace CommonCore.Config
 
                 //handle migrations
                 var rawConfig = CoreUtils.ReadExternalJson(Path) as JObject;
-                rawConfig = MigrationsManager.Instance.MigrateToLatest<ConfigState>(rawConfig, true, out bool didMigrate);
+                var newRawConfig = MigrationsManager.Instance.MigrateToLatest<ConfigState>(rawConfig, true, out bool didMigrate);
                 if(didMigrate)
                 {
                     Debug.Log("[Config] Config file was migrated successfully");
@@ -42,7 +42,7 @@ namespace CommonCore.Config
                     File.Copy(Path, System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups" , $"config.migrated.{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.json"), true);
                     CoreUtils.WriteExternalJson(Path, rawConfig);
                 }
-                Instance = CoreUtils.InterpretJson<ConfigState>(rawConfig);
+                Instance = CoreUtils.InterpretJson<ConfigState>(newRawConfig ?? rawConfig);
             }
             catch(Exception e)
             {                

@@ -116,7 +116,7 @@ namespace CommonCore.UI
                         continue;
 
                     GameObject saveGO = Instantiate<GameObject>(SaveItemPrefab, ScrollContent);
-                    saveGO.GetComponentInChildren<Text>().text = saveInfo.NiceName;
+                    saveGO.GetComponentInChildren<Text>().text = saveInfo.ShortName;
                     Button b = saveGO.GetComponent<Button>();
                     b.onClick.AddListener(delegate { OnSaveSelected(Path.GetFileNameWithoutExtension(saveFI.Name), saveInfo, b); });
                     if (applyTheme)
@@ -147,9 +147,9 @@ namespace CommonCore.UI
                 //selected an existing save
                 if(saveInfo.HasValue)
                 {
-                    DetailName.text = saveInfo.Value.NiceName;
+                    DetailName.text = saveInfo.Value.ShortName;
                     DetailType.text = saveInfo.Value.Type.ToString();
-                    DetailLocation.text = saveInfo.Value.Location;
+                    //DetailLocation.text = saveInfo.Value.Location;
                     DetailDate.text = saveInfo.Value.Date.ToString();
                 }
 
@@ -185,21 +185,25 @@ namespace CommonCore.UI
                     //assume save name is already okay
 
                     saveName = SelectedSaveName; //we know it already has a prefix
-                    saveFileName = saveName + ".json";
-                    string savePath = CoreParams.SavePath + Path.DirectorySeparatorChar + saveName + ".json";
-                    if (File.Exists(savePath))
-                        File.Delete(savePath); //this "works" but seems to be bugged- race condition?
+                    saveFileName = saveName;
+                    //string savePath = CoreParams.SavePath + Path.DirectorySeparatorChar + saveName + ".json";
+                    //if (File.Exists(savePath))
+                    //    File.Delete(savePath); //this "works" but seems to be bugged- race condition?
+                    //unneeded
                 }
                 else
                 {
-                    saveFileName = "m_" + SaveUtils.GetSafeName(saveName) + ".json";
+                    saveFileName = "m_" + SaveUtils.GetSafeName(saveName);
+
+                    //TODO warn if save already exists on new saves
+                    Debug.LogWarning("TODO warn if save already exists on new saves"); //so I remember
                 }
 
                 if (!string.IsNullOrEmpty(saveName))
                 {
                     try
                     {
-                        SharedUtils.SaveGame(saveFileName, true, false);
+                        SharedUtils.SaveGame(saveFileName, true, false, SaveUtils.CreateDefaultMetadata(saveName));
                         Modal.PushMessageModal(Sub.Replace("SaveSuccessMessage", SubList), Sub.Replace("SaveSuccess", SubList), null, null, true);
                     }
                     catch(Exception e)
