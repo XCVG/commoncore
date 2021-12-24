@@ -326,4 +326,6 @@
 * Attempting to save a new save with the same filename as an existing save now warns
 * Base difficulty is now saved into base ConfigState instead of GameplayConfig
 * Initial, current, highest, and lowest difficulty level is now saved to game saves
+* Registering a script method with a duplicate callable name now replaces existing with warning instead of throwing
+* Removed obsolete methods from ScriptingModule
 * Implemented migration for save games on load [Untested]

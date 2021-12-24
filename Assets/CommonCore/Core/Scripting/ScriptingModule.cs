@@ -191,24 +191,11 @@ namespace CommonCore.Scripting
 
             if (CallableMethods.ContainsKey(callableName))
             {
-                LogError(string.Format("Tried to add a script with name \"{0}\" but that name is already registered!", callableName));
-                throw new ScriptAlreadyRegisteredException();
+                LogError($"Script with name \"{callableName}\" was already registered and has been overridden ({scriptMethod.DeclaringType.FullName}.{scriptMethod.Name} replaces {CallableMethods[callableName].DeclaringType.FullName}.{CallableMethods[callableName].Name})");
+                CallableMethods.Remove(callableName);
             }
 
             CallableMethods.Add(callableName, scriptMethod);
-        }
-
-        private void RegisterScript(Delegate scriptDelegate, string className, string methodName)
-        {
-            string callableName = className + "." + methodName;
-
-            if (CallableMethods.ContainsKey(callableName))
-            {
-                LogError(string.Format("Tried to add a script with name \"{0}\" but that name is already registered!", callableName));
-                throw new ScriptAlreadyRegisteredException();
-            }
-
-            CallableMethods.Add(callableName, scriptDelegate.Method);
         }
 
         private void UnregisterScript(string className, string methodName)
