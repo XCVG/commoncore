@@ -325,4 +325,5 @@
 * Implemented save metadata including thumbnails
 * Attempting to save a new save with the same filename as an existing save now warns
 * Base difficulty is now saved into base ConfigState instead of GameplayConfig
+* Initial, current, highest, and lowest difficulty level is now saved to game saves
 * Implemented migration for save games on load [Untested]

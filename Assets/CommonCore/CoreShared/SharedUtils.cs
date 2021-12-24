@@ -124,8 +124,11 @@ namespace CommonCore
             if (didMigrate)
             {
                 Debug.Log($"Save file \"{path}\" was migrated successfully");
-                Directory.CreateDirectory(System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups"));
-                File.Copy(path, Path.Combine(CoreParams.PersistentDataPath, "migrationbackups", $"{Path.GetFileNameWithoutExtension(path)}.migrated.{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.json"), true);
+                if(CoreParams.UseMigrationBackups || CoreParams.IsDebug)
+                {
+                    Directory.CreateDirectory(System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups"));
+                    File.Copy(path, Path.Combine(CoreParams.PersistentDataPath, "migrationbackups", $"{Path.GetFileNameWithoutExtension(path)}.migrated.{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.json"), true);
+                }                
                 CoreUtils.WriteExternalJson(path, raw);
             }
 
@@ -148,6 +151,7 @@ namespace CommonCore
             if(commit)
                 BaseSceneController.Current.Commit();
             DateTime savePoint = DateTime.Now;
+            GameState.Instance.UpdateDifficulty();
 
             var jo = GameState.SerializeToJObject();
             if(metadata != null)

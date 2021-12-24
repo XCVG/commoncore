@@ -35,8 +35,11 @@ namespace CommonCore.State
             if (didMigrate)
             {
                 Debug.Log("[PersistState] Persist state was migrated successfully");
-                Directory.CreateDirectory(System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups"));
-                File.Copy(Path, System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups", $"persist.migrated.{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.json"), true);
+                if(CoreParams.UseMigrationBackups || CoreParams.IsDebug)
+                {
+                    Directory.CreateDirectory(System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups"));
+                    File.Copy(Path, System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups", $"persist.migrated.{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.json"), true);
+                }                
                 CoreUtils.WriteExternalJson(Path, raw);
             }
             Instance = CoreUtils.InterpretJson<PersistState>(nRaw ?? raw);

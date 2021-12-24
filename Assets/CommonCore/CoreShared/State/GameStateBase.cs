@@ -111,6 +111,8 @@ namespace CommonCore.State
             instance.SetCampaignStartDate();
             instance.SetCampaignHash();
             instance.LastMigratedVersion = instance.CurrentVersion;
+            instance.InitialDifficulty = ConfigState.Instance.Difficulty;
+            instance.UpdateDifficulty();
         }
 
         /// <summary>
@@ -207,15 +209,16 @@ namespace CommonCore.State
             }
         }
 
-        //our first "migration": sets LastMigratedVersion if not already set
-        [Obsolete] //TODO use actual migrations
-        private static void MigrateLastMigratedVersion(GameState gs)
+        /// <summary>
+        /// Update current, highest, lowest difficulty
+        /// </summary>
+        /// <remarks>Runs after load and before save</remarks>
+        [AfterLoad]
+        public void UpdateDifficulty()
         {
-            if (gs.LastMigratedVersion == null)
-            {
-                gs.LastMigratedVersion = CoreParams.GetCurrentVersion();
-                Debug.Log($"[GameState] Migrated to {gs.LastMigratedVersion} ({nameof(MigrateLastMigratedVersion)})");
-            }
+            CurrentDifficulty = ConfigState.Instance.Difficulty;
+            HighestDifficulty = (new int[] { InitialDifficulty, CurrentDifficulty, HighestDifficulty }).OrderBy(i => i).Last();
+            LowestDifficulty = (new int[] { InitialDifficulty, CurrentDifficulty, LowestDifficulty }).OrderBy(i => i).First();
         }
 
         //metadata for save games
@@ -329,13 +332,13 @@ namespace CommonCore.State
         /// Highest difficulty this campaign has ever had
         /// </summary>
         [JsonProperty]
-        public int HighestDifficulty { get; set; }
+        public int HighestDifficulty { get; set; } = int.MinValue;
 
         /// <summary>
         /// Lowest difficulty this campaign has ever had
         /// </summary>
         [JsonProperty]
-        public int LowestDifficulty { get; set; }
+        public int LowestDifficulty { get; set; } = int.MaxValue;
 
         /// <summary>
         /// Lazy-deserialized data for addons
