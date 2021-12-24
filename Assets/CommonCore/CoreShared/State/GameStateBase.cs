@@ -22,27 +22,17 @@ namespace CommonCore.State
     {
         private static GameState instance;
 
-        public static GameState Instance
-        {
-            get
-            {
-                //if (instance == null)
-                //{
-                //    instance = new GameState();
-                //}
-                return instance;
-            }
-        }
+        public static GameState Instance => instance;
 
         public static bool Exists => Instance != null;
 
         /// <summary>
         /// Purges the current game state and recreates it
         /// </summary>
+        /// <remarks>Does not run initialization</remarks>
         public static void Recreate()
         {
             instance = new GameState();
-            MigrateLastMigratedVersion(instance);
         }
 
         /// <summary>
@@ -115,12 +105,12 @@ namespace CommonCore.State
             if (instance == null)
             {
                 instance = new GameState();
-                MigrateLastMigratedVersion(instance);
             }
 
             instance.Init();
             instance.SetCampaignStartDate();
             instance.SetCampaignHash();
+            instance.LastMigratedVersion = instance.CurrentVersion;
         }
 
         /// <summary>
@@ -322,6 +312,30 @@ namespace CommonCore.State
         /// </summary>
         [JsonProperty]
         public float CurrentTimescale { get; set; } = 1.0f;
+
+        /// <summary>
+        /// Difficulty at last save
+        /// </summary>
+        [JsonProperty]
+        public int CurrentDifficulty { get; set; }
+
+        /// <summary>
+        /// Difficulty at campaign start
+        /// </summary>
+        [JsonProperty]
+        public int InitialDifficulty { get; set; }
+
+        /// <summary>
+        /// Highest difficulty this campaign has ever had
+        /// </summary>
+        [JsonProperty]
+        public int HighestDifficulty { get; set; }
+
+        /// <summary>
+        /// Lowest difficulty this campaign has ever had
+        /// </summary>
+        [JsonProperty]
+        public int LowestDifficulty { get; set; }
 
         /// <summary>
         /// Lazy-deserialized data for addons

@@ -261,6 +261,7 @@ namespace CommonCore.Config
         public bool FlashEffects { get; set; } = true;        
         public float GameSpeed { get; set; } = 1; //experimental, must be explicitly handled        
         public int AutosaveCount { get; set; } = 3;
+        public int Difficulty { get; set; } = 1;
 
         //INPUT CONFIG
         public string InputMapper { get; set; } = "ExplicitKBMInputMapper";

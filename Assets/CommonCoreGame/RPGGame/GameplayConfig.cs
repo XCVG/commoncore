@@ -21,7 +21,12 @@ namespace CommonCore.RpgGame
         public bool FullscreenDamageIndicator { get; set; } = true;    
 
         //difficulty options
-        public DifficultyLevel DifficultySetting { get; set; } = DifficultyLevel.Normal;
+        [JsonIgnore]
+        public DifficultyLevel DifficultySetting //moved to base ConfigState, thunks
+        { 
+            get => (DifficultyLevel)ConfigState.Instance.Difficulty; 
+            set { ConfigState.Instance.Difficulty = (int)value; } 
+        }
         [JsonIgnore]
         public DifficultyValues Difficulty { get {
                 switch (DifficultySetting)

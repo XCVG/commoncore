@@ -324,4 +324,5 @@
 * Implemented previously unimplemented methods in LazyLooseDictionary
 * Implemented save metadata including thumbnails
 * Attempting to save a new save with the same filename as an existing save now warns
+* Base difficulty is now saved into base ConfigState instead of GameplayConfig
 * Implemented migration for save games on load [Untested]
