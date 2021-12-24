@@ -1,4 +1,5 @@
-﻿using CommonCore.State;
+﻿using CommonCore;
+using CommonCore.State;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,6 +22,7 @@ namespace CommonCore.UI
         public Text DetailType;
         public Text DetailDate;
         public Text DetailLocation;
+        public InputField SaveNameField;
         public Button LoadButton;
         
         private SaveGameInfo[] Saves;
@@ -31,9 +33,15 @@ namespace CommonCore.UI
             base.SignalPaint();
 
             SelectedSaveIndex = -1;
-
+            
             ClearList();
+            ClearDetails();
             ListSaves();
+        }
+
+        public override void SignalUnpaint()
+        {
+            ClearDetails();
         }
 
         private void ClearList()
@@ -46,6 +54,26 @@ namespace CommonCore.UI
 
             Saves = null;
             LoadButton.interactable = false;
+        }
+
+        private void ClearDetails()
+        {
+            DetailName.text = string.Empty;
+            DetailType.text = string.Empty;
+            DetailLocation.text = string.Empty;
+            DetailDate.text = string.Empty;
+
+            //SaveButton.interactable = false;
+
+            SaveNameField.text = string.Empty;
+
+            if (DetailImage.sprite != null)
+            {
+                Destroy(DetailImage.sprite.texture);
+                Destroy(DetailImage.sprite);
+
+                DetailImage.sprite = null;
+            }
         }
 
         private void ListSaves()
@@ -105,12 +133,22 @@ namespace CommonCore.UI
 
             var selectedSave = Saves[i];
 
-            //TODO read metadata, handle different save types differently
+            ClearDetails();
 
-            DetailName.text = selectedSave.ShortName;
+            var metadata = SaveUtils.LoadSaveMetadata(selectedSave.FileName);
+
+            DetailName.text = metadata?.NiceName ?? selectedSave.ShortName;
             DetailType.text = selectedSave.Type.ToString();
-            //DetailLocation.text = selectedSave.Location;
-            DetailDate.text = selectedSave.Date.ToString();
+            DetailLocation.text = metadata?.Location ?? metadata?.LocationRaw ?? "";
+            DetailDate.text = selectedSave.Date.ToString("yyyy-MM-dd HH:mm");
+            SaveNameField.text = Path.GetFileNameWithoutExtension(selectedSave.FileName);
+
+            if (metadata?.ThumbnailImage != null)
+            {
+                var tex = new Texture2D(128, 128);
+                tex.LoadImage(metadata.ThumbnailImage);
+                DetailImage.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.zero);
+            }
 
             LoadButton.interactable = true;
         }

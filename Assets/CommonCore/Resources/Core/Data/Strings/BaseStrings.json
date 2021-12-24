@@ -10,8 +10,10 @@
     "SaveSuccessMessage": "",
     "SaveFail": "Save Failed",
     "SaveNotAllowed": "Save Not Allowed",
+	"SaveAlreadyExists": "Save Already Exists",
     "SaveBadFilenameMessage": "You need to enter a filename!",
     "SaveNotAllowedMessage": "You cannot save here!",
+	"SaveAlreadyExistsMessage": "A save file with this name already exists. Do you want to replace it?",
     "ContinueNoSaveHeading": "No Save Found",
     "ContinueNoSaveMessage": "There is no game to continue, please start a new game"
   },

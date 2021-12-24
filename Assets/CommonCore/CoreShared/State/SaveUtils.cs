@@ -43,7 +43,6 @@ namespace CommonCore.State
     /// </remarks>
     public struct SaveGameInfo
     {
-        public string NiceName { get; set; }
         public string ShortName { get; set; }
         public string FileName { get; set; }
         public SaveGameType Type { get; set; }        
@@ -81,7 +80,6 @@ namespace CommonCore.State
 
             }
 
-            NiceName = shortName; //for now?
             ShortName = shortName;
             FileName = fileInfo.Name;
             Type = type;
@@ -185,8 +183,8 @@ namespace CommonCore.State
             //very loosely coupled thumbnail
             try
             {
-                if (ScriptingModule.CheckScript("GetSaveThumbnail"))
-                    sm.ThumbnailImage = (byte[])ScriptingModule.CallForResult("GetSaveThumbnail", new ScriptExecutionContext());
+                if (ScriptingModule.CheckScript("Save.GetSaveThumbnail"))
+                    sm.ThumbnailImage = (byte[])ScriptingModule.CallForResult("Save.GetSaveThumbnail", new ScriptExecutionContext());
             }
             catch(Exception e)
             {

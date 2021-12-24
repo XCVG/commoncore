@@ -1,6 +1,7 @@
 ﻿using CommonCore.State;
 using CommonCore.StringSub;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -48,6 +49,11 @@ namespace CommonCore.UI
             ListSaves();            
         }
 
+        public override void SignalUnpaint()
+        {
+            ClearDetails();
+        }
+
         private void SetButtonVisibility()
         {
             if(GameState.Instance.SaveLocked || GameState.Instance.ManualSaveLocked)
@@ -80,6 +86,14 @@ namespace CommonCore.UI
             DetailDate.text = string.Empty;
 
             //SaveButton.interactable = false;
+
+            if (DetailImage.sprite != null)
+            {
+                Destroy(DetailImage.sprite.texture);
+                Destroy(DetailImage.sprite);
+
+                DetailImage.sprite = null;
+            }
         }
 
         private void ListSaves()
@@ -147,10 +161,19 @@ namespace CommonCore.UI
                 //selected an existing save
                 if(saveInfo.HasValue)
                 {
-                    DetailName.text = saveInfo.Value.ShortName;
+                    var metadata = SaveUtils.LoadSaveMetadata(saveInfo.Value.FileName);
+
+                    DetailName.text = metadata?.NiceName ?? saveInfo.Value.ShortName;
                     DetailType.text = saveInfo.Value.Type.ToString();
-                    //DetailLocation.text = saveInfo.Value.Location;
-                    DetailDate.text = saveInfo.Value.Date.ToString();
+                    DetailLocation.text = metadata?.Location ?? metadata?.LocationRaw ?? "";
+                    DetailDate.text = saveInfo.Value.Date.ToString("yyyy-MM-dd HH:mm");
+
+                    if (metadata?.ThumbnailImage != null)
+                    {
+                        var tex = new Texture2D(128, 128);
+                        tex.LoadImage(metadata.ThumbnailImage);
+                        DetailImage.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.zero);
+                    }
                 }
 
                 SaveNameField.interactable = false;
@@ -193,31 +216,22 @@ namespace CommonCore.UI
                 }
                 else
                 {
-                    saveFileName = "m_" + SaveUtils.GetSafeName(saveName);
+                    saveFileName = "m_" + SaveUtils.GetSafeName(saveName);                    
 
-                    //TODO warn if save already exists on new saves
-                    Debug.LogWarning("TODO warn if save already exists on new saves"); //so I remember
+                    if(File.Exists(SaveUtils.GetCleanSavePath(saveFileName)))
+                    {
+                        Modal.PushConfirmModal(Sub.Replace("SaveAlreadyExistsMessage", SubList), Sub.Replace("SaveAlreadyExists", SubList), "Replace", "Cancel", null, 
+                            (status, tag, result) => { 
+                                if(status == ModalStatusCode.Complete && result)
+                                {
+                                    CompleteSave(saveName, saveFileName);
+                                }
+                        });
+                        return;
+                    }
                 }
 
-                if (!string.IsNullOrEmpty(saveName))
-                {
-                    try
-                    {
-                        SharedUtils.SaveGame(saveFileName, true, false, SaveUtils.CreateDefaultMetadata(saveName));
-                        Modal.PushMessageModal(Sub.Replace("SaveSuccessMessage", SubList), Sub.Replace("SaveSuccess", SubList), null, null, true);
-                    }
-                    catch(Exception e)
-                    {
-                        Debug.LogError($"Save failed! ({e.GetType().Name})");
-                        Debug.LogException(e);
-                        Modal.PushMessageModal(e.Message, Sub.Replace("SaveFail", SubList), null, null, true);
-                    }
-                    SignalPaint();
-                }
-                else
-                {
-                    Modal.PushMessageModal(Sub.Replace("SaveBadFilenameMessage", SubList), Sub.Replace("SaveFail", SubList), null, null, true);
-                }
+                CompleteSave(saveName, saveFileName);                
 
             }
             else
@@ -225,6 +239,29 @@ namespace CommonCore.UI
                 //can't save!
 
                 Modal.PushMessageModal(Sub.Replace("SaveNotAllowedMessage", SubList), Sub.Replace("SaveNotAllowed", SubList), null, null, true);
+            }
+        }
+
+        private void CompleteSave(string saveName, string saveFileName)
+        {
+            if (!string.IsNullOrEmpty(saveName))
+            {
+                try
+                {
+                    SharedUtils.SaveGame(saveFileName, true, false, SaveUtils.CreateDefaultMetadata(saveName));
+                    Modal.PushMessageModal(Sub.Replace("SaveSuccessMessage", SubList), Sub.Replace("SaveSuccess", SubList), null, null, true);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Save failed! ({e.GetType().Name})");
+                    Debug.LogException(e);
+                    Modal.PushMessageModal(e.Message, Sub.Replace("SaveFail", SubList), null, null, true);
+                }
+                SignalPaint();
+            }
+            else
+            {
+                Modal.PushMessageModal(Sub.Replace("SaveBadFilenameMessage", SubList), Sub.Replace("SaveFail", SubList), null, null, true);
             }
         }
     }

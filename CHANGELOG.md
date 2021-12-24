@@ -322,3 +322,6 @@
 * Added init function run only on first create to ConfigState
 * Added AddonData LazyLooseDictionary to GameState
 * Implemented previously unimplemented methods in LazyLooseDictionary
+* Implemented save metadata including thumbnails
+* Attempting to save a new save with the same filename as an existing save now warns
+* Implemented migration for save games on load [Untested]

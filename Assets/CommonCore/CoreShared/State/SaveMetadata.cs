@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,8 +11,6 @@ namespace CommonCore.State
     /// </summary>
     public class SaveMetadata
     {
-        //POCO for now, fancier later?
-
         public string NiceName { get; set; }
         public string CampaignIdentifier { get; set; }
         public string Location { get; set; }
@@ -19,10 +19,12 @@ namespace CommonCore.State
         public string CompanyName { get; set; }
         public string GameName { get; set; }
 
-        //TODO do we keep version info here?
         public VersionInfo GameVersion { get; set; }
 
         public byte[] ThumbnailImage { get; set; }
+
+        [JsonExtensionData]
+        public IDictionary<string, JToken> AdditionalData { get; set; }
 
     }
 }
