@@ -328,4 +328,5 @@
 * Initial, current, highest, and lowest difficulty level is now saved to game saves
 * Registering a script method with a duplicate callable name now replaces existing with warning instead of throwing
 * Removed obsolete methods from ScriptingModule
+* Added tags to HUD push messages
 * Implemented migration for save games on load [Untested]

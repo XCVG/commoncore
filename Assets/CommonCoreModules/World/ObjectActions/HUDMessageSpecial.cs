@@ -12,6 +12,7 @@ namespace CommonCore.ObjectActions
     {
         public string Message;
         public bool UseSubstitution;
+        public string[] Tags;
 
         private bool Locked;
 
@@ -20,7 +21,7 @@ namespace CommonCore.ObjectActions
             if (Locked || (!AllowInvokeWhenDisabled && !isActiveAndEnabled))
                 return;
 
-            QdmsMessageBus.Instance.PushBroadcast(new HUDPushMessage(UseSubstitution ? Sub.Macro(Message) : Message));
+            QdmsMessageBus.Instance.PushBroadcast(new HUDPushMessage(UseSubstitution ? Sub.Macro(Message) : Message, Tags));
 
             if (!Repeatable)
                 Locked = true;

@@ -551,7 +551,7 @@ namespace CommonCore.RpgGame.Rpg
             {
                 QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgLevelUp", "CharacterModel", this));
                 if(IsPlayer)
-                    QdmsMessageBus.Instance.PushBroadcast(new HUDPushMessage("<l:RPG_MESSAGE:LevelUp>"));
+                    QdmsMessageBus.Instance.PushBroadcast(new HUDPushMessage("<l:RPG_MESSAGE:LevelUp>", HUDPushMessageDefaultTags.StatusUpdate, "RPG"));
             }
         }
 

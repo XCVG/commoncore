@@ -211,7 +211,7 @@ namespace CommonCore.Console
             {
                 if(msg is HUDPushMessage)
                 {
-                    ConsoleModule.WriteLine(string.Format("{0} : {1}", "*HUD PUSH MESSAGE*", ((HUDPushMessage)msg).Contents));
+                    ConsoleModule.WriteLine(string.Format("{0} [{2}] : {1}", "*HUD PUSH MESSAGE*", ((HUDPushMessage)msg).Contents, ((HUDPushMessage)msg).Tags.ToNiceString()));
                 }
             }
         }
