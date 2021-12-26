@@ -331,4 +331,5 @@
 * Added tags to HUD push messages
 * Implemented handling for generic custom Modal
 * Added generic text entry Modal
+* Moved Modal prefabs to UI/Modals/*
 * Implemented migration for save games on load [Untested]

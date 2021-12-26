@@ -70,9 +70,9 @@ namespace CommonCore.UI
     /// </summary>
     public static class Modal
     {
-        private const string MessageModalPrefab = "UI/Modal_Message";
-        private const string QuantityModalPrefab = "UI/Modal_Quantity";
-        private const string ConfirmModalPrefab = "UI/Modal_Confirm";
+        private const string MessageModalPrefab = "UI/Modals/MessageModal";
+        private const string QuantityModalPrefab = "UI/Modals/QuantityModal";
+        private const string ConfirmModalPrefab = "UI/Modals/ConfirmModal";
 
         /// <summary>
         /// Pushes a message modal and invokes the callback when dismissed
