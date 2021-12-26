@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -46,6 +47,18 @@ namespace CommonCore.UI
         public readonly bool Result;
 
         public ConfirmModalResult(ModalStatusCode status, bool result)
+        {
+            Status = status;
+            Result = result;
+        }
+    }
+
+    public readonly struct CustomModalResult<T>
+    {
+        public readonly ModalStatusCode Status;
+        public readonly T Result;
+
+        public CustomModalResult(ModalStatusCode status, T result)
         {
             Status = status;
             Result = result;
@@ -214,6 +227,94 @@ namespace CommonCore.UI
                 status = ModalStatusCode.Aborted;
 
             return new ConfirmModalResult(status, result);
+        }
+
+        /// <summary>
+        /// Pushes a custom modal and invokes the callback when dismissed
+        /// </summary>
+        public static TModalController PushCustomModal<TModalController, TData, TResult>(TData data, string tag, Action<ModalStatusCode, string, TResult> callback) where TModalController : CustomModalController<TData, TResult>
+        {
+            return PushCustomModal<TModalController, TData, TResult>(null, data, tag, callback, false);
+        }
+
+        /// <summary>
+        /// Pushes a custom modal and invokes the callback when dismissed
+        /// </summary>
+        public static TModalController PushCustomModal<TModalController, TData, TResult>(TData data, string tag, Action<ModalStatusCode, string, TResult> callback, bool ephemeral) where TModalController : CustomModalController<TData, TResult>
+        {
+            return PushCustomModal<TModalController, TData, TResult>(null, data, tag, callback, ephemeral);
+        }
+
+        /// <summary>
+        /// Pushes a custom modal and invokes the callback when dismissed
+        /// </summary>
+        public static TModalController PushCustomModal<TModalController, TData, TResult>(string prefab, TData data, string tag, Action<ModalStatusCode, string, TResult> callback) where TModalController : CustomModalController<TData, TResult>
+        {
+            return PushCustomModal<TModalController, TData, TResult>(prefab, data, tag, callback, false);
+        }
+
+        /// <summary>
+        /// Pushes a custom modal and invokes the callback when dismissed
+        /// </summary>
+        public static TModalController PushCustomModal<TModalController, TData, TResult>(string prefab, TData data, string tag, Action<ModalStatusCode, string, TResult> callback, bool ephemeral) where TModalController : CustomModalController<TData, TResult>
+        {
+            if(string.IsNullOrEmpty(prefab))
+            {
+                var attribute = typeof(TModalController).GetCustomAttribute<CustomModalAttribute>();
+                if (attribute != null)
+                    prefab = attribute.Prefab;
+
+                if (string.IsNullOrEmpty(prefab))
+                    throw new ArgumentException("Custom modal must have prefab from CustomModalAttribute if prefab is not specified!");
+            }
+
+            var go = GameObject.Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>("UI/Modals/" + prefab), ephemeral ? GetEphemeralOrUIRoot() : CoreUtils.GetUIRoot());
+            TModalController modalController = go.GetComponent<TModalController>();
+            modalController.SetInitial(data, tag, callback);
+            return modalController;
+        }
+
+        /// <summary>
+        /// Pushes a custom modal and allows it to be awaited
+        /// </summary>
+        public static async Task<CustomModalResult<TResult>> PushCustomModalAsync<TModalController, TData, TResult>(TData data, bool ephemeral, CancellationToken? token) where TModalController : CustomModalController<TData, TResult>
+        {
+            return await PushCustomModalAsync<TModalController, TData, TResult>(null, data, ephemeral, token);
+        }
+
+        /// <summary>
+        /// Pushes a custom modal and allows it to be awaited
+        /// </summary>
+        public static async Task<CustomModalResult<TResult>> PushCustomModalAsync<TModalController, TData, TResult>(string prefab, TData data, bool ephemeral, CancellationToken? token) where TModalController : CustomModalController<TData, TResult>
+        {
+            bool finished = false;
+            ModalStatusCode status = ModalStatusCode.Undefined;
+            TResult result = default;
+
+            Action<ModalStatusCode, string, TResult> callback = (s, t, r) => { finished = true; status = s; result = r; };
+
+            var modalController = PushCustomModal<TModalController, TData, TResult>(prefab, data, null, callback, ephemeral);
+            var go = modalController.gameObject;
+
+            while (!(finished || go == null))
+            {
+                if (token != null && token.Value.IsCancellationRequested)
+                {
+                    if (go != null)
+                        UnityEngine.Object.Destroy(go);
+
+                    break;
+                }
+
+                await Task.Yield();
+            }
+
+            await Task.Yield(); //let the callback run, hopefully
+
+            if (status == ModalStatusCode.Undefined)
+                status = ModalStatusCode.Aborted;
+
+            return new CustomModalResult<TResult>(status, result);
         }
 
         private static Transform GetEphemeralOrUIRoot()
