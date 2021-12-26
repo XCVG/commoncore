@@ -8,33 +8,45 @@ using CommonCore.StringSub;
 
 namespace CommonCore.UI
 {
-    public class TextEntryModalData
+    public struct TextEntryModalData
     {
-
+        public string Heading { get; set; }
+        public string Description { get; set; }
+        public string Placeholder { get; set; }
+        public string InitialText { get; set; }
+        public bool AllowCancel { get; set; }
     }
 
-    public class TextEntryModalResult
+    [CustomModal("TextEntryModal")]
+    public class TextEntryModalController : CustomModalController<TextEntryModalData, string>
     {
-
-    }
-
-    public class TextEntryModalController : CustomModalController<TextEntryModalData, TextEntryModalResult>
-    {
+        [Header("Elements")]
         public Text HeadingText;
+        public Text DescriptionText;
         public Button ConfirmButton;
         public Text ConfirmButtonText;
         public Button CancelButton;
         public Text CancelButtonText;
-        public InputField QuantityField;
+        public InputField TextField;
 
-        protected override TextEntryModalResult GetResult()
+        protected override string GetResult()
         {
-            throw new NotImplementedException();
+            return TextField.text;
         }
 
         protected override void Init(TextEntryModalData data)
         {
-            throw new NotImplementedException();
+            HeadingText.text = data.Heading;
+            DescriptionText.text = data.Description;
+
+            TextField.text = data.InitialText;
+            ((Text)TextField.placeholder).text = data.Placeholder;
+
+            if (!data.AllowCancel)
+            {
+                CancelButton.gameObject.SetActive(false);
+            }
+
         }
     }
 }

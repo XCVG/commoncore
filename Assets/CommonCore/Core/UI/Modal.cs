@@ -230,6 +230,30 @@ namespace CommonCore.UI
         }
 
         /// <summary>
+        /// Pushes a text entry modal and invokes the callback when dismissed
+        /// </summary>
+        public static void PushTextEntryModal(TextEntryModalData data, string tag, Action<ModalStatusCode, string, string> callback)
+        {
+            PushCustomModal<TextEntryModalController, TextEntryModalData, string>(data, tag, callback);
+        }
+
+        /// <summary>
+        /// Pushes a text entry modal and invokes the callback when dismissed
+        /// </summary>
+        public static void PushTextEntryModal(TextEntryModalData data, string tag, Action<ModalStatusCode, string, string> callback, bool ephemeral)
+        {
+            PushCustomModal<TextEntryModalController, TextEntryModalData, string>(data, tag, callback, ephemeral);
+        }
+
+        /// <summary>
+        /// Pushes a text entry modal and allows it to be awaited
+        /// </summary>
+        public static async Task<CustomModalResult<string>> PushTextEntryModalAsync(TextEntryModalData data, bool ephemeral, CancellationToken? token)
+        {
+            return await PushCustomModalAsync<TextEntryModalController, TextEntryModalData, string>(data, ephemeral, token);
+        }
+
+        /// <summary>
         /// Pushes a custom modal and invokes the callback when dismissed
         /// </summary>
         public static TModalController PushCustomModal<TModalController, TData, TResult>(TData data, string tag, Action<ModalStatusCode, string, TResult> callback) where TModalController : CustomModalController<TData, TResult>

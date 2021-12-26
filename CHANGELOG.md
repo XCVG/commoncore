@@ -329,4 +329,6 @@
 * Registering a script method with a duplicate callable name now replaces existing with warning instead of throwing
 * Removed obsolete methods from ScriptingModule
 * Added tags to HUD push messages
+* Implemented handling for generic custom Modal
+* Added generic text entry Modal
 * Implemented migration for save games on load [Untested]

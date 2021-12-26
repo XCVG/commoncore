@@ -4,6 +4,7 @@ using CommonCore.Audio;
 using CommonCore.DebugLog;
 using CommonCore.LockPause;
 using CommonCore.State;
+using CommonCore.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -104,6 +105,29 @@ public static class TestConsoleCommands
     {
         var audioPlayer = CCBase.GetModule<AudioModule>().AudioPlayer;
         audioPlayer.PlayMusic("menu", MusicSlot.Override, 1.0f, true, false);
+    }
+
+    [Command]
+    public static void TestTextEntryModal()
+    {
+        AsyncUtils.RunWithExceptionHandling(async () =>
+        {
+            var result = await Modal.PushTextEntryModalAsync(new TextEntryModalData() {
+                AllowCancel = true,
+                Heading = "text entry modal", 
+                Description = "Lorem ipsum dolor sit amet. \n\nThe quick brown fox jumps over the lazy dog",
+                InitialText = "default text",
+                Placeholder = "or a placeholder"
+            }, false, null);
+            if(result.Status == ModalStatusCode.Complete)
+            {
+                await Modal.PushMessageModalAsync(result.Result, "Completed", false, null);
+            }
+            else
+            {
+                await Modal.PushMessageModalAsync("", "Cancelled", false, null);
+            }
+        });
     }
 
 }
