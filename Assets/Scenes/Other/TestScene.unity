@@ -5700,6 +5700,7 @@ MonoBehaviour:
   AllowInvokeWhenDisabled: 0
   Message: Opened door with red key!
   UseSubstitution: 0
+  Tags: []
 --- !u!1 &2074254586
 GameObject:
   m_ObjectHideFlags: 0

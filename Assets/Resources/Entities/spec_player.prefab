@@ -775,7 +775,7 @@ MonoBehaviour:
   volumeTrigger: {fileID: 4093219710241858}
   volumeLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4194304
   stopNaNPropagation: 1
   finalBlitToCameraTarget: 0
   antialiasingMode: 1
@@ -832,7 +832,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2de984d320cf15b43b727e776bb455f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UseAggressiveConfigurationCheck: 1
+  UseAggressiveConfigurationCheck: 0
   AttachedCamera: {fileID: 0}
 --- !u!114 &2545220286573828681
 MonoBehaviour:
@@ -2162,6 +2162,7 @@ MonoBehaviour:
   MeleeBoxCastSize: 0.5
   MeleeContactHitRadius: 0.65
   MeleeContactHitHeight: 1.5
+  MeleeContactMaxAngle: 45
   ADSZoomFadeTime: 0.1
   AutoaimWeakCastSize: 0.25
   AutoaimStrongCastSize: 1
@@ -4077,10 +4078,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 948f4100a11a5c24981795d21301da5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  volumeTrigger: {fileID: 4377599811798244}
+  volumeTrigger: {fileID: 4093219710241858}
   volumeLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4194304
   stopNaNPropagation: 1
   finalBlitToCameraTarget: 0
   antialiasingMode: 1
@@ -6059,6 +6060,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReportingType: 0
   Clamp: 0
+  OverrideBias: 1.5
   CalculateInterval: 60
   CalculatedAmbientWeight: 1
   CalculatedDirectionalWeight: 1
@@ -7169,10 +7171,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 948f4100a11a5c24981795d21301da5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  volumeTrigger: {fileID: 4377599811798244}
+  volumeTrigger: {fileID: 4093219710241858}
   volumeLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4194304
   stopNaNPropagation: 1
   finalBlitToCameraTarget: 0
   antialiasingMode: 1

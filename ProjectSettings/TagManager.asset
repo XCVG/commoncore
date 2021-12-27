@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - EphemeralRoot
+  - CCObject
   layers:
   - Default
   - TransparentFX
@@ -28,7 +29,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - PostProcessVolume
   - ViewModel
   - LightReporter
   - 

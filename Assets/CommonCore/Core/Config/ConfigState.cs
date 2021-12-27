@@ -184,7 +184,7 @@ namespace CommonCore.Config
 
         Version IMigratable.LastMigratedVersion => LastMigratedVersion.GameVersion;
 
-        //actual config data here (WIP)
+        //actual config data here
 
         //SYSTEM CONFIG
         public bool UseVerboseLogging { get; set; } = true;        
@@ -203,12 +203,13 @@ namespace CommonCore.Config
 
         //AUDIO CONFIG
         public float MusicVolume { get; set; } = 0.8f;
-        public float SoundVolume { get; set; } = 0.8f;
+        public float SoundVolume { get; set; } = 0.8f; //due to a historical quirk, this is actually main volume
         public AudioSpeakerMode SpeakerMode { get; set; } = AudioSpeakerMode.Stereo; //safe default on all platforms
 
         //VIDEO CONFIG
         [JsonIgnore]
         public bool UseCustomVideoSettings => (QualitySettings.GetQualityLevel() >= QualitySettings.names.Length - 1);
+        public int GraphicsQuality { get; set; } = 3;
         public Vector2Int Resolution { get; set; } = new Vector2Int(1920, 1080);
         public int RefreshRate { get; set; } = 60;
         public bool FullScreen { get; set; } = true;
@@ -220,6 +221,7 @@ namespace CommonCore.Config
         public float EffectDwellTime { get; set; } = 30;
         public float FieldOfView { get; set; } = 60;
         public float HudScale { get; set; } = 1;
+        public float Brightness { get; set; } = 1f;
 
         //VIDEO CONFIG (EXTENDED)
         public QualityLevel ShadowQuality { get; set; } = QualityLevel.Medium;

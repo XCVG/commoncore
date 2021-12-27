@@ -332,4 +332,7 @@
 * Implemented handling for generic custom Modal
 * Added generic text entry Modal
 * Moved Modal prefabs to UI/Modals/*
+* Renamed FXAAToggleTackon to PostProcessingV2ConfigTackon
+* Added Brightness value to config
+* Implemented Brightness implementation via postprocessing in PostProcessingV2ConfigTackon
 * Implemented migration for save games on load [Untested]
