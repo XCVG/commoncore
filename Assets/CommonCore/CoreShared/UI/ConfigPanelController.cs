@@ -55,6 +55,8 @@ namespace CommonCore.UI
         public Slider EffectDwellSlider;
         public Text EffectDwellLabel;
         public Toggle ShowFpsToggle;
+        public Slider BrightnessSlider;
+        public Text BrightnessLabel;
 
         [Header("Sound")]
         public Slider SoundVolumeSlider;
@@ -142,6 +144,7 @@ namespace CommonCore.UI
             ViewDistanceSlider.value = ConfigState.Instance.ViewDistance;
             FovSlider.value = Mathf.RoundToInt(ConfigState.Instance.FieldOfView);
             EffectDwellSlider.value = Mathf.RoundToInt(ConfigState.Instance.EffectDwellTime);
+            BrightnessSlider.value = Mathf.RoundToInt(ConfigState.Instance.Brightness * 100f);
 
             ShowFpsToggle.isOn = ConfigState.Instance.ShowFps;
 
@@ -232,6 +235,11 @@ namespace CommonCore.UI
             EffectDwellLabel.text = $"{EffectDwellSlider.value}s";
         }
 
+        public void OnBrightnessSliderChanged()
+        {
+            BrightnessLabel.text = $"{(BrightnessSlider.value / 100f):F2}";
+        }
+
         public void OnClickConfirm()
         {
             UpdateValues();
@@ -303,6 +311,7 @@ namespace CommonCore.UI
             ConfigState.Instance.ViewDistance = ViewDistanceSlider.value;
             ConfigState.Instance.FieldOfView = FovSlider.value;
             ConfigState.Instance.EffectDwellTime = EffectDwellSlider.value;
+            ConfigState.Instance.Brightness = BrightnessSlider.value / 100f;
 
             ConfigState.Instance.ShowFps = ShowFpsToggle.isOn;
 

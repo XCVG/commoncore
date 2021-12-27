@@ -335,4 +335,5 @@
 * Renamed FXAAToggleTackon to PostProcessingV2ConfigTackon
 * Added Brightness value to config
 * Implemented Brightness implementation via postprocessing in PostProcessingV2ConfigTackon
+* Added Brightness slider to options panel
 * Implemented migration for save games on load [Untested]
