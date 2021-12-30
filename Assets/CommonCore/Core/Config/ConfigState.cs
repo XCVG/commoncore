@@ -208,7 +208,7 @@ namespace CommonCore.Config
 
         //VIDEO CONFIG
         [JsonIgnore]
-        public bool UseCustomVideoSettings => (QualitySettings.GetQualityLevel() >= QualitySettings.names.Length - 1);
+        public bool UseCustomVideoSettings => (GraphicsQuality >= QualitySettings.names.Length - 1);
         public int GraphicsQuality { get; set; } = 3;
         public Vector2Int Resolution { get; set; } = new Vector2Int(1920, 1080);
         public int RefreshRate { get; set; } = 60;
@@ -243,7 +243,7 @@ namespace CommonCore.Config
                 if (UseCustomVideoSettings)
                     return _PlayerLightReporting;
 
-                var q = QualitySettings.GetQualityLevel();
+                var q = GraphicsQuality;
                 if (q >= 4) //ultra or better
                     return PlayerLightReportingType.Probed;
                 else if (q >= 2) //medium or better (medium/high)

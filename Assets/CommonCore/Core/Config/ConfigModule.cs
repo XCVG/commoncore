@@ -113,6 +113,7 @@ namespace CommonCore.Config
             AudioSettings.Reset(ac);
 
             //VIDEO CONFIG
+            QualitySettings.SetQualityLevel(ConfigState.Instance.GraphicsQuality, true);
             if (ConfigState.Instance.UseCustomVideoSettings)
             {
                 ApplyExtendedGraphicsConfiguration();

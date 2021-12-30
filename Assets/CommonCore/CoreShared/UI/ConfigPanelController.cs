@@ -137,7 +137,7 @@ namespace CommonCore.UI
             VsyncSlider.value = ConfigState.Instance.VsyncCount;
 
             GraphicsQualitySlider.maxValue = QualitySettings.names.Length - 1;
-            GraphicsQualitySlider.value = QualitySettings.GetQualityLevel();
+            GraphicsQualitySlider.value = ConfigState.Instance.GraphicsQuality;
             GraphicsQualitySlider.interactable = true;
 
             AntialiasingQualitySlider.value = ConfigState.Instance.AntialiasingQuality;
@@ -306,7 +306,7 @@ namespace CommonCore.UI
             ConfigState.Instance.MaxFrames = FramerateSlider.value > 0 ? Mathf.RoundToInt(FramerateSlider.value) : -1;
             ConfigState.Instance.VsyncCount = Mathf.RoundToInt(VsyncSlider.value);
 
-            QualitySettings.SetQualityLevel( (int)GraphicsQualitySlider.value, true);
+            ConfigState.Instance.GraphicsQuality = (int)GraphicsQualitySlider.value;
             ConfigState.Instance.AntialiasingQuality = (int)AntialiasingQualitySlider.value;
             ConfigState.Instance.ViewDistance = ViewDistanceSlider.value;
             ConfigState.Instance.FieldOfView = FovSlider.value;

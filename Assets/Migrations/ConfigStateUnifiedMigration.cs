@@ -3,6 +3,7 @@ using CommonCore.Config;
 using CommonCore.Migrations;
 using Newtonsoft.Json.Linq;
 using System;
+using UnityEngine;
 
 /// <summary>
 /// ConfigState migration
@@ -32,6 +33,13 @@ public class ConfigStateUnifiedMigration : Migration<ConfigState>
             var difficulty = Convert.ToInt32(inputObject["CustomConfigVars"]["GameplayConfig"]["DifficultySetting"].ToObject<long>());
             ((JObject)inputObject["CustomConfigVars"]["GameplayConfig"]).Remove("DifficultySetting");
             inputObject["Difficulty"] = difficulty;
+        }
+
+        //migrate graphics quality from Unity to ConfigState (3.1.0 -> 4.0.0)
+        if(inputObject["GraphicsQuality"].IsNullOrEmpty())
+        {
+            var qualityLevel = QualitySettings.GetQualityLevel();
+            inputObject["GraphicsQuality"] = qualityLevel;
         }
 
         return inputObject;
