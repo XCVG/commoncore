@@ -127,10 +127,7 @@ namespace CommonCore.RpgGame.Rpg
                         JToken modelJToken = itemJToken["model"];
                         if (modelJToken != null)
                         {
-                            var model = JsonConvert.DeserializeObject<InventoryItemModel>(modelJToken.ToString(), new JsonSerializerSettings
-                            {
-                                TypeNameHandling = TypeNameHandling.Auto
-                            });
+                            var model = JsonConvert.DeserializeObject<InventoryItemModel>(modelJToken.ToString(), CoreParams.DefaultJsonSerializerSettings);
                             model.GetType().GetField("Name").SetValue(model, itemName); //slight hack to set name field
                             Models[itemName] = model;
                             LoadItemCount++;
@@ -139,10 +136,7 @@ namespace CommonCore.RpgGame.Rpg
                         JToken defJToken = itemJToken["def"];
                         if (defJToken != null)
                         {
-                            Defs[itemName] = JsonConvert.DeserializeObject<InventoryItemDef>(defJToken.ToString(), new JsonSerializerSettings
-                            {
-                                TypeNameHandling = TypeNameHandling.Auto
-                            });
+                            Defs[itemName] = JsonConvert.DeserializeObject<InventoryItemDef>(defJToken.ToString(), CoreParams.DefaultJsonSerializerSettings);
                             LoadDefCount++;
                         }
                     }

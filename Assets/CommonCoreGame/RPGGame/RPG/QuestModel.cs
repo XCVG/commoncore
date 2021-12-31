@@ -51,10 +51,7 @@ namespace CommonCore.RpgGame.Rpg
             {
                 CDebug.LogEx("Loading legacy quest defs!", LogLevel.Verbose, null);
                 string data = CoreUtils.LoadResource<TextAsset>("Data/RPGDefs/rpg_quests").text;
-                var newDefs = JsonConvert.DeserializeObject<Dictionary<string, QuestDef>>(data, new JsonSerializerSettings
-                {
-                    TypeNameHandling = TypeNameHandling.Auto
-                });
+                var newDefs = JsonConvert.DeserializeObject<Dictionary<string, QuestDef>>(data, CoreParams.DefaultJsonSerializerSettings);
                 newDefs.ToList().ForEach(x => Defs[x.Key] = x.Value);
 
             }
@@ -95,10 +92,7 @@ namespace CommonCore.RpgGame.Rpg
                         JToken defJToken = itemJToken["def"];
                         if (defJToken != null)
                         {
-                            Defs[itemName] = JsonConvert.DeserializeObject<QuestDef>(defJToken.ToString(), new JsonSerializerSettings
-                            {
-                                TypeNameHandling = TypeNameHandling.Auto
-                            });
+                            Defs[itemName] = JsonConvert.DeserializeObject<QuestDef>(defJToken.ToString(), CoreParams.DefaultJsonSerializerSettings);
                             defCount++;
                         }
                     }

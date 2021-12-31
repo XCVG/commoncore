@@ -176,6 +176,7 @@ namespace CommonCore
         public static IReadOnlyList<string> CommandLineArgs { get; set; }
 
         public static JsonSerializerSettings DefaultJsonSerializerSettings => new JsonSerializerSettings() {
+            Formatting = Formatting.Indented,
             Converters = CCJsonConverters.Defaults.Converters,
             TypeNameHandling = TypeNameHandling.Auto
         };
