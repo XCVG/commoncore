@@ -157,6 +157,16 @@ namespace CommonCore
         WinRTDotNET = 2
     }    
 
+    /// <summary>
+    /// Defines direction for a control axis
+    /// </summary>
+    public enum AxisDirection
+    {
+        Any = 0,
+        Negative = -1,        
+        Positive = 1
+    }
+
     public class StartupFailedException : Exception
     {
         public StartupFailedException(Exception innerException): base("A fatal error occurred during CommonCore startup", innerException)

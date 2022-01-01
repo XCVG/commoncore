@@ -18,9 +18,11 @@ namespace CommonCore.Input
 
         public abstract float GetAxis(string axis);
         public abstract float GetAxisRaw(string axis);
+        public abstract MappingDescriptor GetDescriptorForAxis(string axis, AxisDirection direction);
         public abstract bool GetButton(string button);
         public abstract bool GetButtonDown(string button);
         public abstract bool GetButtonUp(string button);
+        public abstract MappingDescriptor GetDescriptorForButton(string button);
     }
 
     /// <summary>
@@ -51,6 +53,16 @@ namespace CommonCore.Input
         public override bool GetButtonUp(string button)
         {
             return false;
+        }
+
+        public override MappingDescriptor GetDescriptorForAxis(string axis, AxisDirection direction)
+        {
+            return new MappingDescriptor();
+        }
+
+        public override MappingDescriptor GetDescriptorForButton(string button)
+        {
+            return new MappingDescriptor();
         }
     }
 
@@ -87,6 +99,16 @@ namespace CommonCore.Input
         public override bool GetButtonUp(string button)
         {
             return UnityEngine.Input.GetButtonUp(button);
+        }
+
+        public override MappingDescriptor GetDescriptorForAxis(string axis, AxisDirection direction)
+        {
+            return new MappingDescriptor();
+        }
+
+        public override MappingDescriptor GetDescriptorForButton(string button)
+        {
+            return new MappingDescriptor();
         }
     }
 

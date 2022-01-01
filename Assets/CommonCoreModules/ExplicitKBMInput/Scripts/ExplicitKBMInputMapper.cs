@@ -1,5 +1,6 @@
 ﻿using CommonCore.Config;
 using CommonCore.Input;
+using CommonCore.StringSub;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -179,6 +180,71 @@ namespace CommonCore.ExplicitKBMInput
                 default:
                     return 0;
             }
+        }
+
+        public override MappingDescriptor GetDescriptorForAxis(string axis, AxisDirection direction)
+        {
+            if(AxisMappings.TryGetValue(axis, out var axisMapping))
+            {
+                var descriptors = new List<SingleMappingDescriptor>();
+                if (axisMapping.MouseAxis != MouseAxis.Undefined)
+                    descriptors.Add(new SingleMappingDescriptor((axisMapping.MouseAxis).ToString(), Sub.Replace(Enum.GetName(typeof(ExplicitKBMInput.MouseAxis), axisMapping.MouseAxis), "EXPLICITKBMINPUT_MOUSEAXIS"), Sub.Replace(Enum.GetName(typeof(ExplicitKBMInput.MouseAxis), axisMapping.MouseAxis), "EXPLICITKBMINPUT_MOUSEAXIS")));
+
+                switch (direction)
+                {
+                    case AxisDirection.Any:
+                        {
+                            //TODO improve this, it'll be ugly
+                            if (axisMapping.PrimaryPositive != 0)
+                                descriptors.Add(new SingleMappingDescriptor(axisMapping.PrimaryPositive.ToString(), InputModule.GetNameForKeyCode((KeyCode)axisMapping.PrimaryPositive), InputModule.GetNameForKeyCode((KeyCode)axisMapping.PrimaryPositive)));
+                            if (axisMapping.PrimaryNegative != 0)
+                                descriptors.Add(new SingleMappingDescriptor(axisMapping.PrimaryNegative.ToString(), InputModule.GetNameForKeyCode((KeyCode)axisMapping.PrimaryNegative), InputModule.GetNameForKeyCode((KeyCode)axisMapping.PrimaryNegative)));
+                            if (axisMapping.SecondaryPositive != 0)
+                                descriptors.Add(new SingleMappingDescriptor(axisMapping.SecondaryPositive.ToString(), InputModule.GetNameForKeyCode((KeyCode)axisMapping.SecondaryPositive), InputModule.GetNameForKeyCode((KeyCode)axisMapping.SecondaryPositive)));
+                            if (axisMapping.SecondaryNegative != 0)
+                                descriptors.Add(new SingleMappingDescriptor(axisMapping.SecondaryNegative.ToString(), InputModule.GetNameForKeyCode((KeyCode)axisMapping.SecondaryNegative), InputModule.GetNameForKeyCode((KeyCode)axisMapping.SecondaryNegative)));
+                        }
+                        break;
+                    case AxisDirection.Negative:
+                        {
+                            if (axisMapping.PrimaryNegative != 0)
+                                descriptors.Add(new SingleMappingDescriptor(axisMapping.PrimaryNegative.ToString(), InputModule.GetNameForKeyCode((KeyCode)axisMapping.PrimaryNegative), InputModule.GetNameForKeyCode((KeyCode)axisMapping.PrimaryNegative)));
+                            if (axisMapping.SecondaryNegative != 0)
+                                descriptors.Add(new SingleMappingDescriptor(axisMapping.SecondaryNegative.ToString(), InputModule.GetNameForKeyCode((KeyCode)axisMapping.SecondaryNegative), InputModule.GetNameForKeyCode((KeyCode)axisMapping.SecondaryNegative)));
+                        }
+                        break;
+                    case AxisDirection.Positive:
+                        {
+                            if(axisMapping.PrimaryPositive != 0)
+                                descriptors.Add(new SingleMappingDescriptor(axisMapping.PrimaryPositive.ToString(), InputModule.GetNameForKeyCode((KeyCode)axisMapping.PrimaryPositive), InputModule.GetNameForKeyCode((KeyCode)axisMapping.PrimaryPositive)));
+                            if (axisMapping.SecondaryPositive != 0)
+                                descriptors.Add(new SingleMappingDescriptor(axisMapping.SecondaryPositive.ToString(), InputModule.GetNameForKeyCode((KeyCode)axisMapping.SecondaryPositive), InputModule.GetNameForKeyCode((KeyCode)axisMapping.SecondaryPositive)));
+                        }
+                        break;
+                }
+
+                return new MappingDescriptor(descriptors);
+            }
+            return new MappingDescriptor();
+        }
+
+        public override MappingDescriptor GetDescriptorForButton(string button)
+        {
+            if (ButtonMappings.TryGetValue(button, out var buttonMapping))
+            {
+                var descriptors = new List<SingleMappingDescriptor>();
+
+                //should we run these checks or just return "none" when a mapping maps to nothing?
+                if (buttonMapping.Primary != 0)
+                    descriptors.Add(new SingleMappingDescriptor(buttonMapping.Primary.ToString(), InputModule.GetNameForKeyCode((KeyCode)buttonMapping.Primary), InputModule.GetNameForKeyCode((KeyCode)buttonMapping.Primary)));
+                if (buttonMapping.Secondary != 0)
+                    descriptors.Add(new SingleMappingDescriptor(buttonMapping.Secondary.ToString(), InputModule.GetNameForKeyCode((KeyCode)buttonMapping.Secondary), InputModule.GetNameForKeyCode((KeyCode)buttonMapping.Secondary)));
+                if (buttonMapping.Tertiary != 0)
+                    descriptors.Add(new SingleMappingDescriptor(buttonMapping.Tertiary.ToString(), InputModule.GetNameForKeyCode((KeyCode)buttonMapping.Tertiary), InputModule.GetNameForKeyCode((KeyCode)buttonMapping.Tertiary)));
+
+                return new MappingDescriptor(descriptors);
+            }
+            return new MappingDescriptor();
         }
     }
 }
