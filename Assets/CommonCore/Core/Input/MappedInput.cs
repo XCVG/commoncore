@@ -93,5 +93,15 @@ namespace CommonCore.Input
         {
             return Mapper.GetButtonUp(button);
         }
+
+        public static MappingDescriptor GetDescriptorForAxis(string axis, AxisDirection direction)
+        {
+            return Mapper?.GetDescriptorForAxis(axis, direction) ?? new MappingDescriptor();
+        }
+
+        public static MappingDescriptor GetDescriptorForButton(string button)
+        {
+            return Mapper?.GetDescriptorForButton(button) ?? new MappingDescriptor();
+        }
     }
 }
