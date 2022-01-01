@@ -340,5 +340,6 @@
 * CoreParams.DefaultJsonSerializerSettings is now used in a few more places
 * Added script hooks before and after save read/write and serialize/deserialize
 * Added script hooks after entity or effect spawn (behind CoreParam)
+* Added Saved Games folder as an option for persistent data path on Windows
 * Added GetDescriptorForAxis and GetDescriptorForButton APIs to input mappers for getting names of mappings etc [Experimental]
 * Implemented migration for save games on load [Untested]

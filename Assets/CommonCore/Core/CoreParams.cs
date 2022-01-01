@@ -240,6 +240,9 @@ namespace CommonCore
                 case WindowsPersistentDataPath.MyGames:
                     PersistentDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", Application.companyName, Application.productName);
                     break;
+                case WindowsPersistentDataPath.SavedGames:
+                    PersistentDataPath = NativeHelpers.GetSavedGamesFolderPath();
+                    break;
                 default:
                     PersistentDataPath = Application.persistentDataPath;
                     break;

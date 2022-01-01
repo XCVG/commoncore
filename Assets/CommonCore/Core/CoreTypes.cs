@@ -109,7 +109,11 @@ namespace CommonCore
         /// <summary>
         /// Uses Documents/My Games, which is not officially recommended but commonly used
         /// </summary>
-        MyGames
+        MyGames,
+        /// <summary>
+        /// Uses Saved Games, which is ambiguously recommended but rarely used
+        /// </summary>
+        SavedGames
     }
 
     /// <summary>
