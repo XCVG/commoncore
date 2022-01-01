@@ -338,5 +338,7 @@
 * Added Brightness slider to options panel
 * Quality level is now stored in ConfigState and applied at runtime
 * CoreParams.DefaultJsonSerializerSettings is now used in a few more places
+* Added script hooks before and after save read/write and serialize/deserialize
+* Added script hooks after entity or effect spawn (behind CoreParam)
 * Added GetDescriptorForAxis and GetDescriptorForButton APIs to input mappers for getting names of mappings etc [Experimental]
 * Implemented migration for save games on load [Untested]

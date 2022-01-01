@@ -56,6 +56,7 @@ namespace CommonCore
         //public static bool UseAggressiveLookups { get; private set; } = true; //may bring this back someday if performance is an issue
         public static int ResourceMaxRecurseDepth { get; private set; } = 32;
         public static bool RequireResourceManifest { get; private set; } = true;
+        public static bool EnableSpawnScriptingHooks { get; private set; } = true;
 
         public static bool AlwaysEnableGCBeforeCollect { get; private set; } = true;
 

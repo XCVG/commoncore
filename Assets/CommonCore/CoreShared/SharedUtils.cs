@@ -1,4 +1,5 @@
 ﻿using CommonCore.Migrations;
+using CommonCore.Scripting;
 using CommonCore.State;
 using CommonCore.UI;
 using Newtonsoft.Json.Linq;
@@ -128,11 +129,16 @@ namespace CommonCore
                 {
                     Directory.CreateDirectory(System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups"));
                     File.Copy(path, Path.Combine(CoreParams.PersistentDataPath, "migrationbackups", $"{Path.GetFileNameWithoutExtension(path)}.migrated.{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.json"), true);
-                }                
+                }
                 CoreUtils.WriteExternalJson(path, raw);
             }
 
+            ScriptingModule.CallHooked(ScriptHook.AfterSaveRead, null, newRaw ?? raw);
+
             GameState.DeserializeFromJObject(newRaw ?? raw);
+
+            ScriptingModule.CallHooked(ScriptHook.AfterSaveDeserialize, null, GameState.Instance);
+
             PersistState.Instance.LastCampaignIdentifier = GameState.Instance.CampaignIdentifier;
             MetaState.Instance.NextScene = GameState.Instance.CurrentScene;
         }
@@ -153,9 +159,13 @@ namespace CommonCore
             DateTime savePoint = DateTime.Now;
             GameState.Instance.UpdateDifficulty();
 
+            ScriptingModule.CallHooked(ScriptHook.BeforeSaveSerialize, null, GameState.Instance);
+
             var jo = GameState.SerializeToJObject();
             if(metadata != null)
                 jo["Metadata"] = CoreUtils.ConstructJson(metadata); //null check?
+
+            ScriptingModule.CallHooked(ScriptHook.BeforeSaveWrite, null, jo);
 
             CoreUtils.WriteExternalJson(savePath, jo);
             File.SetCreationTime(savePath, savePoint);

@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using CommonCore.State;
 using CommonCore.Config;
 using System.Linq;
+using CommonCore.Scripting;
 
 namespace CommonCore.World
 {
@@ -397,6 +398,8 @@ namespace CommonCore.World
             if (string.IsNullOrEmpty(thingID))
                 thingID = string.Format("{0}_{1}", go.name.Replace("(Clone)", "").Trim(), GameState.Instance.NextUID);
             go.name = thingID;
+            if (CoreParams.EnableSpawnScriptingHooks)
+                ScriptingModule.CallHooked(ScriptHook.OnEntitySpawn, null, go);
             return go;
         }
 
@@ -423,6 +426,9 @@ namespace CommonCore.World
 
             var go = UnityEngine.Object.Instantiate(prefab, position, rotation, parent) as GameObject;
             go.name = string.Format("{0}_{1}", go.name.Replace("(Clone)", "").Trim(), useUniqueId ? GameState.Instance.NextUID.ToString() : "fx");
+
+            if (CoreParams.EnableSpawnScriptingHooks)
+                ScriptingModule.CallHooked(ScriptHook.OnEffectSpawn, null, go);
 
             return go;
         }
