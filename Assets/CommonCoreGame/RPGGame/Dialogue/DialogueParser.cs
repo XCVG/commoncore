@@ -376,8 +376,8 @@ namespace CommonCore.RpgGame.Dialogue
         public static Conditional ParseSingleCondition(JToken jt)
         {
             //types
-            ConditionType type;
-            string target;
+            ConditionType type = ConditionType.Unknown;
+            string target = null;
             if (jt["flag"] != null)
             {
                 type = ConditionType.Flag;
@@ -425,7 +425,7 @@ namespace CommonCore.RpgGame.Dialogue
             }
             else
             {
-                throw new NotSupportedException("Unsupported or unrecognized condition type");
+                Debug.LogWarning("[DialogueParser] Unsupported or unrecognized condition type");
             }
 
             //options
@@ -440,8 +440,16 @@ namespace CommonCore.RpgGame.Dialogue
                     optionValue = Convert.ToInt32(jt["consume"].Value<bool>());
                 }
 
+            }            
+            else if(type == ConditionType.Exec)
+            {
+                if (jt["arg"] != null)
+                {
+                    option = 0; //we just need it to be non-null
+                    optionValue = (IComparable)TypeUtils.StringToNumericAuto(jt["arg"].Value<string>());
+                }
             }
-            else if (type == ConditionType.Affinity || type == ConditionType.Quest || type == ConditionType.Variable || type == ConditionType.ActorValue)
+            else
             {
                 if (jt["greater"] != null)
                 {
@@ -478,21 +486,9 @@ namespace CommonCore.RpgGame.Dialogue
                     option = ConditionOption.Finished;
                     optionValue = Convert.ToInt32(jt["finished"].Value<bool>());
                 }
-
-                if (!option.HasValue)
-                    throw new FormatException("Unacceptable comparison for condition type");
-
-            }
-            else if(type == ConditionType.Exec)
-            {
-                if (jt["arg"] != null)
-                {
-                    option = 0; //we just need it to be non-null
-                    optionValue = (IComparable)TypeUtils.StringToNumericAuto(jt["arg"].Value<string>());
-                }
             }
 
-            return new Conditional(type, target, option, optionValue);
+            return new Conditional(type, target, option, optionValue, (JObject)jt);
         }
 
         public static SkillCheckNode ParseSkillCheck(JToken jt)
@@ -581,8 +577,8 @@ namespace CommonCore.RpgGame.Dialogue
         public static MicroscriptNode ParseMicroscript(JToken jt)
         {
             //parse type and target
-            MicroscriptType type;
-            string target;
+            MicroscriptType type = MicroscriptType.Unknown;
+            string target = null;
             MicroscriptAction action;
             object value = 0;
 
@@ -632,7 +628,7 @@ namespace CommonCore.RpgGame.Dialogue
             }
             else
             {
-                throw new NotSupportedException("Unsupported or unrecognized microscript type");
+                Debug.LogWarning("[DialogueParser] Unsupported or unrecognized microscript type");
             }
 
             //parse action/value            
@@ -676,9 +672,9 @@ namespace CommonCore.RpgGame.Dialogue
             else
             {
                 if (type != MicroscriptType.Exec)
-                    throw new NotSupportedException("Unacceptable or unrecognized action for microscript");
-                else
-                    action = default;
+                    Debug.LogWarning("[DialogueParser] Unacceptable or unrecognized action for microscript");
+
+                action = default;
             }
 
             //parse delay, if applicable
@@ -711,7 +707,7 @@ namespace CommonCore.RpgGame.Dialogue
                 }
             }
 
-            return new MicroscriptNode(type, target, action, value, delayType, delayTime, delayAbsolute);
+            return new MicroscriptNode(type, target, action, value, delayType, delayTime, delayAbsolute, (JObject)jt);
         }
 
         public static KeyValuePair<string, string> ParseLocation(string loc)

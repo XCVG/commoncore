@@ -5,12 +5,13 @@ using CommonCore.State;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Newtonsoft.Json.Linq;
 
 namespace CommonCore.RpgGame.State
 {
     public enum ConditionType
     {
-        Flag, NoFlag, Item, Variable, Affinity, Quest, ActorValue, Exec //Eval is obviously not supported, we provide Exec instead
+        Unknown, Flag, NoFlag, Item, Variable, Affinity, Quest, ActorValue, Exec //Eval is obviously not supported, we provide Exec instead
     }
 
     public enum ConditionOption
@@ -34,7 +35,7 @@ namespace CommonCore.RpgGame.State
 
             IComparable val = (IComparable)TypeUtils.StringToNumericAuto(OptionValue);
 
-            return new Conditional(Type, Target, opt, val);
+            return new Conditional(Type, Target, opt, val, new JObject());
         }
     }
 
@@ -45,12 +46,17 @@ namespace CommonCore.RpgGame.State
         public readonly ConditionOption? Option;
         public readonly IComparable OptionValue;
 
-        public Conditional(ConditionType type, string target, ConditionOption? option, IComparable optionValue)
+        public readonly JObject RawData;
+
+        private ConditionalResolver Resolver;
+
+        public Conditional(ConditionType type, string target, ConditionOption? option, IComparable optionValue, JObject rawData)
         {
             Type = type;
             Target = target;
             Option = option;
             OptionValue = optionValue;
+            RawData = rawData;
         }
 
         public bool Evaluate()
@@ -111,7 +117,10 @@ namespace CommonCore.RpgGame.State
                         return false;
                     }
                 default:
-                    throw new NotSupportedException();
+                    BindResolver();
+                    if (Resolver != null)
+                        return Resolver.Resolve();
+                    throw new NotSupportedException("This conditional type is not natively supported and no resolver could be found");
             }
         }
 
@@ -180,16 +189,27 @@ namespace CommonCore.RpgGame.State
                     throw new NotSupportedException();
             }
         }
+
+        /// <summary>
+        /// Binds a ConditionalResolver (if an appropriate one exists) to this Conditional if one is not already bound
+        /// </summary>
+        public void BindResolver()
+        {
+            if(Resolver != null)
+            {
+                Resolver = ConditionalModule.Instance.GetResolverFor(this);
+            }
+        }
     }
 
     public enum MicroscriptType
     {
-        Flag, Item, Variable, Affinity, Quest, ActorValue, Exec, MapMarker //eval is again not supported
+        Unknown, Flag, Item, Variable, Affinity, Quest, ActorValue, Exec, MapMarker //eval is again not supported
     }
 
     public enum MicroscriptAction
     {
-        Set, Toggle, Add, Give, Take, Start, Finish
+        Unknown, Set, Toggle, Add, Give, Take, Start, Finish
     }
 
     [Serializable]
@@ -206,7 +226,7 @@ namespace CommonCore.RpgGame.State
         public MicroscriptNode Parse()
         {
             object val = TypeUtils.StringToNumericAuto(Value);
-            return new MicroscriptNode(Type, Target, Action, val, DelayType, DelayTime, DelayAbsolute);
+            return new MicroscriptNode(Type, Target, Action, val, DelayType, DelayTime, DelayAbsolute, new JObject());
         }
 
     }
@@ -217,12 +237,17 @@ namespace CommonCore.RpgGame.State
         public readonly string Target;
         public readonly MicroscriptAction Action;
         public readonly object Value;
+
         public readonly DelayTimeType DelayType;
         public readonly double DelayTime;
         public readonly bool DelayAbsolute;
 
+        public readonly JObject RawData;
+
+        private MicroscriptResolver Resolver;
+
         public MicroscriptNode(MicroscriptType type, string target, MicroscriptAction action, object value,
-            DelayTimeType delayType, double delayTime, bool delayAbsolute)
+            DelayTimeType delayType, double delayTime, bool delayAbsolute, JObject rawData)
         {
             Type = type;
             Target = target;
@@ -231,6 +256,7 @@ namespace CommonCore.RpgGame.State
             DelayType = delayType;
             DelayTime = delayTime;
             DelayAbsolute = delayAbsolute;
+            RawData = rawData;
         }
 
         public void Execute()
@@ -244,7 +270,9 @@ namespace CommonCore.RpgGame.State
 
         private void ExecuteDelayed()
         {
-            MicroscriptNode dupNode = new MicroscriptNode(Type, Target, Action, Value, DelayTimeType.None, default, default);
+            MicroscriptNode dupNode = new MicroscriptNode(Type, Target, Action, Value, DelayTimeType.None, default, default, (JObject)RawData.DeepClone());
+            //dupNode.Resolver = Resolver; //preserve early-bound resolver if exists
+            //we could preserve resolver here, but resolver will be rebound on serialize/deserialize anyway
             DelayedEventScheduler.ScheduleEvent(dupNode, DelayType, DelayTime, DelayAbsolute);
         }
 
@@ -373,7 +401,24 @@ namespace CommonCore.RpgGame.State
                     Scripting.ScriptingModule.Call(Target, new Scripting.ScriptExecutionContext() { Caller = this }, Value);
                     break;
                 default:
-                    throw new NotSupportedException();
+                    BindResolver();
+                    if (Resolver != null)
+                    {
+                        Resolver.Resolve();
+                        break;
+                    }
+                    throw new NotSupportedException("This microscript type is not natively supported and no resolver could be found");
+            }
+        }
+
+        /// <summary>
+        /// Binds a MicroscriptResolver (if an appropriate one exists) to this MicroscriptNode if one is not already bound
+        /// </summary>
+        public void BindResolver()
+        {
+            if (Resolver != null)
+            {
+                Resolver = ConditionalModule.Instance.GetResolverFor(this);
             }
         }
     }

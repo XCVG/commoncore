@@ -341,5 +341,6 @@
 * Added script hooks before and after save read/write and serialize/deserialize
 * Added script hooks after entity or effect spawn (behind CoreParam)
 * Added Saved Games folder as an option for persistent data path on Windows
+* Conditional and MicroscriptNode are now extensible via ConditionalResolver and MicroscriptResolver respectively
 * Added GetDescriptorForAxis and GetDescriptorForButton APIs to input mappers for getting names of mappings etc [Experimental]
 * Implemented migration for save games on load [Untested]

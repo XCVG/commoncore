@@ -1,6 +1,7 @@
 ﻿using CommonCore.Config;
 using CommonCore.DelayedEvents;
 using CommonCore.RpgGame.Rpg;
+using CommonCore.RpgGame.State;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -27,6 +28,8 @@ namespace CommonCore.RpgGame
             InventoryModel.Load();
             QuestModel.Load();
 
+            ConditionalModule.Instance.LoadBaseHandlers(); //TODO
+
             //install gameplay config panel
             ConfigModule.Instance.RegisterConfigPanel("GameplayOptionsPanel", 500, CoreUtils.LoadResource<GameObject>("UI/GameplayOptionsPanel"));
         }
@@ -36,6 +39,8 @@ namespace CommonCore.RpgGame
             FactionModel.LoadFromAddon(data);
             InventoryModel.LoadFromAddon(data);
             QuestModel.LoadFromAddon(data);
+
+            ConditionalModule.Instance.LoadHandlersFromAddon(data); //TODO
         }
 
         private void LoadGameParams()
