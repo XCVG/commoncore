@@ -1,15 +1,4 @@
-﻿using CommonCore.Config;
-using CommonCore.DelayedEvents;
-using CommonCore.Scripting;
-using CommonCore.State;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using Newtonsoft.Json.Linq;
-using System.Reflection;
-using System.Linq;
-
-namespace CommonCore.RpgGame.State
+﻿namespace CommonCore.RpgGame.State
 {
 
     public abstract class ConditionalResolver

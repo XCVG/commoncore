@@ -67,11 +67,6 @@ namespace CommonCore.RpgGame.State
                     return GameState.Instance.CampaignState.HasFlag(Target);
                 case ConditionType.NoFlag:
                     return !GameState.Instance.CampaignState.HasFlag(Target);
-                case ConditionType.Item:
-                    int qty = GameState.Instance.PlayerRpgState.Inventory.CountItem(Target);
-                    if (qty < 1)
-                        return false;
-                    else return true;
                 case ConditionType.Variable:
                     if (GameParams.ForceCampaignVarNumericEvaluation)
                     {
@@ -85,24 +80,10 @@ namespace CommonCore.RpgGame.State
                             return EvaluateValueWithOption(GameState.Instance.CampaignState.GetVar<IComparable>(Target)); //fingers crossed
                         else return false;
                     }
-                case ConditionType.Affinity:
-                    throw new NotImplementedException(); //could be supported, but isn't yet
                 case ConditionType.Quest:
                     if (GameState.Instance.CampaignState.HasQuest(Target))
                         return EvaluateValueWithOption(GameState.Instance.CampaignState.GetQuestStage(Target));
                     else return false;
-                case ConditionType.ActorValue:
-                    try
-                    {
-                        //we assume ActorValue is numeric here, which is probably safe
-                        decimal av = GameState.Instance.PlayerRpgState.GetAV<decimal>(Target);
-                        return EvaluateValueWithOption(av);
-                    }
-                    catch (KeyNotFoundException)
-                    {
-                        Debug.LogError($"Conditional.Evaluate failed: couldn't find ActorValue '{Target}'");
-                        return false;
-                    }
                 case ConditionType.Exec:
                     try
                     {
@@ -195,7 +176,7 @@ namespace CommonCore.RpgGame.State
         /// </summary>
         public void BindResolver()
         {
-            if(Resolver != null)
+            if(Resolver == null)
             {
                 Resolver = ConditionalModule.Instance.GetResolverFor(this);
             }
@@ -295,20 +276,6 @@ namespace CommonCore.RpgGame.State
                         throw new NotSupportedException();
                     }
                     break;
-                case MicroscriptType.Item:
-                    if (Action == MicroscriptAction.Give)
-                    {
-                        GameState.Instance.PlayerRpgState.Inventory.AddItem(Target, Convert.ToInt32(Value));
-                    }
-                    else if (Action == MicroscriptAction.Take)
-                    {
-                        GameState.Instance.PlayerRpgState.Inventory.UseItem(Target, Convert.ToInt32(Value));
-                    }
-                    else
-                    {
-                        throw new NotSupportedException();
-                    }
-                    break;
                 case MicroscriptType.Variable:
                     if (Action == MicroscriptAction.Set || (Action == MicroscriptAction.Add && !GameState.Instance.CampaignState.HasVar(Target)))
                     {
@@ -352,8 +319,6 @@ namespace CommonCore.RpgGame.State
                         throw new NotSupportedException();
                     }
                     break;
-                case MicroscriptType.Affinity:
-                    throw new NotImplementedException();
                 case MicroscriptType.Quest:
                     if (Action == MicroscriptAction.Set)
                     {
@@ -371,30 +336,6 @@ namespace CommonCore.RpgGame.State
                     {
                         if (GameState.Instance.CampaignState.IsQuestStarted(Target))
                             GameState.Instance.CampaignState.EndQuest(Target, Convert.ToInt32(Value));
-                    }
-                    break;
-                case MicroscriptType.ActorValue:
-                    if (Action == MicroscriptAction.Set)
-                    {
-                        GameState.Instance.PlayerRpgState.SetAV(Target, Value);
-                    }
-                    else if (Action == MicroscriptAction.Add)
-                    {
-                        GameState.Instance.PlayerRpgState.ModAV(Target, Value);
-                    }
-                    else
-                    {
-                        throw new NotSupportedException();
-                    }
-                    break;
-                case MicroscriptType.MapMarker:
-                    if (Action == MicroscriptAction.Set)
-                    {
-                        GameState.Instance.MapMarkers[Target] = (MapMarkerState)Enum.Parse(typeof(MapMarkerState), Value.ToString(), true);
-                    }
-                    else
-                    {
-                        throw new NotSupportedException();
                     }
                     break;
                 case MicroscriptType.Exec:
@@ -416,7 +357,7 @@ namespace CommonCore.RpgGame.State
         /// </summary>
         public void BindResolver()
         {
-            if (Resolver != null)
+            if (Resolver == null)
             {
                 Resolver = ConditionalModule.Instance.GetResolverFor(this);
             }
