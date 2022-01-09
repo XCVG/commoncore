@@ -312,7 +312,7 @@
 * Added RunOnMainThread methods to AsyncUtils [Experimental]
 * QdmsMessageComponent can now translate and rebroadcast as Unity messages [Experimental]
 
-# 4.0.0 pNext
+# 4.0.0 Preview 2
 
 * Added custom VersionConverter JsonConverter to CCJsonConverters
 * Added more JSON handling methods to CoreUtils
@@ -352,3 +352,5 @@
 * Resource manifest is now created before build and saved to StreamingAssets (PreBuildGenerateResourceManifest)
 * Added GetDescriptorForAxis and GetDescriptorForButton APIs to input mappers for getting names of mappings etc [Experimental]
 * Implemented migration for save games on load [Untested]
+
+# 4.0.0 pNext
