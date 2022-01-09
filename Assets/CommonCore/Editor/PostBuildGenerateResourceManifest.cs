@@ -21,10 +21,14 @@ public class PostBuildGenerateResourceManifest : IPostprocessBuildWithReport //T
         try
         {
             var resourcesFolders = EditorResourceManifest.GetResourceFolders();
-
+#if UNITY_STANDALONE
             var targetFolder = Path.Combine(Path.GetDirectoryName(report.summary.outputPath), $"{Application.productName}_Data", "StreamingAssets");
-            if (report.summary.platform == BuildTarget.StandaloneOSX)
-                targetFolder = Path.Combine(report.summary.outputPath, "Contents", "Resources", "Data", "StreamingAssets");
+#elif UNITY_WSA
+            var targetFolder = Path.Combine(Path.GetDirectoryName(report.summary.outputPath), Application.productName, "Data", "StreamingAssets");
+#else
+            string targetFolder = null;
+            throw new NotSupportedException("This platform is not supported");
+#endif
 
             List<string> directories = new List<string>();
             List<ResourceFolderModel> models = new List<ResourceFolderModel>();
@@ -48,10 +52,12 @@ public class PostBuildGenerateResourceManifest : IPostprocessBuildWithReport //T
 
             var targetFile = Path.Combine(targetFolder, "core_resources.json");
             File.WriteAllText(targetFile, JsonConvert.SerializeObject(fullModel, Formatting.Indented));
-
+#if UNITY_WSA
+            //TODO add to vcxitems, eventually
+#endif
             Debug.Log($"[{nameof(PostBuildGenerateResourceManifest)}] Generated resource manifest at {targetFile}!");
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             throw new UnityEditor.Build.BuildFailedException(e);
         }
@@ -62,7 +68,7 @@ public class PostBuildGenerateResourceManifest : IPostprocessBuildWithReport //T
         string path = directoryPath.Substring(basePath.Length).Replace('\\', '/');
         var folderModel = new ResourceFolderModel() { Path = path, Items = new List<ResourceItemModel>() };
 
-        foreach(var file in Directory.EnumerateFiles(directoryPath))
+        foreach (var file in Directory.EnumerateFiles(directoryPath))
         {
             if (Path.GetExtension(file).Equals(".meta", StringComparison.OrdinalIgnoreCase))
                 continue;
@@ -71,7 +77,7 @@ public class PostBuildGenerateResourceManifest : IPostprocessBuildWithReport //T
 
         return folderModel;
     }
-    
+
     private string GetAssetType(string assetPath)
     {
         string shortenedPath = "Assets/" + assetPath.Substring(Application.dataPath.Length).Replace('\\', '/');
@@ -79,21 +85,21 @@ public class PostBuildGenerateResourceManifest : IPostprocessBuildWithReport //T
         {
             return AssetDatabase.GetMainAssetTypeAtPath(shortenedPath).ToString();
         }
-        catch(Exception)
+        catch (Exception)
         {
             return "";
         }
-        
+
     }
 
     private IEnumerable<ResourceFolderModel> MergeFolderModels(IEnumerable<ResourceFolderModel> models)
     {
         List<ResourceFolderModel> mergedModels = new List<ResourceFolderModel>();
 
-        foreach(var model in models)
+        foreach (var model in models)
         {
             var existingModel = models.SingleOrDefault(m => m.Path == model.Path);
-            if(existingModel != null)
+            if (existingModel != null)
             {
                 existingModel.Items.AddRange(model.Items);
                 existingModel.Items = existingModel.Items.GroupBy(x => x.Name).Select(g => g.First()).ToList();
