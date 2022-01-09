@@ -12,23 +12,17 @@ using UnityEditor;
 /// <summary>
 /// Generates a resource manifest after a build
 /// </summary>
-public class PostBuildGenerateResourceManifest : IPostprocessBuildWithReport //TODO run it at a more appropriate time?
+public class PreBuildGenerateResourceManifest : IPreprocessBuildWithReport //TODO run it at a more appropriate time?
 {
     public int callbackOrder => 0;
 
-    public void OnPostprocessBuild(BuildReport report)
+    public void OnPreprocessBuild(BuildReport report)
     {
         try
         {
             var resourcesFolders = EditorResourceManifest.GetResourceFolders();
-#if UNITY_STANDALONE
-            var targetFolder = Path.Combine(Path.GetDirectoryName(report.summary.outputPath), $"{Application.productName}_Data", "StreamingAssets");
-#elif UNITY_WSA
-            var targetFolder = Path.Combine(Path.GetDirectoryName(report.summary.outputPath), Application.productName, "Data", "StreamingAssets");
-#else
-            string targetFolder = null;
-            throw new NotSupportedException("This platform is not supported");
-#endif
+
+            var targetFolder = Application.streamingAssetsPath;
 
             List<string> directories = new List<string>();
             List<ResourceFolderModel> models = new List<ResourceFolderModel>();
@@ -52,10 +46,8 @@ public class PostBuildGenerateResourceManifest : IPostprocessBuildWithReport //T
 
             var targetFile = Path.Combine(targetFolder, "core_resources.json");
             File.WriteAllText(targetFile, JsonConvert.SerializeObject(fullModel, Formatting.Indented));
-#if UNITY_WSA
-            //TODO add to vcxitems, eventually
-#endif
-            Debug.Log($"[{nameof(PostBuildGenerateResourceManifest)}] Generated resource manifest at {targetFile}!");
+
+            Debug.Log($"[{nameof(PreBuildGenerateResourceManifest)}] Generated resource manifest at {targetFile}!");
         }
         catch (Exception e)
         {

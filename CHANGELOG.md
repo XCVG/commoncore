@@ -349,5 +349,6 @@
 * Fixed compile error on UWP because AudioSpeakerMode.Raw is no longer defined
 * Switched to recommended setup for jilleJr/Newtonsoft.Json-for-Unity (modified assemblies for all platforms)
 * Added CoreAotTypeEnforcer to resolve issues with IL2CPP stripping
+* Resource manifest is now created before build and saved to StreamingAssets (PreBuildGenerateResourceManifest)
 * Added GetDescriptorForAxis and GetDescriptorForButton APIs to input mappers for getting names of mappings etc [Experimental]
 * Implemented migration for save games on load [Untested]
