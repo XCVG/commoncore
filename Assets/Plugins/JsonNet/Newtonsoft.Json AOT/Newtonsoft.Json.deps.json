@@ -7,7 +7,7 @@
   "targets": {
     ".NETStandard,Version=v2.0": {},
     ".NETStandard,Version=v2.0/": {
-      "Newtonsoft.Json/12.0.301": {
+      "Newtonsoft.Json/12.0.302": {
         "dependencies": {
           "Microsoft.CodeAnalysis.FxCopAnalyzers": "2.9.2",
           "Microsoft.Net.Compilers.Toolset": "3.3.1",
@@ -39,7 +39,7 @@
     }
   },
   "libraries": {
-    "Newtonsoft.Json/12.0.301": {
+    "Newtonsoft.Json/12.0.302": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

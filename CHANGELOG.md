@@ -347,5 +347,7 @@
 * Fixed attempting to use Windows desktop file paths on UWP
 * Fixed attempting to create root data folder (not allowed) on UWP
 * Fixed compile error on UWP because AudioSpeakerMode.Raw is no longer defined
+* Switched to recommended setup for jilleJr/Newtonsoft.Json-for-Unity (modified assemblies for all platforms)
+* Added CoreAotTypeEnforcer to resolve issues with IL2CPP stripping
 * Added GetDescriptorForAxis and GetDescriptorForButton APIs to input mappers for getting names of mappings etc [Experimental]
 * Implemented migration for save games on load [Untested]

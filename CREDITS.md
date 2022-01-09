@@ -16,14 +16,9 @@ These are included under permissive or copyleft licenses. License texts are incl
 
 ## Libraries
 
-James Newton-King - Json.NET
-	https://github.com/JamesNK/Newtonsoft.Json
-	Included as DLL (Assets/Plugins/JsonNet)
-	MIT License
-	
 Kalle Jillheden - Newtonsoft.Json for Unity
 	https://github.com/jilleJr/Newtonsoft.Json-for-Unity
-	Included as DLL (Assets/Plugins/JsonNet/aot)
+	Included as DLL (Assets/Plugins/JsonNet)
 	MIT License
 	
 Microsoft - System.Collections.Immutable
