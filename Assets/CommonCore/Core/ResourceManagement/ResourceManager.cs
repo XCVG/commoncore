@@ -27,7 +27,9 @@ namespace CommonCore.ResourceManagement
         public ResourceManager()
         {
             ResourceLoader = new ResourceLoader();
-            ResourceManifest = ResourceManifest.Load();
+
+            if(CoreParams.TryLoadResourceManifest)
+                ResourceManifest = ResourceManifest.Load();
 
             if (ResourceManifest == null && CoreParams.RequireResourceManifest)
                 throw new Exception("Resource Manifest is required but not available");

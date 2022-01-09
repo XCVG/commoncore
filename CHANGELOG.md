@@ -342,5 +342,10 @@
 * Added script hooks after entity or effect spawn (behind CoreParam)
 * Added Saved Games folder as an option for persistent data path on Windows
 * Conditional and MicroscriptNode are now extensible via ConditionalResolver and MicroscriptResolver respectively
+* Resource manifest is now only loaded if TryLoadResourceManifest CoreParam is set to true
+* Fixed postbuild buildinfo and file copy scripts using incorrect paths for UWP
+* Fixed attempting to use Windows desktop file paths on UWP
+* Fixed attempting to create root data folder (not allowed) on UWP
+* Fixed compile error on UWP because AudioSpeakerMode.Raw is no longer defined
 * Added GetDescriptorForAxis and GetDescriptorForButton APIs to input mappers for getting names of mappings etc [Experimental]
 * Implemented migration for save games on load [Untested]

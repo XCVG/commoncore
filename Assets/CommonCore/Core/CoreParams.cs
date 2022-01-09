@@ -55,6 +55,7 @@ namespace CommonCore
         public static float DelayedEventPollInterval { get; private set; } = 1.0f;
         //public static bool UseAggressiveLookups { get; private set; } = true; //may bring this back someday if performance is an issue
         public static int ResourceMaxRecurseDepth { get; private set; } = 32;
+        public static bool TryLoadResourceManifest { get; private set; } = true;
         public static bool RequireResourceManifest { get; private set; } = true;
         public static bool EnableSpawnScriptingHooks { get; private set; } = true;
 
@@ -225,7 +226,7 @@ namespace CommonCore
             GameFolderPath = Directory.GetParent(Application.dataPath).ToString();
 
             //special handling for PersistentDataPath and LocalDataPath
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+#if (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN) && !UNITY_WSA
             switch (PersistentDataPathWindows)
             {
                 case WindowsPersistentDataPath.Corrected:

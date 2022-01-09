@@ -710,7 +710,9 @@ namespace CommonCore
             try
             {
                 Directory.CreateDirectory(CoreParams.LocalDataPath);
+#if !UNITY_WSA
                 Directory.CreateDirectory(CoreParams.PersistentDataPath);
+#endif
                 Directory.CreateDirectory(CoreParams.SavePath);
                 Directory.CreateDirectory(CoreParams.FinalSavePath);
                 Directory.CreateDirectory(CoreParams.DebugPath);

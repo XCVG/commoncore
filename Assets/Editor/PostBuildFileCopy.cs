@@ -17,7 +17,11 @@ public class PostBuildFileCopy : IPostprocessBuildWithReport
         try
         {
             var projectFolder = Path.GetFullPath(Path.Combine(Application.dataPath, "../"));
-            var targetFolder = Path.GetDirectoryName(report.summary.outputPath); //may break on non-windows?
+#if UNITY_WSA
+            var targetFolder = report.summary.outputPath;
+#else
+            var targetFolder = Path.GetDirectoryName(report.summary.outputPath);
+#endif
             var iniPath = Path.Combine(projectFolder, "filecopy.ini");
             if (File.Exists(iniPath))
             {

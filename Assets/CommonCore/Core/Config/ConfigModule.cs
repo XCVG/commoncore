@@ -106,7 +106,7 @@ namespace CommonCore.Config
             AudioListener.volume = ConfigState.Instance.SoundVolume;
             var ac = AudioSettings.GetConfiguration();
 #if UNITY_WSA
-            if (ConfigState.Instance.SpeakerMode == AudioSpeakerMode.Raw)
+            if ((int)ConfigState.Instance.SpeakerMode == 0)
                 ConfigState.Instance.SpeakerMode = AudioSpeakerMode.Stereo;
 #endif
             ac.speakerMode = ConfigState.Instance.SpeakerMode;

@@ -16,7 +16,11 @@ public class PostBuildAppendBuildInfo : IPostprocessBuildWithReport
 
     public void OnPostprocessBuild(BuildReport report)
     {
+#if UNITY_WSA
+        var targetFolder = report.summary.outputPath;
+#else
         var targetFolder = Path.GetDirectoryName(report.summary.outputPath);
+#endif
         var targetPath = Path.Combine(targetFolder, "buildinfo.json");
 
         var buildInfo = new BuildInfo()
