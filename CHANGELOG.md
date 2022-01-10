@@ -354,3 +354,5 @@
 * Implemented migration for save games on load [Untested]
 
 # 4.0.0 pNext
+
+* Removed UI folder (remaining contents moved to Shared)
