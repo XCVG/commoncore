@@ -356,3 +356,4 @@
 # 4.0.0 pNext
 
 * Removed UI folder (remaining contents moved to Shared)
+* Added speaker name and better color handling to SubtitleUtilsEx
