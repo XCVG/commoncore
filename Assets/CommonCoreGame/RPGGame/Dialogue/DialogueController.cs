@@ -453,10 +453,10 @@ namespace CommonCore.RpgGame.Dialogue
                     {
                         bool isPossible = cn.SkillCheck.CheckIfPossible();
 
-                        if (!GameParams.ShowImpossibleSkillChecks && !isPossible)
+                        if (!(f.Options.ShowImpossibleSkillChecks ?? GameParams.ShowImpossibleSkillChecks) && !isPossible)
                             showChoice = false;
 
-                        if (!GameParams.AttemptImpossibleSkillChecks && !isPossible)
+                        if (!(f.Options.AttemptImpossibleSkillChecks ?? GameParams.AttemptImpossibleSkillChecks) && !isPossible)
                             lockChoice = true;
 
                         string passValue = cn.SkillCheck.CheckType == SkillCheckType.Soft ? $"{(int)(cn.SkillCheck.GetApproximatePassChance() * 100)}%" : cn.SkillCheck.Value.ToString();

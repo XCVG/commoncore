@@ -325,6 +325,10 @@ namespace CommonCore.RpgGame.Dialogue
 
         public bool AllowReturnFromShop => TypeUtils.CoerceValue<bool>(Options.GetOrDefault(nameof(AllowReturnFromShop), false), false);
 
+        public bool? ShowImpossibleSkillChecks => Options.ContainsKey(nameof(ShowImpossibleSkillChecks)) ? TypeUtils.CoerceValue<bool>(Options[nameof(ShowImpossibleSkillChecks)]) : (bool?)null;
+
+        public bool? AttemptImpossibleSkillChecks => Options.ContainsKey(nameof(AttemptImpossibleSkillChecks)) ? TypeUtils.CoerceValue<bool>(Options[nameof(AttemptImpossibleSkillChecks)]) : (bool?)null;
+
         public TraceDefaultSpeaker TraceDefaultSpeaker => TypeUtils.CoerceValue<TraceDefaultSpeaker>(Options.GetOrDefault(nameof(TraceDefaultSpeaker), default(TraceDefaultSpeaker)), false);
         public string TraceSpeaker => Options.GetOrDefault(nameof(TraceSpeaker), null)?.ToString();
         public bool TraceIgnore => TypeUtils.CoerceValue<bool>(Options.GetOrDefault(nameof(TraceIgnore), false), false);
