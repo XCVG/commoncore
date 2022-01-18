@@ -359,3 +359,4 @@
 * Added speaker name and better color handling to SubtitleUtilsEx
 * Fixed PostProcessVolume layer colliding with other layers
 * Allow and attempt impossible skill checks can now be overridden with dialogue scene/frame options
+* Fixed FacingSpriteActorAnimationComponent sequence not found error when target animation exists in ExtraAnimations but is not first

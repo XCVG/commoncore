@@ -291,6 +291,7 @@ namespace CommonCore.RpgGame.World
             {
                 if (ExtraAnimations != null && ExtraAnimations.Length > 0)
                 {
+                    bool found = false;
                     foreach (var animation in ExtraAnimations)
                     {
                         if (animation.Name.Equals(stateName, StringComparison.OrdinalIgnoreCase))
@@ -299,12 +300,14 @@ namespace CommonCore.RpgGame.World
                             NextFrameSet = animation.ReturnToIdle ? Idle : null;
 
                             StartAnimationSequence(animation.Frames);
+                            found = true;
                             break;
                         }
-                        else
-                        {
-                            Debug.LogWarning($"Failed to set animation sequence {stateName} on {name} because it could not be parsed and {GetType().Name} does not have it as an extra animation!");
-                        }
+                    }
+
+                    if(!found)
+                    {
+                        Debug.LogWarning($"Failed to set animation sequence {stateName} on {name} because it could not be parsed and {GetType().Name} does not have it as an extra animation!");
                     }
                 }
                 else
