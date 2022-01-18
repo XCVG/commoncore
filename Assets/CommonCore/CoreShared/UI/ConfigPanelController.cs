@@ -57,6 +57,8 @@ namespace CommonCore.UI
         public Toggle ShowFpsToggle;
         public Slider BrightnessSlider;
         public Text BrightnessLabel;
+        public GameObject MonitorGroup;
+        public Dropdown MonitorDropdown;
 
         [Header("Sound")]
         public Slider SoundVolumeSlider;
@@ -75,6 +77,8 @@ namespace CommonCore.UI
         private bool PendingMoreOptionsOnApply = false;
         private bool PendingRequiresRestart = false;
         private bool CommittedRequiresRestart { get => (bool)MetaState.Instance.SessionData.GetOrDefault("ConfigRequiresRestart", false); set => MetaState.Instance.SessionData["ConfigRequiresRestart"] = value; }
+
+        private bool AllowMonitorSelection => !CoreParams.IsEditor && (CoreParams.Platform == RuntimePlatform.LinuxPlayer || CoreParams.Platform == RuntimePlatform.OSXPlayer || CoreParams.Platform == RuntimePlatform.WindowsPlayer);
 
         public override void SignalInitialPaint()
         {
@@ -131,6 +135,18 @@ namespace CommonCore.UI
             ResolutionDropdown.AddOptions(Resolutions.Select(r => $"{r.x} x {r.y}").ToList());
             int rIndex = Resolutions.IndexOf(ConfigState.Instance.Resolution);
             ResolutionDropdown.value = rIndex > 0 ? rIndex : Resolutions.Count - 1;
+
+            if(AllowMonitorSelection)
+            {
+                MonitorDropdown.ClearOptions();
+                MonitorDropdown.AddOptions(Display.displays.Select((d, i) => $"Monitor {i}").ToList());
+                int mIndex = PlayerPrefs.GetInt("UnitySelectMonitor", 0);
+                MonitorDropdown.value = mIndex;
+            }
+            else
+            {
+                MonitorGroup.SetActive(false);
+            }
 
             FullscreenToggle.isOn = ConfigState.Instance.FullScreen;
             FramerateSlider.value = Math.Max(0, ConfigState.Instance.MaxFrames);
@@ -240,6 +256,14 @@ namespace CommonCore.UI
             BrightnessLabel.text = $"{(BrightnessSlider.value / 100f):F2}";
         }
 
+        public void OnMonitorDropdownChanged()
+        {
+            if (IgnoreValueChanges)
+                return;
+
+            SignalPendingChanges(PendingChangesFlags.RequiresRestart);
+        }
+
         public void OnClickConfirm()
         {
             UpdateValues();
@@ -305,6 +329,11 @@ namespace CommonCore.UI
             ConfigState.Instance.FullScreen = FullscreenToggle.isOn;
             ConfigState.Instance.MaxFrames = FramerateSlider.value > 0 ? Mathf.RoundToInt(FramerateSlider.value) : -1;
             ConfigState.Instance.VsyncCount = Mathf.RoundToInt(VsyncSlider.value);
+
+            if(AllowMonitorSelection)
+            {
+                PlayerPrefs.SetInt("UnitySelectMonitor", MonitorDropdown.value);
+            }
 
             ConfigState.Instance.GraphicsQuality = (int)GraphicsQualitySlider.value;
             ConfigState.Instance.AntialiasingQuality = (int)AntialiasingQualitySlider.value;
