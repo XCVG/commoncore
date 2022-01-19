@@ -361,3 +361,4 @@
 * Allow and attempt impossible skill checks can now be overridden with dialogue scene/frame options
 * Fixed FacingSpriteActorAnimationComponent sequence not found error when target animation exists in ExtraAnimations but is not first
 * Implemented monitor selection in settings (desktop only)
+* Added ActivatorFilter to ObjectActions
