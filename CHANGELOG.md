@@ -364,3 +364,4 @@
 * Added ActivatorFilter to ObjectActions
 * Added ContainsSpecific API to main playerflags source to check if it is in that source specifically
 * Added conditional/microscript resolvers for PlayerFlags and SessionFlags (conditional only) [Experimental]
+* Added ScriptStringSubber that calls scripts and substitutes the result [Experimental]
