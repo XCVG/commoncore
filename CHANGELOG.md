@@ -362,3 +362,5 @@
 * Fixed FacingSpriteActorAnimationComponent sequence not found error when target animation exists in ExtraAnimations but is not first
 * Implemented monitor selection in settings (desktop only)
 * Added ActivatorFilter to ObjectActions
+* Added ContainsSpecific API to main playerflags source to check if it is in that source specifically
+* Added conditional/microscript resolvers for PlayerFlags and SessionFlags (conditional only) [Experimental]

@@ -267,6 +267,8 @@ namespace CommonCore.RpgGame.World
 
             ExitState(CurrentAiState); //good place or no?
 
+            TryExecuteOnComponents(component => (component as IReceiveActorEntityEvents)?.ChangeState(CurrentAiState, newState));
+
             TimeInState = 0;
 
             switch (newState)

@@ -111,6 +111,18 @@ namespace CommonCore.World
             return false;
         }
 
+        //returns if *this specific collection* contains item
+        public bool ContainsSpecific<T>(T item) where T : Enum
+        {
+            return ContainsSpecific(item.ToString());
+        }
+
+        //returns if *this specific collection* contains item
+        public bool ContainsSpecific(string item)
+        {
+            return Flags.Contains(item);
+        }
+
         public bool Remove<T>(T item) where T : Enum
         {
             return Flags.Remove(item.ToString());

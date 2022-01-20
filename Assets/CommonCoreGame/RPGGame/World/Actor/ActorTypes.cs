@@ -93,4 +93,12 @@ namespace CommonCore.RpgGame.World
         public int HitLocation;
         public int HitMaterial;
     }
+
+    /// <summary>
+    /// Interface representing a component on an object that receives actor entity event calls
+    /// </summary>
+    public interface IReceiveActorEntityEvents : IReceiveDamageableEntityEvents
+    {
+        void ChangeState(ActorAiState oldState, ActorAiState newState);
+    }
 }
