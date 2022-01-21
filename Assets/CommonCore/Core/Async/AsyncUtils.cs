@@ -156,8 +156,15 @@ namespace CommonCore.Async
         /// <summary>
         /// Waits a specified number of seconds in scaled (game) time
         /// </summary>
-        /// <remarks>Can only be used from the main thread</remarks>
         public static async Task DelayScaled(float timeToWait)
+        {
+            if (IsOnMainThread())
+                await DelayScaledInternal(timeToWait);
+            else
+                await RunOnMainThread(() => DelayScaledInternal(timeToWait));
+        }
+
+        private static async Task DelayScaledInternal(float timeToWait)
         {
             float startTime = Time.time;
             while (Time.time - startTime < timeToWait)
@@ -167,8 +174,15 @@ namespace CommonCore.Async
         /// <summary>
         /// Waits a specified number of seconds in scaled time (respecting pause state), can be skipped with skip button
         /// </summary>
-        /// <remarks>Can only be used from the main thread</remarks>
         public static async Task DelayScaled(float time, PauseLockType lowestPauseState, bool useRealtime = false)
+        {
+            if (IsOnMainThread())
+                await DelayScaledInternal(time, lowestPauseState, useRealtime);
+            else
+                await RunOnMainThread(() => DelayScaledInternal(time, lowestPauseState, useRealtime));
+        }
+
+        private static async Task DelayScaledInternal(float time, PauseLockType lowestPauseState, bool useRealtime)
         {
             for (float elapsed = 0; elapsed < time;)
             {
