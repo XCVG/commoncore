@@ -111,6 +111,19 @@ namespace CommonCore.ResourceManagement
             foreach (var resource in resources)
                 addHandle(resource, ResourcePriority.Normal);
 
+            //explore for redirects
+            RedirectAsset[] coreRedirectResources = Resources.LoadAll<RedirectAsset>(System.IO.Path.Combine("Core", Path));
+            foreach (var resource in coreRedirectResources)
+                addRedirectHandle(resource, ResourcePriority.Core);
+
+            RedirectAsset[] gameRedirectResources = Resources.LoadAll<RedirectAsset>(System.IO.Path.Combine("Game", Path));
+            foreach (var resource in gameRedirectResources)
+                addRedirectHandle(resource, ResourcePriority.Game);
+
+            RedirectAsset[] redirectResources = Resources.LoadAll<RedirectAsset>(Path);
+            foreach (var resource in redirectResources)
+                addRedirectHandle(resource, ResourcePriority.Normal);
+
             //don't forget to add to ExploredForTypes when we're done
 
             ExploredForTypes.Add(typeof(T));
@@ -148,6 +161,42 @@ namespace CommonCore.ResourceManagement
                         throw new NotImplementedException();
                 }
                 ro.AppendResourceHandle<T>(new UnityResourceHandle<T>(rpath, priority)); 
+            }
+
+            void addRedirectHandle(RedirectAsset redirect, ResourcePriority priority)
+            {
+                string name = redirect.name;
+                ResourceObject ro;
+                if (ResourceObjects.ContainsKey(name))
+                {
+                    ro = ResourceObjects[name];
+
+                    if (ro.HasResourceOfPriority<T>(priority)) //avoid duplicates!
+                        return;
+                }
+                else
+                {
+                    ro = new ResourceObject(System.IO.Path.Combine(Path, name));
+                    ResourceObjects.Add(name, ro);
+                }
+
+                string rpath;
+                switch (priority) //could optimize this
+                {
+                    case ResourcePriority.Core:
+                        rpath = System.IO.Path.Combine("Core", Path);
+                        break;
+                    case ResourcePriority.Game:
+                        rpath = System.IO.Path.Combine("Game", Path);
+                        break;
+                    case ResourcePriority.Normal:
+                        rpath = Path;
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+                //TODO check if path is actually correct
+                ro.AppendResourceHandle<T>(new RedirectResourceHandle<T>(redirect, Path, CCBase.ResourceManager, priority));
             }
         }
 
