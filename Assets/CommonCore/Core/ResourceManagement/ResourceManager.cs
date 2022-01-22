@@ -35,7 +35,7 @@ namespace CommonCore.ResourceManagement
                 throw new Exception("Resource Manifest is required but not available");
         }
 
-        //TODO get handle (instead of resource) variants
+        //WIP get handle (instead of resource) variants
 
         /// <summary>
         /// Gets resource handles for a resource object at a path
@@ -48,7 +48,23 @@ namespace CommonCore.ResourceManagement
             }
 
             ResourceObject rObject = RetrieveResourceObject(path);
+            rObject?.ExploreForType<T>();
             return rObject?.GetResourceHandles<T>();
+        }
+
+        /// <summary>
+        /// Gets collections of resource handles for a resource folder at a path
+        /// </summary>
+        public Dictionary<string, ResourceHandle<T>[]> GetHandlesAll<T>(string path) where T : UnityEngine.Object
+        {
+            if (path.StartsWith("Game/") || path.StartsWith("Core/"))
+            {
+                Debug.LogWarning($"Resource path starts with special folder, this case isn't currently handled! ({path})");
+            }
+
+            ResourceFolder rFolder = RetrieveResourceFolder(path);
+            rFolder?.ExploreForType<T>();
+            return rFolder?.GetResourceHandlesAll<T>();
         }
 
         /// <summary>

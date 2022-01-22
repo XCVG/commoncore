@@ -271,6 +271,38 @@ namespace CommonCore.ResourceManagement
             return resources;
         }
 
+        /// <summary>
+        /// Gets all resource handles of a given type in this folder
+        /// </summary>
+        /// <remarks>
+        /// <para>Note that no fuzzy type matching is done; it will return the list for the exact type</para>
+        /// <para>Returns empty array if there is no lists of resource handles for the type</para>
+        /// <para>Note that due to Unity shenanigans, the actual resource may not be of type T</para>
+        /// </remarks>
+        public Dictionary<string, ResourceHandle<T>[]> GetResourceHandlesAll<T>() where T : UnityEngine.Object
+        {
+            return ResourceObjects
+                .Select(kvp => new KeyValuePair<string, ResourceHandle<T>[]>(kvp.Key, kvp.Value.GetResourceHandles<T>()))
+                .Where(a => a.Value != null)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        }
+
+        /// <summary>
+        /// Gets all resource handles of a given type in this folder
+        /// </summary>
+        /// <remarks>
+        /// <para>Note that no fuzzy type matching is done; it will return the list for the exact type</para>
+        /// <para>Returns empty array if there is no lists of resource handles for the type</para>
+        /// <para>Note that due to Unity shenanigans, the actual resource may not be of type T</para>
+        /// </remarks>
+        public Dictionary<string, ResourceHandle[]> GetResourceHandlesAll(Type type)
+        {
+            return ResourceObjects
+                .Select(kvp => new KeyValuePair<string, ResourceHandle[]>(kvp.Key, kvp.Value.GetResourceHandles(type)))
+                .Where(a => a.Value != null)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        }
+
     }
 
     public class ResourceObject
@@ -828,10 +860,8 @@ namespace CommonCore.ResourceManagement
     public class RedirectResourceHandle<T> : ResourceHandle<T>, IRedirectHandle where T : UnityEngine.Object
     {
         public string Path { get; private set; }
-        //I was thinking about "absolute path" versus "path" but there's no clear meaning of that so not for now
 
         private WeakReference<ResourceManager> ResourceManagerReference;
-        //TODO we can probably cache _at least_ ResourceObject here
 
         public override T Resource
         {
