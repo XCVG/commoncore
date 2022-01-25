@@ -39,6 +39,9 @@ LightmapSnapshot.asset.meta
 LightingData.asset
 LightingData.asset.meta
 
+# User Settings (Unity 2020+)
+/[Uu]ser[Ss]ettings/
+
 # Explicitly excluded (optional)
 # /Assets/ThirdParty/
 # /Assets/Objects/ThirdParty/
