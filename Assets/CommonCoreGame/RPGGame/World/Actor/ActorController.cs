@@ -304,7 +304,19 @@ namespace CommonCore.RpgGame.World
                             this.gameObject.SetActive(false); //actually destroying the object breaks saving
 
                         if (OnDeathSpecial != null)
-                            OnDeathSpecial.Execute(new ActionInvokerData { Activator = LastHit?.Originator, Caller = this, Position = transform.position, Rotation = transform.rotation, Velocity = MovementComponent.Ref()?.PhysicsVelocity });
+                        {
+                            try
+                            {
+                                OnDeathSpecial.Execute(new ActionInvokerData { Activator = LastHit?.Originator, Caller = this, Position = transform.position, Rotation = transform.rotation, Velocity = MovementComponent.Ref()?.PhysicsVelocity });
+                            }
+                            catch(Exception e)
+                            {                                
+                                Debug.LogError($"[{nameof(ActorController)}] Failed to execute OnDeathSpecial ({e.GetType().Name}: {e.Message})");
+                                if (ConfigState.Instance.UseVerboseLogging)
+                                    Debug.LogException(e);
+                            }
+                        }
+                            
 
                         if (DisableHitboxesOnDeath)
                         {

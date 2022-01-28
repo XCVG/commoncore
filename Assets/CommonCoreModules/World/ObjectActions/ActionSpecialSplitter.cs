@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using CommonCore.Config;
 
 namespace CommonCore.ObjectActions
 {
     public class ActionSpecialSplitter : ActionSpecial
     {
+        public bool ContinueOnError = true;
         public ActionSpecialEvent[] Specials;
 
         private bool Locked;
@@ -17,7 +19,20 @@ namespace CommonCore.ObjectActions
 
             foreach (ActionSpecialEvent sp in Specials)
             {
-                sp.Invoke(data);
+                try
+                {
+                    sp.Invoke(data);
+                }
+                catch(Exception e)
+                {
+                    Debug.LogError($"[{nameof(ActionSpecialSplitter)}] Failed to invoke ActionSpecial ({e.GetType().Name}: {e.Message})");
+                    if (ConfigState.Instance.UseVerboseLogging)
+                        Debug.LogException(e);
+
+                    if (!ContinueOnError)
+                        throw;
+                }
+                
             }
 
             if (!Repeatable)
