@@ -356,14 +356,16 @@ namespace CommonCore
                 {
                     if(kvp.Value is IEnumerable<KeyValuePair<string, object>> col)
                     {
-                        dictionary.AddRange(col);
+                        dictionary.AddRangeKeepExisting(col);
                     }
-                    //TODO should we handle params-given-as-json?
                 }
                 else if(kvp.Key.StartsWith(moduleName, StringComparison.OrdinalIgnoreCase))
-                {                    
-                    string key = kvp.Key.Substring(moduleName.Length).TrimStart('.', '_', '-');
-                    dictionary[key] = kvp.Value;
+                {
+                    if(kvp.Key.Substring(moduleName.Length, 1) == "." || kvp.Key.Substring(moduleName.Length, 1) == "_" || kvp.Key.Substring(moduleName.Length, 1) == "-")
+                    {
+                        string key = kvp.Key.Substring(moduleName.Length).TrimStart('.', '_', '-');
+                        dictionary[key] = kvp.Value;
+                    }
                 }
             }
             return dictionary;
