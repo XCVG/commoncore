@@ -375,6 +375,7 @@
 * GetParamsForModule now checks if there's actually a delimiter after the module name
 * GetActiveCamera getting player camera is now delegated to PlayerController via IControlPlayerCamera interface
 * IControlPlayerCamera now provides getter for player audio listener
+* Fixed 2D collision matrix not matching 3D collision matrix
 * Added conditional/microscript resolvers for PlayerFlags and SessionFlags (conditional only) [Experimental]
 * Added ScriptStringSubber that calls scripts and substitutes the result [Experimental]
 * DelayScaled can now be used from threads other than the main thread [Untested]
