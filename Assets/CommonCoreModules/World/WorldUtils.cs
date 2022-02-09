@@ -500,31 +500,10 @@ namespace CommonCore.World
             var playerObject = GetPlayerObject();
             if(playerObject != null && playerObject.activeSelf)
             {
-                var cameras = playerObject.GetComponentsInChildren<Camera>();
-
-                //speedhack: if there is one camera on the player and it is enabled, it's our best choice by the conditions below
-                if (cameras.Length == 1 && cameras[0].enabled)
-                    return cameras[0];
-
-                foreach(var camera in cameras)
-                {
-                    if (camera.gameObject.layer == LayerMask.NameToLayer("LightReporter") || camera.gameObject.name.Equals("GunCamera", StringComparison.OrdinalIgnoreCase))
-                        continue;
-
-                    //First choice is the camera on the player object tagged MainCamera and enabled
-                    if (camera.gameObject.tag == "MainCamera" && camera.enabled)
-                        return camera;
-                }
-
-                foreach(var camera in cameras)
-                {
-                    if (camera.gameObject.layer == LayerMask.NameToLayer("LightReporter") || camera.gameObject.name.Equals("GunCamera", StringComparison.OrdinalIgnoreCase))
-                        continue;
-
-                    //Next choice is the camera on the player object that is enabled
-                    if (camera.enabled)
-                        return camera;
-                }
+                var playerCameraController = playerObject.GetComponent<IControlPlayerCamera>();
+                var camera = playerCameraController.GetCamera();
+                if (camera != null)
+                    return camera;
             }
 
             //next, try the objects tagged "Main Camera"

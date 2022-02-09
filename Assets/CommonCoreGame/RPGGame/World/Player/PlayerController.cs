@@ -17,7 +17,7 @@ using CommonCore.RpgGame.UI;
 
 namespace CommonCore.RpgGame.World
 {
-    public class PlayerController : BaseController, ITakeDamage, IAmTargetable
+    public class PlayerController : BaseController, ITakeDamage, IAmTargetable, IControlPlayerCamera
     {
         public bool AutoinitHud = true;
 
@@ -572,6 +572,37 @@ namespace CommonCore.RpgGame.World
 
             TryExecuteOnComponents(component => (component as IReceiveDamageableEntityEvents)?.DamageTaken(data));
 
+        }
+
+        public Camera GetCamera()
+        {
+            var cameras = gameObject.GetComponentsInChildren<Camera>();
+
+            //speedhack: if there is one camera on the player and it is enabled, it's our best choice by the conditions below
+            if (cameras.Length == 1 && cameras[0].enabled)
+                return cameras[0];
+
+            foreach (var camera in cameras)
+            {
+                if (camera.gameObject.layer == LayerMask.NameToLayer("LightReporter") || camera.gameObject.name.Equals("GunCamera", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                //First choice is the camera on the player object tagged MainCamera and enabled
+                if (camera.gameObject.tag == "MainCamera" && camera.enabled)
+                    return camera;
+            }
+
+            foreach (var camera in cameras)
+            {
+                if (camera.gameObject.layer == LayerMask.NameToLayer("LightReporter") || camera.gameObject.name.Equals("GunCamera", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                //Next choice is the camera on the player object that is enabled
+                if (camera.enabled)
+                    return camera;
+            }
+
+            return null;
         }
 
         private enum ModelVisibility
