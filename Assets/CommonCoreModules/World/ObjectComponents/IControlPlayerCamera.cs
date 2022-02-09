@@ -7,5 +7,6 @@ namespace CommonCore.World
     public interface IControlPlayerCamera
     {
         Camera GetCamera();
+        AudioListener GetAudioListener();
     }
 }

@@ -535,6 +535,71 @@ namespace CommonCore.World
         }
 
         /// <summary>
+        /// Sets this audio listener active, disabling all other audio listeners
+        /// </summary>
+        public static void SetAudioListener(AudioListener audioListener)
+        {
+            var listeners = UnityEngine.Object.FindObjectsOfType<AudioListener>();
+            foreach(var listener in listeners)
+            {
+                listener.enabled = false;
+            }
+
+            audioListener.enabled = true;
+        }
+
+        /// <summary>
+        /// Sets the audio listener on the camera active (it will be created if it does not exist), disabling all other audio listeners
+        /// </summary>
+        public static void SetAudioListener(Camera camera)
+        {
+            var audioListener = camera.GetComponent<AudioListener>();
+
+            if(audioListener == null)
+            {
+                audioListener = camera.gameObject.AddComponent<AudioListener>();
+            }
+
+            SetAudioListener(audioListener);
+        }
+
+        /// <summary>
+        /// Sets the audio listener on this entity active (it will be created if it does not exist), disabling all other audio listeners
+        /// </summary>
+        public static void SetAudioListener(BaseController controller)
+        {
+            SetAudioListener(controller.gameObject);
+        }
+
+        /// <summary>
+        /// Sets the audio listener on this object active (it will be created if it does not exist), disabling all other audio listeners
+        /// </summary>
+        public static void SetAudioListener(GameObject obj)
+        {
+            AudioListener audioListener;
+
+            if(IsPlayer(obj))
+            {
+                //special handling for players
+
+                var playerCameraController = obj.GetComponent<IControlPlayerCamera>();
+                audioListener = playerCameraController.GetAudioListener();
+            }
+            else
+            {
+                audioListener = obj.GetComponentInChildren<AudioListener>();
+
+                if(audioListener == null)
+                {
+                    audioListener = obj.AddComponent<AudioListener>();
+                }
+            }
+            
+            if(audioListener != null)
+                SetAudioListener(audioListener);
+        }
+
+        /// <summary>
         /// Gets the default layermask used for attacks
         /// </summary>
         public static LayerMask GetAttackLayerMask()

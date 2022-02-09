@@ -38,6 +38,7 @@ namespace CommonCore.RpgGame.World
         public PlayerCameraZoomComponent CameraZoomComponent;
         public PlayerDeathComponent DeathComponent;
         public PlayerShieldComponent ShieldComponent;
+        public AudioListener AudioListener;
 
         //hacking around Unity's shitty support for interfaces
         [SerializeField]
@@ -166,6 +167,14 @@ namespace CommonCore.RpgGame.World
             if(LightReportingComponent == null)
             {
                 LightReportingComponent = GetComponentInChildren<IReportLight>() as MonoBehaviour;
+            }
+
+            if(AudioListener == null)
+            {
+                AudioListener = CameraRoot.Ref()?.GetComponentInChildren<AudioListener>();
+
+                if (AudioListener == null)
+                    AudioListener = GetComponentInChildren<AudioListener>();
             }
 
             if(!HUDScript)
@@ -603,6 +612,11 @@ namespace CommonCore.RpgGame.World
             }
 
             return null;
+        }
+
+        public AudioListener GetAudioListener()
+        {
+            return AudioListener;
         }
 
         private enum ModelVisibility
