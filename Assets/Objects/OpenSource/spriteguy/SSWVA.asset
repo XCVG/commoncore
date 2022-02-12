@@ -17,9 +17,6 @@ MonoBehaviour:
   Left: {fileID: 21300000, guid: 71fcd501d892de94a983257b321fcef9, type: 3}
   BackLeft: {fileID: 21300000, guid: 80c075abc7afc4a428b6547e850e2245, type: 3}
   Back: {fileID: 21300000, guid: 13b00bed1f8c3954db76bdc62fbfd5d4, type: 3}
-  BackRight: {fileID: 21300000, guid: 80c075abc7afc4a428b6547e850e2245, type: 3}
-  Right: {fileID: 21300000, guid: 71fcd501d892de94a983257b321fcef9, type: 3}
-  FrontRight: {fileID: 21300000, guid: dd38f919ceefd6e45bb284e7dec8c20a, type: 3}
-  MirrorBackRight: 1
-  MirrorRight: 1
-  MirrorFrontRight: 1
+  BackRight: {fileID: 0}
+  Right: {fileID: 0}
+  FrontRight: {fileID: 0}
