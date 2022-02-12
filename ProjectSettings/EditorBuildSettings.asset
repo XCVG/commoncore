@@ -29,4 +29,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Other/UITestScene.unity
     guid: cfdb22e5218ad914fb7ce8c13c41ed19
+  - enabled: 1
+    path: Assets/Scenes/Other/LosTestScene.unity
+    guid: a855dee420cdad64ab3a213aca1958d4
+  - enabled: 1
+    path: Assets/Scenes/Other/NavigationNodeTestScene.unity
+    guid: 94a82386c665a3a47ab3532f6f46205c
   m_configObjects: {}
