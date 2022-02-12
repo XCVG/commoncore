@@ -1,4 +1,5 @@
 using CommonCore.LockPause;
+using CommonCore.ObjectActions;
 using CommonCore.World;
 using System;
 using System.Collections;
@@ -141,10 +142,18 @@ namespace CommonCore.RpgGame.World
             if (!TargetActor.isActiveAndEnabled)
                 return;
 
+            TargetActor.MovementComponent.MovementTarget = TargetNode.transform.position;
+
             float threshold = Mathf.Min(ArriveThreshold, TargetActor.MovementComponent.TargetThreshold, TargetNode.DistanceThreshold);
 
             if((TargetNode.transform.position - TargetActor.transform.position).GetFlatVector().magnitude <= threshold)
             {
+                var trigger = TargetNode.GetComponent<NavigationNodeReachedTrigger>();
+                if(trigger != null)
+                {
+                    trigger.Activate(TargetActor);
+                }
+
                 if(TargetNode.EndNode || TargetNode.NextNode == null || TargetNode.NextNode == StartNode)
                 {
                     //if it is an end node (either explicitly labelled, nextNode = null or nextNode = startNode)
@@ -232,6 +241,17 @@ namespace CommonCore.RpgGame.World
         {
             if (string.IsNullOrEmpty(name))
                 return null;
+
+            if(StartNode != null)
+            {
+                NavigationNode node = StartNode;
+                while(node.gameObject.name != name && node.NextNode != null)
+                {
+                    node = node.NextNode;
+                }
+                if (node.gameObject.name == name)
+                    return node;
+            }
 
             var transforms = SceneUtils.FindDeepChildren(CoreUtils.GetWorldRoot(), name);
             foreach(var transform in transforms)
