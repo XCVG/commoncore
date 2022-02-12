@@ -106,6 +106,22 @@ namespace CommonCore.AddonSupport
             return (MonoBehaviour)ProxyUtils.InvokeStaticProxied(SharedUtilsTypeName, "GetSceneController");
         }
 
+        /// <summary>
+        /// Gets the HUD controller (returns null on fail)
+        /// </summary>
+        public static MonoBehaviour TryGetHudController()
+        {
+            return (MonoBehaviour)ProxyUtils.InvokeStaticProxied(SharedUtilsTypeName, "TryGetHudController");
+        }
+
+        /// <summary>
+        /// Gets the HUD controller (throws on fail)
+        /// </summary>
+        public static MonoBehaviour GetHudController()
+        {
+            return (MonoBehaviour)ProxyUtils.InvokeStaticProxied(SharedUtilsTypeName, "GetHudController");
+        }
+
         #endregion
 
         #region SaveUtils
@@ -126,6 +142,30 @@ namespace CommonCore.AddonSupport
         public static string GetLastSave()
         {
             return (string)ProxyUtils.InvokeStaticProxied(SaveUtilsTypeName, "GetLastSave");
+        }
+
+        /// <summary>
+        /// Gets the clean save path given a save name which may or may not contain a path and may or may not contain an extension
+        /// </summary>
+        public static string GetCleanSavePath(string saveName)
+        {
+            return (string)ProxyUtils.InvokeStaticProxied(SaveUtilsTypeName, "GetCleanSavePath", saveName);
+        }
+
+        /// <summary>
+        /// Creates default metadata with specified nicename, drawing other info from game state and thumbnail generation script
+        /// </summary>
+        public static object CreateDefaultMetadata(string niceName)
+        {
+            return ProxyUtils.InvokeStaticProxied(SaveUtilsTypeName, "CreateDefaultMetadata", niceName);
+        }
+
+        /// <summary>
+        /// Loads save metadata from a save file
+        /// </summary>
+        public static object LoadSaveMetadata(string saveName)
+        {
+            return ProxyUtils.InvokeStaticProxied(SaveUtilsTypeName, "LoadSaveMetadata", saveName);
         }
 
         //all non-Ex should be "safe" (log errors instead of throwing) and check conditions themselves
@@ -242,6 +282,28 @@ namespace CommonCore.AddonSupport
         }
 
         /// <summary>
+        /// Finds the default player spawn point
+        /// </summary>
+        /// <remarks>
+        /// <para>Selects "DefaultPlayerSpawn" from active PlayerSpawnPoints, then "DefaultPlayerSpawn" from active without PlayerSpawnPoint, then any active PlayerSpawnPoint</para>
+        /// </remarks>
+        public static GameObject FindDefaultPlayerSpawn()
+        {
+            return (GameObject)ProxyUtils.InvokeStaticProxied(WorldUtilsTypeName, "FindDefaultPlayerSpawn");
+        }
+
+        /// <summary>
+        /// Finds the player spawn point by name
+        /// </summary>
+        /// <remarks>
+        /// <para>Selects from active PlayerSpawnPoints, then active without PlayerSpawnPoint</para>
+        /// </remarks>
+        public static GameObject FindPlayerSpawn(string spawnPointName)
+        {
+            return (GameObject)ProxyUtils.InvokeStaticProxied(WorldUtilsTypeName, "FindPlayerSpawn", spawnPointName);
+        }
+
+        /// <summary>
         /// Checks if this scene is considered a world scene (ie has WorldSceneController)
         /// </summary>
         public static bool IsWorldScene()
@@ -297,18 +359,49 @@ namespace CommonCore.AddonSupport
             return (IList)ProxyUtils.InvokeStaticProxied(WorldUtilsTypeName, "FindEntitiesWithTag", tag);
         }
 
+        /// <summary>
+        /// Checks if an ITakeDamage is considered alive
+        /// </summary>
+        public static bool IsDamageableAlive(object itd)
+        {
+            return (bool)ProxyUtils.InvokeStaticProxied(WorldUtilsTypeName, "IsDamageableAlive", itd);
+        }
+
+        /// <summary>
+        /// Checks if an entity is considered alive
+        /// </summary>
+        public static bool IsEntityAlive(MonoBehaviour entity)
+        {
+            return (bool)ProxyUtils.InvokeStaticProxied(WorldUtilsTypeName, "IsEntityAlive", entity);
+        }
+
+        /// <summary>
+        /// Checks if an object is considered alive
+        /// </summary>
+        public static bool IsObjectAlive(GameObject obj)
+        {
+            return (bool)ProxyUtils.InvokeStaticProxiedEx(WorldUtilsTypeName, "IsObjectAlive", new InvokeStaticProxyOptions() { MatchParameterTypes = true, ParameterMatchTypes = new Type[] { typeof(GameObject) } }, obj);
+        }
+
+        /// <summary>
+        /// Checks if an object is considered alive
+        /// </summary>
+        public static bool IsObjectAlive(Transform transform)
+        {
+            return (bool)ProxyUtils.InvokeStaticProxiedEx(WorldUtilsTypeName, "IsObjectAlive", new InvokeStaticProxyOptions() { MatchParameterTypes = true, ParameterMatchTypes = new Type[] { typeof(Transform) } }, transform);
+        }
+
+        [Obsolete]
         public static bool IsAlive(GameObject target)
         {
             return (bool)ProxyUtils.InvokeStaticProxiedEx(WorldUtilsTypeName, "IsAlive", new InvokeStaticProxyOptions() { MatchParameterTypes = true }, target);
         }
 
+        [Obsolete]
         public static bool IsAlive(Transform target)
         {
             return (bool)ProxyUtils.InvokeStaticProxiedEx(WorldUtilsTypeName, "IsAlive", new InvokeStaticProxyOptions() { MatchParameterTypes = true }, target);
         }
-
-        //TODO ParameterMatchTypes for below
-
 
         /// <summary>
         /// Sets parameters and loads a different scene
@@ -381,6 +474,38 @@ namespace CommonCore.AddonSupport
         public static Camera GetActiveCamera()
         {
             return (Camera)ProxyUtils.InvokeStaticProxied(WorldUtilsTypeName, "GetActiveCamera");
+        }
+
+        /// <summary>
+        /// Sets this audio listener active, disabling all other audio listeners
+        /// </summary>
+        public static void SetAudioListener(AudioListener audioListener)
+        {
+            ProxyUtils.InvokeStaticProxiedEx(WorldUtilsTypeName, "SetAudioListener", new InvokeStaticProxyOptions() { MatchParameterTypes = true }, audioListener);
+        }
+
+        /// <summary>
+        /// Sets the audio listener on the camera active (it will be created if it does not exist), disabling all other audio listeners
+        /// </summary>
+        public static void SetAudioListener(Camera camera)
+        {
+            ProxyUtils.InvokeStaticProxiedEx(WorldUtilsTypeName, "SetAudioListener", new InvokeStaticProxyOptions() { MatchParameterTypes = true }, camera);
+        }
+
+        /// <summary>
+        /// Sets the audio listener on this entity active (it will be created if it does not exist), disabling all other audio listeners
+        /// </summary>
+        public static void SetAudioListener(MonoBehaviour controller)
+        {
+            ProxyUtils.InvokeStaticProxiedEx(WorldUtilsTypeName, "SetAudioListener", new InvokeStaticProxyOptions() { MatchParameterTypes = true }, controller);
+        }
+
+        /// <summary>
+        /// Sets the audio listener on this object active (it will be created if it does not exist), disabling all other audio listeners
+        /// </summary>
+        public static void SetAudioListener(GameObject obj)
+        {
+            ProxyUtils.InvokeStaticProxiedEx(WorldUtilsTypeName, "SetAudioListener", new InvokeStaticProxyOptions() { MatchParameterTypes = true }, obj);
         }
 
         #endregion

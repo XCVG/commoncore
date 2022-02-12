@@ -145,27 +145,8 @@ namespace CommonCore.State
         }
 
         /// <summary>
-        /// Gets the clean metadata path given a save name which may or may not contain a path and may or may not contain an extension
+        /// Creates default metadata with specified nicename, drawing other info from game state and thumbnail generation script
         /// </summary>
-        //TODO remove this, unused as we are embedding metadata
-        public static string GetCleanMetadataPath(string saveName)
-        {
-            string path;
-            if (Path.IsPathRooted(saveName))
-                path = saveName;
-            else
-                path = Path.Combine(CoreParams.SavePath, saveName);
-
-            if (string.IsNullOrEmpty(Path.GetExtension(path)) || path.EndsWith(".meta.json", StringComparison.OrdinalIgnoreCase))
-                path = path.Substring(0, path.Length - 10);
-            else
-                path = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path));
-
-            path = path + ".meta.json";
-
-            return path;
-        }
-
         public static SaveMetadata CreateDefaultMetadata(string niceName)
         {
             var sm = new SaveMetadata()
@@ -197,6 +178,9 @@ namespace CommonCore.State
             return sm;
         }
 
+        /// <summary>
+        /// Loads save metadata from a save file
+        /// </summary>
         public static SaveMetadata LoadSaveMetadata(string saveName)
         {
             string path = SaveUtils.GetCleanSavePath(saveName);
