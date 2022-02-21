@@ -390,3 +390,4 @@
 * DelayScaled can now be used from threads other than the main thread [Untested]
 * Added NavigationNodeReachedTrigger action trigger [Untested]
 * Added audio listener switching methods to WorldUtils [Untested]
+* Added physics handling to BulletExplosionComponent [Untested]

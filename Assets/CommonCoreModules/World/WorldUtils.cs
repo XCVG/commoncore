@@ -648,10 +648,22 @@ namespace CommonCore.World
         /// <para>If a HitPuff is passed in, the HitPuffs will be spawned</para>
         /// <para>If useFalloff is enabled, a simple linear falloff will be used</para>
         /// </remarks>
-        public static void RadiusDamage(Vector3 position, float radius, bool useFalloff, bool rejectBullets, bool damageDuplicates, bool damageSelf, bool damageFriendly, ActorHitInfo actorHitInfo)
+        public static void RadiusDamage(Vector3 origin, float radius, bool useFalloff, bool rejectBullets, bool damageDuplicates, bool damageSelf, bool damageFriendly, ActorHitInfo actorHitInfo)
         {
-            var hits = OverlapSphereAttackHit(position, radius, rejectBullets, damageDuplicates, damageSelf, actorHitInfo.Originator);
-            foreach(var hit in hits)
+            var hits = OverlapSphereAttackHit(origin, radius, rejectBullets, damageDuplicates, damageSelf, actorHitInfo.Originator);
+            RadiusDamage(hits, origin, radius, useFalloff, actorHitInfo);
+        }
+
+        /// <summary>
+        /// Deals damage to everything in the list of hits
+        /// </summary>
+        /// <remarks>
+        /// <para>If a HitPuff is passed in, the HitPuffs will be spawned</para>
+        /// <para>If useFalloff is enabled, a simple linear falloff will be used</para>
+        /// </remarks>
+        public static void RadiusDamage(IEnumerable<HitInfo> hits, Vector3 origin, float radius, bool useFalloff, ActorHitInfo actorHitInfo)
+        {
+            foreach (var hit in hits)
             {
                 if (!(hit.Controller is ITakeDamage itd))
                     continue;
@@ -660,7 +672,7 @@ namespace CommonCore.World
 
                 if (useFalloff)
                 {
-                    float distance = Mathf.Min(radius, (hit.HitPoint - position).magnitude);
+                    float distance = Mathf.Min(radius, (hit.HitPoint - origin).magnitude);
                     float damageMultiplier = (radius - distance) / radius;
                     ahi.Damage *= damageMultiplier;
                     ahi.DamagePierce *= damageMultiplier;
@@ -670,7 +682,7 @@ namespace CommonCore.World
                 {
                     ahi.Damage *= hit.Hitbox.DamageMultiplier;
                     ahi.DamagePierce *= hit.Hitbox.DamageMultiplier;
-                    if(hit.Hitbox.AllDamageIsPierce)
+                    if (hit.Hitbox.AllDamageIsPierce)
                     {
                         ahi.DamagePierce += ahi.Damage;
                         ahi.Damage = 0;
@@ -678,7 +690,7 @@ namespace CommonCore.World
                 }
 
                 itd.TakeDamage(ahi);
-                if(!string.IsNullOrEmpty(actorHitInfo.HitPuff))
+                if (!string.IsNullOrEmpty(actorHitInfo.HitPuff))
                     HitPuffScript.SpawnHitPuff(ahi);
             }
         }

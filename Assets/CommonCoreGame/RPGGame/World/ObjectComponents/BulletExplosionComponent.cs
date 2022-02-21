@@ -19,9 +19,15 @@ namespace CommonCore.RpgGame.World //here because we need factions
 
 		[Header("Explosion Parameters")]
 		public float Damage = 10f;
-		public float Radius = 5f;
+		public float Radius = 5f;		
 		public bool UseFalloff = true;
 		public string HitPuff = string.Empty;
+
+		[Header("Physics Parameters")]
+		public float Impulse = 1000f;
+		public bool PushNonEntities = false;
+		public bool PushFlatPhysics = false;
+		public bool ImpulseUsesFalloff = true;
 
 		[Header("Detonation Parameters")]
 		public bool DetonateOnWorldHit = true;
@@ -136,11 +142,59 @@ namespace CommonCore.RpgGame.World //here because we need factions
 			ActorHitInfo hitInfo = new ActorHitInfo(Damage, 0, bulletHitInfo.DamageType, (int)DefaultDamageEffectors.Explosion, false, 0, 0, bulletHitInfo.Originator, bulletHitInfo.OriginatorFaction, HitPuff, null, bulletHitInfo.HitFlags);
 			//TODO we copy flags, should we also copy ExtraFlags and ExtraData?
 
-			WorldUtils.RadiusDamage(transform.position, Radius, UseFalloff, true, false, false, false, hitInfo);
+			var hits = WorldUtils.OverlapSphereAttackHit(transform.position, Radius, true, false, false, bulletHitInfo.Originator);
 
-			//TODO physics
+			//WorldUtils.RadiusDamage(transform.position, Radius, UseFalloff, true, false, false, false, hitInfo);
+			WorldUtils.RadiusDamage(hits, transform.position, Radius, UseFalloff, hitInfo);
 
-			if(!string.IsNullOrEmpty(ExplosionEffect))
+			//physics
+			if (Mathf.Abs(Impulse) > 0)
+			{
+				foreach (var hit in hits)
+				{
+					if (hit.Controller is IAmPushable iap)
+					{
+						var vecToTarget = hit.Controller.transform.position - transform.position;
+						if (PushFlatPhysics)
+							vecToTarget = vecToTarget.GetFlatVector().GetSpaceVector();
+						var dirToTarget = vecToTarget.normalized;
+						var distToTarget = vecToTarget.magnitude;
+
+						float pushAmount = Impulse * (ImpulseUsesFalloff ? ((Radius - distToTarget) / Radius) : 1f);
+						iap.Push(pushAmount * dirToTarget);
+					}
+				}
+
+				if(PushNonEntities)
+                {
+					var colliders = Physics.OverlapSphere(transform.position, Radius, WorldUtils.GetAttackLayerMask(), QueryTriggerInteraction.Ignore);
+					foreach(var collider in colliders)
+                    {
+						var rb = collider.attachedRigidbody;
+
+						if (rb == null || rb.isKinematic)
+							continue;
+
+						if (collider.GetComponent<BaseController>() != null || collider.GetComponentInParent<BaseController>() != null)
+							continue;
+
+						if (collider.GetComponent<BulletScript>() != null || collider.GetComponentInParent<BulletScript>() != null)
+							continue;
+
+						var vecToTarget = collider.transform.position - transform.position;
+						if (PushFlatPhysics)
+							vecToTarget = vecToTarget.GetFlatVector().GetSpaceVector();
+						var dirToTarget = vecToTarget.normalized;
+						var distToTarget = vecToTarget.magnitude;
+
+						float pushAmount = Impulse * (ImpulseUsesFalloff ? ((Radius - distToTarget) / Radius) : 1f);
+
+						rb.AddForce(pushAmount * dirToTarget, ForceMode.Impulse);
+                    }
+                }
+			}
+
+			if (!string.IsNullOrEmpty(ExplosionEffect))
             {
 				var explosionEffect = WorldUtils.SpawnEffect(ExplosionEffect, transform.position, transform.rotation, null, false);
 				if(explosionEffect != null && ApplyVelocityToEffect)
