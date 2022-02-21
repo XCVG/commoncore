@@ -240,7 +240,6 @@ MonoBehaviour:
   UseLineOfSight: 0
   SearchRadius: 25
   SearchInterval: 70
-  ChaseOptimalDistance: 0
   DisableInteractionOnHit: 1
   GrantXpOnDeath: 50
   RunOnChase: 1
@@ -302,6 +301,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ActorController: {fileID: 5737222755212715997}
   ShootPoint: {fileID: 5628258314254578959}
+  ChaseOptimalDistance: 0
   UseMelee: 0
   UseSuicide: 0
   AutoDamageEffector: 1
@@ -332,6 +332,9 @@ MonoBehaviour:
   ParentAttackEffect: 1
   AttackSound: {fileID: 6161069624574782821}
   AttackAnimationOverride: 
+  UseLosChase: 0
+  LosChaseDestinationRadius: 4
+  MaxRepeatCount: 0
 --- !u!114 &8815026076913120822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -346,6 +349,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ActorController: {fileID: 5737222755212715997}
   TargetThreshold: 1
+  PhysicsMass: 100
   <MovementTarget>k__BackingField: {x: 0, y: 0, z: 0}
   <IsRunning>k__BackingField: 0
   <ControlRotation>k__BackingField: 1
@@ -604,6 +608,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -628,6 +633,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &6161069624574782827
 GameObject:
   m_ObjectHideFlags: 0

@@ -379,6 +379,12 @@
 * Added PathFollower entity that pushes actors along a path of NavigationNodes
 * Added ThingPusher entity that pushes other things along a path of NavigationNodes
 * Updated ForwardedUtils in AddonSupport and added a few missing methods
+* Removed now-redundant BulletExplosionComponentEx
+* Added IAmPushable interface implemented by pushable entity types, allowing them to be pushed
+* Added HitPhysicsInfo describing push physics for attack hits
+* BulletScript now handles push physics (ie bullets can now push things)
+* ActorAttackComponent can use push physics for ranged and melee attacks
+* Player offhand kick can now push around actors
 * Added conditional/microscript resolvers for PlayerFlags and SessionFlags (conditional only) [Experimental]
 * Added ScriptStringSubber that calls scripts and substitutes the result [Experimental]
 * DelayScaled can now be used from threads other than the main thread [Untested]

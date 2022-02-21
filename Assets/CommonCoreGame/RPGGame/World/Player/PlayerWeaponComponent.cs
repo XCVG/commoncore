@@ -1640,14 +1640,17 @@ namespace CommonCore.RpgGame.World
                     //var (otherController, hitPoint, hitLocation, hitMaterial) = GetMeleeHitEx(OffhandKickPoint, OffhandKickRange);
                     var (otherController, hitPoint, hitLocation, hitMaterial) = WorldUtils.SpherecastAttackHit(OffhandKickPoint.position, OffhandKickPoint.forward, 0.25f, OffhandKickRange, true, false, PlayerController);
 
-                    var itd = otherController as ITakeDamage;
-                    if (itd != null)
+                    if (otherController is ITakeDamage itd)
                     {
                         float damageMultiplier = RpgValues.GetKickDamageFactor(player) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerStrength; //from stats and difficulty
                         var hitInfo = new ActorHitInfo(OffhandKickDamage * damageMultiplier, 0, (int)DamageType.Impact, (int)DamageEffector.Melee, GameParams.UseFriendlyFire, (int)hitLocation, (int)hitMaterial, PlayerController, PredefinedFaction.Player.ToString(), OffhandKickPuff, hitPoint, TypeUtils.FlagsFromCollection(OffhandKickFlags));
                         itd.TakeDamage(hitInfo);
                         if(!string.IsNullOrEmpty(OffhandKickPuff))
-                            HitPuffScript.SpawnHitPuff(hitInfo);
+                            HitPuffScript.SpawnHitPuff(hitInfo);                        
+                    }
+                    if(otherController is IAmPushable iap)
+                    {
+                        iap.Push(OffhandKickPoint.forward * OffhandKickForce * RpgValues.GetKickForceFactor(player));
                     }
 
                     //kick away kickable things
@@ -1655,7 +1658,8 @@ namespace CommonCore.RpgGame.World
                     if(Physics.BoxCast(OffhandKickPoint.position, Vector3.one * 0.25f, OffhandKickPoint.forward, out var hit, Quaternion.identity, OffhandKickRange))
                     {
                         Rigidbody rb = hit.collider.attachedRigidbody;
-                        if(rb != null)
+                        var rbIap = rb.gameObject.GetComponent<IAmPushable>();
+                        if(rb != null && rbIap == null)
                         {
                             rb.AddForce(OffhandKickPoint.forward * OffhandKickForce * RpgValues.GetKickForceFactor(player), ForceMode.Impulse);
                         }

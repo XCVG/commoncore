@@ -1551,6 +1551,8 @@ MonoBehaviour:
   GravityMultiplier: 2
   SlopeSlideAccleration: 100
   SlopeSlideSpeed: 6
+  PhysicsMass: 100
+  PushImpulseMultiplier: 5
   MaxBrakeAcceleration: 2000
   MaxWalkSpeed: 5
   MaxWalkAcceleration: 200
@@ -1564,7 +1566,6 @@ MonoBehaviour:
   JumpInstantaneousDisplacement: {x: 0, y: 0.2, z: 0}
   JumpCrouchBoostVelocity: {x: 0, y: 1, z: 0}
   EnableCollisions: 1
-  CollisionMass: 100
   CollisionRigidbodyBounceRatio: 0.5
   CollisionBrakeAcceleration: 100
   NoclipVelocity: {x: 8, y: 8, z: 8}

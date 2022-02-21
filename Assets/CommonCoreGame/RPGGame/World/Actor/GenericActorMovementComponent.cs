@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -43,7 +44,7 @@ namespace CommonCore.RpgGame.World
         private float CollidedBrakeFactor = 10f;
         [SerializeField]
         private float YBrakeFactor = 10f;
-        [SerializeField, Tooltip("Use to simulate mass (lower multiplier=higher mass)")]
+        [SerializeField, Tooltip("Use to simulate mass (lower multiplier=higher mass)"), Obsolete("Use Physics Mass instead")]
         private float VelocityMultiplier = 1f;
 
         //fields
@@ -270,10 +271,21 @@ namespace CommonCore.RpgGame.World
 
         public override void SetVelocity(Vector3 velocity)
         {
+            if (velocity == Vector3.zero) //allow zeroing velocity even when physics is disabled
+                PhysicsVelocity = Vector3.zero;
+
             if (!EnablePhysics)
                 return;
 
             base.SetVelocity(velocity * VelocityMultiplier);
+        }
+
+        public override void Push(Vector3 impulse)
+        {
+            if (!EnablePhysics)
+                return;
+
+            base.Push(impulse);
         }
 
         public override bool CheckLocationReachable(Vector3 location)

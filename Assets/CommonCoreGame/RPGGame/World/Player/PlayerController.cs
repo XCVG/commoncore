@@ -17,7 +17,7 @@ using CommonCore.RpgGame.UI;
 
 namespace CommonCore.RpgGame.World
 {
-    public class PlayerController : BaseController, ITakeDamage, IAmTargetable, IControlPlayerCamera
+    public class PlayerController : BaseController, ITakeDamage, IAmTargetable, IAmPushable, IControlPlayerCamera
     {
         public bool AutoinitHud = true;
 
@@ -617,6 +617,12 @@ namespace CommonCore.RpgGame.World
         public AudioListener GetAudioListener()
         {
             return AudioListener;
+        }
+
+        public void Push(Vector3 impulse)
+        {
+            if (MovementComponent != null)
+                MovementComponent.Push(impulse);
         }
 
         private enum ModelVisibility

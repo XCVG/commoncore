@@ -26,6 +26,7 @@ namespace CommonCore.World
 
         [Header("Mechanics")]
         public ActorHitInfo HitInfo;
+        public HitPhysicsInfo PhysicsInfo;
         public string HitPuffOverride;
         public ActionSpecialEvent HitSpecial;
         public Transform Target;
@@ -158,13 +159,13 @@ namespace CommonCore.World
                     if(EnableDeferredHits)
                     {
                         DeferredHitBegan = true;
-                        DeferredHitAction = () => HandleHit(hit.Controller, hit.Hitbox, hit.HitLocation, hit.HitMaterial, hit.HitPoint, damageMultiplier, allDamageIsPierce);
+                        DeferredHitAction = () => HandleHit(hit.HitCollider.gameObject, hit.Controller, hit.Hitbox, hit.HitLocation, hit.HitMaterial, hit.HitPoint, damageMultiplier, allDamageIsPierce);
                         TimeToDeferredHit = (transform.position - hit.HitPoint).magnitude / Rigidbody.velocity.magnitude;
                         //Debug.Log($"bullet: {transform.position} | target: {hit.HitPoint} | distance: {(transform.position - hit.HitPoint).magnitude} | velocity: {Rigidbody.velocity.magnitude}");
                     }
                     else
                     {
-                        HandleHit(hit.Controller, hit.Hitbox, hit.HitLocation, hit.HitMaterial, hit.HitPoint, damageMultiplier, allDamageIsPierce);
+                        HandleHit(hit.HitCollider.gameObject, hit.Controller, hit.Hitbox, hit.HitLocation, hit.HitMaterial, hit.HitPoint, damageMultiplier, allDamageIsPierce);
                     }                    
                 }
                 else if(hit.Controller == null && hit.HitCollider != null)
@@ -177,13 +178,13 @@ namespace CommonCore.World
                     if(EnableDeferredHits)
                     {
                         DeferredHitBegan = true;
-                        DeferredHitAction = () => HandleHit(null, null, hit.HitLocation, hitMaterial, hit.HitPoint, 1, false);
+                        DeferredHitAction = () => HandleHit(hit.HitCollider.gameObject, null, null, hit.HitLocation, hitMaterial, hit.HitPoint, 1, false);
                         TimeToDeferredHit = (transform.position - hit.HitPoint).magnitude / Rigidbody.velocity.magnitude;
                         //Debug.Log($"bullet: {transform.position} | target: {hit.HitPoint} | distance: {(transform.position - hit.HitPoint).magnitude} | velocity: {Rigidbody.velocity.magnitude}");
                     }
                     else
                     {
-                        HandleHit(null, null, hit.HitLocation, hitMaterial, hit.HitPoint, 1, false);
+                        HandleHit(hit.HitCollider.gameObject, null, null, hit.HitLocation, hitMaterial, hit.HitPoint, 1, false);
                     }                    
                 }
             }
@@ -242,10 +243,10 @@ namespace CommonCore.World
 
             //Debug.Log($"Contact points: {collision.contactCount} | First contact point: {(collision.contactCount > 0 ? collision.GetContact(0).point.ToString("F2") : null)} ");
 
-            HandleHit(otherController, null, 0, hitMaterial, positionOverride, 1, false);
+            HandleHit(otherObject, otherController, null, 0, hitMaterial, positionOverride, 1, false);
         }
 
-        private void HandleHit(BaseController otherController, IHitboxComponent hitbox, int hitLocation, int hitmaterial, Vector3? positionOverride, float damageMultiplier, bool allDamageIsPierce)
+        private void HandleHit(GameObject otherObject, BaseController otherController, IHitboxComponent hitbox, int hitLocation, int hitmaterial, Vector3? positionOverride, float damageMultiplier, bool allDamageIsPierce)
         {
             //Debug.Log($"HandleHit called ({otherController})");
 
@@ -257,6 +258,8 @@ namespace CommonCore.World
                 if (!(hitbox != null && hitbox.AlwaysApplyMultiplier))
                     damageMultiplier = 1;
             }
+
+            var pushVector = PhysicsInfo.Impulse * (PhysicsInfo.HitPhysicsFlags.HasFlag(BuiltinHitPhysicsFlags.UseFlatPhysics) ? transform.forward.GetFlatVector().GetSpaceVector() : transform.forward);
 
             if (otherController != null)
             {
@@ -287,6 +290,20 @@ namespace CommonCore.World
 
                     if (FiredByPlayer)
                         QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("PlayerHitTarget"));
+                }
+
+                if(otherController is IAmPushable iap && PhysicsInfo.Impulse > 0)
+                {
+                    iap.Push(pushVector);
+                }
+            }
+            else
+            {
+                //handle non-entity hits
+                if (PhysicsInfo.Impulse > 0 && PhysicsInfo.HitPhysicsFlags.HasFlag(BuiltinHitPhysicsFlags.PushNonEntities))
+                {
+                    var rb = otherObject.GetComponent<Rigidbody>();
+                    rb.AddForce(pushVector, ForceMode.Impulse);
                 }
             }
 
@@ -322,7 +339,11 @@ namespace CommonCore.World
             if (!EnableCollision || DeferredHitBegan)
                 return;
 
-            HandleHit(otherController, hitbox, hitLocation, hitmaterial, positionOverride, damageMultiplier, allDamageIsPierce);
+            GameObject targetObj = otherController.gameObject;
+            if (hitbox is Component c)
+                targetObj = c.gameObject;
+
+            HandleHit(targetObj, otherController, hitbox, hitLocation, hitmaterial, positionOverride, damageMultiplier, allDamageIsPierce);
 
         }
 

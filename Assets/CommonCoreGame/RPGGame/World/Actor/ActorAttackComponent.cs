@@ -29,7 +29,9 @@ namespace CommonCore.RpgGame.World
         public float AttackSpread = 0.25f;
         public float BulletSpeed = 100;
         public ActorHitInfo AttackHit;
+        public HitPhysicsInfo AttackPhysics;
         public float AttackRandomFactor = 0;
+        [Obsolete("Can now edit this in AttackHit directly"), Tooltip("Obsolete: Can now edit this in AttackHit directly")]
         public BuiltinHitFlags[] AttackHitFlags;
         public string BulletPrefab;
         public string AttackEffectPrefab;
@@ -191,7 +193,9 @@ namespace CommonCore.RpgGame.World
                 if (string.IsNullOrEmpty(modHit.OriginatorFaction))
                     modHit.OriginatorFaction = ActorController.Faction;
 
-                modHit.HitFlags = TypeUtils.FlagsFromCollection(AttackHitFlags);
+#pragma warning disable CS0618 // Type or member is obsolete
+                modHit.HitFlags |= TypeUtils.FlagsFromCollection(AttackHitFlags);
+#pragma warning restore CS0618 // Type or member is obsolete
 
                 if (UseMelee)
                 {
@@ -212,19 +216,23 @@ namespace CommonCore.RpgGame.World
                         if (ahgo != null)
                         {
                             ac = ahgo.ParentController;
-                            break;
+                            if(ac != ActorController)
+                                break;
                         }
                         var acgo = go.GetComponent<ActorController>();
                         if (acgo != null)
                         {
                             ac = acgo;
-                            break;
+                            if (ac != ActorController)
+                                break;
                         }
                     }
-                    if (ac != null)
+                    if (ac != null && ac != ActorController)
                     {
                         if (ac is ITakeDamage itd)
                             itd.TakeDamage(modHit);
+                        if (AttackPhysics.Impulse > 0 && ac is IAmPushable iap)
+                            iap.Push(AttackPhysics.Impulse * (AttackPhysics.HitPhysicsFlags.HasFlag(BuiltinHitPhysicsFlags.UseFlatPhysics) ? shootVec.normalized.GetFlatVector().GetSpaceVector() : shootVec.normalized));
                     }
 
 
@@ -242,6 +250,7 @@ namespace CommonCore.RpgGame.World
                     bulletRigidbody.velocity = (shootVec * BulletSpeed);
                     var bulletScript = bullet.GetComponent<BulletScript>();
                     bulletScript.HitInfo = modHit;
+                    bulletScript.PhysicsInfo = new HitPhysicsInfo(AttackPhysics);
                     bulletScript.Target = target;
                 }
                 else

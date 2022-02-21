@@ -138,6 +138,8 @@ namespace CommonCore.RpgGame.World //here because we need factions
 
 			WorldUtils.RadiusDamage(transform.position, Radius, UseFalloff, true, false, false, false, hitInfo);
 
+			//TODO physics
+
 			if(!string.IsNullOrEmpty(ExplosionEffect))
             {
 				var explosionEffect = WorldUtils.SpawnEffect(ExplosionEffect, transform.position, transform.rotation, null, false);

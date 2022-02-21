@@ -171,6 +171,40 @@ namespace CommonCore.World
     }
 
     /// <summary>
+    /// Data used by bullets and bullet creators describing on-hit push physics
+    /// </summary>
+    [Serializable]
+    public struct HitPhysicsInfo
+    {
+        public float Impulse;
+        public BuiltinHitPhysicsFlags HitPhysicsFlags;
+        public int ExtraFlags;
+
+        public HitPhysicsInfo(HitPhysicsInfo original)
+        {
+            Impulse = original.Impulse;
+            HitPhysicsFlags = original.HitPhysicsFlags;
+            ExtraFlags = original.ExtraFlags;
+        }
+
+        public HitPhysicsInfo(float impulse, BuiltinHitPhysicsFlags hitPhysicsFlags)
+        {
+            Impulse = impulse;
+            HitPhysicsFlags = hitPhysicsFlags;
+            ExtraFlags = 0;
+        }
+    }
+
+    [Flags]
+    public enum BuiltinHitPhysicsFlags : int
+    {
+        None = 0,
+        //PushFriendly = 1 << 0, //not doable because of how factions are set up, maybe someday
+        PushNonEntities = 1 << 1,
+        UseFlatPhysics = 1 << 2,
+    }
+
+    /// <summary>
     /// Default body parts/hit locations for ActorHitInfo/ITakeDamage
     /// </summary>
     public enum DefaultHitLocations

@@ -14,7 +14,7 @@ namespace CommonCore.RpgGame.World
 {
     //TODO restorable, animation, and eventually a full refactor
     //I say that now, but I bet this will still be mostly the same until, say, Downwarren
-    public class ActorController : BaseController, ITakeDamage, IAmTargetable
+    public class ActorController : BaseController, ITakeDamage, IAmTargetable, IAmPushable
     {
         //public string CharacterModelIdOverride; //does nothing lol
 
@@ -992,6 +992,14 @@ namespace CommonCore.RpgGame.World
             EnterState(BaseAiState);
         }
 
+        public void Push(Vector3 impulse)
+        {
+            if (!isActiveAndEnabled || MovementComponent == null)
+                return;
+
+            MovementComponent.Push(impulse);
+        }
+
         public float EffectiveAggression
         {
             get
@@ -1160,7 +1168,7 @@ namespace CommonCore.RpgGame.World
                 CDebug.LogEx(string.Format("No actor data for {0} found on restore!", this.name), LogLevel.Error, this);
             }
         }
-
+        
     }
 
 }

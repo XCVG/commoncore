@@ -17,6 +17,9 @@ namespace CommonCore.RpgGame.World
         [SerializeField, FormerlySerializedAs("NavThreshold"), Tooltip("Distance to be considered at the target")]
         public float TargetThreshold = 1.0f;
 
+        [SerializeField]
+        public float PhysicsMass = 100f;
+
         [field: SerializeField] //probably not safe but okay for debuggering
         public virtual Vector3 MovementTarget { get; set; } //TODO visibility?
 
@@ -93,6 +96,11 @@ namespace CommonCore.RpgGame.World
         /// Adds to the physics velocity (will have no effect if the movement component does not support physics)
         /// </summary>
         public virtual void AddVelocity(Vector3 velocity) => PhysicsVelocity += velocity;
+
+        /// <summary>
+        /// Adds to the physics velocity taking mass into account
+        /// </summary>
+        public virtual void Push(Vector3 impulse) => PhysicsVelocity += impulse / PhysicsMass;
 
         /// <summary>
         /// Checks if this actor can reach the specified location

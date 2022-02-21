@@ -42,6 +42,10 @@ namespace CommonCore.RpgGame.World
         private float SlopeSlideAccleration = 100f;
         [SerializeField]
         private float SlopeSlideSpeed = 6f;
+        [SerializeField]
+        private float PhysicsMass = 100f;
+        [SerializeField]
+        private float PushImpulseMultiplier = 10f;
 
         [SerializeField, Header("Movement Values")]
         private float MaxBrakeAcceleration = 1000f;
@@ -70,8 +74,6 @@ namespace CommonCore.RpgGame.World
 
         [SerializeField, Header("Collision Values")]
         private bool EnableCollisions = true;
-        [SerializeField]
-        private float CollisionMass = 100f;
         [SerializeField, Tooltip("Ratio of bounce to transfer when hitting a pushable Rigidbody")]
         private float CollisionRigidbodyBounceRatio = 0.5f;
         [SerializeField]
@@ -264,7 +266,7 @@ namespace CommonCore.RpgGame.World
                 {
                     //holy hell this needs tweaking TODO
                     //movable rigidbody; push-bounce behavior
-                    float momentum = Velocity.magnitude * CollisionMass;
+                    float momentum = Velocity.magnitude * PhysicsMass;
                     float playerMomentum = momentum * (CollisionRigidbodyBounceRatio);
                     Velocity = Velocity.normalized * (playerMomentum / momentum);
 
@@ -876,8 +878,6 @@ namespace CommonCore.RpgGame.World
         /// <summary>
         /// Give the player a push!
         /// </summary>
-        /// <param name="instantaneousVelocity"></param>
-        /// <param name="instantaneousDisplacement"></param>
         public void Push(Vector3 instantaneousVelocity, Vector3 instantaneousDisplacement)
         {
             //Debug.Log($"Player pushed ({instantaneousVelocity}|{instantaneousDisplacement})");
@@ -887,6 +887,19 @@ namespace CommonCore.RpgGame.World
 
             Velocity += instantaneousVelocity;
             CharController.Move(instantaneousDisplacement);
+        }
+
+        /// <summary>
+        /// Give the player a push!
+        /// </summary>
+        public void Push(Vector3 impulse)
+        {
+            //Debug.Log($"Player pushed ({instantaneousVelocity}|{instantaneousDisplacement})");
+
+            if (GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoPhysics))
+                return;
+
+            Velocity += PushImpulseMultiplier * impulse / PhysicsMass;
         }
 
         /// <summary>
