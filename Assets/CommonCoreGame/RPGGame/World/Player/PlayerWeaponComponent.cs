@@ -1198,9 +1198,16 @@ namespace CommonCore.RpgGame.World
             bulletScript.FiredByPlayer = true;
             bulletScript.Target = intendedTarget;
 
-            //apply projectile and explosion options
+            //apply projectile explosion, physics options
+
             if (wim.ProjectileData != null)
-                bulletScript.FakeGravity = wim.ProjectileData.Gravity;
+            {
+                if(wim.ProjectileData.Gravity >= 0)
+                {
+                    bulletScript.FakeGravity = wim.ProjectileData.Gravity;
+                    bulletRigidbody.useGravity = false;
+                }                
+            }
 
             if (wim.ExplosionData != null && !wim.CheckFlag(ItemFlag.WeaponAlwaysUseEffectExplosion))
             {
@@ -1220,6 +1227,11 @@ namespace CommonCore.RpgGame.World
                     explosionComponent.ProximityRadius = wim.ExplosionData.ProximityRadius;
                     explosionComponent.UseFactions = wim.ExplosionData.UseFactions;
                     explosionComponent.UseTangentHack = wim.ExplosionData.UseTangentHack;
+
+                    explosionComponent.Impulse = wim.ExplosionData.Impulse;
+                    explosionComponent.PushNonEntities = wim.ExplosionData.PushNonEntities;
+                    explosionComponent.ImpulseFlatPhysics = wim.ExplosionData.ImpulseFlatPhysics;
+                    explosionComponent.ImpulseUseFalloff = wim.ExplosionData.ImpulseUseFalloff;
                 }
                 else
                 {
@@ -1233,6 +1245,17 @@ namespace CommonCore.RpgGame.World
                 {
                     explosionComponent.enabled = false;
                 }
+            }
+
+            if (wim.PhysicsData != null)
+            {
+                var physicsInfo = new HitPhysicsInfo() { Impulse = wim.PhysicsData.Impulse };
+                if (wim.PhysicsData.PushNonEntities)
+                    physicsInfo.HitPhysicsFlags |= BuiltinHitPhysicsFlags.PushNonEntities;
+                if (wim.PhysicsData.UseFlatPhysics)
+                    physicsInfo.HitPhysicsFlags |= BuiltinHitPhysicsFlags.UseFlatPhysics;
+
+                bulletScript.PhysicsInfo = physicsInfo;
             }
 
             bulletRigidbody.velocity = (fireVec * wim.ProjectileVelocity);

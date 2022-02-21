@@ -26,8 +26,8 @@ namespace CommonCore.RpgGame.World //here because we need factions
 		[Header("Physics Parameters")]
 		public float Impulse = 1000f;
 		public bool PushNonEntities = false;
-		public bool PushFlatPhysics = false;
-		public bool ImpulseUsesFalloff = true;
+		public bool ImpulseFlatPhysics = false;
+		public bool ImpulseUseFalloff = true;
 
 		[Header("Detonation Parameters")]
 		public bool DetonateOnWorldHit = true;
@@ -155,12 +155,12 @@ namespace CommonCore.RpgGame.World //here because we need factions
 					if (hit.Controller is IAmPushable iap)
 					{
 						var vecToTarget = hit.Controller.transform.position - transform.position;
-						if (PushFlatPhysics)
+						if (ImpulseFlatPhysics)
 							vecToTarget = vecToTarget.GetFlatVector().GetSpaceVector();
 						var dirToTarget = vecToTarget.normalized;
 						var distToTarget = vecToTarget.magnitude;
 
-						float pushAmount = Impulse * (ImpulseUsesFalloff ? ((Radius - distToTarget) / Radius) : 1f);
+						float pushAmount = Impulse * (ImpulseUseFalloff ? ((Radius - distToTarget) / Radius) : 1f);
 						iap.Push(pushAmount * dirToTarget);
 					}
 				}
@@ -182,12 +182,12 @@ namespace CommonCore.RpgGame.World //here because we need factions
 							continue;
 
 						var vecToTarget = collider.transform.position - transform.position;
-						if (PushFlatPhysics)
+						if (ImpulseFlatPhysics)
 							vecToTarget = vecToTarget.GetFlatVector().GetSpaceVector();
 						var dirToTarget = vecToTarget.normalized;
 						var distToTarget = vecToTarget.magnitude;
 
-						float pushAmount = Impulse * (ImpulseUsesFalloff ? ((Radius - distToTarget) / Radius) : 1f);
+						float pushAmount = Impulse * (ImpulseUseFalloff ? ((Radius - distToTarget) / Radius) : 1f);
 
 						rb.AddForce(pushAmount * dirToTarget, ForceMode.Impulse);
                     }

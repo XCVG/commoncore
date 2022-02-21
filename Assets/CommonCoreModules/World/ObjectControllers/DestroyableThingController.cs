@@ -11,7 +11,7 @@ namespace CommonCore.World
     /// <summary>
     /// Controller for "destroyable things" like explosive barrels, etc
     /// </summary>
-    public class DestroyableThingController : ThingController, ITakeDamage, IAmTargetable
+    public class DestroyableThingController : ThingController, ITakeDamage, IAmTargetable, IAmPushable
     {
 
         [Header("Destroyable Options"), SerializeField]
@@ -80,6 +80,11 @@ namespace CommonCore.World
         private DestroyableThingFacingSpriteComponent FacingSpriteComponent = null;
         [SerializeField]
         private bool DisableFacingSpriteOnDeath = false;
+
+        [Header("Physics Options"), SerializeField, Tooltip("If set, redirects IamPushable.Push to attached rigidbody")]
+        private bool ThunkPhysicsToRigidbody = false;
+        [SerializeField]
+        private bool AllowPushingWhenDead = false;
 
         [Header("Debug")]
         public float Health;
@@ -311,6 +316,22 @@ namespace CommonCore.World
                 WorldUtils.SpawnEffect(PainEffect, effectSpawnPoint.position, effectSpawnPoint.eulerAngles, null, false);
         }
 
+        public void Push(Vector3 impulse)
+        {
+            if (!ThunkPhysicsToRigidbody)
+                return;
+
+            if (IsDead && !AllowPushingWhenDead)
+                return;
+
+            var rb = GetComponent<Rigidbody>();
+
+            if (rb == null)
+                return;
+
+            rb.AddForce(impulse, ForceMode.Impulse);
+        }
+
         public override Dictionary<string, object> CommitEntityData()
         {
             var data = base.CommitEntityData();
@@ -333,7 +354,7 @@ namespace CommonCore.World
 
                 ForceDeadState = IsDead;
             }
-        }
+        }        
 
         private struct DestroyableThingData
         {

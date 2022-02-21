@@ -48,7 +48,7 @@ namespace CommonCore.RpgGame.Rpg
         WeaponPierceConsiderShields, WeaponPierceConsiderArmor, WeaponIgnoreShields, WeaponIgnoreArmor, WeaponNeverAlert, WeaponNeverBlockable, WeaponNoPain, WeaponAlwaysPain, WeaponIgnoreHitLocation, WeaponAlwaysExtremeDeath, WeaponNeverExtremeDeath,
 
         //melee-specific weapon flags
-        MeleeWeaponUsePreciseCasting, MeleeWeaponDelayCasting, MeleeWeaponAllowMultipleHits, MeleeWeaponHitNonDamageable, MeleeWeaponUseContactHitHack, MeleeWeaponDistinctMultipleHits,
+        MeleeWeaponUsePreciseCasting, MeleeWeaponDelayCasting, MeleeWeaponAllowMultipleHits, MeleeWeaponHitNonDamageable, MeleeWeaponUseContactHitHack, MeleeWeaponDistinctMultipleHits, MeleeWeaponPushNonEntities,
 
         //dummy-specific weapon flags
         DummyWeaponUseViewModelRaiseLower,
@@ -401,12 +401,14 @@ namespace CommonCore.RpgGame.Rpg
 
         public readonly float CastRadius;
 
+        public readonly float Impulse;
+
         public readonly string EnvironmentHitPuff;
 
         public MeleeWeaponItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts,
             float damage, float damagePierce, float damageSpread, float damagePierceSpread,
             float reach, float rate, float energyCost, float damageDelay,
-            float castRadius, string environmentHitPuff,
+            float castRadius, float impulse, string environmentHitPuff,
             DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType,
             string viewModel, string worldModel, string hitPuff, float lowerTime, float raiseTime) 
             : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, extraData, scripts, damage, damagePierce, damageSpread, damagePierceSpread, dType, dEffector, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
@@ -417,6 +419,7 @@ namespace CommonCore.RpgGame.Rpg
             DamageDelay = damageDelay;
 
             CastRadius = castRadius;
+            Impulse = impulse;
             EnvironmentHitPuff = environmentHitPuff;
         }
 
@@ -466,6 +469,7 @@ namespace CommonCore.RpgGame.Rpg
 
         public readonly RangedWeaponItemProjectileData ProjectileData;
         public readonly RangedWeaponItemExplosionData ExplosionData;
+        public readonly RangedWeaponItemPhysicsData PhysicsData;
 
         //it looks like JSON.net is actually using these constructors and the naming of the parameters matters, which is somewhat terrifying
         public RangedWeaponItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts,
@@ -477,7 +481,7 @@ namespace CommonCore.RpgGame.Rpg
             float fireInterval, float? burstFireInterval, int? projectilesPerShot, int? ammoPerShot, int? shotsPerBurst, float lockTime, float recockTime, int magazineSize, float reloadTime,
             string aType, DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType, string viewModel, string worldModel,
             string hitPuff, string projectile, float adsZoomFactor, float lowerTime, float raiseTime,
-            RangedWeaponItemProjectileData projectileData, RangedWeaponItemExplosionData explosionData)
+            RangedWeaponItemProjectileData projectileData, RangedWeaponItemExplosionData explosionData, RangedWeaponItemPhysicsData physicsData)
             : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, extraData, scripts, damage, damagePierce, damageSpread, damagePierceSpread, dType, dEffector, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
         {
             ProjectileVelocity = projectileVelocity;
@@ -515,6 +519,7 @@ namespace CommonCore.RpgGame.Rpg
 
             ProjectileData = projectileData;
             ExplosionData = explosionData;
+            PhysicsData = physicsData;
         }
 
         public bool UseMagazine => MagazineSize > 0;
@@ -554,12 +559,32 @@ namespace CommonCore.RpgGame.Rpg
         public bool UseFactions { get; private set; } = false;
         [JsonProperty]
         public bool UseTangentHack { get; private set; } = false;
+
+        [JsonProperty]
+        public float Impulse { get; private set; }
+        [JsonProperty]
+        public bool PushNonEntities { get; private set; }
+        [JsonProperty]
+        public bool ImpulseFlatPhysics { get; private set; }
+        [JsonProperty]
+        public bool ImpulseUseFalloff { get; private set; }
     }
 
     public class RangedWeaponItemProjectileData
     {
         //we may enable more options here later
+        [JsonProperty]
         public float Gravity { get; private set; }
+    }
+
+    public class RangedWeaponItemPhysicsData
+    {
+        [JsonProperty]
+        public float Impulse { get; private set; }
+        [JsonProperty]
+        public bool PushNonEntities { get; private set; }
+        [JsonProperty]
+        public bool UseFlatPhysics { get; private set; }
     }
 
     public class DummyWeaponItemModel : WeaponItemModel

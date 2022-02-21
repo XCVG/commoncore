@@ -385,6 +385,8 @@
 * BulletScript now handles push physics (ie bullets can now push things)
 * ActorAttackComponent can use push physics for ranged and melee attacks
 * Player offhand kick can now push around actors
+* DestroyableThingController can be pushed (thunks to attached rigidbody)
+* RPG weapons can now specify push physics [WIP]
 * Added conditional/microscript resolvers for PlayerFlags and SessionFlags (conditional only) [Experimental]
 * Added ScriptStringSubber that calls scripts and substitutes the result [Experimental]
 * DelayScaled can now be used from threads other than the main thread [Untested]
