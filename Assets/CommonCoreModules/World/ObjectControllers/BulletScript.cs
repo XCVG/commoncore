@@ -259,7 +259,7 @@ namespace CommonCore.World
                     damageMultiplier = 1;
             }
 
-            var pushVector = PhysicsInfo.Impulse * (PhysicsInfo.HitPhysicsFlags.HasFlag(BuiltinHitPhysicsFlags.UseFlatPhysics) ? transform.forward.GetFlatVector().GetSpaceVector() : transform.forward);
+            var pushVector = PhysicsInfo.Impulse * (PhysicsInfo.HitPhysicsFlags.HasFlag(BuiltinHitPhysicsFlags.UseFlatPhysics) ? transform.forward.GetFlatVector().GetSpaceVector() : transform.forward).normalized;
 
             if (otherController != null)
             {

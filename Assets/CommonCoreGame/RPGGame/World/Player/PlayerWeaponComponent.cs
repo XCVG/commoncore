@@ -731,11 +731,15 @@ namespace CommonCore.RpgGame.World
 
         private void MeleeCastAndDealDamage(MeleeWeaponItemModel wim, Transform shootPoint, float calcDamage, float calcDamagePierce, bool harmFriendly)
         {
-            bool hitSingle = false;
-            HashSet<BaseController> hitEntities = null;
-            HashSet<Collider> hitNonEntities = null;
-            if(wim.CheckFlag(ItemFlag.MeleeWeaponAllowMultipleHits))
+            var physicsInfo = new HitPhysicsInfo() { Impulse = wim.Impulse };
+            if (wim.CheckFlag(ItemFlag.MeleeWeaponPushNonEntities))
+                physicsInfo.HitPhysicsFlags |= BuiltinHitPhysicsFlags.PushNonEntities;
+
+            if (wim.CheckFlag(ItemFlag.MeleeWeaponAllowMultipleHits))
             {
+                HashSet<BaseController> hitEntities = null;
+                HashSet<Collider> hitNonEntities = null;
+
                 //run codepath adapted from motherearth
 
                 bool defer = !wim.CheckFlag(ItemFlag.MeleeWeaponDelayCasting) && wim.DamageDelay > 0;
@@ -764,23 +768,26 @@ namespace CommonCore.RpgGame.World
                     hitEntities = new HashSet<BaseController>(hitDic.Keys);
                 }
 
-                foreach(var hit in hits)
+                if(hits != null)
                 {
-                    float distance = (hit.HitPoint - shootPoint.position).magnitude;
-
-                    if (distance <= wim.Reach)
+                    foreach (var hit in hits)
                     {
-                        var hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, (int)wim.DType, (int)wim.Effector, harmFriendly, hit.HitLocation, hit.HitMaterial, PlayerController, PredefinedFaction.Player.ToString(), wim.HitPuff, hit.HitPoint, wim.GetHitFlags());
+                        float distance = (hit.HitPoint - shootPoint.position).magnitude;
 
-                        if (hit.Controller is ITakeDamage itd)
+                        if (distance <= wim.Reach)
                         {
-                            if (defer)
-                                deferredActions.Add(() => MeleeDealDamage(hitInfo, itd));
-                            else
-                                MeleeDealDamage(hitInfo, itd);
+                            var hitInfo = new ActorHitInfo(calcDamage, calcDamagePierce, (int)wim.DType, (int)wim.Effector, harmFriendly, hit.HitLocation, hit.HitMaterial, PlayerController, PredefinedFaction.Player.ToString(), wim.HitPuff, hit.HitPoint, wim.GetHitFlags());
+
+                            if (hit.Controller is ITakeDamage itd)
+                            {
+                                if (defer)
+                                    deferredActions.Add(() => MeleeDealDamage(hitInfo, itd, physicsInfo, hit.Controller as IAmPushable, shootPoint.forward));
+                                else
+                                    MeleeDealDamage(hitInfo, itd, physicsInfo, hit.Controller as IAmPushable, shootPoint.forward);
+                            }
                         }
                     }
-                }
+                }                
 
                 if(nonActorHits != null && nonActorHits.Count > 0)
                 {
@@ -844,12 +851,14 @@ namespace CommonCore.RpgGame.World
             }
             else
             {
+                bool hitSingle = false;
+
                 //run old codepath essentially unchanged
                 {
                     var (otherController, hitPoint, hitLocation, hitMaterial) = wim.CheckFlag(ItemFlag.MeleeWeaponUsePreciseCasting) ?
                                     WorldUtils.RaycastAttackHit(shootPoint.position, shootPoint.forward, Math.Max(MeleeProbeDist, wim.Reach * 1.5f), true, true, PlayerController) :
                                     WorldUtils.SpherecastAttackHit(shootPoint.position, shootPoint.forward, MeleeBoxCastSize * 0.5f, Math.Max(MeleeProbeDist, wim.Reach * 1.5f), true, false, PlayerController);
-                    float distance = (hitPoint - shootPoint.position).magnitude;
+                    float distance = (hitPoint - shootPoint.position).magnitude;                    
 
                     if (distance <= wim.Reach)
                     {
@@ -859,12 +868,12 @@ namespace CommonCore.RpgGame.World
                         {
                             if (!wim.CheckFlag(ItemFlag.MeleeWeaponDelayCasting) && wim.DamageDelay > 0)
                             {
-                                DelayedFiringAction = () => MeleeDealDamage(hitInfo, itd);
+                                DelayedFiringAction = () => MeleeDealDamage(hitInfo, itd, physicsInfo, otherController as IAmPushable, shootPoint.forward);
                                 DelayedFiringTimeRemaining = wim.DamageDelay;
                             }
                             else
                             {
-                                MeleeDealDamage(hitInfo, itd);
+                                MeleeDealDamage(hitInfo, itd, physicsInfo, otherController as IAmPushable, shootPoint.forward);
                             }
                             hitSingle = true;
                         }
@@ -919,12 +928,12 @@ namespace CommonCore.RpgGame.World
                         {
                             if (!wim.CheckFlag(ItemFlag.MeleeWeaponDelayCasting) && wim.DamageDelay > 0)
                             {
-                                DelayedFiringAction = () => MeleeDealDamage(hitInfo, itd);
+                                DelayedFiringAction = () => MeleeDealDamage(hitInfo, itd, physicsInfo, oc as IAmPushable, shootPoint.forward);
                                 DelayedFiringTimeRemaining = wim.DamageDelay;
                             }
                             else
                             {
-                                MeleeDealDamage(hitInfo, itd);
+                                MeleeDealDamage(hitInfo, itd, physicsInfo, oc as IAmPushable, shootPoint.forward);
                             }
                             hitSingle = true;
                         }
@@ -941,12 +950,18 @@ namespace CommonCore.RpgGame.World
                         {
                             if (!wim.CheckFlag(ItemFlag.MeleeWeaponDelayCasting) && wim.DamageDelay > 0)
                             {
-                                DelayedFiringAction = () => HitPuffScript.SpawnHitPuff(string.IsNullOrEmpty(wim.EnvironmentHitPuff) ? wim.HitPuff : wim.EnvironmentHitPuff, naHit.point, naHit.collider is TerrainCollider ? (int)HitMaterial.Dirt : 0);
+                                DelayedFiringAction = () => {
+                                    HitPuffScript.SpawnHitPuff(string.IsNullOrEmpty(wim.EnvironmentHitPuff) ? wim.HitPuff : wim.EnvironmentHitPuff, naHit.point, naHit.collider is TerrainCollider ? (int)HitMaterial.Dirt : 0);
+                                    if (wim.Impulse > 0 && wim.CheckFlag(ItemFlag.MeleeWeaponPushNonEntities) && naHit.collider.attachedRigidbody != null)
+                                        naHit.collider.attachedRigidbody.AddForce(wim.Impulse * shootPoint.forward, ForceMode.Impulse);
+                                };
                                 DelayedFiringTimeRemaining = wim.DamageDelay;
                             }
                             else
                             {
                                 HitPuffScript.SpawnHitPuff(string.IsNullOrEmpty(wim.EnvironmentHitPuff) ? wim.HitPuff : wim.EnvironmentHitPuff, naHit.point, naHit.collider is TerrainCollider ? (int)HitMaterial.Dirt : 0);
+                                if (wim.Impulse > 0 && wim.CheckFlag(ItemFlag.MeleeWeaponPushNonEntities) && naHit.collider.attachedRigidbody != null)
+                                    naHit.collider.attachedRigidbody.AddForce(wim.Impulse * shootPoint.forward, ForceMode.Impulse);
                             }
                         }
                     }
@@ -956,10 +971,18 @@ namespace CommonCore.RpgGame.World
             
         }
 
-        private static void MeleeDealDamage(ActorHitInfo hitInfo, ITakeDamage itd)
+        private static void MeleeDealDamage(ActorHitInfo hitInfo, ITakeDamage itd, HitPhysicsInfo hitPhysicsInfo, IAmPushable iap, Vector3 impulseVector)
         {
             HitPuffScript.SpawnHitPuff(hitInfo);
             itd.TakeDamage(hitInfo);
+
+            if(hitPhysicsInfo.Impulse > 0 && iap != null)
+            {
+                if (hitPhysicsInfo.HitPhysicsFlags.HasFlag(BuiltinHitPhysicsFlags.UseFlatPhysics))
+                    impulseVector = impulseVector.GetFlatVector().GetSpaceVector();
+                impulseVector = impulseVector.normalized;
+                iap.Push(hitPhysicsInfo.Impulse * impulseVector);
+            }
         }
 
         //this whole thing is a fucking mess that needs to be refactored

@@ -232,7 +232,7 @@ namespace CommonCore.RpgGame.World
                         if (ac is ITakeDamage itd)
                             itd.TakeDamage(modHit);
                         if (AttackPhysics.Impulse > 0 && ac is IAmPushable iap)
-                            iap.Push(AttackPhysics.Impulse * (AttackPhysics.HitPhysicsFlags.HasFlag(BuiltinHitPhysicsFlags.UseFlatPhysics) ? shootVec.normalized.GetFlatVector().GetSpaceVector() : shootVec.normalized));
+                            iap.Push(AttackPhysics.Impulse * (AttackPhysics.HitPhysicsFlags.HasFlag(BuiltinHitPhysicsFlags.UseFlatPhysics) ? shootVec.GetFlatVector().GetSpaceVector().normalized : shootVec.normalized));
                     }
 
 
