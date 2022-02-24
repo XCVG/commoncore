@@ -5,6 +5,7 @@ using CommonCore.Scripting;
 using CommonCore.State;
 using System.Globalization;
 using CommonCore;
+using CommonCore.StringSub;
 
 public static class TestScripts
 {
@@ -40,5 +41,12 @@ public static class TestScripts
     public static void PrintColoredText()
     {
         Subtitle.Show("<color=blue>Blue text!</color>\n<color=red>Red text!</color>", 5f, true);
+    }
+
+    [CCScript(ClassName = "Test", Name = "LiteralStringSub"), CCScriptHook(AllowExplicitCalls = true, Hook = ScriptHook.AfterModulesLoaded)]
+    public static void TestLiteralStringSub()
+    {
+        string testCase = "random text<p:\"I am a \\\"literal string\\\"!\">";
+        Debug.Log($"{nameof(TestLiteralStringSub)}\n{testCase}\n{Sub.Macro(testCase)}");
     }
 }

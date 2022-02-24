@@ -226,7 +226,20 @@ namespace CommonCore.StringSub
 
                     //advance to the end of the sequence
                     int newPointer = pointer + 1;
-                    for (; baseString[newPointer] != '>'; newPointer++) { }
+                    if(baseString[newPointer] == 'p')
+                    {
+                        //special case for literal string printing (WIP)
+
+                        //advance to opening quote
+                        for (; baseString[newPointer] != '"'; newPointer++) { throwIfPastEnd(newPointer); }
+
+                        //advance to ending quote, skipping escaped quotes
+                        for (; baseString[newPointer] != '"' || baseString[newPointer-1] == '\\'; newPointer++) { throwIfPastEnd(newPointer); }
+                    }
+                    
+                    for (; baseString[newPointer] != '>'; newPointer++) { throwIfPastEnd(newPointer); }
+                    
+                    
                     lastPointer = newPointer + 1;
                     string sequence = baseString.Substring(pointer + 1, newPointer-pointer-1);
                     pointer = newPointer;
@@ -241,6 +254,12 @@ namespace CommonCore.StringSub
             sb.Append(baseString.Substring(lastPointer, pointer - lastPointer));
 
             return sb.ToString();
+
+            void throwIfPastEnd(int ptr)
+            {
+                if (ptr > baseString.Length)
+                    throw new IndexOutOfRangeException();
+            }
         }
 
         internal string GetMacro(string sequence)
@@ -251,11 +270,19 @@ namespace CommonCore.StringSub
             string result = "?ERROR?";
             try
             {
+                //special case for literal strings
+                if (sequence[0] == 'p')
+                {
+                    int startIndex = sequence.IndexOf('"');
+                    int endIndex = sequence.LastIndexOf('"');
+                    return sequence.Substring(startIndex + 1, endIndex - startIndex - 1).Replace("\\\"", "\"");
+                }
+
                 //hack to handle preserving Unity-compatible rich text color tags
-                if(sequence.StartsWith("color", StringComparison.Ordinal))
+                if (sequence.StartsWith("color", StringComparison.Ordinal))
                 {
                     return $"<{sequence}>";
-                }
+                }                
 
                 string[] sequenceParts = sequence.Split(':');
 
