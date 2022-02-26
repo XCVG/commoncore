@@ -353,7 +353,7 @@
 * Added GetDescriptorForAxis and GetDescriptorForButton APIs to input mappers for getting names of mappings etc [Experimental]
 * Implemented migration for save games on load [Untested]
 
-# 4.0.0 pNext
+# 4.0.0 Preview 3
 
 * Removed UI folder (remaining contents moved to Shared)
 * Added speaker name and better color handling to SubtitleUtilsEx
@@ -394,3 +394,6 @@
 * Added NavigationNodeReachedTrigger action trigger [Untested]
 * Added audio listener switching methods to WorldUtils [Untested]
 * Added physics handling to BulletExplosionComponent [Untested]
+
+# 4.0.0 pNext
+
