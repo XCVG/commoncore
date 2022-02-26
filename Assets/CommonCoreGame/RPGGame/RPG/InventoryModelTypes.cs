@@ -99,13 +99,13 @@ namespace CommonCore.RpgGame.Rpg
         [JsonProperty]
         public string OnFire { get; private set; } //weapon items only
         //caller: weapon controller
-        //args: item instance
+        //args: item instance, item model
         //return: void
 
         [JsonProperty]
         public string OnReload { get; private set; } //ranged weapon items only
         //caller: weapon controller
-        //args: item instance
+        //args: item instance, item model
         //return: void
     }
 

@@ -17,6 +17,14 @@ BASE SUBSTITUTIONS (implemented in StringSubModule)
 <color=*>	<color=*>
 </color>	</color>
 
+LITERAL STRING (implemented in StringSubModule)
+
+<p:"your string here">
+
+double quotes inside literal string must be escaped with backslash, all other characters pass through
+
+Why "p"? Because "s" and "l" are already taken. "p" is the next logical choice; p for Print
+
 LOOKUP (implemented in StringSubModule)
 
 Looks up an item in one of the lists in the static substitution table and replaces it.
@@ -98,8 +106,13 @@ ALIAS_FEMALE			"she" pronouns, used for Sex.Female
 ALIAS_MALE				"he" pronouns, used for Sex.Male
 ALIAS_NEUTRAL			"they" pronouns, used for Sex.Other
 
+SCRIPT SUBSTITUTIONS (implemented in ScriptStringSubber)
 
+Calls a script through the scripting system, inserts the result
 
+<s:script|arg0|arg1|...argn>
+
+There may be 0 to n args, separated by the | character. Putting a | character in a string arg will break.
 
 
 

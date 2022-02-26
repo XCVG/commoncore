@@ -1,0 +1,41 @@
+[JsonProperty]
+
+OnAdd
+caller: inventory model
+args: item model, item instance
+return: void
+
+OnRemove
+caller: inventory model
+args: item model, item instance
+return: void
+
+OnEquip (available on weapon and armor items only)
+caller: character model
+args: item model, item instance
+return: void
+
+OnUnequip (available on weapon and armor items only)
+caller: character model
+args: item model, item instance
+return: void
+
+OnApply (aid items only)
+caller: character model
+args: item model, item instance
+return: AidItemScriptResult
+
+OnQuantityChange (stackable items only)
+caller: inventory model
+args: item model, item instance, old quantity, new quantity
+return: void
+
+OnFire (weapon items only)
+caller: weapon controller
+args: item instance, item model
+return: void
+
+OnReload (weapon items only)
+caller: weapon controller
+args: item instance, item model
+return: void

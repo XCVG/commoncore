@@ -111,7 +111,15 @@ eval: *javascript*
 
 exec: <script name>
 	arg: *any* (passed to script)
-(special directive, looks up and executes a script through ASE engine)
+(special directive, looks up and executes a script through ASE engine, CommonCore only)
+
+playerFlag: <PlayerFlag>
+noPlayerFlag: <PlayerFlag>
+(checks if a player flag is set or unset, no additional options, CommonCore only)
+
+sessionFlag: <SessionFlag>
+noSessionFlag: <SessionFlag>
+(checks if a session flag is set or unset, no additional options, CommonCore only)
 
 _______________________________________________________________________________
 
@@ -160,6 +168,9 @@ eval (Katana only)
 
 exec (CommonCore only)
 	special directive, looks up and executes a script through ASE engine
+	
+playerFlag (CommonCore only)
+	set, toggle
 	
 AVAILABLE ACTIONS
 
