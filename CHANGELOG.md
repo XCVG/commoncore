@@ -398,3 +398,4 @@
 # 4.0.0 pNext
 
 * Added ChangeSceneSpecial action special to RPGGame
+* Fixed ToggleObjectSpecial not actually toggling state

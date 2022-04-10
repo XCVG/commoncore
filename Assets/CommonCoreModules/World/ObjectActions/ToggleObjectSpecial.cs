@@ -32,7 +32,7 @@ namespace CommonCore.ObjectActions
             else if (AlwaysForceEnable)
                 Target.SetActive(true);
             else
-                Target.SetActive(Target.activeSelf);
+                Target.SetActive(!Target.activeSelf);
 
             if (!Repeatable)
                 Locked = true;
