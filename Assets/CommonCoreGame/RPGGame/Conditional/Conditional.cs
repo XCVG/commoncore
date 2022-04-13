@@ -330,7 +330,10 @@ namespace CommonCore.RpgGame.State
                     }
                     else if (Action == MicroscriptAction.Start)
                     {
-                        GameState.Instance.CampaignState.StartQuest(Target);
+                        if (Value != null)
+                            GameState.Instance.CampaignState.StartQuest(Target, Convert.ToInt32(Value));
+                        else
+                            GameState.Instance.CampaignState.StartQuest(Target);
                     }
                     else if (Action == MicroscriptAction.Finish)
                     {
