@@ -24,6 +24,9 @@ namespace CommonCore.DebugLog
             if (!CCBase.Initialized)
                 return;
 
+            if (CoreParams.Platform == RuntimePlatform.WebGLPlayer)
+                return;
+
             if(ConfigState.Instance.ScreenshotKey != default)
             {
                 if(UnityEngine.Input.GetKeyDown(ConfigState.Instance.ScreenshotKey))

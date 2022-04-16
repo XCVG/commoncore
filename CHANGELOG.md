@@ -404,3 +404,8 @@
 * Added graceful handling of null LastMigratedVersion in MigrationsManager (treated as version 0)
 * Fixed attempting to load resource manifest on WebGL (not supported on WebGL)
 * Fixed attempting to manipulate GC on WebGL (not supported on WebGL)
+* No longer attempts to set resolution/fullscreen on WebGL (nop on WebGL)
+* Resolution and fullscreen options now hidden on platforms where they are not applicable
+* Fixed NRE in GameplayOptionsPanelController on initial create
+* Changed default Quicksave key to F6 on WebGL (F5 refreshes the page)
+* Disabled screenshot functionality in WebGL (doesn't really work)

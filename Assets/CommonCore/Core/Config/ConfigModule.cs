@@ -41,7 +41,7 @@ namespace CommonCore.Config
         public override void Dispose()
         {
             //set safe resolution on exit. Hacky code ahead!
-            if(!CoreParams.IsEditor && CoreParams.SetSafeResolutionOnExit)
+            if(!CoreParams.IsEditor && CoreParams.Platform != RuntimePlatform.WebGLPlayer && CoreParams.SetSafeResolutionOnExit)
             {
                 //Screen.SetResolution(CoreParams.SafeResolution.x, CoreParams.SafeResolution.y, false, 60);
                 //Debug.LogWarning($"W: {PlayerPrefs.GetInt("Screenmanager Resolution Width")} | H: {PlayerPrefs.GetInt("Screenmanager Resolution Height")}");
@@ -119,7 +119,7 @@ namespace CommonCore.Config
                 ApplyExtendedGraphicsConfiguration();
             }
 
-            if(!CoreParams.IsEditor)
+            if(!CoreParams.IsEditor && CoreParams.Platform != RuntimePlatform.WebGLPlayer)
                 Screen.SetResolution(ConfigState.Instance.Resolution.x, ConfigState.Instance.Resolution.y, ConfigState.Instance.FullScreen, ConfigState.Instance.RefreshRate);
 
             QualitySettings.vSyncCount = ConfigState.Instance.VsyncCount;
