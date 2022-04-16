@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Utilities;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -13,5 +14,7 @@ public class CoreAotTypeEnforcer : MonoBehaviour
     public void Awake()
     {
         AotHelper.EnsureType<VersionConverter>();
+        AotHelper.EnsureDictionary<string, object>();
+        AotHelper.EnsureList<string>();
     }
 }

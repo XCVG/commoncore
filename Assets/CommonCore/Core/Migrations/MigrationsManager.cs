@@ -118,21 +118,25 @@ namespace CommonCore.Migrations
         {
             var lmv = inputObject["LastMigratedVersion"];
 
-            if(lmv.Type == JTokenType.String)
+            if(lmv != null)
             {
-                return lmv.ToObject<Version>(JsonSerializer.Create(CoreParams.DefaultJsonSerializerSettings));
-            }
-            else if(lmv.Type == JTokenType.Object && ((JObject)lmv).ContainsKey("Major"))
-            {
-                return lmv.ToObject<Version>(JsonSerializer.Create(CoreParams.DefaultJsonSerializerSettings));
-            }
-            else if(lmv.Type == JTokenType.Object && ((JObject)lmv).ContainsKey("GameVersion"))
-            {
-                var vInfo = lmv.ToObject<VersionInfo>(JsonSerializer.Create(CoreParams.DefaultJsonSerializerSettings));
-                return vInfo.GameVersion;
-            }
+                if (lmv.Type == JTokenType.String)
+                {
+                    return lmv.ToObject<Version>(JsonSerializer.Create(CoreParams.DefaultJsonSerializerSettings));
+                }
+                else if (lmv.Type == JTokenType.Object && ((JObject)lmv).ContainsKey("Major"))
+                {
+                    return lmv.ToObject<Version>(JsonSerializer.Create(CoreParams.DefaultJsonSerializerSettings));
+                }
+                else if (lmv.Type == JTokenType.Object && ((JObject)lmv).ContainsKey("GameVersion"))
+                {
+                    var vInfo = lmv.ToObject<VersionInfo>(JsonSerializer.Create(CoreParams.DefaultJsonSerializerSettings));
+                    return vInfo.GameVersion;
+                }
+            }            
 
-            throw new NotSupportedException(); //TODO better exception
+            //"version 0", or "so old it predates migration information"
+            return new Version();
         }        
 
         public void LoadMigrationsFromAssemblies(IEnumerable<Assembly> assemblies)

@@ -271,6 +271,8 @@ namespace CommonCore
         /// </summary>
         public static void CollectGarbage(bool waitForPendingFinalizers)
         {
+#if !UNITY_WEBGL //not supported on webGL, NOP
+
             if (GarbageCollector.GCMode == GarbageCollector.Mode.Disabled && !CoreParams.AlwaysEnableGCBeforeCollect)
                 return;
 
@@ -286,6 +288,7 @@ namespace CommonCore
             }
 
             GarbageCollector.GCMode = oldMode;
+#endif
         }
 
     }

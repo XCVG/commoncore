@@ -400,3 +400,7 @@
 * Added ChangeSceneSpecial action special to RPGGame
 * Fixed ToggleObjectSpecial not actually toggling state
 * Fixed starting quest through microscript not setting initial stage
+* Fixed ConfigState and PersistState not setting LastMigratedVersion when created new
+* Added graceful handling of null LastMigratedVersion in MigrationsManager (treated as version 0)
+* Fixed attempting to load resource manifest on WebGL (not supported on WebGL)
+* Fixed attempting to manipulate GC on WebGL (not supported on WebGL)

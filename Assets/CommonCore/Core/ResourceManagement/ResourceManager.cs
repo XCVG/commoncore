@@ -28,8 +28,18 @@ namespace CommonCore.ResourceManagement
         {
             ResourceLoader = new ResourceLoader();
 
-            if(CoreParams.TryLoadResourceManifest)
-                ResourceManifest = ResourceManifest.Load();
+            if(CoreParams.TryLoadResourceManifest) 
+            {
+                //resource manifest not supported on WebGL
+                if (CoreParams.Platform == RuntimePlatform.WebGLPlayer)
+                {
+                    Debug.LogWarning("[ResourceManager] Attempted to load resource manifest on WebGL (resource manifest is not supported on WebGL)");
+                }
+                else
+                {
+                    ResourceManifest = ResourceManifest.Load();
+                }
+            }            
 
             if (ResourceManifest == null && CoreParams.RequireResourceManifest)
                 throw new Exception("Resource Manifest is required but not available");
