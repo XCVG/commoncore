@@ -19,46 +19,48 @@ namespace CommonCore.Config
 
         public static void Load()
         {
-            try
+            if (File.Exists(Path))
             {
-                //backup the config file first
                 try
                 {
-                    if (File.Exists(Path))
-                        File.Copy(Path, System.IO.Path.Combine(CoreParams.PersistentDataPath, "config.backup.json"), true);
-                }
-                catch(Exception)
-                {
-                    
-                }
-
-                //handle migrations
-                var rawConfig = CoreUtils.ReadExternalJson(Path) as JObject;
-                var newRawConfig = MigrationsManager.Instance.MigrateToLatest<ConfigState>(rawConfig, true, out bool didMigrate);
-                if(didMigrate)
-                {
-                    Debug.Log("[Config] Config file was migrated successfully");
-                    if(CoreParams.UseMigrationBackups || CoreParams.IsDebug)
+                    //backup the config file first
+                    try
                     {
-                        Directory.CreateDirectory(System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups"));
-                        File.Copy(Path, System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups", $"config.migrated.{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.json"), true);
-                    }                    
-                    CoreUtils.WriteExternalJson(Path, rawConfig);
-                }
-                Instance = CoreUtils.InterpretJson<ConfigState>(newRawConfig ?? rawConfig);
-            }
-            catch(Exception e)
-            {                
-                Debug.LogError("[Config] Failed to load config from file, using defaults");
-                Debug.LogException(e);
-                try
-                {
-                    if(File.Exists(Path))
-                        DebugUtils.TextWrite(File.ReadAllText(Path), "brokenconfig");
-                }
-                catch(Exception)
-                {
+                        File.Copy(Path, System.IO.Path.Combine(CoreParams.PersistentDataPath, "config.backup.json"), true);
+                    }
+                    catch (Exception)
+                    {
 
+                    }
+
+                    //handle migrations
+                    var rawConfig = CoreUtils.ReadExternalJson(Path) as JObject;
+                    var newRawConfig = MigrationsManager.Instance.MigrateToLatest<ConfigState>(rawConfig, true, out bool didMigrate);
+                    if (didMigrate)
+                    {
+                        Debug.Log("[Config] Config file was migrated successfully");
+                        if (CoreParams.UseMigrationBackups || CoreParams.IsDebug)
+                        {
+                            Directory.CreateDirectory(System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups"));
+                            File.Copy(Path, System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups", $"config.migrated.{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.json"), true);
+                        }
+                        CoreUtils.WriteExternalJson(Path, rawConfig);
+                    }
+                    Instance = CoreUtils.InterpretJson<ConfigState>(newRawConfig ?? rawConfig);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("[Config] Failed to load config from file, using defaults");
+                    Debug.LogException(e);
+                    try
+                    {
+                        if (File.Exists(Path))
+                            DebugUtils.TextWrite(File.ReadAllText(Path), "brokenconfig");
+                    }
+                    catch (Exception)
+                    {
+
+                    }
                 }
             }
 
@@ -114,9 +116,9 @@ namespace CommonCore.Config
         /// </summary>
         public void AddCustomVarIfNotExists(string name, object customVar)
         {
-            if(CustomConfigVars.ContainsKey(name))
+            if (CustomConfigVars.ContainsKey(name))
             {
-                if(CustomConfigVars[name] == null || CustomConfigVars[name].GetType() != customVar.GetType())
+                if (CustomConfigVars[name] == null || CustomConfigVars[name].GetType() != customVar.GetType())
                 {
                     Debug.LogWarning($"[Config] Custom config var {name} exists but contains a {CustomConfigVars[name]?.GetType()?.Name} instead of a {customVar.GetType().Name}");
                 }
@@ -174,7 +176,7 @@ namespace CommonCore.Config
         /// Version information of the initial state or last migration
         /// </summary>
         [JsonProperty]
-        public VersionInfo LastMigratedVersion { get; private set; }
+        public VersionInfo LastMigratedVersion { get; private set; } = CoreParams.GetCurrentVersion();
 
         /// <summary>
         /// Version information of the current state
@@ -187,7 +189,7 @@ namespace CommonCore.Config
         //actual config data here
 
         //SYSTEM CONFIG
-        public bool UseVerboseLogging { get; set; } = true;        
+        public bool UseVerboseLogging { get; set; } = true;
         public bool UseCampaignIdentifier { get; set; } = true;
         public float DefaultTimescale { get; set; } = 1;
         public float WorldTimescale { get; set; } = 1;
@@ -234,8 +236,8 @@ namespace CommonCore.Config
 
         //VIDEO CONFIG (SPECIAL HANDLING)
         [JsonIgnore]
-        public PlayerLightReportingType PlayerLightReporting { 
-            get 
+        public PlayerLightReportingType PlayerLightReporting {
+            get
             {
                 if (CoreParams.ForcePlayerLightReporting)
                     return PlayerLightReportingType.Probed;
@@ -263,7 +265,7 @@ namespace CommonCore.Config
         //GAME/GAMEPLAY CONFIG
         public SubtitlesLevel Subtitles { get; set; } = SubtitlesLevel.Always;
         public bool ShakeEffects { get; set; } = true;
-        public bool FlashEffects { get; set; } = true;        
+        public bool FlashEffects { get; set; } = true;
         public float GameSpeed { get; set; } = 1; //experimental, must be explicitly handled        
         public int AutosaveCount { get; set; } = 3;
         public int Difficulty { get; set; } = 1;
@@ -275,7 +277,12 @@ namespace CommonCore.Config
         public bool LookInvert { get; set; } = false;
         public float AxisDeadzone { get; set; } = 0.1f;
         public KeyCode ScreenshotKey { get; set; } = KeyCode.F12;
-        public KeyCode QuicksaveKey { get; set; } = KeyCode.F5;
+        public KeyCode QuicksaveKey { get; set; } =
+#if UNITY_WEBGL 
+            KeyCode.F6;
+#else
+            KeyCode.F5;
+#endif
         public KeyCode QuickloadKey { get; set; } = KeyCode.F9;
 
         //EXTRA/GAME-SPECIFIC CONFIG
@@ -375,7 +382,7 @@ namespace CommonCore.Config
             get => AddonConfigVars.GetFullJObject();
             set => AddonConfigVars = new LazyLooseDictionary(value);
         }
-        
+
     }
 
 

@@ -19,9 +19,17 @@ namespace CommonCore.DebugLog
             FPSCounter.Initialize();
         }
 
+        public override void Dispose()
+        {
+            FPSCounter.Terminate();
+        }
+
         public override void OnFrameUpdate()
         {
             if (!CCBase.Initialized)
+                return;
+
+            if (CoreParams.Platform == RuntimePlatform.WebGLPlayer)
                 return;
 
             if(ConfigState.Instance.ScreenshotKey != default)

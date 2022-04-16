@@ -29,20 +29,23 @@ namespace CommonCore.State
         /// </summary>
         public static void Load()
         {
-            //handle migrations
-            var raw = CoreUtils.ReadExternalJson(Path) as JObject;
-            var nRaw = MigrationsManager.Instance.MigrateToLatest<PersistState>(raw, true, out bool didMigrate);
-            if (didMigrate)
+            if (File.Exists(Path))
             {
-                Debug.Log("[PersistState] Persist state was migrated successfully");
-                if(CoreParams.UseMigrationBackups || CoreParams.IsDebug)
+                //handle migrations
+                var raw = CoreUtils.ReadExternalJson(Path) as JObject;
+                var nRaw = MigrationsManager.Instance.MigrateToLatest<PersistState>(raw, true, out bool didMigrate);
+                if (didMigrate)
                 {
-                    Directory.CreateDirectory(System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups"));
-                    File.Copy(Path, System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups", $"persist.migrated.{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.json"), true);
-                }                
-                CoreUtils.WriteExternalJson(Path, raw);
+                    Debug.Log("[PersistState] Persist state was migrated successfully");
+                    if (CoreParams.UseMigrationBackups || CoreParams.IsDebug)
+                    {
+                        Directory.CreateDirectory(System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups"));
+                        File.Copy(Path, System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups", $"persist.migrated.{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.json"), true);
+                    }
+                    CoreUtils.WriteExternalJson(Path, raw);
+                }
+                Instance = CoreUtils.InterpretJson<PersistState>(nRaw ?? raw);
             }
-            Instance = CoreUtils.InterpretJson<PersistState>(nRaw ?? raw);
 
             if (Instance == null)
             {
@@ -72,23 +75,13 @@ namespace CommonCore.State
             Save();
         }
 
-        //our first "migration": sets LastMigratedVersion if not already set
-        private static void MigrateLastMigratedVersion(PersistState ps)
-        {
-            if (ps.LastMigratedVersion == null)
-            {
-                ps.LastMigratedVersion = CoreParams.GetCurrentVersion();
-                Debug.Log($"[PersistState] Migrated to {ps.LastMigratedVersion} ({nameof(MigrateLastMigratedVersion)})");
-            }
-        }
-
         //versioning metadata
 
         /// <summary>
         /// Version information of the initial state or last migration
         /// </summary>
         [JsonProperty]
-        public VersionInfo LastMigratedVersion { get; private set; }
+        public VersionInfo LastMigratedVersion { get; private set; } = CoreParams.GetCurrentVersion();
 
         /// <summary>
         /// Version information of the current state

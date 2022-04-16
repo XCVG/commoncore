@@ -38,7 +38,9 @@ namespace CommonCore.UI
         public Toggle LookYToggle;
 
         [Header("Graphics")]
+        public GameObject ResolutionGroup;
         public Dropdown ResolutionDropdown;
+        public GameObject FullscreenGroup;
         public Toggle FullscreenToggle;
         public Slider FramerateSlider;
         public Text FramerateLabel;
@@ -79,6 +81,8 @@ namespace CommonCore.UI
         private bool CommittedRequiresRestart { get => (bool)MetaState.Instance.SessionData.GetOrDefault("ConfigRequiresRestart", false); set => MetaState.Instance.SessionData["ConfigRequiresRestart"] = value; }
 
         private bool AllowMonitorSelection => !CoreParams.IsEditor && (CoreParams.Platform == RuntimePlatform.LinuxPlayer || CoreParams.Platform == RuntimePlatform.OSXPlayer || CoreParams.Platform == RuntimePlatform.WindowsPlayer);
+
+        private bool AllowResolutionSelection => !(CoreParams.Platform == RuntimePlatform.WebGLPlayer || SystemInfo.deviceType == DeviceType.Console);
 
         public override void SignalInitialPaint()
         {
@@ -129,14 +133,23 @@ namespace CommonCore.UI
             LookSpeedSlider.value = ConfigState.Instance.LookSpeed;
             LookYToggle.isOn = ConfigState.Instance.LookInvert;
 
-            //Resolutions = new List<Resolution>(Screen.resolutions);
-            Resolutions = GetDeduplicatedResolutionList(Screen.resolutions);
-            ResolutionDropdown.ClearOptions();
-            ResolutionDropdown.AddOptions(Resolutions.Select(r => $"{r.x} x {r.y}").ToList());
-            int rIndex = Resolutions.IndexOf(ConfigState.Instance.Resolution);
-            ResolutionDropdown.value = rIndex > 0 ? rIndex : Resolutions.Count - 1;
+            if (AllowResolutionSelection)
+            {
+                //Resolutions = new List<Resolution>(Screen.resolutions);
+                Resolutions = GetDeduplicatedResolutionList(Screen.resolutions);
+                ResolutionDropdown.ClearOptions();
+                ResolutionDropdown.AddOptions(Resolutions.Select(r => $"{r.x} x {r.y}").ToList());
+                int rIndex = Resolutions.IndexOf(ConfigState.Instance.Resolution);
+                ResolutionDropdown.value = rIndex > 0 ? rIndex : Resolutions.Count - 1;
+                FullscreenToggle.isOn = ConfigState.Instance.FullScreen;
+            }
+            else
+            {
+                ResolutionGroup.SetActive(false);
+                FullscreenGroup.SetActive(false);
+            }
 
-            if(AllowMonitorSelection)
+            if (AllowMonitorSelection)
             {
                 MonitorDropdown.ClearOptions();
                 MonitorDropdown.AddOptions(Display.displays.Select((d, i) => $"Monitor {i}").ToList());
@@ -147,8 +160,7 @@ namespace CommonCore.UI
             {
                 MonitorGroup.SetActive(false);
             }
-
-            FullscreenToggle.isOn = ConfigState.Instance.FullScreen;
+            
             FramerateSlider.value = Math.Max(0, ConfigState.Instance.MaxFrames);
             VsyncSlider.value = ConfigState.Instance.VsyncCount;
 
@@ -325,15 +337,19 @@ namespace CommonCore.UI
             ConfigState.Instance.LookSpeed = LookSpeedSlider.value;
             ConfigState.Instance.LookInvert = LookYToggle.isOn;
 
-            ConfigState.Instance.Resolution = Resolutions[ResolutionDropdown.value];
-            ConfigState.Instance.FullScreen = FullscreenToggle.isOn;
-            ConfigState.Instance.MaxFrames = FramerateSlider.value > 0 ? Mathf.RoundToInt(FramerateSlider.value) : -1;
-            ConfigState.Instance.VsyncCount = Mathf.RoundToInt(VsyncSlider.value);
+            if(AllowResolutionSelection)
+            {
+                ConfigState.Instance.Resolution = Resolutions[ResolutionDropdown.value];
+                ConfigState.Instance.FullScreen = FullscreenToggle.isOn;
+            }            
 
-            if(AllowMonitorSelection)
+            if (AllowMonitorSelection)
             {
                 PlayerPrefs.SetInt("UnitySelectMonitor", MonitorDropdown.value);
             }
+
+            ConfigState.Instance.MaxFrames = FramerateSlider.value > 0 ? Mathf.RoundToInt(FramerateSlider.value) : -1;
+            ConfigState.Instance.VsyncCount = Mathf.RoundToInt(VsyncSlider.value);            
 
             ConfigState.Instance.GraphicsQuality = (int)GraphicsQualitySlider.value;
             ConfigState.Instance.AntialiasingQuality = (int)AntialiasingQualitySlider.value;

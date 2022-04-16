@@ -151,7 +151,7 @@ namespace CommonCore.RpgGame.UI
             if (IgnoreValueChanges)
                 return;
 
-            SignalPendingChanges(PendingChangesFlags.None);
+            SignalPendingChanges?.Invoke(PendingChangesFlags.None);
         }
 
         private float GetGameSpeedValue()

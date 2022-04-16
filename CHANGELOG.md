@@ -400,3 +400,14 @@
 * Added ChangeSceneSpecial action special to RPGGame
 * Fixed ToggleObjectSpecial not actually toggling state
 * Fixed starting quest through microscript not setting initial stage
+* Fixed ConfigState and PersistState not setting LastMigratedVersion when created new
+* Added graceful handling of null LastMigratedVersion in MigrationsManager (treated as version 0)
+* Fixed attempting to load resource manifest on WebGL (not supported on WebGL)
+* Fixed attempting to manipulate GC on WebGL (not supported on WebGL)
+* No longer attempts to set resolution/fullscreen on WebGL (nop on WebGL)
+* Resolution and fullscreen options now hidden on platforms where they are not applicable
+* Fixed NRE in GameplayOptionsPanelController on initial create
+* Changed default Quicksave key to F6 on WebGL (F5 refreshes the page)
+* Disabled screenshot functionality in WebGL (doesn't really work)
+* Implemented fake-exit with post-exit scene for platforms that don't quit normally (currently just WebGL)
+* Async, Debug, Console, and Audio modules now properly clean up their GameObjects and components on unload

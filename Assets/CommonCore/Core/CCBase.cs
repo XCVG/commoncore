@@ -63,6 +63,8 @@ namespace CommonCore
         public static ResourceManager ResourceManager { get; private set; }
         public static AddonManager AddonManager { get; private set; }
 
+        private static CCMonoBehaviourHook HookScript;
+
         /// <summary>
         /// Retrieves a loaded module specified by the type parameter
         /// </summary>
@@ -653,8 +655,8 @@ namespace CommonCore
         private static void HookMonobehaviourEvents()
         {
             GameObject hookObject = new GameObject(nameof(CCMonoBehaviourHook));
-            CCMonoBehaviourHook hookScript = hookObject.AddComponent<CCMonoBehaviourHook>();
-            hookScript.OnUpdateDelegate = new LifecycleEventDelegate(OnFrameUpdate);
+            HookScript = hookObject.AddComponent<CCMonoBehaviourHook>();
+            HookScript.OnUpdateDelegate = new LifecycleEventDelegate(OnFrameUpdate);
 
             Debug.Log("[Core] Hooked MonoBehaviour events!");
         }
@@ -699,6 +701,7 @@ namespace CommonCore
             }
 
             Modules = null;
+            UnityEngine.Object.Destroy(HookScript.gameObject);
             CoreUtils.CollectGarbage(true);
             Terminated = true;
 
