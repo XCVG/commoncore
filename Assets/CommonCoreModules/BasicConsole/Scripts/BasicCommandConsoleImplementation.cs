@@ -11,7 +11,7 @@ namespace CommonCore.BasicConsole
     /// <summary>
     /// IConsole implementation using homebuilt basic command console
     /// </summary>
-    public class BasicCommandConsoleImplementation : IConsole
+    public class BasicCommandConsoleImplementation : IConsole, IDisposable
     {
         private BasicConsoleController Console;
 
@@ -22,6 +22,12 @@ namespace CommonCore.BasicConsole
             var consoleObject = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Modules/BasicConsole/BasicConsole")); //we use Resources.Load because ResourceManager isn't initialized yet
             Console = consoleObject.GetComponent<BasicConsoleController>();
             Console.SetBaseImplementation(this);
+        }
+
+        public void Dispose()
+        {
+            if (Console != null)
+                UnityEngine.Object.Destroy(Console.gameObject);
         }
 
         /// <summary>

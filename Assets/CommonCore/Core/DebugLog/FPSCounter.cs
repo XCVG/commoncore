@@ -49,6 +49,14 @@ namespace CommonCore.DebugLog
             }
         }
 
+        internal static void Terminate()
+        {
+            if(Instance != null)
+            {
+                Destroy(Instance.gameObject);
+            }
+        }
+
         private void Awake()
         {
             DontDestroyOnLoad(this.gameObject);

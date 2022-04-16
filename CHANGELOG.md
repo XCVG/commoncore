@@ -409,3 +409,5 @@
 * Fixed NRE in GameplayOptionsPanelController on initial create
 * Changed default Quicksave key to F6 on WebGL (F5 refreshes the page)
 * Disabled screenshot functionality in WebGL (doesn't really work)
+* Implemented fake-exit with post-exit scene for platforms that don't quit normally (currently just WebGL)
+* Async, Debug, Console, and Audio modules now properly clean up their GameObjects and components on unload

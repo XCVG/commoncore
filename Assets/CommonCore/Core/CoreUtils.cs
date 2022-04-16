@@ -257,8 +257,16 @@ namespace CommonCore
         /// <param name="exitCode">The status code to return</param>
         public static void Quit(int exitCode)
         {
-            //for now, call through- we use hooks to execute our code on exit
-            Application.Quit(exitCode);
+            //handling WebGL (and other platforms?) that can't really quit
+            if(CoreParams.Platform == RuntimePlatform.WebGLPlayer)
+            {
+                SceneManager.LoadScene("FakeExitScene");
+            }
+            else
+            {
+                //call through- we use hooks to execute our code on exit
+                Application.Quit(exitCode);
+            }
         }
 
         /// <summary>

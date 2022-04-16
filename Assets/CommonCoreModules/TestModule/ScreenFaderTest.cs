@@ -19,42 +19,42 @@ namespace CommonCore.TestModule
                 ScreenFader.FadeTo(Color.white, 5.0f, true, true, true);
 
                 await Task.Delay(6000);
-                AsyncUtils.ThrowIfEditorStopped();
+                AsyncUtils.ThrowIfStopped();
 
                 SharedUtils.ChangeScene("TestScene");
 
                 await Task.Delay(5000);
-                AsyncUtils.ThrowIfEditorStopped();
+                AsyncUtils.ThrowIfStopped();
 
                 ScreenFader.FadeFrom(null, 1.0f, false, true, true);
 
                 await Task.Delay(5000);
-                AsyncUtils.ThrowIfEditorStopped();
+                AsyncUtils.ThrowIfStopped();
 
                 ScreenFader.Crossfade(Color.blue, Color.red, 5.0f, false, false, false);
 
                 await Task.Delay(3000);
-                AsyncUtils.ThrowIfEditorStopped();
+                AsyncUtils.ThrowIfStopped();
 
                 ScreenFader.ClearFade();
 
                 await Task.Delay(5000);
-                AsyncUtils.ThrowIfEditorStopped();
+                AsyncUtils.ThrowIfStopped();
 
                 ScreenFader.Crossfade(Color.blue, Color.red, 5.0f, false, false, false);
 
                 await Task.Delay(1000);
-                AsyncUtils.ThrowIfEditorStopped();
+                AsyncUtils.ThrowIfStopped();
 
                 SharedUtils.ChangeScene("TestScene");
 
                 await Task.Delay(5000);
-                AsyncUtils.ThrowIfEditorStopped();
+                AsyncUtils.ThrowIfStopped();
 
                 ScreenFader.FadeTo(Color.black, 1.0f, true, false, true);
 
                 await Task.Delay(1500);
-                AsyncUtils.ThrowIfEditorStopped();
+                AsyncUtils.ThrowIfStopped();
 
                 SharedUtils.EndGame();
 

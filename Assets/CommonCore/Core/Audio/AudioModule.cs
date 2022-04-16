@@ -31,6 +31,11 @@ namespace CommonCore.Audio
 
         }
 
+        public override void Dispose()
+        {
+            UnityEngine.Object.Destroy(AudioPlayer.gameObject);
+        }
+
         public override void OnGameEnd()
         {
             AudioPlayer.HandleGameEnd();

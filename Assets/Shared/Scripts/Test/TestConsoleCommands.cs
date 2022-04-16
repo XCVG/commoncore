@@ -60,7 +60,7 @@ public static class TestConsoleCommands
             Debug.Log("Untyped lock added!");
 
             await Task.Delay(3000);
-            AsyncUtils.ThrowIfEditorStopped();
+            AsyncUtils.ThrowIfStopped();
 
             lockObject = null;
             CoreUtils.CollectGarbage(false);
@@ -68,14 +68,14 @@ public static class TestConsoleCommands
             Debug.Log("Untyped lock released!");
 
             await Task.Yield();
-            AsyncUtils.ThrowIfEditorStopped();
+            AsyncUtils.ThrowIfStopped();
 
             LockPauseModule.ForceCleanLocks();
 
             Debug.Log("Locks cleaned!");
 
             await Task.Delay(5000);
-            AsyncUtils.ThrowIfEditorStopped();
+            AsyncUtils.ThrowIfStopped();
 
             IEnumerable typedLockObject = new string[] { "lol", "hi" };
             WeakReference<IEnumerable> typedWeakReference = new WeakReference<IEnumerable>(typedLockObject);
@@ -84,7 +84,7 @@ public static class TestConsoleCommands
             Debug.Log("Typed lock added!");
 
             await Task.Delay(3000);
-            AsyncUtils.ThrowIfEditorStopped();
+            AsyncUtils.ThrowIfStopped();
 
             typedLockObject = null;
             CoreUtils.CollectGarbage(false);
@@ -92,7 +92,7 @@ public static class TestConsoleCommands
             Debug.Log("Typed lock released!");
 
             await Task.Yield();
-            AsyncUtils.ThrowIfEditorStopped();
+            AsyncUtils.ThrowIfStopped();
 
             LockPauseModule.ForceCleanLocks();
 

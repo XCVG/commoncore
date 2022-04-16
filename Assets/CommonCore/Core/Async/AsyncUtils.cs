@@ -133,16 +133,25 @@ namespace CommonCore.Async
 
         }
 
-        /// <summary>
-        /// Checks if the editor is in play mode and throws if it is not
-        /// </summary>
-        /// <remarks>Use this to abort async methods when play mode is exited, because for Reasons that's not done by default</remarks>
+        [Obsolete]
         public static void ThrowIfEditorStopped()
+        {
+            Debug.LogWarning("AsyncUtils.ThrowIfEditorStopped is deprecated, use ThrowIfStopped instead");
+            ThrowIfStopped();
+        }
+
+        /// <summary>
+        /// Checks if the editor is in play mode and CommonCore is running, and throws if it is not
+        /// </summary>
+        /// <remarks>Use this as a guard so your async methods terminate when they really should not be running anymore</remarks>
+        public static void ThrowIfStopped()
         {
 #if UNITY_EDITOR
             if (!UnityEditor.EditorApplication.isPlaying)
                 throw new InvalidOperationException("Async method aborted because play mode was exited!");
 #endif
+            if (CCBase.Terminated)
+                throw new InvalidOperationException("Async method aborted because CommonCore was terminated!");
         }
 
         /// <summary>

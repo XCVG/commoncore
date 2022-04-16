@@ -22,6 +22,11 @@ namespace CommonCore.Async
 
             AsyncCoroutineRunner.Instance.GetType(); //poke this to create the instance
         }
+
+        public override void Dispose()
+        {
+            UnityEngine.Object.Destroy(AsyncCoroutineRunner.Instance.gameObject);
+        }
     }
 
     /// <summary>
