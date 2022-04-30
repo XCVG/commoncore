@@ -242,6 +242,11 @@ namespace CommonCore.World
             }
         }
 
+        public void Kill()
+        {
+            Health = 0;
+        }
+
         public void TakeDamage(ActorHitInfo data)
         {
             LastDamageDealer = data.Originator;

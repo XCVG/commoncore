@@ -504,6 +504,10 @@ namespace CommonCore.RpgGame.World
             QdmsMessageBus.Instance.PushBroadcast(msg);
         }
         
+        public void Kill()
+        {
+            GameState.Instance.PlayerRpgState.HealthFraction = 0;
+        }
 
         public void TakeDamage(ActorHitInfo data)
         {

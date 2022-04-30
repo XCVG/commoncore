@@ -188,7 +188,7 @@ namespace CommonCore.RpgGame.Rpg
         [JsonProperty]
         public string Description { get; protected set; }
         [JsonProperty]
-        protected Dictionary<int, string> Stages { get; set; } = new Dictionary<int, string>();
+        protected Dictionary<int, string> Stages { get; set; }
         [JsonProperty]
         public bool Hidden { get; protected set; }
 
@@ -202,7 +202,7 @@ namespace CommonCore.RpgGame.Rpg
             Description = description;
             Stages = stageText;
             Hidden = hidden;
-            ExtraData = extraData.ToDictionary(x => x.Key, x => x.Value);
+            ExtraData = extraData?.ToDictionary(x => x.Key, x => x.Value) ?? new Dictionary<string, object>();
         }
 
         public string GetStageText(int stage)

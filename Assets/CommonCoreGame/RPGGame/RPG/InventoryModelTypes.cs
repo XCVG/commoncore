@@ -218,7 +218,7 @@ namespace CommonCore.RpgGame.Rpg
             NiceName = niceName;
             Image = image;
             Description = description;
-            ExtraData = extraData.ToDictionary(x => x.Key, x => x.Value);
+            ExtraData = extraData?.ToDictionary(x => x.Key, x => x.Value) ?? new Dictionary<string, object>();
         }
 
         public override string ToString()

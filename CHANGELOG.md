@@ -420,3 +420,5 @@
 * Added a SetColor method to ScreenFader to allow setting the color directly
 * Added ExtraData to Quest Defs and Inventory Item Defs
 * Cleaned up visibility and JSON handling for Inventory Item Defs
+* Moved Kill console command to WorldConsoleCommands
+* Added Kill method to ITakeDamage (already implemented on ActorController, now also implemented on other entity types)
