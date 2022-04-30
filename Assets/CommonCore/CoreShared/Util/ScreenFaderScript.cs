@@ -37,6 +37,19 @@ namespace CommonCore
         }
 
         /// <summary>
+        /// Sets the screen fade to the specified color
+        /// </summary>
+        public void SetColor(Color color, bool abortCurrentFade, bool persist)
+        {
+            if (abortCurrentFade)
+                AbortFade();
+
+            Persist = persist;
+
+            FadeImage.color = color;
+        }
+
+        /// <summary>
         /// Starts a fade operation, aborting the existing one if it is running
         /// </summary>
         public void Crossfade(Color? startColor, Color endColor, float duration, bool realTime, bool hideHud, bool persist)

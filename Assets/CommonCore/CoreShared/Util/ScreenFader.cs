@@ -44,6 +44,14 @@ namespace CommonCore
             ScreenFaderScript.Crossfade(startColor, endColor, duration, realTime, hideHud, persist);
         }
 
+        public static void SetColor(Color color, bool abortCurrentFade = false, bool persist = false)
+        {
+            if (ScreenFaderScript == null)
+                ResetFaderObject(); //this will create an instance
+
+            ScreenFaderScript.SetColor(color, abortCurrentFade, persist);
+        }
+
         /// <summary>
         /// Clear the current fade
         /// </summary>

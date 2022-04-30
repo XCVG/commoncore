@@ -203,15 +203,22 @@ namespace CommonCore.RpgGame.Rpg
     // class for invariant inventory defs
     public class InventoryItemDef
     {
-        public string NiceName;
-        public string Image;
-        public string Description;
+        [JsonProperty]
+        public string NiceName { get; private set; }
+        [JsonProperty]
+        public string Image { get; private set; }
+        [JsonProperty]
+        public string Description { get; private set; }
 
-        public InventoryItemDef(string niceName, string image, string description)
+        [JsonProperty]
+        public IReadOnlyDictionary<string, object> ExtraData { get; private set; } = new Dictionary<string, object>();
+
+        public InventoryItemDef(string niceName, string image, string description, IEnumerable<KeyValuePair<string, object>> extraData)
         {
             NiceName = niceName;
             Image = image;
             Description = description;
+            ExtraData = extraData.ToDictionary(x => x.Key, x => x.Value);
         }
 
         public override string ToString()

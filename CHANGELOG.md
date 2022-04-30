@@ -416,3 +416,7 @@
 * Parsing of Conditionals and Microscripts is now done in their respective classes (instead of DialogueParser)
 * Inventory item condition can now count and compare item quantity using standard options/operators
 * Added "add this item to its quantity limit" API to inventory model (AddItemsToQuantityLimit overload)
+* SpecialInteractableComponent now defaults to repeatable=true
+* Added a SetColor method to ScreenFader to allow setting the color directly
+* Added ExtraData to Quest Defs and Inventory Item Defs
+* Cleaned up visibility and JSON handling for Inventory Item Defs

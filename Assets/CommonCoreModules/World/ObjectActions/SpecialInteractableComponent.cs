@@ -10,7 +10,7 @@ namespace CommonCore.World
     public class SpecialInteractableComponent : InteractableComponent
     {
         public ActionSpecialEvent Special;
-        public bool Repeatable;
+        public bool Repeatable = true;
 
         private bool Locked;
 
