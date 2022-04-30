@@ -44,16 +44,26 @@ namespace CommonCore.RpgGame.State
             }
             else if(Conditional.Type == ConditionType.Item)
             {
+                if (Conditional.Option == ConditionOption.Consume)
+                    Debug.LogWarning($"{nameof(RpgConditionalResolver)}.Resolve warning: Consume item is not supported in CommonCore");
+
                 int qty = GameState.Instance.PlayerRpgState.Inventory.CountItem(Conditional.Target);
-                if (qty < 1)
-                    return false;
-                else return true;
+                if (Conditional.Option == ConditionOption.Unknown || Conditional.Option == ConditionOption.Consume || Conditional.OptionValue == null)
+                {                    
+                    if (qty < 1)
+                        return false;
+                    else return true;
+                }
+                else
+                {
+                    return EvaluateValueWithOptionAsInt(qty);
+                }
+                
             }
 
             throw new NotSupportedException();                
         }
 
-        //TODO merge this with Conditional.EvaluateValueWithOption and put it somewhere
         private bool EvaluateValueWithOption(decimal value)
         {
             IComparable value0 = value; //target value
@@ -63,6 +73,38 @@ namespace CommonCore.RpgGame.State
                 return false; //assume null = false
 
             value1 = Convert.ToDecimal(value1);
+
+            switch (Conditional.Option.Value)
+            {
+                case ConditionOption.Greater:
+                    return value0.CompareTo(value1) > 0;
+                case ConditionOption.Less:
+                    return value0.CompareTo(value1) < 0;
+                case ConditionOption.Equal:
+                    return value0.CompareTo(value1) == 0;
+                case ConditionOption.GreaterEqual:
+                    return value0.CompareTo(value1) >= 0;
+                case ConditionOption.LessEqual:
+                    return value0.CompareTo(value1) <= 0;
+                case ConditionOption.Started:
+                    return value0.CompareTo(value1) > 0;
+                case ConditionOption.Finished:
+                    return value0.CompareTo(value1) < 0;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+
+        private bool EvaluateValueWithOptionAsInt(int value)
+        {
+            IComparable value0 = value; //target value
+            IComparable value1 = Conditional.OptionValue; //our value (comparison value)
+
+            if (value0 == null || value1 == null)
+                return false; //assume null = false
+
+            value0 = Convert.ToInt32(value0);
+            value1 = Convert.ToInt32(value1);
 
             switch (Conditional.Option.Value)
             {

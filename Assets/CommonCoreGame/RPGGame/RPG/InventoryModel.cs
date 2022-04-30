@@ -541,13 +541,14 @@ namespace CommonCore.RpgGame.Rpg
         /// </summary>
         /// <remarks>
         /// <para>Will create or return a new item instance and modify the one passed in</para>
+        /// <para>This is a really weirdly specific one and probably only used for containers</para>
         /// </remarks>
         /// <returns>The instance of the item actually in the inventory</returns>
         public InventoryItemInstance AddItemsToQuantityLimit(InventoryItemInstance item)
         {
             if(!item.ItemModel.Stackable)
             {
-                throw new InvalidOperationException("Stackable items cannot be added with this API, use AddItemIfPossible instead!");
+                throw new InvalidOperationException("Non-stackable items cannot be added with this API, use AddItemIfPossible instead!");
             }
 
             InventoryItemInstance instance = FindFirstItem(item.ItemModel.Name);
@@ -602,9 +603,19 @@ namespace CommonCore.RpgGame.Rpg
         }
 
         /// <summary>
+        /// Adds an item up to the quantity limit specified by MaxQuantity of the item model.
+        /// </summary>
+        /// <returns>The quantity remaining after adding the item (MaxQuantity - existing)</returns>
+        public int AddItemsToQuantityLimit(string item)
+        {
+            int quantity = GetModel(item).MaxQuantity;
+            return AddItemsToQuantityLimit(item, quantity);
+        }
+
+        /// <summary>
         /// Adds an item up to the quantity limit.
         /// </summary>
-        /// <returns>The quantity remaining after adding the item</returns>
+        /// <returns>The quantity remaining after adding the item (quantity - existing)</returns>
         public int AddItemsToQuantityLimit(string item, int quantity)
         {
             AddItem(item, quantity, true, out var quantityRemaining);

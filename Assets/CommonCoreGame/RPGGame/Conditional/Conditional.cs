@@ -16,28 +16,8 @@ namespace CommonCore.RpgGame.State
 
     public enum ConditionOption
     {
-        Consume, Greater, Less, Equal, GreaterEqual, LessEqual, Started, Finished
-    }
-
-    [Serializable]
-    public struct EditorConditional
-    {
-        public ConditionType Type;
-        public string Target;
-        public ConditionOption Option;
-        public string OptionValue;
-
-        public Conditional Parse()
-        {
-            ConditionOption? opt = null;
-            if (Type == ConditionType.Item || Type == ConditionType.Quest || Type == ConditionType.ActorValue)
-                opt = Option;
-
-            IComparable val = (IComparable)TypeUtils.StringToNumericAuto(OptionValue);
-
-            return new Conditional(Type, Target, opt, val, new JObject());
-        }
-    }
+        Unknown, Consume, Greater, Less, Equal, GreaterEqual, LessEqual, Started, Finished
+    }    
 
     public class Conditional
     {
@@ -181,6 +161,127 @@ namespace CommonCore.RpgGame.State
                 Resolver = ConditionalModule.Instance.GetResolverFor(this);
             }
         }
+
+        /// <summary>
+        /// Parses a condition from a JObject
+        /// </summary>
+        public static Conditional Parse(JObject jt)
+        {
+            //types
+            ConditionType type = ConditionType.Unknown;
+            string target = null;
+            if (jt["flag"] != null)
+            {
+                type = ConditionType.Flag;
+                target = jt["flag"].Value<string>();
+            }
+            else if (jt["noflag"] != null)
+            {
+                type = ConditionType.NoFlag;
+                target = jt["noflag"].Value<string>();
+            }
+            else if (jt["variable"] != null)
+            {
+                type = ConditionType.Variable;
+                target = jt["variable"].Value<string>();
+            }
+            else if (jt["affinity"] != null)
+            {
+                type = ConditionType.Affinity;
+                target = jt["affinity"].Value<string>();
+            }
+            else if (jt["quest"] != null)
+            {
+                type = ConditionType.Quest;
+                target = jt["quest"].Value<string>();
+            }
+            else if (jt["item"] != null)
+            {
+                type = ConditionType.Item;
+                target = jt["item"].Value<string>();
+            }
+            else if (jt["av"] != null)
+            {
+                type = ConditionType.ActorValue;
+                target = jt["av"].Value<string>();
+            }
+            else if (jt["actorvalue"] != null)
+            {
+                type = ConditionType.ActorValue;
+                target = jt["actorvalue"].Value<string>();
+            }
+            else if (jt["exec"] != null)
+            {
+                type = ConditionType.Exec;
+                target = jt["exec"].Value<string>();
+            }
+            else
+            {
+                Debug.LogWarning($"[{nameof(Conditional)}.{nameof(Parse)}] Unsupported or unrecognized condition type");
+            }
+
+            //options
+            ConditionOption? option = null;
+            IComparable optionValue = 0;
+            if (type == ConditionType.Item)
+            {
+                //check for "consume"
+                if (jt["consume"] != null)
+                {
+                    option = ConditionOption.Consume;
+                    optionValue = Convert.ToInt32(jt["consume"].Value<bool>());
+                }
+
+            }
+            else if (type == ConditionType.Exec)
+            {
+                if (jt["arg"] != null)
+                {
+                    option = 0; //we just need it to be non-null
+                    optionValue = (IComparable)TypeUtils.StringToNumericAuto(jt["arg"].Value<string>());
+                }
+            }
+            else
+            {
+                if (jt["greater"] != null)
+                {
+                    option = ConditionOption.Greater;
+                    optionValue = (IComparable)TypeUtils.StringToNumericAuto(jt["greater"].Value<string>());
+                }
+                else if (jt["less"] != null)
+                {
+                    option = ConditionOption.Less;
+                    optionValue = (IComparable)TypeUtils.StringToNumericAuto(jt["less"].Value<string>());
+                }
+                else if (jt["equal"] != null)
+                {
+                    option = ConditionOption.Equal;
+                    optionValue = (IComparable)TypeUtils.StringToNumericAuto(jt["equal"].Value<string>());
+                }
+                else if (jt["greaterEqual"] != null)
+                {
+                    option = ConditionOption.GreaterEqual;
+                    optionValue = (IComparable)TypeUtils.StringToNumericAuto(jt["greaterEqual"].Value<string>());
+                }
+                else if (jt["lessEqual"] != null)
+                {
+                    option = ConditionOption.LessEqual;
+                    optionValue = (IComparable)TypeUtils.StringToNumericAuto(jt["lessEqual"].Value<string>());
+                }
+                else if (jt["started"] != null)
+                {
+                    option = ConditionOption.Started;
+                    optionValue = Convert.ToInt32(jt["started"].Value<bool>());
+                }
+                else if (jt["finished"] != null)
+                {
+                    option = ConditionOption.Finished;
+                    optionValue = Convert.ToInt32(jt["finished"].Value<bool>());
+                }
+            }
+
+            return new Conditional(type, target, option, optionValue, jt);
+        }
     }
 
     public enum MicroscriptType
@@ -191,25 +292,6 @@ namespace CommonCore.RpgGame.State
     public enum MicroscriptAction
     {
         Unknown, Set, Toggle, Add, Give, Take, Start, Finish
-    }
-
-    [Serializable]
-    public struct EditorMicroscript
-    {
-        public MicroscriptType Type;
-        public string Target;
-        public MicroscriptAction Action;
-        public string Value;
-        public DelayTimeType DelayType;
-        public float DelayTime;
-        public bool DelayAbsolute;
-
-        public MicroscriptNode Parse()
-        {
-            object val = TypeUtils.StringToNumericAuto(Value);
-            return new MicroscriptNode(Type, Target, Action, val, DelayType, DelayTime, DelayAbsolute, new JObject());
-        }
-
     }
 
     public class MicroscriptNode //"directive" in Katana parlance
@@ -364,6 +446,145 @@ namespace CommonCore.RpgGame.State
             {
                 Resolver = ConditionalModule.Instance.GetResolverFor(this);
             }
+        }
+
+        /// <summary>
+        /// Parses a microscript from a JObject
+        /// </summary>
+        public static MicroscriptNode Parse(JObject jt)
+        {
+            //parse type and target
+            MicroscriptType type = MicroscriptType.Unknown;
+            string target = null;
+            MicroscriptAction action;
+            object value = 0;
+
+            if (jt["flag"] != null)
+            {
+                type = MicroscriptType.Flag;
+                target = jt["flag"].Value<string>();
+            }
+            else if (jt["item"] != null)
+            {
+                type = MicroscriptType.Item;
+                target = jt["item"].Value<string>();
+            }
+            else if (jt["variable"] != null)
+            {
+                type = MicroscriptType.Variable;
+                target = jt["variable"].Value<string>();
+            }
+            else if (jt["affinity"] != null)
+            {
+                type = MicroscriptType.Affinity;
+                target = jt["affinity"].Value<string>();
+            }
+            else if (jt["quest"] != null)
+            {
+                type = MicroscriptType.Quest;
+                target = jt["quest"].Value<string>();
+            }
+            else if (jt["av"] != null)
+            {
+                type = MicroscriptType.ActorValue;
+                target = jt["av"].Value<string>();
+            }
+            else if (jt["actorvalue"] != null)
+            {
+                type = MicroscriptType.ActorValue;
+                target = jt["actorvalue"].Value<string>();
+            }
+            else if (jt["exec"] != null)
+            {
+                type = MicroscriptType.Exec;
+                target = jt["exec"].Value<string>();
+                if (jt["arg"] != null)
+                {
+                    value = TypeUtils.StringToNumericAuto(jt["arg"].Value<string>());
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[{nameof(MicroscriptNode)}.{nameof(Parse)}] Unsupported or unrecognized microscript type");
+            }
+
+            //parse action/value            
+            if (jt["set"] != null)
+            {
+                action = MicroscriptAction.Set;
+                if (type == MicroscriptType.Flag) //parse as boolean
+                    value = Convert.ToInt32(jt["set"].Value<bool>());
+                else //otherwise parse as number
+                    value = TypeUtils.StringToNumericAuto(jt["set"].Value<string>());
+            }
+            else if (jt["toggle"] != null)
+            {
+                action = MicroscriptAction.Toggle;
+            }
+            else if (jt["add"] != null)
+            {
+                action = MicroscriptAction.Add;
+                value = TypeUtils.StringToNumericAuto(jt["add"].Value<string>());
+            }
+            else if (jt["give"] != null)
+            {
+                action = MicroscriptAction.Give;
+                value = TypeUtils.StringToNumericAuto(jt["give"].Value<string>());
+            }
+            else if (jt["take"] != null)
+            {
+                action = MicroscriptAction.Take;
+                value = TypeUtils.StringToNumericAuto(jt["take"].Value<string>());
+            }
+            else if (jt["start"] != null)
+            {
+                action = MicroscriptAction.Start;
+                value = TypeUtils.StringToNumericAuto(jt["start"].Value<string>());
+            }
+            else if (jt["finish"] != null)
+            {
+                action = MicroscriptAction.Finish;
+                value = TypeUtils.StringToNumericAuto(jt["finish"].Value<string>());
+            }
+            else
+            {
+                if (type != MicroscriptType.Exec)
+                    Debug.LogWarning($"[{nameof(MicroscriptNode)}.{nameof(Parse)}] Unacceptable or unrecognized action for microscript");
+
+                action = MicroscriptAction.Unknown;
+            }
+
+            //parse delay, if applicable
+            DelayTimeType delayType = DelayTimeType.None;
+            double delayTime = default(double);
+            bool delayAbsolute = false;
+            if (jt["delay"] != null)
+            {
+                delayType = DelayTimeType.Game;
+                delayTime = double.Parse(jt["delay"].Value<string>());
+                if (jt["delayType"] != null)
+                {
+                    string delayTypeString = jt["delayType"].Value<string>();
+                    switch (delayTypeString)
+                    {
+                        case "real":
+                            delayType = DelayTimeType.Real;
+                            break;
+                        case "world":
+                            delayType = DelayTimeType.World;
+                            break;
+                        case "game":
+                            delayType = DelayTimeType.Game;
+                            break;
+                    }
+                }
+                if (jt["delayAbsolute"] != null)
+                {
+                    delayAbsolute = jt["delayAbsolute"].Value<bool>();
+                }
+            }
+
+            return new MicroscriptNode(type, target, action, value, delayType, delayTime, delayAbsolute, jt);
         }
     }
 }

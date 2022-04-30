@@ -412,3 +412,7 @@
 * Implemented fake-exit with post-exit scene for platforms that don't quit normally (currently just WebGL)
 * Async, Debug, Console, and Audio modules now properly clean up their GameObjects and components on unload
 * Fixed some IGUI prefabs not using sliced sprites
+* Split EditorConditional and EditorMicroscript to separate files
+* Parsing of Conditionals and Microscripts is now done in their respective classes (instead of DialogueParser)
+* Inventory item condition can now count and compare item quantity using standard options/operators
+* Added "add this item to its quantity limit" API to inventory model (AddItemsToQuantityLimit overload)
