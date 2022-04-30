@@ -422,3 +422,4 @@
 * Cleaned up visibility and JSON handling for Inventory Item Defs
 * Moved Kill console command to WorldConsoleCommands
 * Added Kill method to ITakeDamage (already implemented on ActorController, now also implemented on other entity types)
+* OnGameEnd is now called before application quit if quit from within a game

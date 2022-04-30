@@ -961,8 +961,11 @@ namespace CommonCore.RpgGame.World
             InitialPosition = transform.position;
         }
 
-        public void Kill()
+        public void Kill(bool bypassInvulnerability)
         {
+            if (Invincible && !bypassInvulnerability)
+                return;
+
             Health = 0;
         }
 

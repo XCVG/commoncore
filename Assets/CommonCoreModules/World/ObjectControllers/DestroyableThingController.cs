@@ -242,8 +242,11 @@ namespace CommonCore.World
             }
         }
 
-        public void Kill()
+        public void Kill(bool bypassInvulnerability)
         {
+            if (Invincible && !bypassInvulnerability)
+                return;
+
             Health = 0;
         }
 
