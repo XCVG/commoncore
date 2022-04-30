@@ -29,6 +29,8 @@ namespace CommonCore.RpgGame.World
         private ViewModelWaitForLockTime EffectWaitForLockTime = ViewModelWaitForLockTime.Unspecified;
         [SerializeField]
         private bool EjectShellOnRecock = false;
+        [SerializeField, Tooltip("If set, binds the canvas used by this weapon to the view model camera (note that this is actually faked)")]
+        private bool BindCanvasToCamera = true;
 
         [SerializeField, Header("Lighting Options")]
         private bool ApplyReportedLighting = true;
@@ -119,6 +121,9 @@ namespace CommonCore.RpgGame.World
         private bool MovebobCriticalError;
         private bool Fullbright;
 
+        private Canvas WeaponImageCanvas;
+        private Camera AttachedCamera;
+
         private Coroutine EffectDelayedCoroutine;
 
         public override bool ViewHandlesCrosshair => HandleCrosshair;
@@ -132,11 +137,43 @@ namespace CommonCore.RpgGame.World
             //throw new System.NotImplementedException();
         }
 
+        public override void Init(ViewModelOptions options)
+        {
+            base.Init(options);
+
+            WeaponImageCanvas = WeaponImage.canvas;
+
+            if(BindCanvasToCamera)
+            {
+                BindToCamera();
+            }
+                  
+        }
+
         protected override void Update()
         {
+            HandleCameraAttachment();
             HandleAnimation();
             HandleMovebob();
             HandleLighting();
+        }
+
+        private void HandleCameraAttachment()
+        {
+            //this fakes the canvas being attached to the camera for state etc
+
+            if(BindCanvasToCamera && AttachedCamera != null)
+            {
+                bool cameraActive = AttachedCamera.isActiveAndEnabled;
+                if (cameraActive && !WeaponImageCanvas.enabled)
+                {
+                    WeaponImageCanvas.enabled = true;
+                }
+                else if(!cameraActive && WeaponImageCanvas.enabled)
+                {
+                    WeaponImageCanvas.enabled = false;
+                }
+            }
         }
 
         private void HandleAnimation()
@@ -439,6 +476,14 @@ namespace CommonCore.RpgGame.World
         {
             yield return new WaitForSeconds(time);
             action();
+        }
+
+        private void BindToCamera()
+        {
+            var cameraRoot = Options.WeaponComponent.PlayerController.CameraRoot;
+            var viewModelCamera = cameraRoot.Find("ViewBobNode").FindDeepChild("FP Camera").GetChild(0).GetComponent<Camera>();
+
+            AttachedCamera = viewModelCamera;
         }
 
 

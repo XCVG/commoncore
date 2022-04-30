@@ -1577,7 +1577,7 @@ namespace CommonCore.RpgGame.World
                     var vmo = new ViewModelOptions(item, slot, this, ViewShakeScript, MovebobComponent);
                     var go = Instantiate<GameObject>(prefab, RightViewModelPoint);                    
                     RightViewModel = go.GetComponent<WeaponViewModelScript>();
-                    RightViewModel.Options = vmo;
+                    RightViewModel.Init(vmo);
                 }
                 else
                 {

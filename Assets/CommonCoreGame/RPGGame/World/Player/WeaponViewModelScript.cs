@@ -145,13 +145,18 @@ namespace CommonCore.RpgGame.World
     {
         public static readonly string HandsHidden = "Hidden";
 
-        public virtual ViewModelOptions Options { get; set; }
+        public virtual ViewModelOptions Options { get; protected set; }
 
         public virtual bool ViewHandlesCrosshair => false;
 
         protected abstract void Start();
 
         protected abstract void Update();
+
+        public virtual void Init(ViewModelOptions options)
+        {
+            Options = options;
+        }
 
         public abstract void SetVisibility(bool visible);
 
