@@ -345,7 +345,7 @@ namespace CommonCore.World
         {
             var itd = WorldConsoleCommands.SelectedObject.GetComponent<ITakeDamage>();
             if (itd != null)
-                itd.Kill();
+                itd.Kill(true);
         }
 
     }

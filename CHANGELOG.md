@@ -423,3 +423,6 @@
 * Moved Kill console command to WorldConsoleCommands
 * Added Kill method to ITakeDamage (already implemented on ActorController, now also implemented on other entity types)
 * OnGameEnd is now called before application quit if quit from within a game
+* ChangeSceneScript is now called ChangeSceneSpecial
+* Duplicate ChangeSceneSpecial is now marked obsolete
+* DoorInteractableComponent and ChangeSceneSpecial can now spawn a transfer effect when used

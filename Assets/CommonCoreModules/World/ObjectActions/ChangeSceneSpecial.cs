@@ -6,15 +6,22 @@ using CommonCore.World;
 
 namespace CommonCore.ObjectActions
 {
-    public class ChangeSceneScript : ActionSpecial
+
+    /// <summary>
+    /// Change Scene Action Special
+    /// </summary>
+    public class ChangeSceneSpecial : ActionSpecial
     {
         public string NextScene;
         public string SpawnPoint;
         public bool UsePosition = false;
         public Vector3 SpawnPosition;
         public Vector3 SpawnRotation;
+        public string TransferEffect;
 
-        public void ChangeScene()
+        private bool Locked = false;
+
+        public void ChangeScene(BaseController activator)
         {
             string spawnPointHack = SpawnPoint;
             if (UsePosition)
@@ -22,7 +29,18 @@ namespace CommonCore.ObjectActions
             else if (string.IsNullOrEmpty(SpawnPoint))
                 spawnPointHack = string.Empty;
 
+            if(!string.IsNullOrEmpty(TransferEffect))
+            {
+                var targetTransform = activator.Ref()?.transform ?? transform;
+                WorldUtils.SpawnEffect(TransferEffect, targetTransform.position, targetTransform.rotation, null, false);
+            }
+
             WorldUtils.ChangeScene(NextScene, spawnPointHack, SpawnPosition, SpawnRotation);
+
+            if (!Repeatable)
+            {
+                Locked = true;
+            }
         }
 
         public override void Execute(ActionInvokerData data)
@@ -30,7 +48,10 @@ namespace CommonCore.ObjectActions
             if (!AllowInvokeWhenDisabled && !isActiveAndEnabled)
                 return;
 
-            ChangeScene();
+            if (Locked)
+                return;
+
+            ChangeScene(data.Activator);
         }
     }
 }
