@@ -176,8 +176,8 @@ namespace CommonCore.UI
 
             ShowFpsToggle.isOn = ConfigState.Instance.ShowFps;
 
-            SoundVolumeSlider.value = ConfigState.Instance.SoundVolume;
-            MusicVolumeSlider.value = ConfigState.Instance.MusicVolume;
+            SoundVolumeSlider.value = (float)Math.Round(Math.Sqrt(ConfigState.Instance.SoundVolume), 2);
+            MusicVolumeSlider.value = (float)Math.Round(Math.Sqrt(ConfigState.Instance.MusicVolume), 2);
 
             var cList = new List<string>(Enum.GetNames(typeof(AudioSpeakerMode)));
             ChannelDropdown.ClearOptions();
@@ -360,8 +360,8 @@ namespace CommonCore.UI
 
             ConfigState.Instance.ShowFps = ShowFpsToggle.isOn;
 
-            ConfigState.Instance.SoundVolume = SoundVolumeSlider.value;
-            ConfigState.Instance.MusicVolume = MusicVolumeSlider.value;
+            ConfigState.Instance.SoundVolume = (float)Math.Round(Math.Pow(SoundVolumeSlider.value, 2), 2);
+            ConfigState.Instance.MusicVolume = (float)Math.Round(Math.Pow(MusicVolumeSlider.value, 2), 2);
             ConfigState.Instance.SpeakerMode = (AudioSpeakerMode)Enum.Parse(typeof(AudioSpeakerMode), ChannelDropdown.options[ChannelDropdown.value].text);
 
             //handle subpanels

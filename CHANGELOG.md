@@ -426,3 +426,4 @@
 * ChangeSceneScript is now called ChangeSceneSpecial
 * Removed duplicate ChangeSceneSpecial
 * DoorInteractableComponent and ChangeSceneSpecial can now spawn a transfer effect when used
+* Volume control is now pseudo-logarithmic (exponential)
