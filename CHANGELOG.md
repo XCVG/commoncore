@@ -411,3 +411,4 @@
 * Disabled screenshot functionality in WebGL (doesn't really work)
 * Implemented fake-exit with post-exit scene for platforms that don't quit normally (currently just WebGL)
 * Async, Debug, Console, and Audio modules now properly clean up their GameObjects and components on unload
+* Fixed some IGUI prefabs not using sliced sprites
