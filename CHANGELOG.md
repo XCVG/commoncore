@@ -429,3 +429,4 @@
 * Volume control is now pseudo-logarithmic (exponential)
 * Weapon viewmodels are now explicitly initialized (WeaponViewModelScript.Init)
 * Sprite weapon viewmodels can be (pseudo) attached to ViewModel camera
+* ScreenFader can now be used when game is paused by specifying a lowest allowed pause level

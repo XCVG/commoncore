@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonCore.LockPause;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -52,7 +53,7 @@ namespace CommonCore
         /// <summary>
         /// Starts a fade operation, aborting the existing one if it is running
         /// </summary>
-        public void Crossfade(Color? startColor, Color endColor, float duration, bool realTime, bool hideHud, bool persist)
+        public void Crossfade(Color? startColor, Color endColor, float duration, PauseLockType? lowestPauseState, bool realTime, bool hideHud, bool persist)
         {
             //abort current fade if exists
             AbortFade();
@@ -70,16 +71,22 @@ namespace CommonCore
             }
 
             //execute fade
-            CrossfadeCoroutine = StartCoroutine(CoCrossfade(endColor, duration, realTime));
+            CrossfadeCoroutine = StartCoroutine(CoCrossfade(endColor, duration, lowestPauseState, realTime));
         }
 
-        private IEnumerator CoCrossfade(Color endColor, float duration, bool realTime)
+        private IEnumerator CoCrossfade(Color endColor, float duration, PauseLockType? lowestPauseState, bool realTime)
         {
             Color startColor = FadeImage.color;
+            bool allowWhenPaused = lowestPauseState.HasValue;
             float elapsed = 0;
             while(elapsed < duration)
             {
-                elapsed += realTime ? Time.unscaledDeltaTime : Time.deltaTime;
+                var pls = LockPauseModule.GetPauseLockState();
+                if (pls == null || (allowWhenPaused && pls >= lowestPauseState))
+                {
+                    float timeScale = realTime ? 1 : (Mathf.Approximately(Time.timeScale, 0) ? 1 : Time.timeScale);
+                    elapsed += Time.unscaledDeltaTime * timeScale;
+                }
                 float ratio = elapsed / duration;
                 Color newColor = Color.Lerp(startColor, endColor, ratio);
                 FadeImage.color = newColor;
