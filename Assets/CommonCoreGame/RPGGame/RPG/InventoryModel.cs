@@ -651,9 +651,10 @@ namespace CommonCore.RpgGame.Rpg
 
             enforceQuantityLimit &= mdl.MaxQuantity > 0;
 
-            if(enforceQuantityLimit)
+            if (enforceQuantityLimit)
             {
-                int quantityToAdd = Math.Min(quantity, mdl.MaxQuantity);
+                int existingQuantity = CountItem(item);
+                int quantityToAdd = Math.Min(quantity, mdl.MaxQuantity - existingQuantity);
                 quantityRemaining = quantity - quantityToAdd;
                 quantity = quantityToAdd;
             }
@@ -688,9 +689,6 @@ namespace CommonCore.RpgGame.Rpg
 
         private void CallOnQuantityChanged(InventoryItemInstance instance, int oldQuantity, int? newQuantity = null)
         {
-            if (string.IsNullOrEmpty(instance?.ItemModel?.Scripts?.OnQuantityChange))
-                return;
-
             if(!instance.ItemModel.Stackable)
             {
                 Debug.LogError($"Tried to call OnQuantityChange script \"{instance.ItemModel.Scripts.OnQuantityChange}\" on non-stackable model \"{instance.ItemModel}\"");
@@ -705,34 +703,40 @@ namespace CommonCore.RpgGame.Rpg
                 { "OldQuantity", oldQuantity },
                 { "NewQuantity", newQuantity ?? instance.Quantity },
             }));
+
+            if (string.IsNullOrEmpty(instance?.ItemModel?.Scripts?.OnQuantityChange))
+                return;
+
             ScriptingModule.Call(instance.ItemModel.Scripts.OnQuantityChange, new ScriptExecutionContext() { Caller = this }, instance.ItemModel, instance, oldQuantity, newQuantity ?? instance.Quantity);
         }
 
         private void CallOnAdd(InventoryItemInstance instance)
         {
-            if (string.IsNullOrEmpty(instance?.ItemModel?.Scripts?.OnAdd))
-                return;
-
             QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgInventoryModified", new Dictionary<string, object>() {
                 { "ChangeType", "Add" },
                 { "InventoryModel", this },
                 { "InventoryItemInstance", instance },
                 { "InventoryItemModel", instance.ItemModel }
             }));
+
+            if (string.IsNullOrEmpty(instance?.ItemModel?.Scripts?.OnAdd))
+                return;
+            
             ScriptingModule.Call(instance.ItemModel.Scripts.OnAdd, new ScriptExecutionContext() { Caller = this }, instance.ItemModel, instance);
         }
 
         private void CallOnRemove(InventoryItemInstance instance)
         {
-            if (string.IsNullOrEmpty(instance?.ItemModel?.Scripts?.OnRemove))
-                return;
-
             QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgInventoryModified", new Dictionary<string, object>() {
                 { "ChangeType", "Remove" },
                 { "InventoryModel", this },
                 { "InventoryItemInstance", instance },
                 { "InventoryItemModel", instance.ItemModel }
             }));
+
+            if (string.IsNullOrEmpty(instance?.ItemModel?.Scripts?.OnRemove))
+                return;
+            
             ScriptingModule.Call(instance.ItemModel.Scripts.OnRemove, new ScriptExecutionContext() { Caller = this }, instance.ItemModel, instance);
         }
 
