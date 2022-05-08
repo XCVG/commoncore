@@ -31,7 +31,7 @@ namespace CommonCore.RpgGame.Dialogue
             //parse root node (scene)
             string sBackground = string.Empty;
             string sImage = string.Empty;
-            string sMusic = string.Empty;
+            string sMusic = null;
             string sNext = string.Empty;
             string sText = string.Empty;
             string sName = string.Empty;
@@ -45,7 +45,7 @@ namespace CommonCore.RpgGame.Dialogue
                 sBackground = jo["background"].Value<string>();
             if (jo["image"] != null)
                 sImage = jo["image"].Value<string>();
-            if (jo["music"] != null)
+            if (jo["music"] != null && jo["music"].Type != JTokenType.Null)
             {
                 sMusic = jo["music"].Value<string>();
                 if (sMusic == null)
@@ -130,9 +130,16 @@ namespace CommonCore.RpgGame.Dialogue
                 next = jt["next"].Value<string>();
             if (jt["music"] != null)
             {
-                music = jt["music"].Value<string>();
-                if (music == null)
-                    music = string.Empty;
+                if (jt["music"].Type == JTokenType.Null)
+                {
+                    music = null;
+                }
+                else
+                {
+                    music = jt["music"].Value<string>();
+                    if (music == null)
+                        music = string.Empty;
+                }
             }
             if (jt["nameText"] != null)
                 nameText = jt["nameText"].Value<string>();

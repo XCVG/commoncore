@@ -432,3 +432,4 @@
 * ScreenFader can now be used when game is paused by specifying a lowest allowed pause level
 * Fixed inventory item change messages not being pushed if items did not have scripts attached
 * Fixed AddItem enforceQuantityLimit not applying correctly
+* Fixed DialogueParser not actually being capable of parsing music=null and not setting music to null by default
