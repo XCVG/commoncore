@@ -395,7 +395,7 @@
 * Added audio listener switching methods to WorldUtils [Untested]
 * Added physics handling to BulletExplosionComponent [Untested]
 
-# 4.0.0 pNext
+# 4.0.0 Preview 4
 
 * Added ChangeSceneSpecial action special to RPGGame
 * Fixed ToggleObjectSpecial not actually toggling state
@@ -433,3 +433,5 @@
 * Fixed inventory item change messages not being pushed if items did not have scripts attached
 * Fixed AddItem enforceQuantityLimit not applying correctly
 * Fixed DialogueParser not actually being capable of parsing music=null and not setting music to null by default
+
+# 4.0.0 pNext
