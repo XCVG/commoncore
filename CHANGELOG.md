@@ -435,3 +435,9 @@
 * Fixed DialogueParser not actually being capable of parsing music=null and not setting music to null by default
 
 # 4.0.0 pNext
+
+* Added core_resources and VS code workspace files to default gitignore
+* Handling of boss health by RPGHudController is now optional
+* BossComponent no longer sends RpgBossAwake message if actor is dead on start
+* BossComponent now sends health in RpgBossAwake message
+* BossComponent now sends RpgBossDead message when deactivated
