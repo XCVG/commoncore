@@ -41,6 +41,8 @@ namespace CommonCore.ObjectActions
         protected Coroutine DoorSequenceCoroutine = null;
         protected bool DoorOpen = false;
 
+        public bool IsOpen => DoorOpen;
+
         protected string LocalStorePersistKey => string.IsNullOrEmpty(PersistKey) ? $"{this.gameObject.name}_{GetType().Name}" : PersistKey;
 
         protected virtual void Start()

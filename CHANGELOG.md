@@ -441,3 +441,7 @@
 * BossComponent no longer sends RpgBossAwake message if actor is dead on start
 * BossComponent now sends health in RpgBossAwake message
 * BossComponent now sends RpgBossDead message when deactivated
+* MovingDoorSpecial open state now has a public accessor (IsOpen)
+* WorldUtils.IsObjectAlive variant that takes a transform will no longer throw if transform is null
+* WorldUtils Is*Alive methods now use TryGetComponent instead of GetComponent
+* RpgWorldUtils TargetIsAlive now just thunks to WorldUtils.IsObjectAlive instead of having a redundant implementation
