@@ -446,3 +446,6 @@
 * WorldUtils Is*Alive methods now use TryGetComponent instead of GetComponent
 * RpgWorldUtils TargetIsAlive now just thunks to WorldUtils.IsObjectAlive instead of having a redundant implementation
 * Added OnIGUIPaint script hook called after IGUI panels are painted
+* Removed obsolete ScreenFader methods
+* Removed obsolete SubtitleUtilsEx methods
+* Added console command to reset/reload faction relationships (Factions.Reset)

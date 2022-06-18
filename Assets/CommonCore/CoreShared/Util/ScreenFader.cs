@@ -21,13 +21,6 @@ namespace CommonCore
         /// <summary>
         /// Fade from no fade or existing fade to target color
         /// </summary>
-        [Obsolete]
-        public static void FadeTo(Color endColor, float duration, bool realTime = true, bool hideHud = true, bool persist = false) 
-            => FadeTo(endColor, duration, null, realTime, hideHud, persist);
-
-        /// <summary>
-        /// Fade from no fade or existing fade to target color
-        /// </summary>
         public static void FadeTo(Color endColor, float duration, PauseLockType? lowestPauseState = null, bool realTime = true, bool hideHud = true, bool persist = false)
         {
             ResetFaderObject();
@@ -37,25 +30,11 @@ namespace CommonCore
         /// <summary>
         /// Fade from specified color or existing color to no fade
         /// </summary>
-        [Obsolete]
-        public static void FadeFrom(Color? startColor, float duration, bool realTime = true, bool hideHud = true, bool persist = false) 
-            => FadeFrom(startColor, duration, null, realTime, hideHud, persist);
-
-        /// <summary>
-        /// Fade from specified color or existing color to no fade
-        /// </summary>
         public static void FadeFrom(Color? startColor, float duration, PauseLockType? lowestPauseState = null, bool realTime = true, bool hideHud = true, bool persist = false)
         {
             ResetFaderObject();
             ScreenFaderScript.Crossfade(startColor, new Color(0, 0, 0, 0), duration, lowestPauseState, realTime, hideHud, persist);
         }
-
-        /// <summary>
-        /// Fade from one color to another
-        /// </summary>
-        [Obsolete]
-        public static void Crossfade(Color startColor, Color endColor, float duration,  bool realTime = true, bool hideHud = true, bool persist = false) 
-            => Crossfade(startColor, endColor, duration, null, realTime, hideHud, persist);
 
         /// <summary>
         /// Fade from one color to another

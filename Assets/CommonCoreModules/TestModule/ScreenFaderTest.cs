@@ -16,7 +16,7 @@ namespace CommonCore.TestModule
         {
             AsyncUtils.RunWithExceptionHandling(async () =>
             {
-                ScreenFader.FadeTo(Color.white, 5.0f, true, true, true);
+                ScreenFader.FadeTo(Color.white, 5.0f, null, true, true, true);
 
                 await Task.Delay(6000);
                 AsyncUtils.ThrowIfStopped();
@@ -26,12 +26,12 @@ namespace CommonCore.TestModule
                 await Task.Delay(5000);
                 AsyncUtils.ThrowIfStopped();
 
-                ScreenFader.FadeFrom(null, 1.0f, false, true, true);
+                ScreenFader.FadeFrom(null, 1.0f, null, false, true, true);
 
                 await Task.Delay(5000);
                 AsyncUtils.ThrowIfStopped();
 
-                ScreenFader.Crossfade(Color.blue, Color.red, 5.0f, false, false, false);
+                ScreenFader.Crossfade(Color.blue, Color.red, 5.0f, null, false, false, false);
 
                 await Task.Delay(3000);
                 AsyncUtils.ThrowIfStopped();
@@ -41,7 +41,7 @@ namespace CommonCore.TestModule
                 await Task.Delay(5000);
                 AsyncUtils.ThrowIfStopped();
 
-                ScreenFader.Crossfade(Color.blue, Color.red, 5.0f, false, false, false);
+                ScreenFader.Crossfade(Color.blue, Color.red, 5.0f, null, false, false, false);
 
                 await Task.Delay(1000);
                 AsyncUtils.ThrowIfStopped();
@@ -51,7 +51,7 @@ namespace CommonCore.TestModule
                 await Task.Delay(5000);
                 AsyncUtils.ThrowIfStopped();
 
-                ScreenFader.FadeTo(Color.black, 1.0f, true, false, true);
+                ScreenFader.FadeTo(Color.black, 1.0f, null, true, false, true);
 
                 await Task.Delay(1500);
                 AsyncUtils.ThrowIfStopped();

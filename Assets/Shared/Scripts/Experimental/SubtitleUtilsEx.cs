@@ -17,25 +17,7 @@ namespace CommonCore.Experimental
         public const string NoSpeakerPlaceholder = "\n";
         public const string SpeakerDelimiter = "\n";
 
-        [Obsolete]
-        public static IEnumerator ShowDialogueSubtitle(string text, Color color, float holdTime) => ShowDialogueSubtitle(text, color, holdTime, SubtitleWaitTime);
-        [Obsolete]
-        public static IEnumerator ShowDialogueSubtitle(string text, Color color, float holdTime, float pauseTime) => ShowDialogueSubtitle(null, text, color, holdTime, pauseTime);
-        [Obsolete]
-        public static IEnumerator ShowDialogueSubtitle(ActorController actor, string text, Color color, float holdTime) => ShowDialogueSubtitle(actor, text, color, holdTime, SubtitleWaitTime);
-        [Obsolete]
-        public static IEnumerator ShowDialogueSubtitle(ActorController actor, string text, Color color, float holdTime, float pauseTime) => ShowDialogueSubtitle(actor, text, null, color, holdTime, SubtitleWaitTime);
-
         public static IEnumerator ShowDialogueSubtitle(ActorController actor, string text, string speaker, Color? color, float holdTime, float? pauseTime) => ShowDialogueSubtitle(actor, text, speaker, color.HasValue ? "#" + ColorUtility.ToHtmlStringRGBA(color.Value) : null, holdTime, null);
-
-        [Obsolete]
-        public static IEnumerator ShowDialogueSubtitle(string text, string color, float holdTime) => ShowDialogueSubtitle(text, color, holdTime, SubtitleWaitTime);
-
-        [Obsolete]
-        public static IEnumerator ShowDialogueSubtitle(string text, string color, float holdTime, float pauseTime) => ShowDialogueSubtitle(null, text, null, color, holdTime, pauseTime);
-
-        [Obsolete]
-        public static IEnumerator ShowDialogueSubtitle(ActorController actor, string text, string color, float holdTime) => ShowDialogueSubtitle(actor, text, null, color, holdTime, SubtitleWaitTime);
 
         public static IEnumerator ShowDialogueSubtitle(ActorController actor, string text, string speaker, string color, float holdTime, float? pauseTime)
         {
