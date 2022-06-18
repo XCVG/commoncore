@@ -5,9 +5,7 @@ using UnityEngine;
 namespace CommonCore
 {
     /*
-     * CommonCore Exit Hook
-     * A slightly hacky way of hooking the ApplicationExit event which is only available to MonoBehaviour
-     * We may rename and extend this later to hook other Monobehaviour-only events as well
+     * Hook class for event functions etc that can only be called on MonoBehaviour
      */
     internal class CCMonoBehaviourHook : MonoBehaviour
     { 
@@ -21,6 +19,11 @@ namespace CommonCore
         private void Update()
         {
             OnUpdateDelegate();
+        }
+
+        public void JSCallThunk(string str)
+        {
+            JSCrossCall.JSCallThunk(str);
         }
 
     }
