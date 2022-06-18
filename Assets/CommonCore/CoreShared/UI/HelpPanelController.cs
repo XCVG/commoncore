@@ -45,6 +45,8 @@ namespace CommonCore.UI
                 ApplyThemeToElements(panel.transform);
             }
 
+            CallPostInitialPaintHooks();
+
         }
     }
 }

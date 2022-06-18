@@ -49,6 +49,8 @@ namespace CommonCore.ExplicitKBMInput
 
             LoadControlMap();
             SetupControlList();
+
+            CallPostInitialPaintHooks();
         }
 
         public override void SignalFinalUnpaint()

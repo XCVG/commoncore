@@ -37,6 +37,8 @@ namespace CommonCore.UI
             ClearList();
             ClearDetails();
             ListSaves();
+
+            CallPostRepaintHooks();
         }
 
         public override void SignalUnpaint()

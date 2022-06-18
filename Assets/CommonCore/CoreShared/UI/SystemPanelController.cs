@@ -30,6 +30,8 @@ namespace CommonCore.UI
         {
             HidePanels();
             SetButtonVisibility();
+
+            CallPostRepaintHooks();
         }
 
         public void OnClickLoad()

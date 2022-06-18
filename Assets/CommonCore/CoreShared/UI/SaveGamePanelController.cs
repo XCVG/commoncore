@@ -46,7 +46,9 @@ namespace CommonCore.UI
             SetButtonVisibility();
             ClearList();
             ClearDetails();
-            ListSaves();            
+            ListSaves();
+
+            CallPostRepaintHooks();
         }
 
         public override void SignalUnpaint()

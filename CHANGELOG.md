@@ -445,3 +445,4 @@
 * WorldUtils.IsObjectAlive variant that takes a transform will no longer throw if transform is null
 * WorldUtils Is*Alive methods now use TryGetComponent instead of GetComponent
 * RpgWorldUtils TargetIsAlive now just thunks to WorldUtils.IsObjectAlive instead of having a redundant implementation
+* Added OnIGUIPaint script hook called after IGUI panels are painted

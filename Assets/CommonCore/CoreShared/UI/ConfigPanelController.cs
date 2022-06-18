@@ -109,6 +109,7 @@ namespace CommonCore.UI
                 }
             }
 
+            CallPostInitialPaintHooks();
             ScriptingModule.CallHooked(ScriptHook.OnConfigPanelRendered, this);
 
         }
@@ -118,6 +119,7 @@ namespace CommonCore.UI
             base.SignalPaint();
 
             PaintValues();
+            CallPostRepaintHooks();
         }
 
         private void PaintValues()

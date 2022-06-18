@@ -1,4 +1,5 @@
 ﻿using CommonCore.Scripting;
+using CommonCore.UI;
 using System;
 using UnityEngine;
 
@@ -172,6 +173,12 @@ namespace CommonCore.TestModule
         private static void OnIGUIMenuOpen(ScriptExecutionContext context)
         {
             Debug.Log($"OnIGUIMenuOpen\n{context}");
+        }
+
+        [CCScript, CCScriptHook(Hook = ScriptHook.OnIGUIPaint)]
+        private static void OnIGUIPaint(ScriptExecutionContext context, IGUIPaintData data)
+        {
+            Debug.Log($"OnIGUIPaint\n{context} (panel: {data.PanelController}, menu: {data.MenuController}, type: {data.PaintEventType}, theme: {data.CurrentTheme})");
         }
 
         [CCScript, CCScriptHook(Hook = ScriptHook.AfterAddonLoaded)]
