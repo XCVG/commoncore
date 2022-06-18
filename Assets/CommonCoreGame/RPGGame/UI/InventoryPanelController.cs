@@ -37,6 +37,8 @@ namespace CommonCore.RpgGame.UI
             SelectedItem = -1;
             PaintInventoryList();
             ClearDetailPane();
+
+            CallPostRepaintHooks();
         }
 
         private void PaintInventoryList()

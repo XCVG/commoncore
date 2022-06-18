@@ -1,4 +1,5 @@
 ﻿using CommonCore.Messaging;
+using CommonCore.World;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace CommonCore.RpgGame.World
     /// </summary>
     /// <remarks>
     /// Right now it pretty much just reports health to the HUDController, but it may do more later
+    /// Very rough. Didn't really expect to use this past Ascension III
     /// </remarks>
     public class BossComponent : MonoBehaviour
     {
@@ -43,13 +45,29 @@ namespace CommonCore.RpgGame.World
                 return;
             }
 
+            if(!ActorController.IsEntityAlive())
+            {
+                enabled = false;
+                return;
+            }
+
             if (InteractionComponent == null)
                 InteractionComponent = GetComponent<ActorInteractionComponent>();
 
+            float currentHealthFraction = ActorController.Health / ActorController.MaxHealth;
             if (EnableMessaging)
-                QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgBossAwake", "Target", GetTooltip()));
+                QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgBossAwake", new Dictionary<string, object>() { { "Target", GetTooltip() }, { "Health", currentHealthFraction } }));
 
             LastKnownHealth = ActorController.Health / ActorController.MaxHealth;
+        }
+
+        private void OnDisable()
+        {
+            if (EnableMessaging)
+            {
+                if(QdmsMessageBus.Instance != null)
+                    QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("RpgBossDead", "Target", GetTooltip()));
+            }
         }
 
         private void Update()

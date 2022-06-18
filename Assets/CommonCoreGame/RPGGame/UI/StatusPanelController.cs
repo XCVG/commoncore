@@ -78,6 +78,14 @@ namespace CommonCore.RpgGame.UI
                 }
                 CharacterImage.texture = CoreUtils.LoadResource<Texture2D>("UI/Portraits/" + rid);
             }
+
+            //moved here because it was breaking over there
+            if (CheckLevelUp && !GameState.Instance.MenuGameStateLocked && GameState.Instance.PlayerRpgState.Experience >= RpgValues.XPToNext(GameState.Instance.PlayerRpgState.Level))
+            {
+                DefaultLevelUpModal.PushModal(OnLevelUpDone);
+            }
+
+            CallPostRepaintHooks();
             
         }
 
@@ -97,15 +105,6 @@ namespace CommonCore.RpgGame.UI
                     return itemInstance.ItemModel.Name;
             }
             else return "none";
-        }
-
-        void OnEnable()
-        {
-            //why is this not on SignalPaint? hell if I know
-            if(CheckLevelUp && !GameState.Instance.MenuGameStateLocked && GameState.Instance.PlayerRpgState.Experience >= RpgValues.XPToNext(GameState.Instance.PlayerRpgState.Level))
-            {
-                DefaultLevelUpModal.PushModal(OnLevelUpDone);
-            }
         }
 
         private void OnLevelUpDone()

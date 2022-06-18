@@ -26,6 +26,8 @@ namespace CommonCore.RpgGame.UI
             PaintStats();
             PaintConditions();
             PaintSkills();
+
+            CallPostRepaintHooks();
         }
 
         private void PaintStats()

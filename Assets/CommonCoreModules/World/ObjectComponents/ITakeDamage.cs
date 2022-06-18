@@ -10,6 +10,8 @@
     {
         void TakeDamage(ActorHitInfo data);
 
+        void Kill(bool bypassInvulnerability);
+
         float Health { get; }
     }
 }

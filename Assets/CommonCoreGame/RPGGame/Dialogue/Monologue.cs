@@ -124,7 +124,7 @@ namespace CommonCore.RpgGame.Dialogue
                 {
                     try
                     {
-                        cList.Add(DialogueParser.ParseSingleCondition(conditionJT));
+                        cList.Add(Conditional.Parse((JObject)conditionJT));
                     }
                     catch (Exception e)
                     {
@@ -141,7 +141,7 @@ namespace CommonCore.RpgGame.Dialogue
                 {
                     try
                     {
-                        mList.Add(DialogueParser.ParseMicroscript(microscriptJT));
+                        mList.Add(MicroscriptNode.Parse((JObject)microscriptJT));
                     }
                     catch (Exception e)
                     {

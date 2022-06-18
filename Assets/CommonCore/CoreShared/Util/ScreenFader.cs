@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CommonCore.Scripting;
-
+using CommonCore.LockPause;
+using System;
 
 namespace CommonCore
 {
@@ -20,28 +21,39 @@ namespace CommonCore
         /// <summary>
         /// Fade from no fade or existing fade to target color
         /// </summary>
-        public static void FadeTo(Color endColor, float duration, bool realTime = true, bool hideHud = true, bool persist = false)
+        public static void FadeTo(Color endColor, float duration, PauseLockType? lowestPauseState = null, bool realTime = true, bool hideHud = true, bool persist = false)
         {
             ResetFaderObject();
-            ScreenFaderScript.Crossfade(null, endColor, duration, realTime, hideHud, persist);
+            ScreenFaderScript.Crossfade(null, endColor, duration, lowestPauseState, realTime, hideHud, persist);
         }
 
         /// <summary>
         /// Fade from specified color or existing color to no fade
         /// </summary>
-        public static void FadeFrom(Color? startColor, float duration, bool realTime = true, bool hideHud = true, bool persist = false)
+        public static void FadeFrom(Color? startColor, float duration, PauseLockType? lowestPauseState = null, bool realTime = true, bool hideHud = true, bool persist = false)
         {
             ResetFaderObject();
-            ScreenFaderScript.Crossfade(startColor, new Color(0, 0, 0, 0), duration, realTime, hideHud, persist);
+            ScreenFaderScript.Crossfade(startColor, new Color(0, 0, 0, 0), duration, lowestPauseState, realTime, hideHud, persist);
         }
 
         /// <summary>
         /// Fade from one color to another
         /// </summary>
-        public static void Crossfade(Color startColor, Color endColor, float duration, bool realTime = true, bool hideHud = true, bool persist = false)
+        public static void Crossfade(Color startColor, Color endColor, float duration, PauseLockType? lowestPauseState = null, bool realTime = true, bool hideHud = true, bool persist = false)
         {
             ResetFaderObject();
-            ScreenFaderScript.Crossfade(startColor, endColor, duration, realTime, hideHud, persist);
+            ScreenFaderScript.Crossfade(startColor, endColor, duration, lowestPauseState, realTime, hideHud, persist);
+        }
+
+        /// <summary>
+        /// Set the screen fade to a specific colour
+        /// </summary>
+        public static void SetColor(Color color, bool abortCurrentFade = false, bool persist = false)
+        {
+            if (ScreenFaderScript == null)
+                ResetFaderObject(); //this will create an instance
+
+            ScreenFaderScript.SetColor(color, abortCurrentFade, persist);
         }
 
         /// <summary>
@@ -82,4 +94,5 @@ namespace CommonCore
             }
         }
     }
+
 }

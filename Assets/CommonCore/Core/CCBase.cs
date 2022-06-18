@@ -683,6 +683,14 @@ namespace CommonCore
 
         internal static void OnApplicationQuit()
         {
+            //call OnGameEnd if we are in a game
+            Type thunkType = BaseGameTypes.FirstOrDefault(t => t.Name == "GameStateExistsThunk");
+            IReadOnlyValueThunk<bool> gameStateExistsThunk = Activator.CreateInstance(thunkType) as IReadOnlyValueThunk<bool>;
+            if(gameStateExistsThunk.Value)
+            {
+                OnGameEnd();
+            }
+
             Debug.Log("[Core] Cleaning up CommonCore...");
 
             //execute quit methods and unload modules

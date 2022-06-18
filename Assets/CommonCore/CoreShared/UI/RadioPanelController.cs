@@ -63,6 +63,8 @@ namespace CommonCore.UI
                 }
             }
 
+            CallPostInitialPaintHooks();
+
         }
 
         public override void SignalPaint()
@@ -87,6 +89,8 @@ namespace CommonCore.UI
                 else
                     Debug.LogWarning("Can't find a panel for " + musicComponentName);
             }
+
+            CallPostRepaintHooks();
         }
 
         public void HandleSelectionButtonPressed(string target)

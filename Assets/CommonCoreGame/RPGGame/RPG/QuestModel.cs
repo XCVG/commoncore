@@ -182,24 +182,27 @@ namespace CommonCore.RpgGame.Rpg
     public class QuestDef
     {
         [JsonProperty]
-        public readonly string NiceName;
+        public string NiceName { get; protected set; }
         [JsonProperty]
-        public readonly string Image;
+        public string Image { get; protected set; }
         [JsonProperty]
-        public readonly string Description;
+        public string Description { get; protected set; }
         [JsonProperty]
-        protected readonly Dictionary<int, string> Stages;
+        protected Dictionary<int, string> Stages { get; set; }
         [JsonProperty]
-        public readonly bool Hidden;
+        public bool Hidden { get; protected set; }
 
-        [JsonConstructor]
-        public QuestDef(string niceName, string image, string description, Dictionary<int, string> stageText, bool hidden)
+        [JsonProperty]
+        public IReadOnlyDictionary<string, object> ExtraData { get; private set; } = new Dictionary<string, object>();
+
+        public QuestDef(string niceName, string image, string description, Dictionary<int, string> stageText, bool hidden, IEnumerable<KeyValuePair<string, object>> extraData)
         {
             NiceName = niceName;
             Image = image;
             Description = description;
             Stages = stageText;
             Hidden = hidden;
+            ExtraData = extraData?.ToDictionary(x => x.Key, x => x.Value) ?? new Dictionary<string, object>();
         }
 
         public string GetStageText(int stage)

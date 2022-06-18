@@ -1,4 +1,5 @@
 ﻿using CommonCore.LockPause;
+using CommonCore.Scripting;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,9 @@ namespace CommonCore.UI
         protected bool HookupUnityEvents = true;
 
         private bool InitialPaintDone = false;
+
+        public bool IsUsingUnityEvents => HookupUnityEvents;
+        public bool IsDoneInitialPaint => InitialPaintDone;
 
         private void Start()
         {
@@ -106,6 +110,37 @@ namespace CommonCore.UI
                 else
                     uiModule.ApplyThemeRecurse(root);
             }
+        }
+
+        //TODO probably remove this
+        protected string GetEffectiveTheme()
+        {
+            var menuController = GetComponentInParent<BaseMenuController>();
+            if(menuController != null && !string.IsNullOrEmpty(menuController.OverrideTheme))
+            {
+                return menuController.OverrideTheme;
+            }
+
+            var uiModule = CCBase.GetModule<UIModule>();
+            return uiModule.CurrentTheme.name;
+        }
+
+        protected void CallPostInitialPaintHooks()
+        {
+            var menuController = GetComponentInParent<BaseMenuController>();
+            string theme = (menuController != null && !string.IsNullOrEmpty(menuController.OverrideTheme)) ? menuController.OverrideTheme : CCBase.GetModule<UIModule>().CurrentTheme?.name;
+
+            var data = new IGUIPaintData(IGUIPaintEventType.InitialPaint, this, menuController, theme);
+            ScriptingModule.CallHooked(ScriptHook.OnIGUIPaint, this, data);
+        }
+
+        protected void CallPostRepaintHooks()
+        {
+            var menuController = GetComponentInParent<BaseMenuController>();
+            string theme = (menuController != null && !string.IsNullOrEmpty(menuController.OverrideTheme)) ? menuController.OverrideTheme : CCBase.GetModule<UIModule>().CurrentTheme?.name;
+
+            var data = new IGUIPaintData(IGUIPaintEventType.Repaint, this, menuController, theme);
+            ScriptingModule.CallHooked(ScriptHook.OnIGUIPaint, this, data);
         }
 
     }

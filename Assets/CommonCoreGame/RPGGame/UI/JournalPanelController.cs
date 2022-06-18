@@ -29,6 +29,8 @@ namespace CommonCore.RpgGame.UI
             SelectedQuest = null;
             PaintList();
             ClearDetailPane();
+
+            CallPostRepaintHooks();
         }
 
         private void PaintList()

@@ -65,6 +65,8 @@ namespace CommonCore.RpgGame.UI
         public float HitIndicatorHoldTime;
         public float HitIndicatorFadeTime;
 
+        public bool HandleBossHealth = true;
+
         [Header("Damage Fade")]
         public float DamageFadeMin;
         public float DamageFadeMax;
@@ -159,13 +161,16 @@ namespace CommonCore.RpgGame.UI
                         }
                         break;
                     case "RpgBossHealthUpdate":
-                        UpdateTargetOverrideHealth(kvmessage.GetValue<string>("Target"), kvmessage.GetValue<float>("Health"));
+                        if(HandleBossHealth)
+                            UpdateTargetOverrideHealth(kvmessage.GetValue<string>("Target"), kvmessage.GetValue<float>("Health"));
                         break;
                     case "RpgBossAwake":
-                        SetTargetOverride(kvmessage.GetValue<string>("Target"));
+                        if(HandleBossHealth)
+                            SetTargetOverride(kvmessage.GetValue<string>("Target"));
                         break;
                     case "RpgBossDead":
-                        ClearTargetOverride(kvmessage.GetValue<string>("Target"));
+                        if(HandleBossHealth)
+                            ClearTargetOverride(kvmessage.GetValue<string>("Target"));
                         break;
                 }
 

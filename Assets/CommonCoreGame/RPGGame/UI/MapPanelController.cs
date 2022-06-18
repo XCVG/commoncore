@@ -82,6 +82,8 @@ namespace CommonCore.RpgGame.UI
             }
 
             DrawMarkers(cartographer);
+
+            CallPostRepaintHooks();
         }
 
         private void ClearPanel()

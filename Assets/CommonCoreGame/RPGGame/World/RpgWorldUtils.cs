@@ -52,20 +52,7 @@ namespace CommonCore.RpgGame.World
         /// </summary>
         public static bool TargetIsAlive(Transform target)
         {
-            if (target == null)
-                return false;
-
-            var bc = target.GetComponent<BaseController>();
-            if (bc == null)
-                return target.gameObject.activeInHierarchy;
-
-            bool healthPass = true;
-            if (bc is PlayerController)
-                healthPass = GameState.Instance.PlayerRpgState.HealthFraction > 0;
-            else if (bc is ActorController)
-                healthPass = ((ActorController)bc).Health > 0;
-
-            return target.gameObject.activeInHierarchy && healthPass;
+            return WorldUtils.IsObjectAlive(target);
         }
 
         /// <summary>

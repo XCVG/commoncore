@@ -95,6 +95,13 @@ namespace CommonCore.RpgGame.Rpg
 
         //***** Faction manipulation
 
+        [Command(className = "Factions", alias = "Reset", useClassName = true)]
+        static void ResetFactions()
+        {
+            GameState.Instance.InitializeFactions();
+            ConsoleModule.WriteLine("Factions reset to default relationships!");
+        }
+
         [Command(className = "Factions", alias = "List", useClassName = true)]
         static void ListFactions()
         {

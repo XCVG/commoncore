@@ -300,12 +300,10 @@ namespace CommonCore.World
             if (!obj.activeInHierarchy)
                 return false;
 
-            var entity = obj.GetComponent<BaseController>();
-            if (entity != null)
+            if (obj.TryGetComponent<BaseController>(out var entity))
                 return entity.IsEntityAlive();
 
-            var itd = obj.GetComponent<ITakeDamage>();
-            if (itd != null)
+            if (obj.TryGetComponent<ITakeDamage>(out var itd))
                 return itd.IsDamageableAlive();
 
             return true;
@@ -316,7 +314,7 @@ namespace CommonCore.World
         /// </summary>
         public static bool IsObjectAlive(Transform transform)
         {
-            return IsObjectAlive(transform.gameObject);
+            return transform != null && IsObjectAlive(transform.gameObject);
         }
 
         [Obsolete("Use IsDamageableAlive instead")]

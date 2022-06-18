@@ -504,6 +504,16 @@ namespace CommonCore.RpgGame.World
             QdmsMessageBus.Instance.PushBroadcast(msg);
         }
         
+        public void Kill(bool bypassInvulnerability)
+        {
+            if (!bypassInvulnerability && (MetaState.Instance.SessionFlags.Contains("GodMode") || GameState.Instance.PlayerFlags.Contains(PlayerFlags.Invulnerable)))
+                return;
+
+            if (IsDying)
+                return;
+
+            GameState.Instance.PlayerRpgState.HealthFraction = 0;
+        }
 
         public void TakeDamage(ActorHitInfo data)
         {

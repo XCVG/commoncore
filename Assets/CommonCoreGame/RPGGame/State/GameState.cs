@@ -74,7 +74,7 @@ namespace CommonCore.State
             //hookup factions
             try
             {
-                FactionState = FactionModel.CloneFactionModel(FactionModel.BaseModel);
+                InitializeFactions();
             }
             catch (Exception e)
             {
@@ -109,7 +109,7 @@ namespace CommonCore.State
             }
 
             instance.InitialLoaded = true;
-        }
+        }        
 
         /// <summary>
         /// Initializes the player from initial state in defs
@@ -138,6 +138,14 @@ namespace CommonCore.State
             InventoryModel.AssignUIDs(instance.PlayerRpgState.Inventory.EnumerateItems(), true);
             instance.PlayerRpgState.UpdateStats();
             PlayerFlags.RegisterSource(instance.PlayerRpgState);            
+        }
+
+        /// <summary>
+        /// Initializes the factions from initial state in defs
+        /// </summary>
+        public void InitializeFactions()
+        {
+            FactionState = FactionModel.CloneFactionModel(FactionModel.BaseModel);
         }
 
         /// <summary>

@@ -19,7 +19,7 @@ ExportedObj/
 *.booproj
 *.svd
 .vsconfig
-
+*.code-workspace
 
 # Unity3D generated meta files
 *.pidb.meta
@@ -41,6 +41,9 @@ LightingData.asset.meta
 
 # User Settings (Unity 2020+)
 /[Uu]ser[Ss]ettings/
+
+# Generated (CommonCore 4.0.0+)
+/[Aa]ssets/StreamingAssets/core_resources.json
 
 # Explicitly excluded (optional)
 # /Assets/ThirdParty/

@@ -340,5 +340,13 @@ namespace CommonCore.World
             SceneManager.LoadScene(sceneName);
         }
 
+        [Command]
+        static void Kill()
+        {
+            var itd = WorldConsoleCommands.SelectedObject.GetComponent<ITakeDamage>();
+            if (itd != null)
+                itd.Kill(true);
+        }
+
     }
 }

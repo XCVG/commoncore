@@ -395,7 +395,7 @@
 * Added audio listener switching methods to WorldUtils [Untested]
 * Added physics handling to BulletExplosionComponent [Untested]
 
-# 4.0.0 pNext
+# 4.0.0 Preview 4
 
 * Added ChangeSceneSpecial action special to RPGGame
 * Fixed ToggleObjectSpecial not actually toggling state
@@ -411,3 +411,41 @@
 * Disabled screenshot functionality in WebGL (doesn't really work)
 * Implemented fake-exit with post-exit scene for platforms that don't quit normally (currently just WebGL)
 * Async, Debug, Console, and Audio modules now properly clean up their GameObjects and components on unload
+* Fixed some IGUI prefabs not using sliced sprites
+* Split EditorConditional and EditorMicroscript to separate files
+* Parsing of Conditionals and Microscripts is now done in their respective classes (instead of DialogueParser)
+* Inventory item condition can now count and compare item quantity using standard options/operators
+* Added "add this item to its quantity limit" API to inventory model (AddItemsToQuantityLimit overload)
+* SpecialInteractableComponent now defaults to repeatable=true
+* Added a SetColor method to ScreenFader to allow setting the color directly
+* Added ExtraData to Quest Defs and Inventory Item Defs
+* Cleaned up visibility and JSON handling for Inventory Item Defs
+* Moved Kill console command to WorldConsoleCommands
+* Added Kill method to ITakeDamage (already implemented on ActorController, now also implemented on other entity types)
+* OnGameEnd is now called before application quit if quit from within a game
+* ChangeSceneScript is now called ChangeSceneSpecial
+* Removed duplicate ChangeSceneSpecial
+* DoorInteractableComponent and ChangeSceneSpecial can now spawn a transfer effect when used
+* Volume control is now pseudo-logarithmic (exponential)
+* Weapon viewmodels are now explicitly initialized (WeaponViewModelScript.Init)
+* Sprite weapon viewmodels can be (pseudo) attached to ViewModel camera
+* ScreenFader can now be used when game is paused by specifying a lowest allowed pause level
+* Fixed inventory item change messages not being pushed if items did not have scripts attached
+* Fixed AddItem enforceQuantityLimit not applying correctly
+* Fixed DialogueParser not actually being capable of parsing music=null and not setting music to null by default
+
+# 4.0.0 pNext
+
+* Added core_resources and VS code workspace files to default gitignore
+* Handling of boss health by RPGHudController is now optional
+* BossComponent no longer sends RpgBossAwake message if actor is dead on start
+* BossComponent now sends health in RpgBossAwake message
+* BossComponent now sends RpgBossDead message when deactivated
+* MovingDoorSpecial open state now has a public accessor (IsOpen)
+* WorldUtils.IsObjectAlive variant that takes a transform will no longer throw if transform is null
+* WorldUtils Is*Alive methods now use TryGetComponent instead of GetComponent
+* RpgWorldUtils TargetIsAlive now just thunks to WorldUtils.IsObjectAlive instead of having a redundant implementation
+* Added OnIGUIPaint script hook called after IGUI panels are painted
+* Removed obsolete ScreenFader methods
+* Removed obsolete SubtitleUtilsEx methods
+* Added console command to reset/reload faction relationships (Factions.Reset)
