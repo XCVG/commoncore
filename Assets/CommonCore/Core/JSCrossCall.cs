@@ -31,11 +31,11 @@ namespace CommonCore
         {
 #if UNITY_WEBGL
             JSCallThunkData data = JsonConvert.DeserializeObject<JSCallThunkData>(str, CoreParams.DefaultJsonSerializerSettings); //should we use default settings here?
-            if(data.Target == "PushBroadcastMessage")
+            if(data.CallType == "PushBroadcastMessage")
             {
-                QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage(data.MessageFlag, data.MessageValues));
+                QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage(data.Args[0].ToString(), data.NamedArgs));
             }
-            else if(data.Target == "CallScript")
+            else if(data.CallType == "CallScript")
             {
                 ScriptingModule.Call(data.Target, new ScriptExecutionContext() { Caller = typeof(JSCrossCall) }, data.Args);
             }
@@ -50,7 +50,7 @@ namespace CommonCore
         /// </summary>
         public static void CallJSFunction(string functionName, params object[] args)
         {
-            string dataStr = JsonConvert.SerializeObject(new { function = functionName,  args = args});
+            string dataStr = JsonConvert.SerializeObject(new { functionName = functionName,  args = args});
             CSCallThunk(dataStr);
         }
 
@@ -59,23 +59,23 @@ namespace CommonCore
         /// </summary>
         public static void TriggerCanvasEvent(string eventName, IEnumerable<KeyValuePair<string, object>> additionalData)
         {
-            string dataStr = JsonConvert.SerializeObject(new { @event = eventName, args = additionalData });
+            string dataStr = JsonConvert.SerializeObject(new { eventName = eventName, args = additionalData });
             CSCallThunk(dataStr);
         }
     }
 
     internal class JSCallThunkData
     {
+        [JsonProperty(PropertyName = "callType")]
+        public string CallType;
+
         [JsonProperty(PropertyName = "target")]
         public string Target;
 
         [JsonProperty(PropertyName = "args")]
         public object[] Args;
 
-        //for sending messages
-        [JsonProperty(PropertyName = "messageFlag")]
-        public string MessageFlag;
-        [JsonProperty(PropertyName = "messageValues")]
-        public Dictionary<string, object> MessageValues;
+        [JsonProperty(PropertyName = "namedArgs")]
+        public Dictionary<string, object> NamedArgs;
     }
 }

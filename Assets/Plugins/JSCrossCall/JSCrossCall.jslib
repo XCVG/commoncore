@@ -17,15 +17,21 @@ mergeInto(LibraryManager.library, {
 
 	//this absolutely needs to be here
 	CSCallThunk: function (strPtr) {
-		const dataStr = Pointer_stringify(str);
+		const dataStr = Pointer_stringify(strPtr);
 		const data = JSON.parse(dataStr);
 		debugger;
 
-		//TODO execute call
+		if(data.functionName) {
+			callJSFunction(data.functionName, data.args);
+		}
+		else if(data.eventName) {
+			triggerCanvasEvent(data.eventName, data.args)
+		}
 	},
 
 	//this should be elsewhere I think
 	//I think this doesn't even get emitted because it's not referenced from the C (read: Unity) world
+	/*
 	callCS: function (target, args) {
 		const obj = {
 			target: target,
@@ -34,7 +40,7 @@ mergeInto(LibraryManager.library, {
 		const str = JSON.stringify(obj);
 		unityInstance.SendMessage('CCMonoBehaviourHook', 'JSCallThunk', str);
 	},
-
+*/
 });
 
 //public functions (JS->CS)
