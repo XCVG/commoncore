@@ -28,3 +28,17 @@ function callJSFunction(functionName, args) {
 function triggerCanvasEvent(eventName, args) {
 	Module.canvas.dispatchEvent(new Event(eventName, args));
 }
+
+//window escape handling
+//event handlers do not work and I do not know why, but onbeforeunload works
+function attachWindowUnloadHandler() {
+	window.onbeforeunload = handleBeforeUnload;
+}
+
+function releaseWindowUnloadHandler() {
+	window.onbeforeunload = null;
+}
+
+function handleBeforeUnload(e) {
+	return 'A';
+}
