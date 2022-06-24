@@ -26,8 +26,10 @@ namespace CommonCore.Video
         {
             var module = CCBase.GetModule<VideoModule>();
             var videoPath = module.GetPathForVideo(videoName);
+#if !UNITY_WEBGL
             if (string.IsNullOrEmpty(videoPath) || !File.Exists(videoPath))
                 throw new FileNotFoundException($"[{nameof(SetupVideoPlayer)}] Could not find video file", videoPath);
+#endif
 
             videoPlayer.source = VideoSource.Url;
             videoPlayer.url = videoPath;
