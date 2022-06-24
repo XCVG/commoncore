@@ -45,6 +45,14 @@ namespace CommonCore.State
             MetaState.Instance.TempData.Clear();
         }
 
+        public override void OnSceneUnloaded()
+        {
+            if(CoreParams.PlatformMaySuddenlyExit)
+            {
+                PersistState.Save();
+            }
+        }
+
         public override void OnFrameUpdate()
         {
             if (!GameState.Exists)

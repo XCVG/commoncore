@@ -130,4 +130,16 @@ public static class TestConsoleCommands
         });
     }
 
+    [Command]
+    public static void TestJsFunction()
+    {
+        JSCrossCall.CallJSFunction("console.log", "Hello from C#!");
+    }
+
+    [Command]
+    public static void TestJsEvent()
+    {
+        JSCrossCall.TriggerCanvasEvent("test", new Dictionary<string, object>() { { "testData", "dogcow" } });
+    }
+
 }

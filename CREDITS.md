@@ -174,3 +174,6 @@ Shield sounds (Assets/Resources/DynamicSound/Shield*)
 	https://opengameart.org/content/50-cc0-sci-fi-sfx
 	by rubberduck, licensed CC0/public domain
 
+# A note on WebGL Templates
+
+The WebGL templates in Assets/WebGLTemplates are in a bit of an ambiguous licensing situation. They are based on the built-in templates shipped with Unity (as per Unity's own recommendation), with some modifications and with trademarked Unity assets stripped out.

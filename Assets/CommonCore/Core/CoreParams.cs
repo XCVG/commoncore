@@ -122,6 +122,30 @@ namespace CommonCore
             }
         }
 
+        public static bool PlatformSupportsAsync
+        {
+            get
+            {
+#if UNITY_WEBGL
+                return false;
+#else
+                return true;
+#endif
+            }
+        }
+
+        public static bool PlatformMaySuddenlyExit
+        {
+            get
+            {
+#if UNITY_WEBGL || UNITY_ANDROID || UNITY_IOS
+                return true;
+#else
+                return false;
+#endif
+            }
+        }
+
         public static string SavePath
         {
             get

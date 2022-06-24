@@ -12,6 +12,9 @@ namespace CommonCore.Video
     /// <summary>
     /// Manages video files accessible to the game, including addons adding their own video paths
     /// </summary>
+    /// <remarks>
+    /// <para>Note that this is almost useless and just blindly gives you a path in WebGL</para>
+    /// </remarks>
     public class VideoModule : CCModule
     {
         private static readonly IReadOnlyList<string> VideoExtensions = new string[] { "mp4", "webm" };
@@ -58,6 +61,11 @@ namespace CommonCore.Video
 
         private void PrecacheAllPaths()
         {
+            //enumerating directories won't work in WebGL, so don't try
+#if UNITY_WEBGL
+            return;
+#endif
+
             foreach(string folder in SearchPaths)
             {
                 if (!Directory.Exists(folder))
@@ -74,6 +82,18 @@ namespace CommonCore.Video
 
         private string GetAndCacheInternal(string videoName)
         {
+#if UNITY_WEBGL
+            //try mp4 first in editor
+            if(CoreParams.IsEditor)
+            {
+                string editorVideoPath = Path.Combine(Application.streamingAssetsPath, "Video", Path.GetFileNameWithoutExtension(videoName) + ".mp4");
+                if(File.Exists(editorVideoPath))
+                    return editorVideoPath;
+            }
+
+            //we do not check this first because it would be an expensive request in WebGL
+            return Path.Combine(Application.streamingAssetsPath, "Video", Path.GetFileNameWithoutExtension(videoName) + ".webm");
+#else
             string path = null;
 
             foreach(var folder in ((IEnumerable<string>)SearchPaths).Reverse()) //awkward cast to force LINQ call
@@ -92,6 +112,7 @@ namespace CommonCore.Video
                 LookupCache[videoName] = path;
 
             return path;
+#endif
         }
         
     }

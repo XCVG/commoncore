@@ -185,6 +185,9 @@ namespace CommonCore
         {
             try
             {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            JSCrossCall.CallJSFunction("attachWindowUnloadHandler");
+#endif
                 Initializing = true;
                 System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
                 stopwatch.Start();
@@ -714,6 +717,10 @@ namespace CommonCore
             Terminated = true;
 
             Debug.Log("[Core] ...done!");
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+            JSCrossCall.CallJSFunction("releaseWindowUnloadHandler");
+#endif
         }
 
         private static void CreateFolders()
