@@ -449,3 +449,10 @@
 * Removed obsolete ScreenFader methods
 * Removed obsolete SubtitleUtilsEx methods
 * Added console command to reset/reload faction relationships (Factions.Reset)
+* Added utility methods for cross-calling between JS and C# in WebGL (JSCrossCall)
+* Added modified WebGL templates needed for JSCrossCall
+* Added PlatformMaySuddenlyExit flag to CoreParams
+* PersistState is now saved on every scene unload on platforms that may suddenly exit
+* WebGL now displays warning when trying to leave page before CommonCore has quit
+* Videos utilities now work in WebGL (although paths are not really checked)
+* Added video test scene to project
