@@ -80,6 +80,12 @@ noflag: <flag>
 item: <item>
 	consume: *boolean*
 (checks if the player has an item, uses it if specified [consume supported on Katana only])
+	greater: *number*
+	less: *number*
+	equal: *number*
+	greaterEqual: *number*
+	lessEqual: *number*
+(checks player's item count of this item against the tests, ONLY ONE AT A TIME IS SUPPORTED [supported on CommonCore only])
 
 variable: <variable>
 	greater: *number*
