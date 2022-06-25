@@ -456,3 +456,4 @@
 * WebGL now displays warning when trying to leave page before CommonCore has quit
 * Videos utilities now work in WebGL (although paths are not really checked)
 * Added video test scene to project
+* Upgraded WaveLoader to 1.1.2
