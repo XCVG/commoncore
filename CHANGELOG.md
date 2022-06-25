@@ -457,3 +457,4 @@
 * Videos utilities now work in WebGL (although paths are not really checked)
 * Added video test scene to project
 * Upgraded WaveLoader to 1.1.2
+* Split up CoreParams into two files; things that aren't game-specific settings are now in CoreParamsBase
