@@ -458,3 +458,5 @@
 * Added video test scene to project
 * Upgraded WaveLoader to 1.1.2
 * Split up CoreParams into two files; things that aren't game-specific settings are now in CoreParamsBase
+* Updated Unity to 2020.3.36f1
+* Updated Visual Studio Editor package to 2.0.16
