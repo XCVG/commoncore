@@ -25,6 +25,12 @@ double quotes inside literal string must be escaped with backslash, all other ch
 
 Why "p"? Because "s" and "l" are already taken. "p" is the next logical choice; p for Print
 
+An alternative supported in git versions only (will land in 4.0.0 preview 5):
+
+<p:`your string here`>
+
+backticks can be used instead of quotes, no characters need escaping but backticks cannot be used inside the string
+
 LOOKUP (implemented in StringSubModule)
 
 Looks up an item in one of the lists in the static substitution table and replaces it.

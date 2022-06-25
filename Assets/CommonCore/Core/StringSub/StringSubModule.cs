@@ -233,8 +233,16 @@ namespace CommonCore.StringSub
                         //advance to opening quote
                         for (; baseString[newPointer] != '"'; newPointer++) { throwIfPastEnd(newPointer); }
 
-                        //advance to ending quote, skipping escaped quotes
-                        for (; baseString[newPointer] != '"' || baseString[newPointer-1] == '\\'; newPointer++) { throwIfPastEnd(newPointer); }
+                        if(baseString[newPointer] == '"')
+                        {
+                            //advance to ending quote, skipping escaped quotes
+                            for (; baseString[newPointer] != '"' || baseString[newPointer - 1] == '\\'; newPointer++) { throwIfPastEnd(newPointer); }
+                        }
+                        else if (baseString[newPointer] == '`')
+                        {
+                            //advance to ending backtick
+                            for (; baseString[newPointer] != '`'; newPointer++) { throwIfPastEnd(newPointer); }
+                        }
                     }
                     
                     for (; baseString[newPointer] != '>'; newPointer++) { throwIfPastEnd(newPointer); }
@@ -274,8 +282,17 @@ namespace CommonCore.StringSub
                 if (sequence[0] == 'p')
                 {
                     int startIndex = sequence.IndexOf('"');
-                    int endIndex = sequence.LastIndexOf('"');
-                    return sequence.Substring(startIndex + 1, endIndex - startIndex - 1).Replace("\\\"", "\"");
+                    int btStartIndex = sequence.IndexOf('`');
+                    if(btStartIndex != -1 && (startIndex == -1 || startIndex > btStartIndex))
+                    {
+                        int endIndex = sequence.LastIndexOf('`');
+                        return sequence.Substring(btStartIndex + 1, endIndex - btStartIndex - 1);
+                    }
+                    else
+                    {
+                        int endIndex = sequence.LastIndexOf('"');
+                        return sequence.Substring(startIndex + 1, endIndex - startIndex - 1).Replace("\\\"", "\"");
+                    }                    
                 }
 
                 //hack to handle preserving Unity-compatible rich text color tags

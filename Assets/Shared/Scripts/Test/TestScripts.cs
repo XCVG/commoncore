@@ -46,7 +46,13 @@ public static class TestScripts
     [CCScript(ClassName = "Test", Name = "LiteralStringSub"), CCScriptHook(AllowExplicitCalls = true, Hook = ScriptHook.AfterModulesLoaded)]
     public static void TestLiteralStringSub()
     {
-        string testCase = "random text<p:\"I am a \\\"literal string\\\"!\">";
+        string testCase = "random text<p:\"I am a \\\"literal string\\\"!\">after";
+        Debug.Log($"{nameof(TestLiteralStringSub)}\n{testCase}\n{Sub.Macro(testCase)}");
+
+        testCase = "outside text<p:\"edge case ends with \\\">after";
+        Debug.Log($"{nameof(TestLiteralStringSub)}\n{testCase}\n{Sub.Macro(testCase)}");
+
+        testCase = "outside text<p:`backticks available as an \"alternative\"`>after";
         Debug.Log($"{nameof(TestLiteralStringSub)}\n{testCase}\n{Sub.Macro(testCase)}");
     }
 }
