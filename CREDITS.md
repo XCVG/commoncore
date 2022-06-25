@@ -25,6 +25,11 @@ Microsoft - System.Collections.Immutable
 	https://www.nuget.org/packages/System.Collections.Immutable/
 	Included as DLL (Assets/Plugins/Microsoft)
 	MIT License
+
+.NET Foundation and Contributors - Humanizer
+	https://dotnetfoundation.org/projects/humanizer
+	Included as DLL (Assets/Plugins/Humanizer)
+	MIT License
 	
 ## Code
 
