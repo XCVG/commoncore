@@ -461,3 +461,4 @@
 * Updated Unity to 2020.3.36f1
 * Updated Visual Studio Editor package to 2.0.16
 * Implemented backtick option for string sub literal strings
+* Initial resolution can now auto-set to native instead of fixed (behind CoreParams.SetNativeResolutionOnFirstRun flag)

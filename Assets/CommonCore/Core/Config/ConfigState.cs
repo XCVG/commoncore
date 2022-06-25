@@ -89,7 +89,12 @@ namespace CommonCore.Config
         /// </summary>
         private void Init()
         {
-
+            if(CoreParams.SetNativeResolutionOnFirstRun && !CoreParams.IsEditor && 
+                (CoreParams.Platform == RuntimePlatform.LinuxPlayer || CoreParams.Platform == RuntimePlatform.OSXPlayer || CoreParams.Platform == RuntimePlatform.WindowsPlayer))
+            {
+                Resolution = new Vector2Int(Display.main.systemWidth, Display.main.systemHeight);
+                Debug.Log("Detected native screen resolution: " + Resolution);
+            }
         }
 
         /// <summary>
