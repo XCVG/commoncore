@@ -1,7 +1,7 @@
 ﻿using CommonCore.Migrations;
 using CommonCore.ResourceManagement;
+using PseudoExtensibleEnum;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -281,6 +281,8 @@ namespace CommonCore
             CoreParams.SetInitial();
             CoreParams.LoadOverrides();
             LoadGameTypes();
+            PxEnum.RecreateCurrentContext();
+            PxEnum.CurrentContext.LoadTypes(BaseGameTypes);
             MigrationsManager.Instance.LoadMigrationsFromTypes(BaseGameTypes);
             HookMonobehaviourEvents();
             HookQuitEvent();
@@ -540,6 +542,7 @@ namespace CommonCore
         {
             //a bit ugly, but this is where it has to go
             MigrationsManager.Instance.LoadMigrationsFromAssemblies(data.LoadedAssemblies);
+            PxEnum.CurrentContext.LoadTypes(data.LoadedAssemblies);
 
             foreach (var m in Modules)
             {

@@ -5,9 +5,11 @@ using CommonCore.DebugLog;
 using CommonCore.LockPause;
 using CommonCore.State;
 using CommonCore.UI;
+using PseudoExtensibleEnum;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -47,6 +49,15 @@ public static class TestConsoleCommands
         }
 
         DebugUtils.JsonWrite(allQSettings, "qualitysettings");
+    }
+
+    [Command]
+    public static void DumpPxEnumMappings()
+    {
+        var pxEnumContext = PxEnum.CurrentContext;
+        var mappings = (Dictionary<Type, List<Type>>)pxEnumContext.GetType().GetField("PseudoExtensionMap", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(pxEnumContext);
+        var mappedMappings = mappings.Select(m => new KeyValuePair<string, string[]>(m.Key.Name, m.Value.Select(v => v.Name).ToArray())).ToList();
+        DebugUtils.JsonWrite(mappedMappings, "pxenummappings");
     }
 
     [Command]
