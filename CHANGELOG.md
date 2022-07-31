@@ -461,3 +461,4 @@
 * Updated Unity to 2020.3.36f1
 * Updated Visual Studio Editor package to 2.0.16
 * Implemented backtick option for string sub literal strings
+* Implemented PseudoExtensibleEnum groundwork, with tests and custom property drawer (this is one line, but it's huge!)
