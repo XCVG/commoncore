@@ -2398,7 +2398,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bdf71f57b0e4444281a31ce72450a3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnumTest: 128
+  EnumTest: 222
 --- !u!850595691 &857072117
 LightingSettings:
   m_ObjectHideFlags: 0

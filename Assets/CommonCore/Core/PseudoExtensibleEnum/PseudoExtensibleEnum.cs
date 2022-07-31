@@ -124,6 +124,40 @@ namespace PseudoExtensibleEnum
         }
 
         /// <summary>
+        /// Retrieves a value-name collection of the constants in a specified enumeration and its pseudo-extensions.
+        /// </summary>
+        /// <remarks>
+        /// Intended for the custom property drawer in CommonCore
+        /// </remarks>
+        public static List<KeyValuePair<long, string>> GetValueNameCollection(Type enumType, bool useContext)
+        {
+            ThrowIfTypeInvalid(enumType);
+
+            var underlyingType = Enum.GetUnderlyingType(enumType);
+            List<KeyValuePair<long, string>> result = new List<KeyValuePair<long, string>>();
+
+            var baseValues = Enum.GetValues(enumType);
+            for (int i = 0; i < baseValues.Length; i++)
+            {
+                object val = baseValues.GetValue(i);
+                result.Add(new KeyValuePair<long, string>(Convert.ToInt64(val), Enum.GetName(enumType, val)));
+            }
+
+            var extensions = GetPseudoExtensionsToEnum(enumType);
+            foreach (var eType in extensions)
+            {
+                var eValues = Enum.GetValues(eType);
+                for (int i = 0; i < eValues.Length; i++)
+                {
+                    object val = eValues.GetValue(i);
+                    result.Add(new KeyValuePair<long, string>(Convert.ToInt64(val), Enum.GetName(eType, val)));
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Returns a Boolean telling whether a given integral value, or its name as a string, exists in a specified enumeration or its pseudo-extensions.
         /// </summary>
         public static bool IsDefined(Type enumType, object value)
@@ -235,20 +269,32 @@ namespace PseudoExtensibleEnum
             //    throw new ArgumentException($"{enumType.Name} is not a psuedo-extensible enum");
         }
 
-        private static Type[] GetPseudoExtensionsToEnum(Type baseType)
+        private static Type[] GetPseudoExtensionsToEnum(Type baseType, bool useContext = false)
         {
             if (baseType.GetCustomAttribute<PseudoExtensibleAttribute>() == null)
+            {
                 return new Type[] { };
+            }
 
-            if(CurrentContext != null)
+            if(useContext && CurrentContext != null)
             {
                 return CurrentContext.GetPseudoExtensionsToEnum(baseType);
             }
 
+#if UNITY_2017_1_OR_NEWER
+            var allExtendTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(a => !(a.FullName.StartsWith("Unity") || a.FullName.StartsWith("System") || a.FullName.StartsWith("netstandard") ||
+                            a.FullName.StartsWith("mscorlib") || a.FullName.StartsWith("mono", StringComparison.OrdinalIgnoreCase) ||
+                            a.FullName.StartsWith("Boo") || a.FullName.StartsWith("I18N")))
+                .SelectMany((assembly) => assembly.GetTypes())
+                .Where(t => t.IsDefined(typeof(PseudoExtendAttribute)))
+                .Where(t => t.GetCustomAttribute<PseudoExtendAttribute>().BaseType == baseType);
+#else
             var allExtendTypes = Assembly.GetExecutingAssembly()
                 .GetTypes()
                 .Where(t => t.IsDefined(typeof(PseudoExtendAttribute)))
                 .Where(t => t.GetCustomAttribute<PseudoExtendAttribute>().BaseType == baseType);
+#endif
             return allExtendTypes.ToArray();
         }
     }

@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class PxEnumTestComponent : MonoBehaviour
 {
+    [PxEnumProperty(typeof(PxTestBaseEnum))]
     public int EnumTest;
 
     private void Start()
