@@ -535,6 +535,7 @@ Transform:
   - {fileID: 1596736175}
   - {fileID: 376343724}
   - {fileID: 1095808546}
+  - {fileID: 803421262}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1860,6 +1861,7 @@ MonoBehaviour:
   EntityTags: []
   HandleRestorableExtraData: 0
   HitMaterial: 0
+  ThunkPhysicsToRigidbody: 0
 --- !u!54 &681029983
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2353,6 +2355,50 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 736e85abde1d1dd429259631c3f6dd98, type: 3}
+--- !u!1 &803421261
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 803421262}
+  - component: {fileID: 803421263}
+  m_Layer: 0
+  m_Name: PxEnumTestThing
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &803421262
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 803421261}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 175064700}
+  m_RootOrder: 36
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &803421263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 803421261}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bdf71f57b0e4444281a31ce72450a3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EnumTest: 128
 --- !u!850595691 &857072117
 LightingSettings:
   m_ObjectHideFlags: 0
@@ -3132,6 +3178,7 @@ MonoBehaviour:
     DelayType: 0
     DelayTime: 0
     DelayAbsolute: 0
+    CustomOverride: 
 --- !u!114 &1095808548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3990,6 +4037,7 @@ MonoBehaviour:
   EntityTags: []
   HandleRestorableExtraData: 0
   HitMaterial: 0
+  ThunkPhysicsToRigidbody: 0
   LocalContainer:
     Items:
     - InstanceUID: 0
@@ -4073,6 +4121,7 @@ MonoBehaviour:
     DelayType: 2
     DelayTime: 5
     DelayAbsolute: 0
+    CustomOverride: 
 --- !u!1 &1364984199
 GameObject:
   m_ObjectHideFlags: 0
@@ -4584,6 +4633,7 @@ MonoBehaviour:
     DelayType: 0
     DelayTime: 5
     DelayAbsolute: 0
+    CustomOverride: 
 --- !u!1 &1570469190
 GameObject:
   m_ObjectHideFlags: 0
@@ -5318,6 +5368,7 @@ MonoBehaviour:
   EntityTags: []
   HandleRestorableExtraData: 0
   HitMaterial: 0
+  ThunkPhysicsToRigidbody: 0
   LocalContainer:
     Items: []
     EnforceQuantityLimits: 0
@@ -5552,6 +5603,7 @@ MonoBehaviour:
   UsePosition: 0
   Position: {x: 0, y: 0, z: 0}
   Rotation: {x: 0, y: 0, z: 0}
+  TransferEffect: 
 --- !u!1 &1873061583
 GameObject:
   m_ObjectHideFlags: 0
@@ -6322,6 +6374,7 @@ MonoBehaviour:
   EntityTags: []
   HandleRestorableExtraData: 0
   HitMaterial: 0
+  ThunkPhysicsToRigidbody: 0
 --- !u!114 &1047013200950817356
 MonoBehaviour:
   m_ObjectHideFlags: 0
