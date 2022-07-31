@@ -434,7 +434,7 @@
 * Fixed AddItem enforceQuantityLimit not applying correctly
 * Fixed DialogueParser not actually being capable of parsing music=null and not setting music to null by default
 
-# 4.0.0 pNext
+# 4.0.0 Preview 5
 
 * Added core_resources and VS code workspace files to default gitignore
 * Handling of boss health by RPGHudController is now optional
