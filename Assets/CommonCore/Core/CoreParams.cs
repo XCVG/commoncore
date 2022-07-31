@@ -39,8 +39,8 @@ namespace CommonCore
         public static Vector2Int SafeResolution { get; private set; } = new Vector2Int(1280, 720);
         public static bool SetNativeResolutionOnFirstRun { get; private set; } = true;
 
-        public static UIThemePolicy UIThemeMode { get; private set; } = UIThemePolicy.ExplicitOnly;
-        public static string DefaultUITheme { get; private set; } = "ThresholdTheme";
+        public static UIThemePolicy UIThemeMode { get; private set; } = UIThemePolicy.Auto;
+        public static string DefaultUITheme { get; private set; } = "DefaultTheme";
 
         public static float DelayedEventPollInterval { get; private set; } = 1.0f;
         //public static bool UseAggressiveLookups { get; private set; } = true; //may bring this back someday if performance is an issue

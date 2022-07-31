@@ -19,6 +19,7 @@ namespace CommonCore.UI
 
         public Color TextColor;
         public Color TextContrastingColor;
+        public Color HighlightColor;
 
         [Header("Panels")]
         public Sprite Panel;
