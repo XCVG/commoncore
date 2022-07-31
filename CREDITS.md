@@ -87,17 +87,6 @@ FPS legs model (Assets/TestObjects/legs)
 	Built with MakeHuman (CC0 export exemption)
 	Riding Boots by punkduck (CC-BY)
 	Riding Breeches by punkduck (CC-BY)
-	
-Peasant (female) character model (Assets/OpenSource/makehuman/peasantf)
-	Built with MakeHuman (CC0 export exemption)
-	F Dress 03 by Mindfront (CC-BY)
-	Starship uniform boots by Sculletto (CC0)
-	
-Peasant (male) character model (Assets/OpenSource/makehuman/peasantm)
-	Built with MakeHuman (CC0 export exemption)
-	Ruffle Sleeve Peasant Blouse 1 by Mindfront (CC-BY)
-	F Trousers 01 by Mindfront (CC-BY)
-	Starship uniform boots by Sculletto (CC0)
 
 Sword (Assets/Objects/OpenSource/sword)
 	Clint Bellanger - Historical Swords Set [CC-BY 3.0]

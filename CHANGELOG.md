@@ -465,3 +465,6 @@
 * Implemented PseudoExtensibleEnum groundwork, with tests and custom property drawer (this is one line, but it's huge!)
 * Added missing graphics to DefaultTheme
 * DefaultTheme is now applied by default
+* Themes now define a Highlight Color
+* Removed a lot of unused assets and prefabs left over from Ascension III
+* Moved Aurelia full model, arm and leg viewmodels to Objects/OpenSource/aurelia
