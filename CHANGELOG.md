@@ -468,3 +468,10 @@
 * Themes now define a Highlight Color
 * Removed a lot of unused assets and prefabs left over from Ascension III
 * Moved Aurelia full model, arm and leg viewmodels to Objects/OpenSource/aurelia
+
+# 4.0.0 pNext
+
+* Added DialogueOnAdvance named hook called when dialogue is going to next frame
+* Fixed SlideshowControllerEx not using sprites from Dialogue/char or Dialogue/bg
+* InitSceneController animation can now be disabled
+* InitSceneController can now detect if loading has failed and display "Fatal Error" text

@@ -95,9 +95,9 @@ namespace CommonCore.Experimental
         {
             var sprite = CoreUtils.LoadResource<Sprite>("Sequences/" + imageName);
             if(sprite == null)
-                CoreUtils.LoadResource<Sprite>("Dialogue/char/" + imageName);
+                sprite = CoreUtils.LoadResource<Sprite>("Dialogue/char/" + imageName);
             if (sprite == null)
-                CoreUtils.LoadResource<Sprite>("Dialogue/bg/" + imageName);
+                sprite = CoreUtils.LoadResource<Sprite>("Dialogue/bg/" + imageName);
             return sprite;
         }
 

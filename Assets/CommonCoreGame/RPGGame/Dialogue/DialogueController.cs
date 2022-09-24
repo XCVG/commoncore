@@ -659,8 +659,9 @@ namespace CommonCore.RpgGame.Dialogue
         {
             var nextLoc = ParseLocation(next);
 
-            
-            if(string.IsNullOrEmpty(nextLoc.Key) || nextLoc.Key == "this" || nextLoc.Key == CurrentSceneName)
+            ScriptingModule.CallNamedHooked("DialogueOnAdvance", this, nextLoc);
+
+            if (string.IsNullOrEmpty(nextLoc.Key) || nextLoc.Key == "this" || nextLoc.Key == CurrentSceneName)
             {
                 if (nextLoc.Value == "default")
                     PresentNewFrame(CurrentScene.Default);

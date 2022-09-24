@@ -9,6 +9,8 @@ using CommonCore.Config;
 public class InitSceneController : MonoBehaviour
 {
     [SerializeField]
+    private bool AnimateText = true;
+    [SerializeField]
     private Text LoadingText = null;
     [SerializeField]
     private int MaxLoadingDots = 3;
@@ -17,19 +19,28 @@ public class InitSceneController : MonoBehaviour
 
     private int LoadingDots = 0;
     private float Elapsed = 0;
+    private bool LoadingDone = false;
 
 	void Update ()
     {
 		if(CCBase.Initialized)
         {
-            //ConfigModule.Apply();
+            LoadingDone = true;
             LoadingText.text = "Loaded!";
             SceneManager.LoadScene(CCBase.LoadSceneAfterInit);
+        }
+        else if(CCBase.Failed)
+        {
+            LoadingDone = true;
+            LoadingText.text = "Fatal Error!";
         }
 	}
 
     private void LateUpdate()
     {
+        if (LoadingDone || !AnimateText)
+            return;
+
         Elapsed += Time.deltaTime;
 
         if (Elapsed > LoadingDotDelay)
