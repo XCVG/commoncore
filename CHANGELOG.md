@@ -475,3 +475,5 @@
 * Fixed SlideshowControllerEx not using sprites from Dialogue/char or Dialogue/bg
 * InitSceneController animation can now be disabled
 * InitSceneController can now detect if loading has failed and display "Fatal Error" text
+* Long system text (printed initially into console) now available via CoreParams.GetLongSystemText()
+* Added console command PrintSystemText that prints long system text to console

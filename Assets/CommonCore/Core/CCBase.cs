@@ -312,6 +312,13 @@ namespace CommonCore
 
         private static void PrintSystemData()
         {
+            string systemData = GetSystemData();
+
+            Debug.Log(systemData);
+        }
+
+        internal static string GetSystemData()
+        {
             //this is not efficient, but it's a hell of a lot more readable than a gigantic string.format
             StringBuilder sb = new StringBuilder(1024);
 
@@ -325,10 +332,10 @@ namespace CommonCore
             sb.AppendLine(Environment.CommandLine);
             sb.AppendFormat("DataPath: {0} | StreamingAssetsPath: {1} | GameFolderPath: {2}\n", CoreParams.DataPath, CoreParams.StreamingAssetsPath, CoreParams.GameFolderPath);
             sb.AppendFormat("PersistentDataPath: {0} | LocalDataPath: {1}\n", CoreParams.PersistentDataPath, CoreParams.LocalDataPath);
-            sb.AppendFormat("SavePath: {0} | ScreenshotsPath: {1}\n", CoreParams.SavePath, CoreParams.ScreenshotsPath);            
+            sb.AppendFormat("SavePath: {0} | ScreenshotsPath: {1}\n", CoreParams.SavePath, CoreParams.ScreenshotsPath);
             sb.AppendLine("-----------------------------------------");
 
-            Debug.Log(sb.ToString());
+            return sb.ToString();
         }
 
         private static List<Type> GetAllModuleTypes()

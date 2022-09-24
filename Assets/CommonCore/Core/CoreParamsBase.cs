@@ -292,6 +292,14 @@ namespace CommonCore
         }
 
         /// <summary>
+        /// Returns a "long" description of the application name, versions, platform, environment
+        /// </summary>
+        public static string GetLongSystemText()
+        {
+            return CCBase.GetSystemData();
+        }
+
+        /// <summary>
         /// Gets versioninfo of the current application
         /// </summary>
         /// <returns></returns>

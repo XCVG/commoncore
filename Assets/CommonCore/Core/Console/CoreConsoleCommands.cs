@@ -46,6 +46,15 @@ namespace CommonCore.Console
         }
 
         /// <summary>
+        /// Console command. Dumps system info to console
+        /// </summary>
+        [Command(useClassName = false)]
+        private static void PrintSystemText()
+        {
+            ConsoleModule.WriteLine(CoreParams.GetLongSystemText());
+        }
+
+        /// <summary>
         /// Console command. Dumps all config options to console.
         /// </summary>
         [Command(alias = "Print", className = "Config", useClassName = true)]
