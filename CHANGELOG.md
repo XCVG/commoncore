@@ -478,3 +478,4 @@
 * Long system text (printed initially into console) now available via CoreParams.GetLongSystemText()
 * Added console command PrintSystemText that prints long system text to console
 * Modules are now torn down in reverse order on application quit
+* Default init_player.json now uses EquippedIDs and item UID references instead of deprecated direct refs
