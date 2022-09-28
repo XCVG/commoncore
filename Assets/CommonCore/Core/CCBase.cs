@@ -707,7 +707,7 @@ namespace CommonCore
             Debug.Log("[Core] Cleaning up CommonCore...");
 
             //execute quit methods and unload modules
-            foreach(CCModule m in Modules)
+            foreach(CCModule m in ((IEnumerable<CCModule>)Modules).Reverse())
             {
                 try
                 {
