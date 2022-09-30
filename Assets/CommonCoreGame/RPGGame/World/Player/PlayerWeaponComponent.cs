@@ -194,10 +194,10 @@ namespace CommonCore.RpgGame.World
             if (DidJustFire || TimeToNext > 0)
                 return;
 
-            if (!GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.RightWeapon))
+            if (!GameState.Instance.PlayerRpgState.IsEquipped((int)EquipSlot.RightWeapon))
                 return;
 
-            var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon]?.ItemModel;
+            var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[(int)EquipSlot.RightWeapon]?.ItemModel;
             if(rightWeaponModel != null && rightWeaponModel is RangedWeaponItemModel rwim)
             {
                 float decayMoveFactor = 1.0f;
@@ -240,7 +240,7 @@ namespace CommonCore.RpgGame.World
         /// </summary>
         protected void RescaleAccumulators(bool enteringADS)
         {
-            var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon]?.ItemModel;
+            var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[(int)EquipSlot.RightWeapon]?.ItemModel;
             if (rightWeaponModel != null && rightWeaponModel is RangedWeaponItemModel rwim)
             {
                 float recoilRatio = AccumulatedRecoil / (enteringADS ? rwim.Recoil.Max : rwim.ADSRecoil.Max);
@@ -295,14 +295,14 @@ namespace CommonCore.RpgGame.World
                 if(TransitionState == WeaponTransitionState.Lowering) 
                 {
                     //lowering is done at this point, raise the next weapon
-                    if (GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.RightWeapon))
+                    if (GameState.Instance.PlayerRpgState.IsEquipped((int)EquipSlot.RightWeapon))
                     {
                         //swap the viewmodel, begin animation
                         ClearViewModel(EquipSlot.RightWeapon);
                         SetViewModel(EquipSlot.RightWeapon);
                         HandleCrosshair();
 
-                        var wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel as WeaponItemModel;
+                        var wim = GameState.Instance.PlayerRpgState.Equipped[(int)EquipSlot.RightWeapon].ItemModel as WeaponItemModel;
                                                 
                         if (RightViewModel != null)
                         {
@@ -340,9 +340,9 @@ namespace CommonCore.RpgGame.World
                 else if(TransitionState == WeaponTransitionState.Raising)
                 {
                     //raising done, switch to idle
-                    if (GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.RightWeapon))
+                    if (GameState.Instance.PlayerRpgState.IsEquipped((int)EquipSlot.RightWeapon))
                     {
-                        var wim = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel as WeaponItemModel;
+                        var wim = GameState.Instance.PlayerRpgState.Equipped[(int)EquipSlot.RightWeapon].ItemModel as WeaponItemModel;
 
                         if (RightViewModel != null)
                         {
@@ -404,7 +404,7 @@ namespace CommonCore.RpgGame.World
                         RightViewModel.SetState(ViewModelState.Idle, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded, 1);
                     //else if (LeftViewModel != null)
                     //    LeftViewModel.SetState(ViewModelState.Idle, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded, 1);
-                    else if (FallbackViewModel != null && !GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.LeftWeapon))
+                    else if (FallbackViewModel != null && !GameState.Instance.PlayerRpgState.IsEquipped((int)EquipSlot.LeftWeapon))
                         Hands.SetState(ViewModelState.Idle, FallbackViewModel, ViewModelHandednessState.TwoHanded, 1);
                     else if (Hands != null)
                         Hands.SetState(ViewModelState.Idle, null, IsADS ? ViewModelHandednessState.ADS : ViewModelHandednessState.TwoHanded, 1);
@@ -414,10 +414,10 @@ namespace CommonCore.RpgGame.World
             //input handling
             if (PlayerController.AttackEnabled && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoAttack) && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoWeapons) && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.TotallyFrozen) && PlayerController.PlayerInControl && !LockPauseModule.IsInputLocked())
             {
-                bool rightEquipped = GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.RightWeapon);
-                bool leftEquipped = GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.LeftWeapon);
+                bool rightEquipped = GameState.Instance.PlayerRpgState.IsEquipped((int)EquipSlot.RightWeapon);
+                bool leftEquipped = GameState.Instance.PlayerRpgState.IsEquipped((int)EquipSlot.LeftWeapon);
 
-                WeaponItemModel weaponModel = GameState.Instance.PlayerRpgState.Equipped.GetOrDefault(EquipSlot.RightWeapon, null)?.ItemModel as WeaponItemModel;
+                WeaponItemModel weaponModel = GameState.Instance.PlayerRpgState.Equipped.GetOrDefault((int)EquipSlot.RightWeapon, null)?.ItemModel as WeaponItemModel;
 
                 if (weaponModel is DummyWeaponItemModel)
                 {
@@ -479,7 +479,7 @@ namespace CommonCore.RpgGame.World
                         {
                             if (rightEquipped)
                             {
-                                var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel;
+                                var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[(int)EquipSlot.RightWeapon].ItemModel;
                                 if (rightWeaponModel.CheckFlag(ItemFlag.WeaponHasADS))
                                 {
                                     ToggleADS();
@@ -496,8 +496,8 @@ namespace CommonCore.RpgGame.World
             {
                 if (IsADS)
                 {
-                    bool rightEquipped = GameState.Instance.PlayerRpgState.Equipped.ContainsKey(EquipSlot.RightWeapon);
-                    var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel;
+                    bool rightEquipped = GameState.Instance.PlayerRpgState.Equipped.ContainsKey((int)EquipSlot.RightWeapon);
+                    var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[(int)EquipSlot.RightWeapon].ItemModel;
                     if (rightEquipped && !(rightWeaponModel is DummyWeaponItemModel) && rightWeaponModel.CheckFlag(ItemFlag.WeaponHasADS))
                     {
                         ToggleADS();
@@ -515,7 +515,7 @@ namespace CommonCore.RpgGame.World
             if (TimeToNext <= PendingRecockTime)
             {
                 CharacterModel player = GameState.Instance.PlayerRpgState;
-                InventoryItemInstance wItem = player.Equipped[EquipSlot.RightWeapon];
+                InventoryItemInstance wItem = player.Equipped[(int)EquipSlot.RightWeapon];
                 RangedWeaponItemModel wim = wItem?.ItemModel as RangedWeaponItemModel;
                 if (wim == null)
                 {
@@ -546,7 +546,7 @@ namespace CommonCore.RpgGame.World
                 return false;
             }
 
-            var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel;
+            var rightWeaponModel = GameState.Instance.PlayerRpgState.Equipped[(int)EquipSlot.RightWeapon].ItemModel;
             
             if ((MappedInput.GetButton(DefaultControls.Fire) && rightWeaponModel.CheckFlag(ItemFlag.WeaponFullAuto)) 
                 || (rightWeaponModel is RangedWeaponItemModel rm && BurstCount < rm.ShotsPerBurst && BurstCount > 0))
@@ -555,7 +555,7 @@ namespace CommonCore.RpgGame.World
                 //ammo logic
                 if (rightWeaponModel is RangedWeaponItemModel rwim && rwim.UseAmmo)
                 {
-                    if (rwim.UseMagazine && GameState.Instance.PlayerRpgState.AmmoInMagazine[EquipSlot.RightWeapon] < rwim.AmmoPerShot)
+                    if (rwim.UseMagazine && GameState.Instance.PlayerRpgState.AmmoInMagazine[(int)EquipSlot.RightWeapon] < rwim.AmmoPerShot)
                     {
                         return false;
                     }
@@ -611,7 +611,7 @@ namespace CommonCore.RpgGame.World
                     Hands.SetState(ViewModelState.Idle, RightViewModel, ViewModelHandednessState.ADS, 1);
                 }
 
-                if(GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.RightWeapon) && GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon].ItemModel is RangedWeaponItemModel rwim)
+                if(GameState.Instance.PlayerRpgState.IsEquipped((int)EquipSlot.RightWeapon) && GameState.Instance.PlayerRpgState.Equipped[(int)EquipSlot.RightWeapon].ItemModel is RangedWeaponItemModel rwim)
                 {
                     SetCameraZoom(rwim.ADSZoomFactor, ADSZoomFadeTime);
                 }
@@ -644,7 +644,7 @@ namespace CommonCore.RpgGame.World
             }
             else
             {
-                wItem = player.Equipped.GetOrDefault(slot, null);
+                wItem = player.Equipped.GetOrDefault((int)slot, null);
                 wim = wItem?.ItemModel as MeleeWeaponItemModel;
             }
 
@@ -995,9 +995,9 @@ namespace CommonCore.RpgGame.World
 
             CharacterModel player = GameState.Instance.PlayerRpgState;
 
-            if (player.Equipped.ContainsKey(slot))
+            if (player.Equipped.ContainsKey((int)slot))
             {
-                InventoryItemInstance wItem = player.Equipped[slot];
+                InventoryItemInstance wItem = player.Equipped[(int)slot];
                 RangedWeaponItemModel wim = wItem?.ItemModel as RangedWeaponItemModel;
                 if (wim != null)
                 {
@@ -1012,14 +1012,14 @@ namespace CommonCore.RpgGame.World
                     {
                         if (wim.UseMagazine)
                         {
-                            if (player.AmmoInMagazine[slot] < wim.AmmoPerShot && !IsReloading)
+                            if (player.AmmoInMagazine[(int)slot] < wim.AmmoPerShot && !IsReloading)
                             {
                                 //I think this one actually works okay
                                 DoReload();
                                 return;
                             }
 
-                            player.AmmoInMagazine[slot] -= wim.AmmoPerShot;
+                            player.AmmoInMagazine[(int)slot] -= wim.AmmoPerShot;
                         }
                         else
                         {
@@ -1100,7 +1100,7 @@ namespace CommonCore.RpgGame.World
                     float rateRpgFactor = RpgValues.GetWeaponRateFactor(player, wim);
                     float fireInterval = BurstCount > 0 ? wim.BurstFireInterval : wim.FireInterval;
                     TimeToNext = (wim.CheckFlag(ItemFlag.WeaponIgnoreLevelledRate)) ? fireInterval : (fireInterval * rateRpgFactor);
-                    if(wim.CheckFlag(ItemFlag.WeaponHasRecock) && (player.AmmoInMagazine[slot] > 0 || !wim.CheckFlag(ItemFlag.WeaponRecockSkipOnEmpty)))
+                    if(wim.CheckFlag(ItemFlag.WeaponHasRecock) && (player.AmmoInMagazine[(int)slot] > 0 || !wim.CheckFlag(ItemFlag.WeaponRecockSkipOnEmpty)))
                     {
                         var oldTTN = TimeToNext;
                         TimeToNext += (wim.CheckFlag(ItemFlag.WeaponRecockIgnoreLevelledRate)) ? wim.RecockTime : wim.RecockTime * rateRpgFactor;
@@ -1146,7 +1146,7 @@ namespace CommonCore.RpgGame.World
                         Debug.LogWarning("Left weapon slot not supported!");
                     }
 
-                    if (useAmmo && autoReload && wim.UseMagazine && player.AmmoInMagazine[slot] <= 0)
+                    if (useAmmo && autoReload && wim.UseMagazine && player.AmmoInMagazine[(int)slot] <= 0)
                     {
                         DoReload();
                     }
@@ -1304,12 +1304,12 @@ namespace CommonCore.RpgGame.World
             void reloadSide(EquipSlot slot, WeaponViewModelScript viewModel)
             {
                 CharacterModel player = GameState.Instance.PlayerRpgState;
-                if (player.Equipped.ContainsKey(slot))
+                if (player.Equipped.ContainsKey((int)slot))
                 {
-                    if (player.Equipped[slot].ItemModel is RangedWeaponItemModel rwim)
+                    if (player.Equipped[(int)slot].ItemModel is RangedWeaponItemModel rwim)
                     {
                         //unreloadable condition
-                        if (!rwim.UseMagazine || player.AmmoInMagazine[slot] == rwim.MagazineSize
+                        if (!rwim.UseMagazine || player.AmmoInMagazine[(int)slot] == rwim.MagazineSize
                             || player.Inventory.CountItem(rwim.AType.ToString()) <= 0)
                         {
                             return;
@@ -1332,7 +1332,7 @@ namespace CommonCore.RpgGame.World
                         TimeToNext = Math.Max(rwim.ReloadTime * reloadRpgFactor, TimeToNext); //we take the longest time
 
                         if (!string.IsNullOrEmpty(rwim?.Scripts?.OnReload))
-                            ScriptingModule.Call(rwim.Scripts.OnReload, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, player.Equipped[slot], player.Equipped[slot]?.ItemModel);
+                            ScriptingModule.Call(rwim.Scripts.OnReload, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, player.Equipped[(int)slot], player.Equipped[(int)slot]?.ItemModel);
                     }
                 }
 
@@ -1353,13 +1353,13 @@ namespace CommonCore.RpgGame.World
 
             void finishReloadSide(EquipSlot slot, WeaponViewModelScript viewModel)
             {
-                if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey(slot))
+                if (GameState.Instance.PlayerRpgState.Equipped.ContainsKey((int)slot))
                 {
-                    if (GameState.Instance.PlayerRpgState.Equipped[slot].ItemModel is RangedWeaponItemModel rwim)
+                    if (GameState.Instance.PlayerRpgState.Equipped[(int)slot].ItemModel is RangedWeaponItemModel rwim)
                     {
-                        int currentAmmo = GameState.Instance.PlayerRpgState.AmmoInMagazine[slot];
+                        int currentAmmo = GameState.Instance.PlayerRpgState.AmmoInMagazine[(int)slot];
                         int qty = Math.Min(rwim.MagazineSize - currentAmmo, GameState.Instance.PlayerRpgState.Inventory.CountItem(rwim.AType.ToString()));
-                        GameState.Instance.PlayerRpgState.AmmoInMagazine[slot] = qty + currentAmmo;
+                        GameState.Instance.PlayerRpgState.AmmoInMagazine[(int)slot] = qty + currentAmmo;
                         GameState.Instance.PlayerRpgState.Inventory.RemoveItem(rwim.AType.ToString(), qty);
 
                         if (viewModel != null)
@@ -1397,7 +1397,7 @@ namespace CommonCore.RpgGame.World
                 DelayedFiringAction = null; //should we?
 
                 //handle equip/unequip melee weapon
-                if (player.Equipped.ContainsKey(EquipSlot.RightWeapon) && player.Equipped[EquipSlot.RightWeapon] != null && player.Equipped[EquipSlot.RightWeapon].ItemModel is WeaponItemModel wim)
+                if (player.Equipped.ContainsKey((int)EquipSlot.RightWeapon) && player.Equipped[(int)EquipSlot.RightWeapon] != null && player.Equipped[(int)EquipSlot.RightWeapon].ItemModel is WeaponItemModel wim)
                 {
                     //fixed to equip *right* weapon
                     Debug.Log("Equipped right weapon!");
@@ -1507,7 +1507,7 @@ namespace CommonCore.RpgGame.World
                 TimeToNext = 0;
 
                 //handle equip/unequip ranged weapon
-                if (player.Equipped.ContainsKey(EquipSlot.LeftWeapon) && player.Equipped[EquipSlot.LeftWeapon] != null)
+                if (player.Equipped.ContainsKey((int)EquipSlot.LeftWeapon) && player.Equipped[(int)EquipSlot.LeftWeapon] != null)
                 {
                     Debug.LogError("Left weapons are not actually supported!");
                 }
@@ -1525,7 +1525,7 @@ namespace CommonCore.RpgGame.World
             {
                 if (RightViewModel != null)
                     Hands.SetState(ViewModelState.Idle, RightViewModel, ViewModelHandednessState.TwoHanded, 1);
-                else if (player.IsEquipped(EquipSlot.RightWeapon))
+                else if (player.IsEquipped((int)EquipSlot.RightWeapon))
                     Hands.SetState(ViewModelState.Idle, null, ViewModelHandednessState.TwoHanded, 1);
                 else
                     Hands.SetState(ViewModelState.Idle, FallbackViewModel, ViewModelHandednessState.TwoHanded, 1);
@@ -1533,7 +1533,7 @@ namespace CommonCore.RpgGame.World
 
             void lowerWeapon()
             {
-                if (GameState.Instance.PlayerRpgState.IsEquipped(EquipSlot.RightWeapon))
+                if (GameState.Instance.PlayerRpgState.IsEquipped((int)EquipSlot.RightWeapon))
                 {
                     if (RightViewModel != null)
                     {
@@ -1566,7 +1566,7 @@ namespace CommonCore.RpgGame.World
             if (slot != EquipSlot.RightWeapon)
                 throw new NotImplementedException();
 
-            InventoryItemInstance item = GameState.Instance.PlayerRpgState.Equipped[EquipSlot.RightWeapon];
+            InventoryItemInstance item = GameState.Instance.PlayerRpgState.Equipped[(int)EquipSlot.RightWeapon];
             WeaponItemModel wim = item.ItemModel as WeaponItemModel;
             if (wim != null && !string.IsNullOrEmpty(wim.ViewModel))
             {
@@ -1633,7 +1633,7 @@ namespace CommonCore.RpgGame.World
             {
                 QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("HudDisableCrosshair"));
             }
-            else if (GameState.Instance.PlayerRpgState.Equipped.TryGetValue(EquipSlot.RightWeapon, out var weaponItem))
+            else if (GameState.Instance.PlayerRpgState.Equipped.TryGetValue((int)EquipSlot.RightWeapon, out var weaponItem))
             {
                 WeaponItemModel rwim = weaponItem.ItemModel as WeaponItemModel;
                 var gameplayConfig = ConfigState.Instance.GetGameplayConfig();

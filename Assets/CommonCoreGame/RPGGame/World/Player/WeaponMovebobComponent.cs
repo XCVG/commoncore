@@ -155,6 +155,6 @@ namespace CommonCore.RpgGame.World
         }
 
         //wtf
-        private bool WeaponUseMovebob => !GameState.Instance.PlayerRpgState.Equipped.GetOrDefault(EquipSlot.RightWeapon, null)?.ItemModel.CheckFlag(ItemFlag.WeaponNoMovebob) ?? true;
+        private bool WeaponUseMovebob => !GameState.Instance.PlayerRpgState.Equipped.GetOrDefault((int)EquipSlot.RightWeapon, null)?.ItemModel.CheckFlag(ItemFlag.WeaponNoMovebob) ?? true;
     }
 }

@@ -670,14 +670,14 @@ namespace CommonCore.RpgGame.UI
             var player = GameState.Instance.PlayerRpgState;
 
             //ignore the left weapon even if it exists
-            if (player.IsEquipped(EquipSlot.RightWeapon))
+            if (player.IsEquipped((int)EquipSlot.RightWeapon))
             {
-                RightWeaponText.text = InventoryModel.GetNiceName(player.Equipped[EquipSlot.RightWeapon].ItemModel);
-                if (player.Equipped[EquipSlot.RightWeapon].ItemModel is RangedWeaponItemModel rwim && rwim.UseAmmo)
+                RightWeaponText.text = InventoryModel.GetNiceName(player.Equipped[(int)EquipSlot.RightWeapon].ItemModel);
+                if (player.Equipped[(int)EquipSlot.RightWeapon].ItemModel is RangedWeaponItemModel rwim && rwim.UseAmmo)
                 {
                     if (rwim.UseMagazine)
                     {
-                        RightAmmoText.text = player.AmmoInMagazine[EquipSlot.RightWeapon].ToString();
+                        RightAmmoText.text = player.AmmoInMagazine[(int)EquipSlot.RightWeapon].ToString();
                         RightAmmoReserveText.text = player.Inventory.CountItem(rwim.AType.ToString()).ToString();
                     }
                     else

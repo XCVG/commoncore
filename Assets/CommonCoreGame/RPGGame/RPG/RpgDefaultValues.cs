@@ -82,7 +82,7 @@ namespace CommonCore.RpgGame.Rpg
         {
             //try the ShieldGenerator slot first
             {
-                if (characterModel.IsEquipped(EquipSlot.ShieldGenerator) && characterModel.Equipped[EquipSlot.ShieldGenerator].ItemModel is ArmorItemModel aim)
+                if (characterModel.IsEquipped((int)EquipSlot.ShieldGenerator) && characterModel.Equipped[(int)EquipSlot.ShieldGenerator].ItemModel is ArmorItemModel aim)
                 {
                     if(aim.Shields != null)
                         return aim.Shields;
@@ -91,12 +91,14 @@ namespace CommonCore.RpgGame.Rpg
 
             //also try the Body slot
             {
-                if (characterModel.IsEquipped(EquipSlot.Body) && characterModel.Equipped[EquipSlot.Body].ItemModel is ArmorItemModel aim)
+                if (characterModel.IsEquipped((int)EquipSlot.Body) && characterModel.Equipped[(int)EquipSlot.Body].ItemModel is ArmorItemModel aim)
                 {
                     if (aim.Shields != null)
                         return aim.Shields;
                 }
             }
+
+            //TODO then try other slots
 
             //return new ShieldParams(100f, 100f, 5f, 2f, 0.1f); //for testing
 

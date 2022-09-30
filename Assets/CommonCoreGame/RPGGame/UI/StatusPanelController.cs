@@ -51,7 +51,7 @@ namespace CommonCore.RpgGame.UI
             if(EquipText != null)
             {
                 EquipText.text = string.Format("Armor: {0}\nLH Weapon: {1}\nRH Weapon: {2}",
-                GetNameForSlot(EquipSlot.Body, pModel), GetNameForSlot(EquipSlot.LeftWeapon, pModel), GetNameForSlot(EquipSlot.RightWeapon, pModel));
+                GetNameForSlot((int)EquipSlot.Body, pModel), GetNameForSlot((int)EquipSlot.LeftWeapon, pModel), GetNameForSlot((int)EquipSlot.RightWeapon, pModel));
             }
 
             if(LevelUpButton != null)
@@ -90,7 +90,7 @@ namespace CommonCore.RpgGame.UI
         }
 
         //will generalize and move this
-        private string GetNameForSlot(EquipSlot slot, CharacterModel pModel)
+        private string GetNameForSlot(int slot, CharacterModel pModel)
         {
             if (!pModel.Equipped.ContainsKey(slot))
                 return "none";

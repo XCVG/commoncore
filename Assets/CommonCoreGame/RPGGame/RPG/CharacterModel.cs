@@ -12,6 +12,7 @@ using CommonCore.State;
 using System.Collections;
 using System.Linq;
 using CommonCore.Scripting;
+using PseudoExtensibleEnum;
 
 namespace CommonCore.RpgGame.Rpg
 {
@@ -113,10 +114,11 @@ namespace CommonCore.RpgGame.Rpg
         public IEnumerable<Condition> AllConditions => Conditions; //TODO handle conditions from equipped items and conditions from playerflags
 
         public InventoryModel Inventory { get; private set; }
-        public Dictionary<EquipSlot, int> AmmoInMagazine { get; set; }
+        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(EquipSlot))]
+        public Dictionary<int, int> AmmoInMagazine { get; private set; }
 
         [JsonIgnore]
-        public IDictionary<EquipSlot, InventoryItemInstance> Equipped { get; private set; }
+        public IDictionary<int, InventoryItemInstance> Equipped { get; private set; }
         [JsonProperty(PropertyName = "Equipped")]
         private Dictionary<EquipSlot, InventoryItemInstance> EquippedJsonParseable //hack for parsing old saves and old RPG defs
         {
@@ -132,14 +134,14 @@ namespace CommonCore.RpgGame.Rpg
                             Debug.LogError($"Cannot equip item instance ({kvp.Value}) because it has no UID");
                             continue;
                         }
-                        EquippedIDs[kvp.Key] = kvp.Value.InstanceUID;
+                        EquippedIDs[(int)kvp.Key] = kvp.Value.InstanceUID;
                     }
                 }
 
             }
         }
-        [JsonProperty]
-        private Dictionary<EquipSlot, long> EquippedIDs { get; set; } = new Dictionary<EquipSlot, long>();
+        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(EquipSlot))]
+        private Dictionary<int, long> EquippedIDs { get; set; } = new Dictionary<int, long>();
 
         //mostly for addons/game-specific stuff
         [JsonProperty(ItemTypeNameHandling = TypeNameHandling.All)]
@@ -157,7 +159,7 @@ namespace CommonCore.RpgGame.Rpg
             Inventory.Character = this;
             Conditions = new List<Condition>();
             Equipped = new EquippedDictionaryProxy(this);
-            AmmoInMagazine = new Dictionary<EquipSlot, int>();
+            AmmoInMagazine = new Dictionary<int, int>();
             ExtraData = new Dictionary<string, object>();
 
             //create blank stats and derive stats
@@ -184,9 +186,10 @@ namespace CommonCore.RpgGame.Rpg
             }
 
             //apply equipment bonuses (armor basically)
-            if (Equipped.ContainsKey(EquipSlot.Body))
+            //TODO this should iterate through all equipped and apply bonuses from all armor items
+            if (Equipped.ContainsKey((int)EquipSlot.Body))
             {
-                ArmorItemModel aim = Equipped[EquipSlot.Body].ItemModel as ArmorItemModel;
+                ArmorItemModel aim = Equipped[(int)EquipSlot.Body].ItemModel as ArmorItemModel;
                 if (aim != null)
                 {
                     foreach (var key in BaseStats.DamageResistance.Keys)
@@ -249,14 +252,14 @@ namespace CommonCore.RpgGame.Rpg
             EquipItem(item, null);
         }
 
-        public void EquipItem(InventoryItemInstance item, EquipSlot? slotOverride)
+        public void EquipItem(InventoryItemInstance item, int? slotOverride)
         {
             if (item.Equipped)
                 throw new InvalidOperationException();
 
-            EquipSlot slot = slotOverride ?? (EquipSlot)InventoryModel.GetItemSlot(item.ItemModel);
+            int slot = slotOverride ?? InventoryModel.GetItemSlot(item.ItemModel);
 
-            if (slot == EquipSlot.None)
+            if (slot == (int)EquipSlot.None)
                 throw new InvalidOperationException();
 
             //unequip what was in the slot
@@ -264,8 +267,8 @@ namespace CommonCore.RpgGame.Rpg
                 UnequipItem(Equipped[slot], false);
 
             //if it's a two-handed weapon, also unequip the other slot
-            if (item.ItemModel is WeaponItemModel && item.ItemModel.CheckFlag("TwoHanded") && Equipped.ContainsKey(slot == EquipSlot.LeftWeapon ? EquipSlot.RightWeapon : EquipSlot.LeftWeapon))
-                UnequipItem(Equipped[slot == EquipSlot.LeftWeapon ? EquipSlot.RightWeapon : EquipSlot.LeftWeapon], false);
+            if (item.ItemModel is WeaponItemModel && item.ItemModel.CheckFlag("TwoHanded") && Equipped.ContainsKey(slot == (int)EquipSlot.LeftWeapon ? (int)EquipSlot.RightWeapon : (int)EquipSlot.LeftWeapon))
+                UnequipItem(Equipped[slot == (int)EquipSlot.LeftWeapon ? (int)EquipSlot.RightWeapon : (int)EquipSlot.LeftWeapon], false);
 
             Equipped[slot] = item;
 
@@ -292,9 +295,9 @@ namespace CommonCore.RpgGame.Rpg
             }));
         }
 
-        public InventoryItemInstance UnequipItem(EquipSlot slot)
+        public InventoryItemInstance UnequipItem(int slot)
         {
-            if (slot != EquipSlot.None && Equipped.TryGetValue(slot, out var item) && item != null)
+            if (slot != (int)EquipSlot.None && Equipped.TryGetValue(slot, out var item) && item != null)
             {
                 UnequipItem(item);
                 return item;
@@ -313,9 +316,9 @@ namespace CommonCore.RpgGame.Rpg
             if (!item.Equipped)
                 throw new InvalidOperationException();
 
-            EquipSlot slot = (EquipSlot)InventoryModel.GetItemSlot(item.ItemModel);
+            int slot = InventoryModel.GetItemSlot(item.ItemModel);
 
-            if (slot != EquipSlot.None)
+            if (slot != (int)EquipSlot.None)
             {
                 Equipped.Remove(slot);
             }
@@ -540,7 +543,7 @@ namespace CommonCore.RpgGame.Rpg
             return (dt, dr);
         }
 
-        public bool IsEquipped(EquipSlot slot)
+        public bool IsEquipped(int slot)
         {
             return (Equipped.ContainsKey(slot) && Equipped[slot] != null);
         }
@@ -578,7 +581,7 @@ namespace CommonCore.RpgGame.Rpg
 
 
         //how equipped items are now handled
-        private class EquippedDictionaryProxy : IDictionary<EquipSlot, InventoryItemInstance>
+        private class EquippedDictionaryProxy : IDictionary<int, InventoryItemInstance>
         {
             private CharacterModel CharacterModel;
 
@@ -587,12 +590,12 @@ namespace CommonCore.RpgGame.Rpg
                 CharacterModel = characterModel;
             }
 
-            public InventoryItemInstance this[EquipSlot key] { 
+            public InventoryItemInstance this[int key] { 
                 get => CharacterModel.Inventory.GetItem(CharacterModel.EquippedIDs[key]);
                 set => CharacterModel.EquippedIDs[key] = value.InstanceUID; 
             }
 
-            public ICollection<EquipSlot> Keys => CharacterModel.EquippedIDs.Keys;
+            public ICollection<int> Keys => CharacterModel.EquippedIDs.Keys;
 
             public ICollection<InventoryItemInstance> Values => CharacterModel.EquippedIDs.Values.Select(v => CharacterModel.Inventory.GetItem(v)).ToArray();
 
@@ -600,12 +603,12 @@ namespace CommonCore.RpgGame.Rpg
 
             public bool IsReadOnly => false;
 
-            public void Add(EquipSlot key, InventoryItemInstance value)
+            public void Add(int key, InventoryItemInstance value)
             {
                 CharacterModel.EquippedIDs.Add(key, value.InstanceUID);
             }
 
-            public void Add(KeyValuePair<EquipSlot, InventoryItemInstance> item)
+            public void Add(KeyValuePair<int, InventoryItemInstance> item)
             {
                 CharacterModel.EquippedIDs.Add(item.Key, item.Value.InstanceUID);
             }
@@ -615,37 +618,37 @@ namespace CommonCore.RpgGame.Rpg
                 CharacterModel.EquippedIDs.Clear();
             }
 
-            public bool Contains(KeyValuePair<EquipSlot, InventoryItemInstance> item)
+            public bool Contains(KeyValuePair<int, InventoryItemInstance> item)
             {
                 throw new NotImplementedException();
             }
 
-            public bool ContainsKey(EquipSlot key)
+            public bool ContainsKey(int key)
             {
                 return CharacterModel.EquippedIDs.ContainsKey(key);
             }
 
-            public void CopyTo(KeyValuePair<EquipSlot, InventoryItemInstance>[] array, int arrayIndex)
+            public void CopyTo(KeyValuePair<int, InventoryItemInstance>[] array, int arrayIndex)
             {
                 throw new NotImplementedException();
             }
 
-            public IEnumerator<KeyValuePair<EquipSlot, InventoryItemInstance>> GetEnumerator()
+            public IEnumerator<KeyValuePair<int, InventoryItemInstance>> GetEnumerator()
             {
-                return CharacterModel.EquippedIDs.Select(kvp => new KeyValuePair<EquipSlot, InventoryItemInstance>(kvp.Key, CharacterModel.Inventory.GetItem(kvp.Value))).GetEnumerator();
+                return CharacterModel.EquippedIDs.Select(kvp => new KeyValuePair<int, InventoryItemInstance>(kvp.Key, CharacterModel.Inventory.GetItem(kvp.Value))).GetEnumerator();
             }
 
-            public bool Remove(EquipSlot key)
+            public bool Remove(int key)
             {
                 return CharacterModel.EquippedIDs.Remove(key);
             }
 
-            public bool Remove(KeyValuePair<EquipSlot, InventoryItemInstance> item)
+            public bool Remove(KeyValuePair<int, InventoryItemInstance> item)
             {
                 throw new NotImplementedException();
             }
 
-            public bool TryGetValue(EquipSlot key, out InventoryItemInstance value)
+            public bool TryGetValue(int key, out InventoryItemInstance value)
             {
                 if(CharacterModel.EquippedIDs.TryGetValue(key, out long id))
                 {
