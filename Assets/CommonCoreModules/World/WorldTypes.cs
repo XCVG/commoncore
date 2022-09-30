@@ -1,4 +1,5 @@
 ﻿using CommonCore.Messaging;
+using PseudoExtensibleEnum;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -205,32 +206,40 @@ namespace CommonCore.World
     }
 
     /// <summary>
-    /// Default body parts/hit locations for ActorHitInfo/ITakeDamage
+    /// Default/builtin body parts/hit locations for ActorHitInfo/ITakeDamage
     /// </summary>
+    [PseudoExtensible]
     public enum DefaultHitLocations
     {
         Unspecified = 0, Body = 1, Head = 2, Limb = 3
     }
 
     /// <summary>
-    /// Default hit materials for ActorHitInfo/ITakeDamage
+    /// Default/builtin hit materials for ActorHitInfo/ITakeDamage
     /// </summary>
+    [PseudoExtensible]
     public enum DefaultHitMaterials
     {
         Unspecified = 0, Generic = 1, Metal = 2, Wood = 3, Stone = 4, Dirt = 5, Flesh = 6
     }
 
+    /// <summary>
+    /// Default/builtin damage effectors
+    /// </summary>
+    [PseudoExtensible]
     public enum DefaultDamageEffectors
     {
         Unspecified = 0, Projectile = 1, Explosion = 2, Melee = 3, Ambient = 4, Internal = 5
     }
 
-    //I'm not 100% sure about providing these at all
-    /*
+    /// <summary>
+    /// Default/builtin damage types
+    /// </summary>
+    [PseudoExtensible]
     public enum DefaultDamageTypes
     {
-
+        Normal = 0, Impact = 1, Explosive = 2, Energy = 3, Poison = 4, Thermal = 5, Radiation = 6
     }
-    */
+    
 
 }

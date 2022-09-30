@@ -200,7 +200,7 @@ namespace CommonCore.RpgGame.World
                 if (UseMelee)
                 {
                     if (AutoDamageEffector)
-                        modHit.DamageEffector = (int)DamageEffector.Melee;
+                        modHit.DamageEffector = (int)DefaultDamageEffectors.Melee;
 
                     //melee path (raycast)
                     LayerMask lm = WorldUtils.GetAttackLayerMask();
@@ -240,7 +240,7 @@ namespace CommonCore.RpgGame.World
                 else if (BulletPrefab != null)
                 {
                     if (AutoDamageEffector)
-                        modHit.DamageEffector = (int)DamageEffector.Projectile;
+                        modHit.DamageEffector = (int)DefaultDamageEffectors.Projectile;
 
                     //bullet path (shoot)
                     //var bullet = Instantiate<GameObject>(BulletPrefab, shootPos + (shootVec * 0.25f), Quaternion.identity, transform.root);

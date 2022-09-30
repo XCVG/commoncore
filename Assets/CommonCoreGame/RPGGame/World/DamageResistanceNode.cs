@@ -1,4 +1,6 @@
 ﻿using CommonCore.RpgGame.Rpg;
+using CommonCore.World;
+using PseudoExtensibleEnum;
 using System;
 
 namespace CommonCore.RpgGame.World
@@ -9,7 +11,8 @@ namespace CommonCore.RpgGame.World
     [Serializable]
     public struct DamageResistanceNode
     {
-        public DamageType DamageType;
+        [PxEnumProperty(typeof(DefaultDamageTypes))]
+        public int DamageType;
         public float DamageResistance;
         public float DamageThreshold;
     }

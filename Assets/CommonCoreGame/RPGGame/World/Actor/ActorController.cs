@@ -51,6 +51,7 @@ namespace CommonCore.RpgGame.World
         public bool DestroyOnDeath = false;
         public bool DisableCollidersOnDeath = false;
         public bool DisableHitboxesOnDeath = false;
+        [NonReorderable]
         public DamageResistanceNode[] DamageResistances = null;
         public ActionSpecial OnDeathSpecial;
         public string DefaultHitPuff = "DefaultHitPuff";

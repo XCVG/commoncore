@@ -321,9 +321,9 @@ namespace CommonCore.RpgGame.Rpg
         public float DamageSpread { get; protected set; }
         [JsonProperty]
         public float DamagePierceSpread { get; protected set; }
-        [JsonProperty, JsonConverter(typeof(PxEnumConverter), typeof(DamageType))]
+        [JsonProperty, JsonConverter(typeof(PxEnumConverter), typeof(DefaultDamageTypes))]
         public int DType { get; protected set; }
-        [JsonProperty, JsonConverter(typeof(PxEnumConverter), typeof(DamageEffector))]
+        [JsonProperty, JsonConverter(typeof(PxEnumConverter), typeof(DefaultDamageEffectors))]
         protected int? DEffector { get; set; }
         [JsonProperty, JsonConverter(typeof(PxEnumConverter), typeof(SkillType))]
         public int SkillType { get; protected set; }
@@ -366,7 +366,7 @@ namespace CommonCore.RpgGame.Rpg
         }
 
         [JsonIgnore]
-        public virtual int Effector => DEffector ?? (int)DamageEffector.Unspecified;
+        public virtual int Effector => DEffector ?? (int)DefaultDamageEffectors.Unspecified;
 
         [JsonIgnore]
         public bool? HarmFriendly {
@@ -475,7 +475,7 @@ namespace CommonCore.RpgGame.Rpg
             EnvironmentHitPuff = environmentHitPuff;
         }
 
-        public override int Effector => DEffector ?? (int)DamageEffector.Melee;
+        public override int Effector => DEffector ?? (int)DefaultDamageEffectors.Melee;
 
         public override string GetStatsString()
         {
@@ -616,7 +616,7 @@ namespace CommonCore.RpgGame.Rpg
         [JsonIgnore]
         public bool UseAmmo => !(string.IsNullOrEmpty(AType) || string.Equals(AType, "NoAmmo", StringComparison.OrdinalIgnoreCase)); //"NoAmmo" is for legacy compat
 
-        public override int Effector => DEffector ?? (int)DamageEffector.Projectile;
+        public override int Effector => DEffector ?? (int)DefaultDamageEffectors.Projectile;
 
         public override string GetStatsString()
         {
@@ -683,7 +683,7 @@ namespace CommonCore.RpgGame.Rpg
         {
         }
 
-        public override int Effector => (int)DamageEffector.Unspecified;
+        public override int Effector => (int)DefaultDamageEffectors.Unspecified;
 
         public override string GetStatsString()
         {
@@ -693,9 +693,9 @@ namespace CommonCore.RpgGame.Rpg
 
     public class ArmorItemModel : InventoryItemModel
     {
-        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(DamageType))]
+        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(DefaultDamageTypes))]
         public IReadOnlyDictionary<int, float> DamageResistance { get; protected set; } = new Dictionary<int, float>();
-        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(DamageType))]
+        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(DefaultDamageTypes))]
         public IReadOnlyDictionary<int, float> DamageThreshold { get; protected set; } = new Dictionary<int, float>();
         [JsonProperty]
         public ShieldParams Shields { get; protected set; }

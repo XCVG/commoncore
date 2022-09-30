@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PseudoExtensibleEnum;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -62,6 +63,7 @@ namespace CommonCore.World
         [Serializable]
         private struct EditorHitPuffVariant
         {
+            [PxEnumProperty(typeof(DefaultHitMaterials))]
             public int HitMaterial;
             public GameObject VariantChild;
         }

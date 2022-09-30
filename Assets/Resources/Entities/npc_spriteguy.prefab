@@ -270,6 +270,7 @@ MonoBehaviour:
     Target: 
     Option: 0
     OptionValue: 
+    CustomOverride: 
   AltInteraction: 0
   AltInteractionTarget: 
   AltInteractionSpecial: {fileID: 0}
@@ -325,6 +326,10 @@ MonoBehaviour:
     HitPuff: 
     HitFlags: 0
     ExtraHitFlags: 0
+  AttackPhysics:
+    Impulse: 0
+    HitPhysicsFlags: 0
+    ExtraFlags: 0
   AttackRandomFactor: 0
   AttackHitFlags: 
   BulletPrefab: TestBullet

@@ -1,4 +1,5 @@
 ﻿using CommonCore.Config;
+using PseudoExtensibleEnum;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace CommonCore.World
         [Tooltip("May be deferred to subclass and have no effect")]
         public bool HandleRestorableExtraData = true;
 
+        [PxEnumProperty(typeof(DefaultHitMaterials))]
         public int HitMaterial = 0;
 
         protected virtual bool DeferRestorableExtraDataToSubclass => false;

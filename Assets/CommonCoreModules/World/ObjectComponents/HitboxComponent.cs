@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using PseudoExtensibleEnum;
 
 namespace CommonCore.World
 {
@@ -13,9 +14,9 @@ namespace CommonCore.World
     {
         [SerializeField]
         private BaseController ParentController = null;
-        [SerializeField, Tooltip("This should correspond to a body part/hit location you have specified. Use 0 for no override")]
+        [SerializeField, PxEnumProperty(typeof(DefaultHitLocations)), Tooltip("This should correspond to a body part/hit location you have specified. Use 0 for no override")]
         private int HitLocationOverride = 0;
-        [SerializeField, Tooltip("This should correspond to a hit material type you have specified. Use 0 for no override")]
+        [SerializeField, PxEnumProperty(typeof(DefaultHitMaterials)), Tooltip("This should correspond to a hit material type you have specified. Use 0 for no override")]
         private int HitMaterialOverride = 0;
         [SerializeField, Tooltip("This will directly affect the amount of damage taken")]
         private float DamageMultiplier = 1;

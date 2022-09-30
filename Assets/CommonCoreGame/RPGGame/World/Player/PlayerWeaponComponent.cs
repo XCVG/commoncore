@@ -1689,7 +1689,7 @@ namespace CommonCore.RpgGame.World
                     if (otherController is ITakeDamage itd)
                     {
                         float damageMultiplier = RpgValues.GetKickDamageFactor(player) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerStrength; //from stats and difficulty
-                        var hitInfo = new ActorHitInfo(OffhandKickDamage * damageMultiplier, 0, (int)DamageType.Impact, (int)DamageEffector.Melee, GameParams.UseFriendlyFire, (int)hitLocation, (int)hitMaterial, PlayerController, PredefinedFaction.Player.ToString(), OffhandKickPuff, hitPoint, TypeUtils.FlagsFromCollection(OffhandKickFlags));
+                        var hitInfo = new ActorHitInfo(OffhandKickDamage * damageMultiplier, 0, (int)DefaultDamageTypes.Impact, (int)DefaultDamageEffectors.Melee, GameParams.UseFriendlyFire, (int)hitLocation, (int)hitMaterial, PlayerController, PredefinedFaction.Player.ToString(), OffhandKickPuff, hitPoint, TypeUtils.FlagsFromCollection(OffhandKickFlags));
                         itd.TakeDamage(hitInfo);
                         if(!string.IsNullOrEmpty(OffhandKickPuff))
                             HitPuffScript.SpawnHitPuff(hitInfo);                        

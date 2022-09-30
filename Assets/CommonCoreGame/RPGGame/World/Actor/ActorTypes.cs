@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using CommonCore.World;
 using CommonCore.RpgGame.Rpg;
+using System;
 
 namespace CommonCore.RpgGame.World
 {
@@ -21,6 +22,7 @@ namespace CommonCore.RpgGame.World
         Idle, Dead, Wandering, Chasing, Hurting, Attacking, Covering, Fleeing, ScriptedMoveTo, ScriptedAction
     }
 
+    [Obsolete]
     public enum ActorBodyPart
     {
         Unspecified, Torso, Head, LeftArm, LeftLeg, RightArm, RightLeg, Tail

@@ -483,7 +483,7 @@
 * Weapon and armor inventory models now leverage pseudo-extensible enums for skills, damage type, etc
 * Equipment slots are now defined by a pseudo-extensible enum and stored as int
 * Removed unused Ascension III specific LevelUpModal
-* RPG skills and stats are now defined by a pseudo-extensible enum and stored as int
+* RPG skills and stats are now defined by pseudo-extensible enums and stored as int
 * CharacterPanelController no longer breaks if an expected stat, still, etc has no value on the character
 * WeaponSkillType is no longer used (use SkillType instead) and is obsolete
 * All equipped armor items are now factored into player damage protection/threshold calculations
@@ -493,3 +493,11 @@
 * Type field of ammo and money item models have been removed (redundant with model type and unused for any purpose)
 * Renamed default keys item file to _default_keys.json for consistency with ammo and money
 * Default money type is now defined in GameParams
+* DefaultHitLocations and DefaultHitMaterials are now pseudoextensible
+* DefaultDamageEffectors defined in WorldTypes is pseudoextensible and is used instead of RpgMiscTypes version
+* Added DefaultDamageTypes to WorldTypes, replacing RpgMiscTypes DamageTypes
+* RpgMiscTypes DamageEffector and DamageTypes declared obsolete, use or pseudoextend WorldTypes versions instead
+* ActorBodyPart is now obsolete. HitLocation should be used instead 
+* DamageResistanceNode (actor damage resistance) now uses custom property drawer
+* HitboxComponent now uses custom property drawer for hit location and material
+* Hit puffs and entity controllers now use custom property drawer for hit material

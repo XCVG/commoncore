@@ -10,6 +10,7 @@ using CommonCore.StringSub;
 using CommonCore.UI;
 using System.Linq;
 using PseudoExtensibleEnum;
+using CommonCore.World;
 
 namespace CommonCore.RpgGame.UI
 {
@@ -56,9 +57,9 @@ namespace CommonCore.RpgGame.UI
             statsSB.AppendLine();
 
             //damage resistance and threshold
-            foreach(int value in PxEnum.GetValues(typeof(DamageType)))
+            foreach(int value in PxEnum.GetValues(typeof(DefaultDamageTypes)))
             {
-                string name = PxEnum.GetName(typeof(DamageType), value);
+                string name = PxEnum.GetName(typeof(DefaultDamageTypes), value);
                 float baseDR = baseStats.DamageResistance.GetOrDefault(value);
                 float baseDT = baseStats.DamageThreshold.GetOrDefault(value);
                 float derivedDR = derivedStats.DamageResistance.GetOrDefault(value);

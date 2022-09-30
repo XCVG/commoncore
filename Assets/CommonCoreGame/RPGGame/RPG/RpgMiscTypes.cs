@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using CommonCore.World;
+using Newtonsoft.Json;
 using PseudoExtensibleEnum;
 using System;
 using System.Collections;
@@ -13,19 +14,18 @@ namespace CommonCore.RpgGame.Rpg
         Undefined, Female, Male, Other
     }
 
-    [PseudoExtensible]
+    [Obsolete]
     public enum DamageType
     {
         Normal, Impact, Explosive, Energy, Poison, Thermal, Radiation
     }
 
-    [PseudoExtensible]
+    [Obsolete]
     public enum DamageEffector
     {
         Unspecified, Projectile, Explosion, Melee, Ambient, Internal //matches defaults for now
     }
 
-    //kinda game dependent
     [PseudoExtensible]
     public enum StatType
     {
@@ -43,8 +43,6 @@ namespace CommonCore.RpgGame.Rpg
         Invulnerable, Immortal, NoTarget, NoFallDamage, NoClip, NoInteract, NoAttack, NoWeapons, NoPhysics, Frozen, TotallyFrozen, HideHud, HideSubtitles, Invisible, NoDropItems, NoJump, NoShieldRecharge
     }
 
-    //mostly game dependent
-    //will handle variant trees in leveling logic rather than here
     [PseudoExtensible]
     public enum SkillType
     {
@@ -73,9 +71,9 @@ namespace CommonCore.RpgGame.Rpg
 
         public ShieldParams ShieldParams { get; set; }
 
-        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(DamageType))]
+        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(DefaultDamageTypes))]
         public Dictionary<int, float> DamageResistance { get; set; }
-        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(DamageType))]
+        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(DefaultDamageTypes))]
         public Dictionary<int, float> DamageThreshold { get; set; }
 
         [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(StatType))]
@@ -91,9 +89,9 @@ namespace CommonCore.RpgGame.Rpg
             ShieldParams = new ShieldParams();
 
             DamageResistance = new Dictionary<int, float>();
-            SetupFromPxEnum<DamageType, float>(DamageResistance, default); ; //we still do this because there's probably old code that relies on it even though it's (post-4.x) very unsafe
+            SetupFromPxEnum<DefaultDamageTypes, float>(DamageResistance, default); ; //we still do this because there's probably old code that relies on it even though it's (post-4.x) very unsafe
             DamageThreshold = new Dictionary<int, float>();
-            SetupFromPxEnum<DamageType, float>(DamageThreshold, default);
+            SetupFromPxEnum<DefaultDamageTypes, float>(DamageThreshold, default);
 
             Stats = new Dictionary<int, int>();
             SetupFromPxEnum<StatType, int>(Stats, default);
@@ -126,7 +124,7 @@ namespace CommonCore.RpgGame.Rpg
                 //explicit handling
                 if (propertyName == "DamageResistance" || propertyName == "DamageThreshold")
                 {
-                    int propertyIndex = (int)PxEnum.Parse(typeof(DamageType), propertyAlias);
+                    int propertyIndex = (int)PxEnum.Parse(typeof(DefaultDamageTypes), propertyAlias);
                     if (propertyName == "DamageResistance")
                         DamageResistance[propertyIndex] = Convert.ToSingle(value);
                     else if (propertyName == "DamageThreshold")
@@ -165,7 +163,7 @@ namespace CommonCore.RpgGame.Rpg
                 //explicit handling
                 if (propertyName == "DamageResistance" || propertyName == "DamageThreshold")
                 {
-                    int propertyIndex = (int)PxEnum.Parse(typeof(DamageType), propertyAlias);
+                    int propertyIndex = (int)PxEnum.Parse(typeof(DefaultDamageTypes), propertyAlias);
                     if (propertyName == "DamageResistance")
                         DamageResistance[propertyIndex] += Convert.ToSingle(value);
                     else if (propertyName == "DamageThreshold")
@@ -233,7 +231,7 @@ namespace CommonCore.RpgGame.Rpg
                 //explicit handling
                 if (propertyName == "DamageResistance" || propertyName == "DamageThreshold")
                 {
-                    int propertyIndex = (int)PxEnum.Parse(typeof(DamageType), propertyAlias);
+                    int propertyIndex = (int)PxEnum.Parse(typeof(DefaultDamageTypes), propertyAlias);
                     if (propertyName == "DamageResistance")
                         result = DamageResistance[propertyIndex];
                     else if (propertyName == "DamageThreshold")
