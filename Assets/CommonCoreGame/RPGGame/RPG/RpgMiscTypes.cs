@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using PseudoExtensibleEnum;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,22 +13,26 @@ namespace CommonCore.RpgGame.Rpg
         Undefined, Female, Male, Other
     }
 
+    [PseudoExtensible]
     public enum DamageType
     {
         Normal, Impact, Explosive, Energy, Poison, Thermal, Radiation
     }
 
+    [PseudoExtensible]
     public enum DamageEffector
     {
         Unspecified, Projectile, Explosion, Melee, Ambient, Internal //matches defaults for now
     }
 
     //kinda game dependent
+    [PseudoExtensible]
     public enum StatType
     {
         Resilience, Dexterity, Erudition, Intuition, Dialectic, Subterfuge, Serendipity
     }
 
+    [Obsolete]
     public enum WeaponSkillType
     {
         Unspecified, Melee, Archery, Guns
@@ -40,6 +45,7 @@ namespace CommonCore.RpgGame.Rpg
 
     //mostly game dependent
     //will handle variant trees in leveling logic rather than here
+    [PseudoExtensible]
     public enum SkillType
     {
         Melee, MeleeAlacrity, MeleePrecision, MeleeBrawn,
@@ -51,6 +57,7 @@ namespace CommonCore.RpgGame.Rpg
         Security, SecurityMechanisms, SecurityComputers
     }
 
+    [PseudoExtensible]
     public enum EquipSlot
     {
         None, LeftWeapon, RightWeapon, Body, ShieldGenerator

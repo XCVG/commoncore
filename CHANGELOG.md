@@ -480,3 +480,4 @@
 * Modules are now torn down in reverse order on application quit
 * Default init_player.json now uses EquippedIDs and item UID references instead of deprecated direct refs
 * Inventory item models now use attributes to control Json.NET serialization
+* Weapon and armor inventory models now leverage pseudo-extensible enums for skills, damage type, etc

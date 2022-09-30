@@ -3,6 +3,7 @@ using CommonCore.State;
 using CommonCore.World;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PseudoExtensibleEnum;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -253,6 +254,7 @@ namespace CommonCore.RpgGame.Rpg
         [JsonProperty]
         public IReadOnlyDictionary<string, object> ExtraData { get; private set; } = new Dictionary<string, object>();
 
+        [JsonIgnore]
         public bool Stackable { get; protected set; } = false;
 
         [JsonConstructor]
@@ -328,12 +330,12 @@ namespace CommonCore.RpgGame.Rpg
         public float DamageSpread { get; protected set; }
         [JsonProperty]
         public float DamagePierceSpread { get; protected set; }
-        [JsonProperty]
-        public DamageType DType { get; protected set; }
-        [JsonProperty]
-        protected DamageEffector? DEffector { get; set; }
-        [JsonProperty]
-        public WeaponSkillType SkillType { get; protected set; }
+        [JsonProperty, JsonConverter(typeof(PxEnumConverter), typeof(DamageType))]
+        public int DType { get; protected set; }
+        [JsonProperty, JsonConverter(typeof(PxEnumConverter), typeof(DamageEffector))]
+        protected int? DEffector { get; set; }
+        [JsonProperty, JsonConverter(typeof(PxEnumConverter), typeof(SkillType))]
+        public int SkillType { get; protected set; }
         [JsonProperty]
         public string ViewModel { get; protected set; }
         [JsonProperty]
@@ -351,7 +353,7 @@ namespace CommonCore.RpgGame.Rpg
 
         public WeaponItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts,
             float damage, float damagePierce, float damageSpread, float damagePierceSpread,
-            DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType, string viewModel, string worldModel, string hitPuff, float lowerTime, float raiseTime)
+            int dType, int? dEffector, int skillType, string viewModel, string worldModel, string hitPuff, float lowerTime, float raiseTime)
             : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, extraData, scripts, worldModel)
         {
             Damage = damage;
@@ -373,7 +375,7 @@ namespace CommonCore.RpgGame.Rpg
         }
 
         [JsonIgnore]
-        public virtual DamageEffector Effector => DEffector ?? DamageEffector.Unspecified;
+        public virtual int Effector => DEffector ?? (int)DamageEffector.Unspecified;
 
         [JsonIgnore]
         public bool? HarmFriendly {
@@ -468,7 +470,7 @@ namespace CommonCore.RpgGame.Rpg
             float damage, float damagePierce, float damageSpread, float damagePierceSpread,
             float reach, float rate, float energyCost, float damageDelay,
             float castRadius, float impulse, string environmentHitPuff,
-            DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType,
+            int dType, int? dEffector, int skillType,
             string viewModel, string worldModel, string hitPuff, float lowerTime, float raiseTime) 
             : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, extraData, scripts, damage, damagePierce, damageSpread, damagePierceSpread, dType, dEffector, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
         {
@@ -482,7 +484,7 @@ namespace CommonCore.RpgGame.Rpg
             EnvironmentHitPuff = environmentHitPuff;
         }
 
-        public override DamageEffector Effector => DEffector ?? DamageEffector.Melee;
+        public override int Effector => DEffector ?? (int)DamageEffector.Melee;
 
         public override string GetStatsString()
         {
@@ -574,7 +576,7 @@ namespace CommonCore.RpgGame.Rpg
             float? recoilEffectScale, float? adsRecoilEffectScale,
             float movementSpreadFactor, float movementRecoveryFactor, float crouchSpreadFactor, float crouchRecoveryFactor,
             float fireInterval, float? burstFireInterval, int? projectilesPerShot, int? ammoPerShot, int? shotsPerBurst, float lockTime, float recockTime, int magazineSize, float reloadTime,
-            string aType, DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType, string viewModel, string worldModel,
+            string aType, int dType, int? dEffector, int skillType, string viewModel, string worldModel,
             string hitPuff, string projectile, float adsZoomFactor, float lowerTime, float raiseTime,
             RangedWeaponItemProjectileData projectileData, RangedWeaponItemExplosionData explosionData, RangedWeaponItemPhysicsData physicsData)
             : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, extraData, scripts, damage, damagePierce, damageSpread, damagePierceSpread, dType, dEffector, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
@@ -623,7 +625,7 @@ namespace CommonCore.RpgGame.Rpg
         [JsonIgnore]
         public bool UseAmmo => !(string.IsNullOrEmpty(AType) || string.Equals(AType, AmmoType.NoAmmo.ToString(), StringComparison.OrdinalIgnoreCase));
 
-        public override DamageEffector Effector => DEffector ?? DamageEffector.Projectile;
+        public override int Effector => DEffector ?? (int)DamageEffector.Projectile;
 
         public override string GetStatsString()
         {
@@ -686,11 +688,11 @@ namespace CommonCore.RpgGame.Rpg
 
     public class DummyWeaponItemModel : WeaponItemModel
     {
-        public DummyWeaponItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts, float damage, float damagePierce, float damageSpread, float damagePierceSpread, DamageType dType, DamageEffector? dEffector, WeaponSkillType skillType, string viewModel, string worldModel, string hitPuff, float lowerTime, float raiseTime) : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, extraData, scripts, damage, damagePierce, damageSpread, damagePierceSpread, dType, dEffector, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
+        public DummyWeaponItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts, float damage, float damagePierce, float damageSpread, float damagePierceSpread, int dType, int? dEffector, int skillType, string viewModel, string worldModel, string hitPuff, float lowerTime, float raiseTime) : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, extraData, scripts, damage, damagePierce, damageSpread, damagePierceSpread, dType, dEffector, skillType, viewModel, worldModel, hitPuff, lowerTime, raiseTime)
         {
         }
 
-        public override DamageEffector Effector => DamageEffector.Unspecified;
+        public override int Effector => (int)DamageEffector.Unspecified;
 
         public override string GetStatsString()
         {
@@ -700,14 +702,14 @@ namespace CommonCore.RpgGame.Rpg
 
     public class ArmorItemModel : InventoryItemModel
     {
-        [JsonProperty]
-        public IReadOnlyDictionary<DamageType, float> DamageResistance { get; protected set; } = new Dictionary<DamageType, float>();
-        [JsonProperty]
-        public IReadOnlyDictionary<DamageType, float> DamageThreshold { get; protected set; } = new Dictionary<DamageType, float>();
+        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(DamageType))]
+        public IReadOnlyDictionary<int, float> DamageResistance { get; protected set; } = new Dictionary<int, float>();
+        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(DamageType))]
+        public IReadOnlyDictionary<int, float> DamageThreshold { get; protected set; } = new Dictionary<int, float>();
         [JsonProperty]
         public ShieldParams Shields { get; protected set; }
-        [JsonProperty]
-        public EquipSlot Slot { get; protected set; }
+        [JsonProperty, JsonConverter(typeof(PxEnumConverter), typeof(EquipSlot))]
+        public int Slot { get; protected set; }
 
         [JsonConstructor]
         protected ArmorItemModel() : base()
@@ -716,11 +718,11 @@ namespace CommonCore.RpgGame.Rpg
         }
 
         public ArmorItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts, string worldModel,
-            Dictionary<DamageType, float> damageResistance, Dictionary<DamageType, float> damageThreshold, ShieldParams shields, EquipSlot slot)
+            Dictionary<int, float> damageResistance, Dictionary<int, float> damageThreshold, ShieldParams shields, int slot)
             : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, extraData, scripts, worldModel)
         {
-            DamageResistance = new Dictionary<DamageType, float>(damageResistance);
-            DamageThreshold = new Dictionary<DamageType, float>(damageThreshold);
+            DamageResistance = new Dictionary<int, float>(damageResistance);
+            DamageThreshold = new Dictionary<int, float>(damageThreshold);
             Shields = shields;
             Slot = slot;
         }

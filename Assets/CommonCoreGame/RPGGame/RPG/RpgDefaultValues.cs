@@ -345,17 +345,17 @@ namespace CommonCore.RpgGame.Rpg
             //lower is better
             float factor = 1.0f;
 
-            switch (itemModel.SkillType)
+            switch ((SkillType)itemModel.SkillType)
             {
-                case WeaponSkillType.Melee:
+                case SkillType.Melee:
                     factor -= character.DerivedStats.Skills[SkillType.MeleeAlacrity] / 100f;
                     factor -= character.DerivedStats.Stats[StatType.Dexterity] / 100f;
                     break;
-                case WeaponSkillType.Archery:
+                case SkillType.Archery:
                     factor -= character.DerivedStats.Skills[SkillType.Archery] / 400f; //you can't really increase archery fire rate much
                     factor -= character.DerivedStats.Stats[StatType.Dexterity] / 100f;
                     break;
-                case WeaponSkillType.Guns:
+                case SkillType.Guns:
                     factor -= character.DerivedStats.Skills[SkillType.GunsRapidity] / 100f;
                     factor -= character.DerivedStats.Stats[StatType.Dexterity] / 200f;
                     break;
@@ -369,9 +369,9 @@ namespace CommonCore.RpgGame.Rpg
             //lower is better
             float factor = 1.0f;
 
-            switch (itemModel.SkillType)
+            switch ((SkillType)itemModel.SkillType)
             {
-                case WeaponSkillType.Guns:
+                case SkillType.Guns:
                     factor -= character.DerivedStats.Skills[SkillType.GunsRapidity] / 100f;
                     factor -= character.DerivedStats.Stats[StatType.Dexterity] / 100f;
                     break;
@@ -385,13 +385,13 @@ namespace CommonCore.RpgGame.Rpg
             //lower is better
             float factor = 1.0f;
 
-            switch (itemModel.SkillType)
+            switch ((SkillType)itemModel.SkillType)
             {
-                case WeaponSkillType.Archery:
+                case SkillType.Archery:
                     factor -= character.DerivedStats.Skills[SkillType.ArcherySteady] / 100f;
                     factor -= character.DerivedStats.Stats[StatType.Dexterity] / 100f;
                     break;
-                case WeaponSkillType.Guns:
+                case SkillType.Guns:
                     factor -= character.DerivedStats.Skills[SkillType.GunsAccuracy] / 100f;
                     factor -= character.DerivedStats.Stats[StatType.Dexterity] / 100f;
                     break;
@@ -405,13 +405,13 @@ namespace CommonCore.RpgGame.Rpg
             //lower is better
             float factor = 1.0f;
 
-            switch (itemModel.SkillType)
+            switch ((SkillType)itemModel.SkillType)
             {
-                case WeaponSkillType.Archery:
+                case SkillType.Archery:
                     factor -= character.DerivedStats.Skills[SkillType.ArcherySteady] / 100f;
                     factor -= character.DerivedStats.Stats[StatType.Dexterity] / 100f;
                     break;
-                case WeaponSkillType.Guns:
+                case SkillType.Guns:
                     factor -= character.DerivedStats.Skills[SkillType.GunsAccuracy] / 200f;
                     factor -= character.DerivedStats.Stats[StatType.Dexterity] / 100f;
                     break;
@@ -425,13 +425,13 @@ namespace CommonCore.RpgGame.Rpg
             //higher is better
             float factor = 1.0f;
 
-            switch (itemModel.SkillType)
+            switch ((SkillType)itemModel.SkillType)
             {
-                case WeaponSkillType.Archery:
+                case SkillType.Archery:
                     factor += character.DerivedStats.Skills[SkillType.ArcherySteady] / 100f;
                     factor += character.DerivedStats.Stats[StatType.Dexterity] / 50f;
                     break;
-                case WeaponSkillType.Guns:
+                case SkillType.Guns:
                     factor += character.DerivedStats.Skills[SkillType.GunsAccuracy] / 200f;
                     factor += character.DerivedStats.Stats[StatType.Dexterity] / 50f;
                     break;
@@ -445,9 +445,9 @@ namespace CommonCore.RpgGame.Rpg
             //higher is better
             float factor = 1.0f;
 
-            switch (itemModel.SkillType)
+            switch ((SkillType)itemModel.SkillType)
             {
-                case WeaponSkillType.Melee:
+                case SkillType.Melee:
                     factor += character.DerivedStats.Stats[StatType.Resilience] / 20f;
                     factor += character.DerivedStats.Stats[StatType.Dexterity] / 30f;
                     factor += character.DerivedStats.Skills[SkillType.MeleeBrawn] / 100f;
@@ -460,7 +460,7 @@ namespace CommonCore.RpgGame.Rpg
                         factor -= randomFactor;
                     }
                     break;
-                case WeaponSkillType.Archery:
+                case SkillType.Archery:
                     factor += character.DerivedStats.Skills[SkillType.ArcheryDraw] / 100f;
                     factor += character.DerivedStats.Stats[StatType.Resilience] / 50f;
                     factor += character.DerivedStats.Stats[StatType.Dexterity] / 50f;
@@ -475,14 +475,14 @@ namespace CommonCore.RpgGame.Rpg
             //lower is better
             float factor = 1.0f;
 
-            switch (itemModel.SkillType)
+            switch ((SkillType)itemModel.SkillType)
             {
-                case WeaponSkillType.Melee:
+                case SkillType.Melee:
                     factor -= character.DerivedStats.Skills[SkillType.MeleePrecision] / 100f;
                     factor -= character.DerivedStats.Stats[StatType.Dexterity] / 100f;
                     factor -= character.DerivedStats.Stats[StatType.Resilience] / 100f;
                     break;
-                case WeaponSkillType.Archery:
+                case SkillType.Archery:
                     factor -= character.DerivedStats.Skills[SkillType.Archery] / 200f;
                     factor -= character.DerivedStats.Skills[SkillType.ArcheryDraw] / 100f;
                     factor -= character.DerivedStats.Stats[StatType.Dexterity] / 100f;

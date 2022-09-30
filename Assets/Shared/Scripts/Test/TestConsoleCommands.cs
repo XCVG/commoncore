@@ -3,6 +3,7 @@ using CommonCore.Async;
 using CommonCore.Audio;
 using CommonCore.DebugLog;
 using CommonCore.LockPause;
+using CommonCore.RpgGame.Rpg;
 using CommonCore.State;
 using CommonCore.UI;
 using PseudoExtensibleEnum;
@@ -58,6 +59,13 @@ public static class TestConsoleCommands
         var mappings = (Dictionary<Type, List<Type>>)pxEnumContext.GetType().GetField("PseudoExtensionMap", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(pxEnumContext);
         var mappedMappings = mappings.Select(m => new KeyValuePair<string, string[]>(m.Key.Name, m.Value.Select(v => v.Name).ToArray())).ToList();
         DebugUtils.JsonWrite(mappedMappings, "pxenummappings");
+    }
+
+    [Command]
+    public static void DumpRpgItemModels()
+    {
+        var models = InventoryModel.EnumerateModels();
+        DebugUtils.JsonWrite(models, "itemmodels");
     }
 
     [Command]

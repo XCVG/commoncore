@@ -191,10 +191,10 @@ namespace CommonCore.RpgGame.Rpg
                 {
                     foreach (var key in BaseStats.DamageResistance.Keys)
                     {
-                        if (aim.DamageResistance.ContainsKey((DamageType)key))
-                            DerivedStats.DamageResistance[key] = BaseStats.DamageResistance[key] + aim.DamageResistance[(DamageType)key];
-                        if (aim.DamageThreshold.ContainsKey((DamageType)key))
-                            DerivedStats.DamageThreshold[key] = BaseStats.DamageThreshold[key] + aim.DamageThreshold[(DamageType)key];
+                        if (aim.DamageResistance.ContainsKey((int)key))
+                            DerivedStats.DamageResistance[key] = BaseStats.DamageResistance[key] + aim.DamageResistance[(int)key];
+                        if (aim.DamageThreshold.ContainsKey((int)key))
+                            DerivedStats.DamageThreshold[key] = BaseStats.DamageThreshold[key] + aim.DamageThreshold[(int)key];
                     }
                 }
                 else
@@ -254,7 +254,7 @@ namespace CommonCore.RpgGame.Rpg
             if (item.Equipped)
                 throw new InvalidOperationException();
 
-            EquipSlot slot = slotOverride ?? InventoryModel.GetItemSlot(item.ItemModel);
+            EquipSlot slot = slotOverride ?? (EquipSlot)InventoryModel.GetItemSlot(item.ItemModel);
 
             if (slot == EquipSlot.None)
                 throw new InvalidOperationException();
@@ -313,7 +313,7 @@ namespace CommonCore.RpgGame.Rpg
             if (!item.Equipped)
                 throw new InvalidOperationException();
 
-            EquipSlot slot = InventoryModel.GetItemSlot(item.ItemModel);
+            EquipSlot slot = (EquipSlot)InventoryModel.GetItemSlot(item.ItemModel);
 
             if (slot != EquipSlot.None)
             {

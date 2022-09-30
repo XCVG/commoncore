@@ -284,15 +284,15 @@ namespace CommonCore.RpgGame.Rpg
             return sb.ToString();
         }
 
-        public static EquipSlot GetItemSlot(InventoryItemModel item)
+        public static int GetItemSlot(InventoryItemModel item)
         {
             //LeftWeapon isn't actually supported
             if (item is WeaponItemModel)
-                return EquipSlot.RightWeapon;
+                return (int)EquipSlot.RightWeapon;
             else if (item is ArmorItemModel aim)
                 return aim.Slot;
             else
-                return EquipSlot.None;
+                return (int)EquipSlot.None;
         }
 
         /// <summary>
