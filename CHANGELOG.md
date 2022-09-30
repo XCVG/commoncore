@@ -488,3 +488,4 @@
 * WeaponSkillType is no longer used (use SkillType instead) and is obsolete
 * All equipped armor items are now factored into player damage protection/threshold calculations
 * All equipped items will be considered for shields after ShieldGenerator and Body are tried
+* Added ICustomLevelUpModal interface for custom level up modals

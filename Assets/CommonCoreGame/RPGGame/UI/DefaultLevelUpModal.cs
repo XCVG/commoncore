@@ -205,14 +205,11 @@ namespace CommonCore.RpgGame.UI
         {
             if(GameParams.UseCustomLeveling)
             {
-                //TODO reimplement this
-                /*
                 var go = Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>(AltPrefab), CoreUtils.GetWorldRoot());
-                var modal = go.GetComponent<GameUI.LevelUpModal>();
+                var modal = go.GetComponent<ICustomLevelUpModal>();
                 modal.Callback = callback;
                 if (IngameMenuController.Current != null)
                     go.transform.SetParent(IngameMenuController.Current.EphemeralRoot.transform, false);
-                */
                 throw new NotImplementedException();
             }
             else
