@@ -48,8 +48,8 @@ namespace CommonCore.RpgGame.UI
                 string name = PxEnum.GetName(typeof(StatType), value);
                 if (GameParams.HideStats.Contains(name))
                     continue;
-                int baseValue = baseStats.Stats[value];
-                int derivedValue = derivedStats.Stats[value];
+                int baseValue = baseStats.Stats.GetOrDefault(value);
+                int derivedValue = derivedStats.Stats.GetOrDefault(value);
                 statsSB.AppendFormat("{0}: {1} [{2}]\n", Sub.Replace(name, SubList), baseValue, derivedValue);
             }
 
@@ -59,10 +59,10 @@ namespace CommonCore.RpgGame.UI
             foreach(int value in PxEnum.GetValues(typeof(DamageType)))
             {
                 string name = PxEnum.GetName(typeof(DamageType), value);
-                float baseDR = baseStats.DamageResistance[value];
-                float baseDT = baseStats.DamageThreshold[value];
-                float derivedDR = derivedStats.DamageResistance[value];
-                float derivedDT = derivedStats.DamageThreshold[value];
+                float baseDR = baseStats.DamageResistance.GetOrDefault(value);
+                float baseDT = baseStats.DamageThreshold.GetOrDefault(value);
+                float derivedDR = derivedStats.DamageResistance.GetOrDefault(value);
+                float derivedDT = derivedStats.DamageThreshold.GetOrDefault(value);
                 statsSB.AppendFormat("{0}: DR({1:f1} [{2:f1}]) | DT({3:f1} [{4:f1}])\n", name.Substring(0,Math.Min(4, name.Length)), baseDR, derivedDR, baseDT, derivedDT);
             }
 
@@ -100,8 +100,8 @@ namespace CommonCore.RpgGame.UI
                 if (GameParams.HideSkills.Contains(name))
                     continue;
 
-                int baseSkill = baseStats.Skills[value];
-                int derivedSkill = derivedStats.Skills[value];
+                int baseSkill = baseStats.Skills.GetOrDefault(value);
+                int derivedSkill = derivedStats.Skills.GetOrDefault(value);
                 skillsSB.AppendFormat("{0}: {1} [{2}]\n", Sub.Replace(name, SubList), baseSkill, derivedSkill);
             }
 

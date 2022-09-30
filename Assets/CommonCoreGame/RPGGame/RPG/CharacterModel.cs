@@ -186,23 +186,17 @@ namespace CommonCore.RpgGame.Rpg
             }
 
             //apply equipment bonuses (armor basically)
-            //TODO this should iterate through all equipped and apply bonuses from all armor items
-            if (Equipped.ContainsKey((int)EquipSlot.Body))
+            foreach(var equippedItem in Equipped.Values)
             {
-                ArmorItemModel aim = Equipped[(int)EquipSlot.Body].ItemModel as ArmorItemModel;
-                if (aim != null)
+                if (equippedItem != null && equippedItem.ItemModel is ArmorItemModel aim)
                 {
                     foreach (var key in BaseStats.DamageResistance.Keys)
                     {
                         if (aim.DamageResistance.ContainsKey((int)key))
-                            DerivedStats.DamageResistance[key] = BaseStats.DamageResistance[key] + aim.DamageResistance[(int)key];
+                            DerivedStats.DamageResistance[key] = DerivedStats.DamageResistance[key] + aim.DamageResistance[(int)key];
                         if (aim.DamageThreshold.ContainsKey((int)key))
-                            DerivedStats.DamageThreshold[key] = BaseStats.DamageThreshold[key] + aim.DamageThreshold[(int)key];
+                            DerivedStats.DamageThreshold[key] = DerivedStats.DamageThreshold[key] + aim.DamageThreshold[(int)key];
                     }
-                }
-                else
-                {
-                    Debug.LogWarning("Player has non-armor item in armor slot!");
                 }
             }
 

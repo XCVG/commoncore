@@ -29,7 +29,7 @@ namespace CommonCore.RpgGame.Rpg
     [PseudoExtensible]
     public enum StatType
     {
-        Resilience, Dexterity, Erudition, Intuition, Dialectic, Subterfuge, Serendipity
+        Unspecified, Resilience, Dexterity, Erudition, Intuition, Dialectic, Subterfuge, Serendipity
     }
 
     [Obsolete]

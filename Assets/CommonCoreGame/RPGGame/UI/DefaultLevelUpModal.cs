@@ -126,12 +126,16 @@ namespace CommonCore.RpgGame.UI
         private void UpdateValues()
         {
             //update buttons
-            for(int i = 0; i < SkillButtons.Length; i++)
+            int i = 0;
+            foreach (int value in PxEnum.GetValues(typeof(SkillType)))
             {
-                string name = PxEnum.GetName(typeof(SkillType), i);
+                string name = PxEnum.GetName(typeof(SkillType), value);
+                if (GameParams.HideSkills.Contains(name))
+                    continue;
 
                 Button b = SkillButtons[i];
-                b.GetComponentInChildren<Text>().text = string.Format("{0} [{1}]", Sub.Replace(name, SubList), NewStats.Skills[i]);
+                b.GetComponentInChildren<Text>().text = string.Format("{0} [{1}]", Sub.Replace(name, SubList), NewStats.Skills[value]);
+                i++;
             }
 
             //update details

@@ -26,7 +26,7 @@ namespace CommonCore
         public static bool DialogueHandleMicroscriptExceptions { get; private set; } = true;
         public static bool DialogueHandleConditionalExceptions { get; private set; } = false;
 
-        public static bool UseCustomLeveling { get; private set; } = true;
+        public static bool UseCustomLeveling { get; private set; } = false;
         public static bool UseDerivedSkills { get; private set; } = true;
 
         public static PlayerViewType DefaultPlayerView { get; private set; } = PlayerViewType.PreferFirst;
@@ -45,8 +45,8 @@ namespace CommonCore
         public static float DifficultyFactorMax { get; private set; } = 2f;
 
         //RPG stats and skills with these names will be hidden from display
-        public static IReadOnlyCollection<string> HideStats { get; private set; } = ImmutableHashSet.Create<string>(StringComparer.OrdinalIgnoreCase);
-        public static IReadOnlyCollection<string> HideSkills { get; private set; } = ImmutableHashSet.Create<string>(StringComparer.OrdinalIgnoreCase, "Magic", "MagicForce", "MagicElemental", "MagicDark" );
+        public static IReadOnlyCollection<string> HideStats { get; private set; } = ImmutableHashSet.Create<string>(StringComparer.OrdinalIgnoreCase, "Unspecified");
+        public static IReadOnlyCollection<string> HideSkills { get; private set; } = ImmutableHashSet.Create<string>(StringComparer.OrdinalIgnoreCase, "Unspecified", "Magic", "MagicForce", "MagicElemental", "MagicDark" );
 
     }
 }

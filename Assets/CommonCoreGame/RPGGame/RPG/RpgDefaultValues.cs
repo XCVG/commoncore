@@ -98,7 +98,15 @@ namespace CommonCore.RpgGame.Rpg
                 }
             }
 
-            //TODO then try other slots
+            //then try any other slot
+            foreach(var item in characterModel.Equipped.Values)
+            {
+                if(item.ItemModel is ArmorItemModel aim)
+                {
+                    if (aim.Shields != null)
+                        return aim.Shields;
+                }
+            }
 
             //return new ShieldParams(100f, 100f, 5f, 2f, 0.1f); //for testing
 
