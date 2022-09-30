@@ -128,7 +128,7 @@ namespace CommonCore.RpgGame.Rpg
                         if (modelJToken != null)
                         {
                             var model = JsonConvert.DeserializeObject<InventoryItemModel>(modelJToken.ToString(), CoreParams.DefaultJsonSerializerSettings);
-                            model.GetType().GetField("Name").SetValue(model, itemName); //slight hack to set name field
+                            model.GetType().GetProperty("Name").SetValue(model, itemName); //slight hack to set name field
                             Models[itemName] = model;
                             LoadItemCount++;
                         }

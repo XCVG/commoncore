@@ -230,20 +230,36 @@ namespace CommonCore.RpgGame.Rpg
     //base class for invariant inventory items
     public abstract class InventoryItemModel
     {
-        public readonly string Name;
-        public readonly float Weight;
-        public readonly float Value;
-        public readonly float MaxCondition;
-        public readonly int MaxQuantity;
-        public readonly bool Hidden;
-        public readonly bool Essential;
-        public readonly string WorldModel;
-        public readonly string[] Flags;
-        public readonly ItemScriptNode Scripts;
+        [JsonProperty]
+        public string Name { get; protected set; }
+        [JsonProperty]
+        public float Weight { get; protected set; }
+        [JsonProperty]
+        public float Value { get; protected set; }
+        [JsonProperty]
+        public float MaxCondition { get; protected set; }
+        [JsonProperty]
+        public int MaxQuantity { get; protected set; }
+        [JsonProperty]
+        public bool Hidden { get; protected set; }
+        [JsonProperty]
+        public bool Essential { get; protected set; }
+        [JsonProperty]
+        public string WorldModel { get; protected set; }
+        [JsonProperty]
+        public string[] Flags { get; protected set; } = new string[0];
+        [JsonProperty]
+        public ItemScriptNode Scripts { get; protected set; } = new ItemScriptNode();
+        [JsonProperty]
+        public IReadOnlyDictionary<string, object> ExtraData { get; private set; } = new Dictionary<string, object>();
 
-        public IReadOnlyDictionary<string, object> ExtraData { get; private set; }
+        public bool Stackable { get; protected set; } = false;
 
-        public bool Stackable { get; protected set; }
+        [JsonConstructor]
+        protected InventoryItemModel()
+        {
+
+        }
 
         public InventoryItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts, string worldModel)
         {
@@ -285,6 +301,12 @@ namespace CommonCore.RpgGame.Rpg
 
     public class MiscItemModel : InventoryItemModel
     {
+        [JsonConstructor]
+        protected MiscItemModel() : base()
+        {
+
+        }
+
         public MiscItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts, string worldModel)
             : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, extraData, scripts, worldModel)
         {
@@ -298,17 +320,34 @@ namespace CommonCore.RpgGame.Rpg
 
     public abstract class WeaponItemModel : InventoryItemModel
     {
-        public readonly float Damage;
-        public readonly float DamagePierce;
-        public readonly float DamageSpread;        
-        public readonly float DamagePierceSpread;
-        public readonly DamageType DType;        
-        protected readonly DamageEffector? DEffector;
-        public readonly WeaponSkillType SkillType;
-        public readonly string ViewModel;
-        public readonly string HitPuff;
-        public readonly float LowerTime;
-        public readonly float RaiseTime;
+        [JsonProperty]
+        public float Damage { get; protected set; }
+        [JsonProperty]
+        public float DamagePierce { get; protected set; }
+        [JsonProperty]
+        public float DamageSpread { get; protected set; }
+        [JsonProperty]
+        public float DamagePierceSpread { get; protected set; }
+        [JsonProperty]
+        public DamageType DType { get; protected set; }
+        [JsonProperty]
+        protected DamageEffector? DEffector { get; set; }
+        [JsonProperty]
+        public WeaponSkillType SkillType { get; protected set; }
+        [JsonProperty]
+        public string ViewModel { get; protected set; }
+        [JsonProperty]
+        public string HitPuff { get; protected set; }
+        [JsonProperty]
+        public float LowerTime { get; protected set; }
+        [JsonProperty]
+        public float RaiseTime { get; protected set; }
+
+        [JsonConstructor]
+        protected WeaponItemModel() : base()
+        {
+
+        }
 
         public WeaponItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts,
             float damage, float damagePierce, float damageSpread, float damagePierceSpread,
@@ -401,16 +440,29 @@ namespace CommonCore.RpgGame.Rpg
 
     public class MeleeWeaponItemModel : WeaponItemModel
     {
-        public readonly float Reach;
-        public readonly float Rate;
-        public readonly float EnergyCost;
-        public readonly float DamageDelay;
+        [JsonProperty]
+        public float Reach { get; protected set; }
+        [JsonProperty]
+        public float Rate { get; protected set; }
+        [JsonProperty]
+        public float EnergyCost { get; protected set; }
+        [JsonProperty]
+        public float DamageDelay { get; protected set; }
 
-        public readonly float CastRadius;
+        [JsonProperty]
+        public float CastRadius { get; protected set; }
 
-        public readonly float Impulse;
+        [JsonProperty]
+        public float Impulse { get; protected set; }
 
-        public readonly string EnvironmentHitPuff;
+        [JsonProperty]
+        public string EnvironmentHitPuff { get; protected set; }
+
+        [JsonConstructor]
+        protected MeleeWeaponItemModel() : base()
+        {
+
+        }
 
         public MeleeWeaponItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts,
             float damage, float damagePierce, float damageSpread, float damagePierceSpread,
@@ -441,44 +493,80 @@ namespace CommonCore.RpgGame.Rpg
 
     public class RangedWeaponItemModel : WeaponItemModel
     {
-        public readonly float ProjectileVelocity;
+        [JsonProperty]
+        public float ProjectileVelocity { get; protected set; }
 
-        public readonly RangeEnvelope Recoil;
-        public readonly RangeEnvelope Spread;
-        public readonly RangeEnvelope ADSRecoil;
-        public readonly RangeEnvelope ADSSpread;
-        public readonly PulseEnvelope RecoilImpulse;
-        public readonly PulseEnvelope ADSRecoilImpulse;
+        [JsonProperty]
+        public RangeEnvelope Recoil { get; protected set; }
+        [JsonProperty]
+        public RangeEnvelope Spread { get; protected set; }
+        [JsonProperty]
+        public RangeEnvelope ADSRecoil { get; protected set; }
+        [JsonProperty]
+        public RangeEnvelope ADSSpread { get; protected set; }
+        [JsonProperty]
+        public PulseEnvelope RecoilImpulse { get; protected set; }
+        [JsonProperty]
+        public PulseEnvelope ADSRecoilImpulse { get; protected set; }
 
-        public readonly float RecoilEffectScale;
-        public readonly float ADSRecoilEffectScale;
+        [JsonProperty]
+        public float RecoilEffectScale { get; protected set; } = 1f;
+        [JsonProperty]
+        public float ADSRecoilEffectScale { get; protected set; } = 1f;
 
-        public readonly float MovementSpreadFactor;
-        public readonly float MovementRecoveryFactor;
-        public readonly float CrouchSpreadFactor;
-        public readonly float CrouchRecoveryFactor;
+        [JsonProperty]
+        public float MovementSpreadFactor { get; protected set; }
+        [JsonProperty]
+        public float MovementRecoveryFactor { get; protected set; }
+        [JsonProperty]
+        public float CrouchSpreadFactor { get; protected set; }
+        [JsonProperty]
+        public float CrouchRecoveryFactor { get; protected set; }
 
-        public readonly float FireInterval;
-        public readonly float BurstFireInterval;
-        public readonly int ProjectilesPerShot;
-        public readonly int AmmoPerShot;
-        public readonly int ShotsPerBurst;
-        public readonly float LockTime;
-        public readonly float RecockTime;
+        [JsonProperty]
+        public float FireInterval { get; protected set; }
+        [JsonProperty(propertyName: "BurstFireInterval")]
+        protected float? BurstFireIntervalInternal { get; set; }
+        [JsonIgnore]
+        public float BurstFireInterval => BurstFireIntervalInternal ?? FireInterval;
 
-        public readonly int MagazineSize;       
-        public readonly float ReloadTime;
+        [JsonProperty]
+        public int ProjectilesPerShot { get; protected set; } = 1;
+        [JsonProperty]
+        public int AmmoPerShot { get; protected set; } = 1;
+        [JsonProperty]
+        public int ShotsPerBurst { get; protected set; } = 1;
+        [JsonProperty]
+        public float LockTime { get; protected set; }
+        [JsonProperty]
+        public float RecockTime { get; protected set; }
 
-        public readonly float ADSZoomFactor;        
+        [JsonProperty]
+        public int MagazineSize { get; protected set; }
+        [JsonProperty]
+        public float ReloadTime { get; protected set; }
 
-        public readonly string AType; 
-        public readonly string Projectile;
+        [JsonProperty]
+        public float ADSZoomFactor { get; protected set; }
 
-        public readonly RangedWeaponItemProjectileData ProjectileData;
-        public readonly RangedWeaponItemExplosionData ExplosionData;
-        public readonly RangedWeaponItemPhysicsData PhysicsData;
+        [JsonProperty]
+        public string AType { get; protected set; }
+        [JsonProperty]
+        public string Projectile { get; protected set; }
 
-        //it looks like JSON.net is actually using these constructors and the naming of the parameters matters, which is somewhat terrifying
+        [JsonProperty]
+        public RangedWeaponItemProjectileData ProjectileData { get; protected set; }
+        [JsonProperty]
+        public RangedWeaponItemExplosionData ExplosionData { get; protected set; }
+        [JsonProperty]
+        public RangedWeaponItemPhysicsData PhysicsData { get; protected set; }
+
+        [JsonConstructor]
+        protected RangedWeaponItemModel() : base()
+        {
+
+        }
+
         public RangedWeaponItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts,
             float damage, float damagePierce, float damageSpread, float damagePierceSpread, float projectileVelocity,
             RangeEnvelope recoil, RangeEnvelope spread, RangeEnvelope adsRecoil, RangeEnvelope adsSpread,
@@ -509,7 +597,7 @@ namespace CommonCore.RpgGame.Rpg
             CrouchRecoveryFactor = crouchRecoveryFactor;
 
             FireInterval = fireInterval;
-            BurstFireInterval = burstFireInterval ?? fireInterval;
+            BurstFireIntervalInternal = burstFireInterval;
             ProjectilesPerShot = projectilesPerShot ?? 1;
             AmmoPerShot = ammoPerShot ?? 1;
             ShotsPerBurst = shotsPerBurst?? 1;
@@ -529,8 +617,10 @@ namespace CommonCore.RpgGame.Rpg
             PhysicsData = physicsData;
         }
 
+        [JsonIgnore]
         public bool UseMagazine => MagazineSize > 0;
 
+        [JsonIgnore]
         public bool UseAmmo => !(string.IsNullOrEmpty(AType) || string.Equals(AType, AmmoType.NoAmmo.ToString(), StringComparison.OrdinalIgnoreCase));
 
         public override DamageEffector Effector => DEffector ?? DamageEffector.Projectile;
@@ -610,10 +700,20 @@ namespace CommonCore.RpgGame.Rpg
 
     public class ArmorItemModel : InventoryItemModel
     {
-        public readonly Dictionary<DamageType, float> DamageResistance;
-        public readonly Dictionary<DamageType, float> DamageThreshold;
-        public readonly ShieldParams Shields;
-        public readonly EquipSlot Slot;
+        [JsonProperty]
+        public IReadOnlyDictionary<DamageType, float> DamageResistance { get; protected set; } = new Dictionary<DamageType, float>();
+        [JsonProperty]
+        public IReadOnlyDictionary<DamageType, float> DamageThreshold { get; protected set; } = new Dictionary<DamageType, float>();
+        [JsonProperty]
+        public ShieldParams Shields { get; protected set; }
+        [JsonProperty]
+        public EquipSlot Slot { get; protected set; }
+
+        [JsonConstructor]
+        protected ArmorItemModel() : base()
+        {
+
+        }
 
         public ArmorItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts, string worldModel,
             Dictionary<DamageType, float> damageResistance, Dictionary<DamageType, float> damageThreshold, ShieldParams shields, EquipSlot slot)
@@ -647,9 +747,18 @@ namespace CommonCore.RpgGame.Rpg
 
     public class AidItemModel : InventoryItemModel
     {
-        public readonly AidType AType;
-        public readonly RestoreType RType;
-        public readonly float Amount;
+        [JsonProperty]
+        public AidType AType { get; protected set; }
+        [JsonProperty]
+        public RestoreType RType { get; protected set; }
+        [JsonProperty]
+        public float Amount { get; protected set; }
+
+        [JsonConstructor]
+        protected AidItemModel() : base()
+        {
+
+        }
 
         public AidItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts, string worldModel,
             AidType aType, RestoreType rType, float amount, string script)
@@ -881,7 +990,14 @@ namespace CommonCore.RpgGame.Rpg
 
     public class ComboAidItemModel : AidItemModel
     {
-        public readonly IReadOnlyList<ComboAidItemRestoreNode> RestoreNodes;
+        [JsonProperty]
+        public IReadOnlyList<ComboAidItemRestoreNode> RestoreNodes { get; protected set; } = new List<ComboAidItemRestoreNode>();
+
+        [JsonConstructor]
+        protected ComboAidItemModel(): base()
+        {
+
+        }
 
         public ComboAidItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts, string worldModel,
             AidType aType, RestoreType rType, float amount, string script, ComboAidItemRestoreNode[] restoreNodes) : base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, extraData, scripts, worldModel, aType, rType, amount, script)
@@ -943,7 +1059,14 @@ namespace CommonCore.RpgGame.Rpg
 
     public class MoneyItemModel : InventoryItemModel
     {
-        public readonly string Type;
+        [JsonProperty]
+        public string Type { get; protected set; }
+
+        [JsonConstructor]
+        protected MoneyItemModel() : base()
+        {
+            Stackable = true;
+        }
 
         public MoneyItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts, string worldModel, string type) :
             base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, extraData, scripts, worldModel)
@@ -960,7 +1083,14 @@ namespace CommonCore.RpgGame.Rpg
 
     public class AmmoItemModel : InventoryItemModel
     {
-        public readonly string Type;
+        [JsonProperty]
+        public string Type { get; protected set; }
+
+        [JsonConstructor]
+        protected AmmoItemModel(): base()
+        {
+
+        }
 
         public AmmoItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts, string worldModel, string type) :
             base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, extraData, scripts, worldModel)
