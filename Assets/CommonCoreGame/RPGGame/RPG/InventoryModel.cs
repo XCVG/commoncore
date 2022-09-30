@@ -46,7 +46,6 @@ namespace CommonCore.RpgGame.Rpg
             LoadItemCount = 0;
             LoadDefCount = 0;
 
-            LoadAutocreateModels();
             LoadInventoryModels();
 
             CDebug.LogEx(string.Format("Loaded inventory ({0} items, {1} defs, {2} errors)", LoadItemCount, LoadDefCount, LoadErrorCount), LoadErrorCount > 0 ? LogLevel.Error : LogLevel.Message, null);
@@ -70,33 +69,6 @@ namespace CommonCore.RpgGame.Rpg
             LoadInventoryModelsFromAssets(assets);
 
             CDebug.LogEx(string.Format("Loaded inventory from addon ({0} items, {1} defs, {2} errors)", LoadItemCount, LoadDefCount, LoadErrorCount), LoadErrorCount > 0 ? LogLevel.Error : LogLevel.Message, null);
-        }
-
-        /// <summary>
-        /// Actually loads auto models if applicable; old rpg_items.json is no longer supported
-        /// </summary>
-        private static void LoadAutocreateModels()
-        {
-
-            //first autocreate models (if enabled)
-            if(GameParams.AutocreateInventoryModels)
-            {
-                CDebug.LogEx("Autocreating item models!", LogLevel.Verbose, null);
-                foreach (AmmoType at in Enum.GetValues(typeof(AmmoType)))
-                {
-                    AmmoItemModel aim = new AmmoItemModel(at.ToString(), 0, 1, 1, 0, false, false, null, null, null, null, at.ToString());
-                    Models.Add(at.ToString(), aim);
-                    LoadItemCount++;
-                }
-                
-                foreach(MoneyType mt in Enum.GetValues(typeof(MoneyType)))
-                {
-                    MoneyItemModel mim = new MoneyItemModel(mt.ToString(), 0, 1, 1, 0, false, false, null, null, null, null, mt.ToString());
-                    Models.Add(mt.ToString(), mim);
-                    LoadItemCount++;
-                }
-            }
-
         }
 
         /// <summary>

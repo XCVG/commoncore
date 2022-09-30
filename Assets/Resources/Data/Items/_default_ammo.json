@@ -1,0 +1,110 @@
+{
+	"Para9": {
+		"model": {
+			"$type": "CommonCore.RpgGame.Rpg.AmmoItemModel, Assembly-CSharp",
+			"Value": 1.0,
+			"MaxCondition": 1.0
+		},
+		"def": {
+			"NiceName": "9mm Parabellum",
+			"Image": "pistolbullet",
+			"Description": "Cheap metallic-cased pistol ammunition"
+		}
+	},
+	"Acp45": {
+		"model": {
+			"$type": "CommonCore.RpgGame.Rpg.AmmoItemModel, Assembly-CSharp",
+			"Value": 1.0,
+			"MaxCondition": 1.0
+		},
+		"def": {
+			"NiceName": ".45 ACP",
+			"Image": "pistolbullet",
+			"Description": "Cheap metallic-cased pistol ammunition"
+		}
+	},
+	"Nato556": {
+		"model": {
+			"$type": "CommonCore.RpgGame.Rpg.AmmoItemModel, Assembly-CSharp",
+			"Value": 1.0,
+			"MaxCondition": 1.0
+		},
+		"def": {
+			"NiceName": "5.56mm NATO",
+			"Image": "riflebullet",
+			"Description": "Intermediate-caliber rifle ammunition"
+		}
+	},
+	"Nato762": {
+		"model": {
+			"$type": "CommonCore.RpgGame.Rpg.AmmoItemModel, Assembly-CSharp",
+			"Value": 1.0,
+			"MaxCondition": 1.0
+		},
+		"def": {
+			"NiceName": "7.62mm NATO",
+			"Image": "riflebullet",
+			"Description": "Full-caliber rifle ammunition"
+		}
+	},
+	"Sa68": {
+		"model": {
+			"$type": "CommonCore.RpgGame.Rpg.AmmoItemModel, Assembly-CSharp",
+			"Value": 1.0,
+			"MaxCondition": 1.0
+		},
+		"def": {
+			"NiceName": "6.8mm SA",
+			"Image": "riflebullet",
+			"Description": "Adavanced intermediate-caliber rifle ammunition"
+		}
+	},
+	"Shot12": {
+		"model": {
+			"$type": "CommonCore.RpgGame.Rpg.AmmoItemModel, Assembly-CSharp",
+			"Value": 1.0,
+			"MaxCondition": 1.0
+		},
+		"def": {
+			"NiceName": "12ga shell",
+			"Image": "shotshell",
+			"Description": "Shotgun shells"
+		}
+	},
+	"Slug": {
+		"model": {
+			"$type": "CommonCore.RpgGame.Rpg.AmmoItemModel, Assembly-CSharp",
+			"Value": 1.0,
+			"MaxCondition": 1.0
+		},
+		"def": {
+			"NiceName": "Slug",
+			"Image": "shotshell",
+			"Description": "Slugs, possibly for a railgun or shotgun depending on interpretation"
+		}
+	},
+	"Arrow": {
+		"model": {
+			"$type": "CommonCore.RpgGame.Rpg.AmmoItemModel, Assembly-CSharp",
+			"Value": 1.0,
+			"MaxCondition": 1.0
+		},
+		"def": {
+			"NiceName": "Arrow",
+			"Image": "arrow",
+			"Description": "Arrows for an old-fashioned or modern bow"
+		}
+	},
+	"Bolt": {
+		"model": {
+			"$type": "CommonCore.RpgGame.Rpg.AmmoItemModel, Assembly-CSharp",
+			"Value": 1.0,
+			"MaxCondition": 1.0
+		},
+		"def": {
+			"NiceName": "Bolt",
+			"Image": "arrow",
+			"Description": "Bolts for a crossbow"
+		}
+	}
+}

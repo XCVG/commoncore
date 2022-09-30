@@ -1,0 +1,14 @@
+{
+	"Gold": {
+		"model": {
+			"$type": "CommonCore.RpgGame.Rpg.MoneyItemModel, Assembly-CSharp",
+			"Value": 1.0,
+			"MaxCondition": 1.0
+		},
+		"def": {
+			"NiceName": "Gold",
+			"Image": "gold",
+			"Description": "Gold used as currency."
+		}
+	}
+}

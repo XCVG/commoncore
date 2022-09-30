@@ -122,7 +122,7 @@ namespace CommonCore.RpgGame.UI
             }
             ContainerScrollContent.DetachChildren();
 
-            string moneyTypeName = Enum.GetNames(typeof(MoneyType))[0];
+            string moneyTypeName = GameParams.DefaultMoneyType;
 
             //player/inventory list
             var inventoryList = Inventory.EnumerateItems().ToList();
@@ -175,7 +175,7 @@ namespace CommonCore.RpgGame.UI
 
         private void PaintMoney()
         {
-            string moneyTypeName = Enum.GetNames(typeof(MoneyType))[0];
+            string moneyTypeName = GameParams.DefaultMoneyType;
 
             //paint player money always
             int playerMoney = Inventory.CountItem(moneyTypeName);
@@ -289,9 +289,9 @@ namespace CommonCore.RpgGame.UI
             if(IsShop)
             {
 
-                string moneyTypeName = Enum.GetNames(typeof(MoneyType))[0];
+                string moneyTypeName = GameParams.DefaultMoneyType;
 
-                if(Selected == SelectedState.Inventory)
+                if (Selected == SelectedState.Inventory)
                 {
                     //we are SELLING, check CONTAINER money 
                     int neededMoney = Mathf.RoundToInt(quantity * RpgValues.AdjustedSellPrice(GameState.Instance.PlayerRpgState, SelectedItem.ItemModel.Value));

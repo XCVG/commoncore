@@ -489,3 +489,7 @@
 * All equipped armor items are now factored into player damage protection/threshold calculations
 * All equipped items will be considered for shields after ShieldGenerator and Body are tried
 * Added ICustomLevelUpModal interface for custom level up modals
+* Default ammo and money types are now located in json files instead of being created from enums
+* Type field of ammo and money item models have been removed (redundant with model type and unused for any purpose)
+* Renamed default keys item file to _default_keys.json for consistency with ammo and money
+* Default money type is now defined in GameParams

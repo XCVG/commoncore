@@ -12,15 +12,6 @@ using System.Text;
 
 namespace CommonCore.RpgGame.Rpg
 {
-    public enum MoneyType
-    {
-        Gold
-    }
-
-    public enum AmmoType
-    {
-        NoAmmo, Para9, Acp45, Nato556, Nato762, Sa68, Shot12, Slug, Arrow, Bolt //game dependent, redo for A3
-    }
 
     public enum AidType //are there even any other stats?
     {
@@ -623,7 +614,7 @@ namespace CommonCore.RpgGame.Rpg
         public bool UseMagazine => MagazineSize > 0;
 
         [JsonIgnore]
-        public bool UseAmmo => !(string.IsNullOrEmpty(AType) || string.Equals(AType, AmmoType.NoAmmo.ToString(), StringComparison.OrdinalIgnoreCase));
+        public bool UseAmmo => !(string.IsNullOrEmpty(AType) || string.Equals(AType, "NoAmmo", StringComparison.OrdinalIgnoreCase)); //"NoAmmo" is for legacy compat
 
         public override int Effector => DEffector ?? (int)DamageEffector.Projectile;
 
@@ -1061,19 +1052,15 @@ namespace CommonCore.RpgGame.Rpg
 
     public class MoneyItemModel : InventoryItemModel
     {
-        [JsonProperty]
-        public string Type { get; protected set; }
-
         [JsonConstructor]
         protected MoneyItemModel() : base()
         {
             Stackable = true;
         }
 
-        public MoneyItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts, string worldModel, string type) :
+        public MoneyItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts, string worldModel) :
             base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, extraData, scripts, worldModel)
         {
-            Type = type;
             Stackable = true;
         }
 
@@ -1085,19 +1072,15 @@ namespace CommonCore.RpgGame.Rpg
 
     public class AmmoItemModel : InventoryItemModel
     {
-        [JsonProperty]
-        public string Type { get; protected set; }
-
         [JsonConstructor]
         protected AmmoItemModel(): base()
         {
 
         }
 
-        public AmmoItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts, string worldModel, string type) :
+        public AmmoItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts, string worldModel) :
             base(name, weight, value, maxCondition, maxQuantity, hidden, essential, flags, extraData, scripts, worldModel)
         {
-            Type = type;
             Stackable = true;
         }
 
