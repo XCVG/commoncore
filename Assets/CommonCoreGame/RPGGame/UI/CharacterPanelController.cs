@@ -9,6 +9,7 @@ using CommonCore.State;
 using CommonCore.StringSub;
 using CommonCore.UI;
 using System.Linq;
+using PseudoExtensibleEnum;
 
 namespace CommonCore.RpgGame.UI
 {
@@ -42,9 +43,9 @@ namespace CommonCore.RpgGame.UI
             statsSB.AppendFormat("Level {0} ({1}/{2})\n\n", player.Level, player.Experience, RpgValues.XPToNext(player.Level));
 
             //base statistics
-            foreach (StatType value in Enum.GetValues(typeof(StatType)))
+            foreach (int value in PxEnum.GetValues(typeof(StatType)))
             {
-                string name = Enum.GetName(typeof(StatType), value);
+                string name = PxEnum.GetName(typeof(StatType), value);
                 if (GameParams.HideStats.Contains(name))
                     continue;
                 int baseValue = baseStats.Stats[value];
@@ -55,13 +56,13 @@ namespace CommonCore.RpgGame.UI
             statsSB.AppendLine();
 
             //damage resistance and threshold
-            foreach(int value in Enum.GetValues(typeof(DamageType)))
+            foreach(int value in PxEnum.GetValues(typeof(DamageType)))
             {
-                string name = Enum.GetName(typeof(DamageType), value);
-                float baseDR = baseStats.DamageResistance[(DamageType)value];
-                float baseDT = baseStats.DamageThreshold[(DamageType)value];
-                float derivedDR = derivedStats.DamageResistance[(DamageType)value];
-                float derivedDT = derivedStats.DamageThreshold[(DamageType)value];
+                string name = PxEnum.GetName(typeof(DamageType), value);
+                float baseDR = baseStats.DamageResistance[value];
+                float baseDT = baseStats.DamageThreshold[value];
+                float derivedDR = derivedStats.DamageResistance[value];
+                float derivedDT = derivedStats.DamageThreshold[value];
                 statsSB.AppendFormat("{0}: DR({1:f1} [{2:f1}]) | DT({3:f1} [{4:f1}])\n", name.Substring(0,Math.Min(4, name.Length)), baseDR, derivedDR, baseDT, derivedDT);
             }
 
@@ -93,9 +94,9 @@ namespace CommonCore.RpgGame.UI
 
             StringBuilder skillsSB = new StringBuilder(baseStats.Skills.Keys.Count * 16);
 
-            foreach(SkillType value in Enum.GetValues(typeof(SkillType)))
+            foreach(int value in PxEnum.GetValues(typeof(SkillType)))
             {
-                string name = Enum.GetName(typeof(SkillType), value);
+                string name = PxEnum.GetName(typeof(SkillType), value);
                 if (GameParams.HideSkills.Contains(name))
                     continue;
 

@@ -9,6 +9,7 @@ using CommonCore.RpgGame.Rpg;
 using CommonCore.State;
 using CommonCore.StringSub;
 using CommonCore.UI;
+using PseudoExtensibleEnum;
 
 namespace CommonCore.RpgGame.UI
 {
@@ -106,14 +107,14 @@ namespace CommonCore.RpgGame.UI
 
             List<Button> allButtons = new List<Button>();
             //the fact that we're using an enum actually helps us *a lot* as long as the end-user doesn't do something criminally stupid
-            foreach (int value in Enum.GetValues(typeof(SkillType)))
+            foreach (int value in PxEnum.GetValues(typeof(SkillType)))
             {
-                string name = Enum.GetName(typeof(SkillType), value);
+                string name = PxEnum.GetName(typeof(SkillType), value);
                 if (GameParams.HideSkills.Contains(name))
                     continue;
 
                 GameObject skillGO = Instantiate<GameObject>(LevelItemPrefab, ScrollContent);
-                skillGO.GetComponentInChildren<Text>().text = string.Format("{0} [{1}]", Sub.Replace(name, SubList), NewStats.Skills[(SkillType)value]);
+                skillGO.GetComponentInChildren<Text>().text = string.Format("{0} [{1}]", Sub.Replace(name, SubList), NewStats.Skills[value]);
                 Button b = skillGO.GetComponent<Button>();
                 int lexI = value;
                 b.onClick.AddListener(delegate { OnSkillSelected(lexI, b); }); //scoping is weird here
@@ -127,14 +128,14 @@ namespace CommonCore.RpgGame.UI
             //update buttons
             for(int i = 0; i < SkillButtons.Length; i++)
             {
-                string name = Enum.GetName(typeof(SkillType), i);
+                string name = PxEnum.GetName(typeof(SkillType), i);
 
                 Button b = SkillButtons[i];
-                b.GetComponentInChildren<Text>().text = string.Format("{0} [{1}]", Sub.Replace(name, SubList), NewStats.Skills[(SkillType)i]);
+                b.GetComponentInChildren<Text>().text = string.Format("{0} [{1}]", Sub.Replace(name, SubList), NewStats.Skills[i]);
             }
 
             //update details
-            DetailLevel.text = string.Format("{0}->{1}", NewStats.Skills[(SkillType)SelectedSkill], NewStats.Skills[(SkillType)SelectedSkill] + RpgValues.SkillGainForPoints(1));
+            DetailLevel.text = string.Format("{0}->{1}", NewStats.Skills[SelectedSkill], NewStats.Skills[SelectedSkill] + RpgValues.SkillGainForPoints(1));
 
             //if we're out of PP, set buttons
             LevelUpButton.interactable = (PotentialPoints > 0);
@@ -148,19 +149,19 @@ namespace CommonCore.RpgGame.UI
             //Debug.Log(Enum.GetName(typeof(SkillType), i));
 
             //set selected index, paint detail, enable buttons if valid
-            var skillName = Enum.GetName(typeof(SkillType), i);
+            var skillName = PxEnum.GetName(typeof(SkillType), i);
             SelectedSkill = i;
             DetailPanel.SetActive(true);
             DetailTitle.text = Sub.Replace(skillName, SubList);
             DetailDescription.text = Sub.Exists(skillName, DescriptionList) ? Sub.Replace(skillName, DescriptionList) : string.Empty;
-            DetailLevel.text = string.Format("{0}->{1}", NewStats.Skills[(SkillType)i], NewStats.Skills[(SkillType)i]+RpgValues.SkillGainForPoints(1));
+            DetailLevel.text = string.Format("{0}->{1}", NewStats.Skills[i], NewStats.Skills[i]+RpgValues.SkillGainForPoints(1));
             LevelUpButton.interactable = (PotentialPoints > 0);
         }
 
         //on actual level handler
         public void OnClickLevelUp()
         {
-            NewStats.Skills[(SkillType)SelectedSkill] = NewStats.Skills[(SkillType)SelectedSkill] + RpgValues.SkillGainForPoints(1);
+            NewStats.Skills[SelectedSkill] = NewStats.Skills[SelectedSkill] + RpgValues.SkillGainForPoints(1);
             PotentialPoints--;
 
             UpdateValues();
@@ -200,11 +201,15 @@ namespace CommonCore.RpgGame.UI
         {
             if(GameParams.UseCustomLeveling)
             {
+                //TODO reimplement this
+                /*
                 var go = Instantiate<GameObject>(CoreUtils.LoadResource<GameObject>(AltPrefab), CoreUtils.GetWorldRoot());
                 var modal = go.GetComponent<GameUI.LevelUpModal>();
                 modal.Callback = callback;
                 if (IngameMenuController.Current != null)
                     go.transform.SetParent(IngameMenuController.Current.EphemeralRoot.transform, false);
+                */
+                throw new NotImplementedException();
             }
             else
             {

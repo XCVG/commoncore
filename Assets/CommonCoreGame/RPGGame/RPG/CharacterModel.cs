@@ -534,11 +534,11 @@ namespace CommonCore.RpgGame.Rpg
 
         public (float damageThreshold, float damageResistance) GetDamageThresholdAndResistance(int damageType)
         {
-            if (DerivedStats == null || !Enum.IsDefined(typeof(DamageType), damageType)) //this is the boundary where we go from CommonCore.World damagetype-is-int to game-specific damagetype
+            if (DerivedStats == null)
                 return (0, 0);
 
-            float dt = DerivedStats.DamageThreshold.GetOrDefault((DamageType)damageType, 0f);
-            float dr = DerivedStats.DamageResistance.GetOrDefault((DamageType)damageType, 0f);
+            float dt = DerivedStats.DamageThreshold.GetOrDefault(damageType, 0f);
+            float dr = DerivedStats.DamageResistance.GetOrDefault(damageType, 0f);
 
             return (dt, dr);
         }

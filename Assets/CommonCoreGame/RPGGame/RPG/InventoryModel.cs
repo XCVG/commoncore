@@ -143,6 +143,7 @@ namespace CommonCore.RpgGame.Rpg
                 }
                 catch (Exception e)
                 {
+                    CDebug.LogEx("Failed to load inventory model " + ta.name, LogLevel.Verbose, null);
                     CDebug.LogEx(e.ToString(), LogLevel.Verbose, null);
                     LoadErrorCount++;
                 }

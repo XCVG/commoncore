@@ -8,6 +8,7 @@ using CommonCore.RpgGame.State;
 using CommonCore.State;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PseudoExtensibleEnum;
 using UnityEngine;
 
 namespace CommonCore.RpgGame.Dialogue
@@ -235,10 +236,10 @@ namespace CommonCore.RpgGame.Dialogue
             switch (TargetType)
             {
                 case SkillCheckTarget.Skill:
-                    SkillType skill = (SkillType)Enum.Parse(typeof(SkillType), Target, true);
+                    int skill = (int)PxEnum.Parse(typeof(SkillType), Target, true);
                     return player.DerivedStats.Skills[skill] * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerSkill;
                 case SkillCheckTarget.Stat:
-                    StatType stat = (StatType)Enum.Parse(typeof(StatType), Target, true);
+                    int stat = (int)PxEnum.Parse(typeof(StatType), Target, true);
                     return player.DerivedStats.Stats[stat] * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerSkill;
                 case SkillCheckTarget.ActorValue:
                     return (IComparable)player.GetAV(Target);

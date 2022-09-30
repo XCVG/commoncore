@@ -48,6 +48,7 @@ namespace CommonCore.RpgGame.Rpg
     [PseudoExtensible]
     public enum SkillType
     {
+        Unspecified, //needed for weapons
         Melee, MeleeAlacrity, MeleePrecision, MeleeBrawn,
         Archery, ArcheryDraw, ArcherySteady,
         Guns, GunsAccuracy, GunsRapidity,
@@ -72,11 +73,15 @@ namespace CommonCore.RpgGame.Rpg
 
         public ShieldParams ShieldParams { get; set; }
 
-        public Dictionary<DamageType, float> DamageResistance { get; set; }
-        public Dictionary<DamageType, float> DamageThreshold { get; set; }
-        
-        public Dictionary<StatType, int> Stats { get; set; }
-        public Dictionary<SkillType, int> Skills { get; set; }
+        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(DamageType))]
+        public Dictionary<int, float> DamageResistance { get; set; }
+        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(DamageType))]
+        public Dictionary<int, float> DamageThreshold { get; set; }
+
+        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(StatType))]
+        public Dictionary<int, int> Stats { get; set; }
+        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(SkillType))]
+        public Dictionary<int, int> Skills { get; set; }
 
         [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
         public Dictionary<string, object> ExtraData { get; set; }
@@ -85,15 +90,15 @@ namespace CommonCore.RpgGame.Rpg
         {
             ShieldParams = new ShieldParams();
 
-            DamageResistance = new Dictionary<DamageType, float>();
-            DamageResistance.SetupFromEnum(default); //we still do this because there's probably old code that relies on it
-            DamageThreshold = new Dictionary<DamageType, float>();
-            DamageThreshold.SetupFromEnum(default);
+            DamageResistance = new Dictionary<int, float>();
+            SetupFromPxEnum<DamageType, float>(DamageResistance, default); ; //we still do this because there's probably old code that relies on it even though it's (post-4.x) very unsafe
+            DamageThreshold = new Dictionary<int, float>();
+            SetupFromPxEnum<DamageType, float>(DamageThreshold, default);
 
-            Stats = new Dictionary<StatType, int>();
-            Stats.SetupFromEnum(default);
-            Skills = new Dictionary<SkillType, int>();
-            Skills.SetupFromEnum(default);
+            Stats = new Dictionary<int, int>();
+            SetupFromPxEnum<StatType, int>(Stats, default);
+            Skills = new Dictionary<int, int>();
+            SetupFromPxEnum<SkillType, int>(Skills, default);
 
             ExtraData = new Dictionary<string, object>();
         }
@@ -104,10 +109,10 @@ namespace CommonCore.RpgGame.Rpg
             MaxEnergy = original.MaxEnergy;
             MaxMagic = original.MaxMagic;
             ShieldParams = original.ShieldParams; //okay because ShieldParams is immutable
-            DamageResistance = new Dictionary<DamageType, float>(original.DamageResistance);
-            DamageThreshold = new Dictionary<DamageType, float>(original.DamageThreshold);
-            Stats = new Dictionary<StatType, int>(original.Stats);
-            Skills = new Dictionary<SkillType, int>(original.Skills);      
+            DamageResistance = new Dictionary<int, float>(original.DamageResistance);
+            DamageThreshold = new Dictionary<int, float>(original.DamageThreshold);
+            Stats = new Dictionary<int, int>(original.Stats);
+            Skills = new Dictionary<int, int>(original.Skills);      
         }
         
         public void SetStat(string stat, object value)
@@ -121,21 +126,21 @@ namespace CommonCore.RpgGame.Rpg
                 //explicit handling
                 if (propertyName == "DamageResistance" || propertyName == "DamageThreshold")
                 {
-                    int propertyIndex = (int)Enum.Parse(typeof(DamageType), propertyAlias);
+                    int propertyIndex = (int)PxEnum.Parse(typeof(DamageType), propertyAlias);
                     if (propertyName == "DamageResistance")
-                        DamageResistance[(DamageType)propertyIndex] = Convert.ToSingle(value);
+                        DamageResistance[propertyIndex] = Convert.ToSingle(value);
                     else if (propertyName == "DamageThreshold")
-                        DamageThreshold[(DamageType)propertyIndex] = Convert.ToSingle(value);
+                        DamageThreshold[propertyIndex] = Convert.ToSingle(value);
                 }
                 else if (propertyName == "Stats")
                 {
-                    int propertyIndex = (int)Enum.Parse(typeof(StatType), propertyAlias);
-                    Stats[(StatType)propertyIndex] = Convert.ToInt32(value);
+                    int propertyIndex = (int)PxEnum.Parse(typeof(StatType), propertyAlias);
+                    Stats[propertyIndex] = Convert.ToInt32(value);
                 }
                 else if (propertyName == "Skills")
                 {
-                    int propertyIndex = (int)Enum.Parse(typeof(SkillType), propertyAlias);
-                    Skills[(SkillType)propertyIndex] = Convert.ToInt32(value);
+                    int propertyIndex = (int)PxEnum.Parse(typeof(SkillType), propertyAlias);
+                    Skills[propertyIndex] = Convert.ToInt32(value);
                 }
                 else if(propertyName == "ExtraData")
                 {
@@ -160,21 +165,21 @@ namespace CommonCore.RpgGame.Rpg
                 //explicit handling
                 if (propertyName == "DamageResistance" || propertyName == "DamageThreshold")
                 {
-                    int propertyIndex = (int)Enum.Parse(typeof(DamageType), propertyAlias);
+                    int propertyIndex = (int)PxEnum.Parse(typeof(DamageType), propertyAlias);
                     if (propertyName == "DamageResistance")
-                        DamageResistance[(DamageType)propertyIndex] += Convert.ToSingle(value);
+                        DamageResistance[propertyIndex] += Convert.ToSingle(value);
                     else if (propertyName == "DamageThreshold")
-                        DamageThreshold[(DamageType)propertyIndex] += Convert.ToSingle(value);
+                        DamageThreshold[propertyIndex] += Convert.ToSingle(value);
                 }
                 else if (propertyName == "Stats")
                 {
-                    int propertyIndex = (int)Enum.Parse(typeof(StatType), propertyAlias);
-                    Stats[(StatType)propertyIndex] += Convert.ToInt32(value);
+                    int propertyIndex = (int)PxEnum.Parse(typeof(StatType), propertyAlias);
+                    Stats[propertyIndex] += Convert.ToInt32(value);
                 }
                 else if (propertyName == "Skills")
                 {
-                    int propertyIndex = (int)Enum.Parse(typeof(SkillType), propertyAlias);
-                    Skills[(SkillType)propertyIndex] += Convert.ToInt32(value);
+                    int propertyIndex = (int)PxEnum.Parse(typeof(SkillType), propertyAlias);
+                    Skills[propertyIndex] += Convert.ToInt32(value);
                 }
                 else if (propertyName == "ExtraData")
                 {
@@ -228,21 +233,21 @@ namespace CommonCore.RpgGame.Rpg
                 //explicit handling
                 if (propertyName == "DamageResistance" || propertyName == "DamageThreshold")
                 {
-                    int propertyIndex = (int)Enum.Parse(typeof(DamageType), propertyAlias);
+                    int propertyIndex = (int)PxEnum.Parse(typeof(DamageType), propertyAlias);
                     if (propertyName == "DamageResistance")
-                        result = DamageResistance[(DamageType)propertyIndex];
+                        result = DamageResistance[propertyIndex];
                     else if (propertyName == "DamageThreshold")
-                        result = DamageThreshold[(DamageType)propertyIndex];
+                        result = DamageThreshold[propertyIndex];
                 }
                 else if (propertyName == "Stats")
                 {
-                    int propertyIndex = (int)Enum.Parse(typeof(StatType), propertyAlias);
-                    result = Stats[(StatType)propertyIndex];
+                    int propertyIndex = (int)PxEnum.Parse(typeof(StatType), propertyAlias);
+                    result = Stats[propertyIndex];
                 }
                 else if (propertyName == "Skills")
                 {
-                    int propertyIndex = (int)Enum.Parse(typeof(SkillType), propertyAlias);
-                    result = Skills[(SkillType)propertyIndex];
+                    int propertyIndex = (int)PxEnum.Parse(typeof(SkillType), propertyAlias);
+                    result = Skills[propertyIndex];
                 }
                 else if(propertyName == "ExtraData")
                 {
@@ -256,6 +261,17 @@ namespace CommonCore.RpgGame.Rpg
             }
 
             return result;
+        }
+
+        private static void SetupFromPxEnum<TKey, TValue>(Dictionary<int, TValue> dictionary, TValue defaultValue) where TKey : Enum
+        {
+            var enumValues = PxEnum.GetValues(typeof(TKey));
+
+            foreach (int key in enumValues)
+            {
+                dictionary[key] = defaultValue;
+            }
+
         }
     }
 
