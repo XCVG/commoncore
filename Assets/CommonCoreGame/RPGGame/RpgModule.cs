@@ -28,6 +28,8 @@ namespace CommonCore.RpgGame
             InventoryModel.Load();
             QuestModel.Load();
 
+            RpgValues.SetDefaults(new RpgDefaultValues());
+
             ConditionalModule.Instance.LoadBaseHandlers(); //TODO
 
             //install gameplay config panel

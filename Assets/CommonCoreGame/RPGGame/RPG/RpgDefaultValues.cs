@@ -7,15 +7,15 @@ namespace CommonCore.RpgGame.Rpg
     /// <summary>
     /// Default implementation of RPG values/calculations
     /// </summary>
-    public static class RpgDefaultValues
+    public class RpgDefaultValues : IRpgDefaultValues
     {
 
-        public static int XPToNext(int level)
+        public int XPToNext(int level)
         {
             return level * 10 + 100; //for now
         }
 
-        public static int PotentialPointsForLevel(int newLevel, CharacterModel character)
+        public int PotentialPointsForLevel(int newLevel, CharacterModel character)
         {
             return (2
                 + (int)(0.5f * (float)character.BaseStats.Stats[(int)StatType.Erudition])
@@ -23,12 +23,12 @@ namespace CommonCore.RpgGame.Rpg
                 );
         }
 
-        public static int SkillGainForPoints(int points)
+        public int SkillGainForPoints(int points)
         {
             return points * 3;
         }
 
-        public static int LevelsForExperience(CharacterModel character)
+        public int LevelsForExperience(CharacterModel character)
         {
             int newXP = character.Experience;
             int newLevel = character.Level;
@@ -41,7 +41,7 @@ namespace CommonCore.RpgGame.Rpg
             return newLevel - character.Level;
         }
 
-        public static int XPAfterMaxLevel(CharacterModel character)
+        public int XPAfterMaxLevel(CharacterModel character)
         {
             int newXP = character.Experience;
             int newLevel = character.Level;
@@ -54,12 +54,12 @@ namespace CommonCore.RpgGame.Rpg
             return newXP;
         }
 
-        public static float MaxHealth(CharacterModel characterModel)
+        public float MaxHealth(CharacterModel characterModel)
         {
             return 100 + characterModel.Level * 10;
         }
 
-        public static float MaxEnergy(CharacterModel characterModel)
+        public float MaxEnergy(CharacterModel characterModel)
         {
             return Mathf.FloorToInt(100
                 + characterModel.DerivedStats.Stats[(int)StatType.Dexterity] * 5.0f
@@ -68,7 +68,7 @@ namespace CommonCore.RpgGame.Rpg
                 + characterModel.DerivedStats.Skills[(int)SkillType.AthleticsFleet] * 0.25f);
         }
 
-        public static float MaxMagic(CharacterModel characterModel)
+        public float MaxMagic(CharacterModel characterModel)
         {
             return Mathf.FloorToInt(100
                 + characterModel.DerivedStats.Stats[(int)StatType.Erudition] * 5.0f
@@ -78,13 +78,13 @@ namespace CommonCore.RpgGame.Rpg
         }
 
 
-        public static ShieldParams ShieldParams(CharacterModel characterModel)
+        public ShieldParams ShieldParams(CharacterModel characterModel)
         {
             //try the ShieldGenerator slot first
             {
                 if (characterModel.IsEquipped((int)EquipSlot.ShieldGenerator) && characterModel.Equipped[(int)EquipSlot.ShieldGenerator].ItemModel is ArmorItemModel aim)
                 {
-                    if(aim.Shields != null)
+                    if (aim.Shields != null)
                         return aim.Shields;
                 }
             }
@@ -99,9 +99,9 @@ namespace CommonCore.RpgGame.Rpg
             }
 
             //then try any other slot
-            foreach(var item in characterModel.Equipped.Values)
+            foreach (var item in characterModel.Equipped.Values)
             {
-                if(item.ItemModel is ArmorItemModel aim)
+                if (item.ItemModel is ArmorItemModel aim)
                 {
                     if (aim.Shields != null)
                         return aim.Shields;
@@ -113,7 +113,7 @@ namespace CommonCore.RpgGame.Rpg
             return new ShieldParams(); //default/none
         }
 
-        public static int AdjustedBuyPrice(CharacterModel character, float value)
+        public int AdjustedBuyPrice(CharacterModel character, float value)
         {
             float adjValue = (value * 2.0f)
                 - (character.DerivedStats.Skills[(int)SkillType.Social] / 200 * value)
@@ -125,7 +125,7 @@ namespace CommonCore.RpgGame.Rpg
             return Mathf.CeilToInt(Mathf.Max(value, adjValue));
         }
 
-        public static int AdjustedSellPrice(CharacterModel character, float value)
+        public int AdjustedSellPrice(CharacterModel character, float value)
         {
             float halfValue = value * 0.5f;
 
@@ -139,7 +139,7 @@ namespace CommonCore.RpgGame.Rpg
             return Mathf.FloorToInt(Mathf.Min(adjValue, value));
         }
 
-        public static void SkillsFromStats(StatsSet baseStats, StatsSet derivedStats)
+        public void SkillsFromStats(StatsSet baseStats, StatsSet derivedStats)
         {
             //derive skill values from base stats if you want to; you should never modify baseStats, and ADD to the skills on derivedStats
 
@@ -150,7 +150,7 @@ namespace CommonCore.RpgGame.Rpg
         /// <summary>
         /// Calculates applied damage given hitinfo and armor values
         /// </summary>
-        public static float DamageTaken(ActorHitInfo hitInfo, float threshold, float resistance)
+        public float DamageTaken(ActorHitInfo hitInfo, float threshold, float resistance)
         {
             float damage = hitInfo.Damage;
             float damagePierce = hitInfo.DamagePierce;
@@ -158,7 +158,7 @@ namespace CommonCore.RpgGame.Rpg
             if (hitInfo.HitFlags.HasFlag(BuiltinHitFlags.IgnoreArmor))
                 return damage + damagePierce;
 
-            if(hitInfo.HitFlags.HasFlag(BuiltinHitFlags.PierceConsiderArmor))
+            if (hitInfo.HitFlags.HasFlag(BuiltinHitFlags.PierceConsiderArmor))
             {
                 damage += damagePierce;
                 damagePierce = 0;
@@ -173,7 +173,7 @@ namespace CommonCore.RpgGame.Rpg
             return d2 + dp;
         }
 
-        public static (float damageToShields, float damageToArmor, float damageToCharacter) DamageRatio(ActorHitInfo hitInfo, CharacterModel character)
+        public (float damageToShields, float damageToArmor, float damageToCharacter) DamageRatio(ActorHitInfo hitInfo, CharacterModel character)
         {
             //for now we'll keep returning all 3 values but we'll probably combine the functionality of DamageTaken into this as well and just spit out "damage to shields" and "raw damage"
 
@@ -217,7 +217,7 @@ namespace CommonCore.RpgGame.Rpg
         /// <summary>
         /// Calculates applied damage given the velocity of a fall
         /// </summary>
-        public static float FallDamage(CharacterModel character, Vector3 velocity)
+        public float FallDamage(CharacterModel character, Vector3 velocity)
         {
             //parameters, local because stupid
             const float minDamageVelocity = 15f;
@@ -239,7 +239,7 @@ namespace CommonCore.RpgGame.Rpg
             return Mathf.Clamp(damageFromVelocity, minDamage, maxDamage);
         }
 
-        public static float DetectionChance(CharacterModel character, bool isSneaking, bool isRunning)
+        public float DetectionChance(CharacterModel character, bool isSneaking, bool isRunning)
         {
 
             float r1 = character.DerivedStats.Skills[(int)SkillType.AthleticsFurtive];
@@ -255,7 +255,7 @@ namespace CommonCore.RpgGame.Rpg
 
         //movement calculations
 
-        public static float GetMoveSpeedMultiplier(CharacterModel character)
+        public float GetMoveSpeedMultiplier(CharacterModel character)
         {
             float rawSpeed = 1f
                 + (character.DerivedStats.Stats[(int)StatType.Dexterity] / 50f)
@@ -264,12 +264,12 @@ namespace CommonCore.RpgGame.Rpg
             return Mathf.Clamp(rawSpeed, 0.75f, 1.75f);
         }
 
-        public static float GetRunSpeedMultiplier(CharacterModel character)
+        public float GetRunSpeedMultiplier(CharacterModel character)
         {
             return GetMoveSpeedMultiplier(character); //we use the same multiplier here
         }
 
-        public static float GetRunEnergyRate(CharacterModel character)
+        public float GetRunEnergyRate(CharacterModel character)
         {
             float rawRate = 1f
                 - (character.DerivedStats.Skills[(int)SkillType.AthleticsFleet] / 500f)
@@ -278,7 +278,7 @@ namespace CommonCore.RpgGame.Rpg
             return Mathf.Min(0.1f, rawRate);
         }
 
-        public static float GetJumpVelocityMultiplier(CharacterModel character)
+        public float GetJumpVelocityMultiplier(CharacterModel character)
         {
             float rawMultiplier = 1f
                 + (character.DerivedStats.Stats[(int)StatType.Dexterity] / 100f)
@@ -288,18 +288,18 @@ namespace CommonCore.RpgGame.Rpg
             return Mathf.Clamp(rawMultiplier, 0.75f, 1.5f);
         }
 
-        public static float GetJumpEnergyUse(CharacterModel character)
+        public float GetJumpEnergyUse(CharacterModel character)
         {
             return 10f
                 - (character.DerivedStats.Skills[(int)SkillType.Athletics] / 50f); //athletics very slightly reduces energy use
         }
 
-        public static float GetAirMoveMultiplier(CharacterModel character)
+        public float GetAirMoveMultiplier(CharacterModel character)
         {
             return 1f;
         }
 
-        public static float GetIdleEnergyRecoveryRate(CharacterModel character)
+        public float GetIdleEnergyRecoveryRate(CharacterModel character)
         {
             return 5f
                 + (character.DerivedStats.Stats[(int)StatType.Dexterity] / 2f)
@@ -307,14 +307,14 @@ namespace CommonCore.RpgGame.Rpg
                 + (character.DerivedStats.Skills[(int)SkillType.Athletics] / 100f);
         }
 
-        public static float GetMovingEnergyRecoveryRate(CharacterModel character)
+        public float GetMovingEnergyRecoveryRate(CharacterModel character)
         {
             return GetIdleEnergyRecoveryRate(character) / 3f;
         }
 
         //weapon calculations
 
-        public static float GetKickDamageFactor(CharacterModel character)
+        public float GetKickDamageFactor(CharacterModel character)
         {
             //higher is better
             return Mathf.Clamp(
@@ -326,7 +326,7 @@ namespace CommonCore.RpgGame.Rpg
                 0.5f, 3.0f);
         }
 
-        public static float GetKickForceFactor(CharacterModel character)
+        public float GetKickForceFactor(CharacterModel character)
         {
             //higher is better
             return Mathf.Clamp(
@@ -338,7 +338,7 @@ namespace CommonCore.RpgGame.Rpg
                 0.5f, 2.0f);
         }
 
-        public static float GetKickRateFactor(CharacterModel character)
+        public float GetKickRateFactor(CharacterModel character)
         {
             //lower is better
             return Mathf.Clamp(
@@ -350,7 +350,7 @@ namespace CommonCore.RpgGame.Rpg
                 0.5f, 2.0f);
         }
 
-        public static float GetWeaponRateFactor(CharacterModel character, WeaponItemModel itemModel)
+        public float GetWeaponRateFactor(CharacterModel character, WeaponItemModel itemModel)
         {
             //lower is better
             float factor = 1.0f;
@@ -374,7 +374,7 @@ namespace CommonCore.RpgGame.Rpg
             return Mathf.Clamp(factor, 0.5f, 2.0f);
         }
 
-        public static float GetWeaponReloadFactor(CharacterModel character, WeaponItemModel itemModel)
+        public float GetWeaponReloadFactor(CharacterModel character, WeaponItemModel itemModel)
         {
             //lower is better
             float factor = 1.0f;
@@ -390,7 +390,7 @@ namespace CommonCore.RpgGame.Rpg
             return Mathf.Clamp(factor, 0.5f, 2.0f);
         }
 
-        public static float GetWeaponSpreadFactor(CharacterModel character, WeaponItemModel itemModel)
+        public float GetWeaponSpreadFactor(CharacterModel character, WeaponItemModel itemModel)
         {
             //lower is better
             float factor = 1.0f;
@@ -410,7 +410,7 @@ namespace CommonCore.RpgGame.Rpg
             return Mathf.Clamp(factor, 0.25f, 2.0f);
         }
 
-        public static float GetWeaponInstabilityFactor(CharacterModel character, WeaponItemModel itemModel)
+        public float GetWeaponInstabilityFactor(CharacterModel character, WeaponItemModel itemModel)
         {
             //lower is better
             float factor = 1.0f;
@@ -430,7 +430,7 @@ namespace CommonCore.RpgGame.Rpg
             return Mathf.Clamp(factor, 0.25f, 2.0f);
         }
 
-        public static float GetWeaponRecoveryFactor(CharacterModel character, WeaponItemModel itemModel)
+        public float GetWeaponRecoveryFactor(CharacterModel character, WeaponItemModel itemModel)
         {
             //higher is better
             float factor = 1.0f;
@@ -450,7 +450,7 @@ namespace CommonCore.RpgGame.Rpg
             return Mathf.Clamp(factor, 0.25f, 2.0f);
         }
 
-        public static float GetWeaponDamageFactor(CharacterModel character, WeaponItemModel itemModel)
+        public float GetWeaponDamageFactor(CharacterModel character, WeaponItemModel itemModel)
         {
             //higher is better
             float factor = 1.0f;
@@ -480,7 +480,7 @@ namespace CommonCore.RpgGame.Rpg
             return Mathf.Clamp(factor, 0.25f, 4.0f);
         }
 
-        public static float GetWeaponEnergyCostFactor(CharacterModel character, WeaponItemModel itemModel)
+        public float GetWeaponEnergyCostFactor(CharacterModel character, WeaponItemModel itemModel)
         {
             //lower is better
             float factor = 1.0f;
