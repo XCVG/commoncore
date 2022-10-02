@@ -660,7 +660,7 @@ namespace CommonCore.RpgGame.World
 
                 //calculate all the RPG dice stuff
                 float energyUsed = wim.EnergyCost * RpgValues.GetWeaponEnergyCostFactor(player, wim);
-                float damageDifficultyFactor = ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerStrength;
+
                 float rateRpgFactor = RpgValues.GetWeaponRateFactor(player, wim);
                 if (!wim.CheckFlag(ItemFlag.WeaponUnscaledAnimations) && !wim.CheckFlag(ItemFlag.WeaponIgnoreLevelledRate))
                     timeScale = rateRpgFactor;
@@ -670,10 +670,10 @@ namespace CommonCore.RpgGame.World
                 //damage calculations that take into account alot of things (randomization, rpg calcs, difficulty)
                 bool useRandom = wim.DamageSpread > 0 && !wim.CheckFlag(ItemFlag.WeaponNeverRandomize);
                 float randomizedDamage = useRandom ? Mathf.Max(Mathf.Min(1, wim.Damage), wim.Damage + UnityEngine.Random.Range(-wim.DamageSpread, wim.DamageSpread)) : wim.Damage;
-                float calcDamage = RpgValues.GetWeaponDamageFactor(player, wim) * randomizedDamage * damageDifficultyFactor;
+                float calcDamage = RpgValues.GetWeaponDamageFactor(player, wim) * randomizedDamage;
                 bool useRandomPierce = wim.DamagePierceSpread > 0 && !wim.CheckFlag(ItemFlag.WeaponNeverRandomize);
                 float randomizedPierce = useRandomPierce ? Mathf.Max(Mathf.Min(1, wim.DamagePierce), wim.DamagePierce + UnityEngine.Random.Range(-wim.DamagePierceSpread, wim.DamagePierceSpread)) : wim.DamagePierce;
-                float calcDamagePierce = RpgValues.GetWeaponDamageFactor(player, wim) * randomizedPierce * damageDifficultyFactor;
+                float calcDamagePierce = RpgValues.GetWeaponDamageFactor(player, wim) * randomizedPierce;
 
                 if (player.Energy <= energyUsed)
                 {
@@ -1033,7 +1033,7 @@ namespace CommonCore.RpgGame.World
                     Transform shootPoint = wim.CheckFlag(ItemFlag.WeaponUseFarShootPoint) ? ShootPointFar : ShootPointNear;
 
                     float damageRpgFactor = RpgValues.GetWeaponDamageFactor(player, wim);
-                    float damageDifficultyFactor = ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerStrength;
+
                     bool useRandomDamage = wim.DamageSpread > 0 && !wim.CheckFlag(ItemFlag.WeaponNeverRandomize);
                     bool useRandomPierce = wim.DamagePierceSpread > 0 && !wim.CheckFlag(ItemFlag.WeaponNeverRandomize);
                     Vector3 rFireVec = shootPoint.forward.normalized;
@@ -1063,7 +1063,7 @@ namespace CommonCore.RpgGame.World
                         Vector3 fireVec = CalculateFireVec(shootPoint, spreadRpgFactor, spreadMoveFactor, AccumulatedSpread, AccumulatedRecoil, out var intendedTarget);
                         rFireVec = fireVec;
 
-                        var hitInfo = new ActorHitInfo(randomizedDamage * damageRpgFactor * damageDifficultyFactor, randomizedPierce * damageRpgFactor * damageDifficultyFactor, (int)wim.DType, (int)wim.Effector, harmFriendly, (int)ActorBodyPart.Unspecified, (int)DefaultHitMaterials.Unspecified, PlayerController, PredefinedFaction.Player.ToString(), wim.HitPuff, null, wim.GetHitFlags());
+                        var hitInfo = new ActorHitInfo(randomizedDamage * damageRpgFactor, randomizedPierce * damageRpgFactor, (int)wim.DType, (int)wim.Effector, harmFriendly, (int)ActorBodyPart.Unspecified, (int)DefaultHitMaterials.Unspecified, PlayerController, PredefinedFaction.Player.ToString(), wim.HitPuff, null, wim.GetHitFlags());
 
                         //now a function call!
                         if (wim.LockTime > 0)
@@ -1688,7 +1688,7 @@ namespace CommonCore.RpgGame.World
 
                     if (otherController is ITakeDamage itd)
                     {
-                        float damageMultiplier = RpgValues.GetKickDamageFactor(player) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerStrength; //from stats and difficulty
+                        float damageMultiplier = RpgValues.GetKickDamageFactor(player); //from stats and difficulty
                         var hitInfo = new ActorHitInfo(OffhandKickDamage * damageMultiplier, 0, (int)DefaultDamageTypes.Impact, (int)DefaultDamageEffectors.Melee, GameParams.UseFriendlyFire, (int)hitLocation, (int)hitMaterial, PlayerController, PredefinedFaction.Player.ToString(), OffhandKickPuff, hitPoint, TypeUtils.FlagsFromCollection(OffhandKickFlags));
                         itd.TakeDamage(hitInfo);
                         if(!string.IsNullOrEmpty(OffhandKickPuff))

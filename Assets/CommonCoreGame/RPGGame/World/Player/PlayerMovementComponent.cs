@@ -575,7 +575,7 @@ namespace CommonCore.RpgGame.World
 
                     //clamp velocity to maxwalk/maxrun/etc
                     float maxSpeed = IsCrouching ? MaxCrouchSpeed * RpgValues.GetMoveSpeedMultiplier(playerModel) : (IsRunning ? MaxSprintSpeed * RpgValues.GetRunSpeedMultiplier(playerModel) : MaxWalkSpeed * RpgValues.GetMoveSpeedMultiplier(playerModel));
-                    maxSpeed *= ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerAgility;
+
                     var newFlatVelocity = new Vector3(Velocity.x, 0, Velocity.z) + new Vector3(moveVector.x, 0, moveVector.z);
                     if (newFlatVelocity.magnitude > maxSpeed)
                     {
@@ -595,8 +595,7 @@ namespace CommonCore.RpgGame.World
                     Vector3 refVelocity = Quaternion.AngleAxis(-transform.eulerAngles.y, Vector3.up) * Velocity;
                     Vector3 newAddVelocity = Vector3.zero;
 
-                    float multiplier = ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerAgility;
-                    multiplier *= RpgValues.GetAirMoveMultiplier(playerModel);
+                    float multiplier = RpgValues.GetAirMoveMultiplier(playerModel);
 
                     float maxSpeedScaled = MaxAirSpeed * multiplier;
 
@@ -617,7 +616,7 @@ namespace CommonCore.RpgGame.World
                     if (MappedInput.GetButtonDown(DefaultControls.Jump))
                     {
 
-                        var jumpVelocity = JumpInstantaneousVelocity * RpgValues.GetJumpVelocityMultiplier(playerModel) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerAgility;
+                        var jumpVelocity = JumpInstantaneousVelocity * RpgValues.GetJumpVelocityMultiplier(playerModel);
                         float jumpEnergyUse = RpgValues.GetJumpEnergyUse(playerModel);
 
                         if (playerModel.Energy >= jumpEnergyUse)

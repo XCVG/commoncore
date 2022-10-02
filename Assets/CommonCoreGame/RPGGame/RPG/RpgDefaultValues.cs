@@ -1,4 +1,5 @@
-﻿using CommonCore.World;
+﻿using CommonCore.Config;
+using CommonCore.World;
 using System;
 using UnityEngine;
 
@@ -56,7 +57,7 @@ namespace CommonCore.RpgGame.Rpg
 
         public float MaxHealth(CharacterModel characterModel)
         {
-            return 100 + characterModel.Level * 10;
+            return (100 + characterModel.Level * 10) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerEndurance;
         }
 
         public float MaxEnergy(CharacterModel characterModel)
@@ -65,7 +66,7 @@ namespace CommonCore.RpgGame.Rpg
                 + characterModel.DerivedStats.Stats[(int)StatType.Dexterity] * 5.0f
                 + characterModel.DerivedStats.Stats[(int)StatType.Resilience] * 10.0f
                 + characterModel.DerivedStats.Skills[(int)SkillType.Athletics] * 0.5f
-                + characterModel.DerivedStats.Skills[(int)SkillType.AthleticsFleet] * 0.25f);
+                + characterModel.DerivedStats.Skills[(int)SkillType.AthleticsFleet] * 0.25f) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerEndurance;
         }
 
         public float MaxMagic(CharacterModel characterModel)
@@ -261,7 +262,7 @@ namespace CommonCore.RpgGame.Rpg
                 + (character.DerivedStats.Stats[(int)StatType.Dexterity] / 50f)
                 + (character.DerivedStats.Skills[(int)SkillType.AthleticsFleet] / 150f)
                 + (character.DerivedStats.Skills[(int)SkillType.Athletics] / 300f);
-            return Mathf.Clamp(rawSpeed, 0.75f, 1.75f);
+            return Mathf.Clamp(rawSpeed, 0.75f, 1.75f) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerAgility;
         }
 
         public float GetRunSpeedMultiplier(CharacterModel character)
@@ -285,7 +286,7 @@ namespace CommonCore.RpgGame.Rpg
                 + (character.DerivedStats.Skills[(int)SkillType.AthleticsFleet] / 200f)
                 + (character.DerivedStats.Skills[(int)SkillType.Athletics] / 500f);
 
-            return Mathf.Clamp(rawMultiplier, 0.75f, 1.5f);
+            return Mathf.Clamp(rawMultiplier, 0.75f, 1.5f) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerAgility;
         }
 
         public float GetJumpEnergyUse(CharacterModel character)
@@ -296,7 +297,7 @@ namespace CommonCore.RpgGame.Rpg
 
         public float GetAirMoveMultiplier(CharacterModel character)
         {
-            return 1f;
+            return 1f * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerAgility;
         }
 
         public float GetIdleEnergyRecoveryRate(CharacterModel character)
@@ -323,7 +324,7 @@ namespace CommonCore.RpgGame.Rpg
                     + (character.DerivedStats.Stats[(int)StatType.Dexterity] / 30f)
                     + (character.DerivedStats.Skills[(int)SkillType.MeleeBrawn] / 100f)
                     + (character.DerivedStats.Skills[(int)SkillType.Melee] / 200f),
-                0.5f, 3.0f);
+                0.5f, 3.0f) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerStrength;
         }
 
         public float GetKickForceFactor(CharacterModel character)
@@ -477,7 +478,7 @@ namespace CommonCore.RpgGame.Rpg
                     break;
             }
 
-            return Mathf.Clamp(factor, 0.25f, 4.0f);
+            return Mathf.Clamp(factor, 0.25f, 4.0f) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerStrength;
         }
 
         public float GetWeaponEnergyCostFactor(CharacterModel character, WeaponItemModel itemModel)

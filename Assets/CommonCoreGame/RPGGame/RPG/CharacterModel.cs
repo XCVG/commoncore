@@ -226,10 +226,6 @@ namespace CommonCore.RpgGame.Rpg
                 c.ApplyToDerived(BaseStats, DerivedStats);
             }
 
-            //apply endurance from difficulty
-            float endurance = ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerEndurance;
-            DerivedStats.MaxHealth *= endurance;
-            DerivedStats.MaxEnergy *= endurance;
         }
 
         //recalculates stats and informs other systems that stats have been updated

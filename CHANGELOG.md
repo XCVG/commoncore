@@ -502,3 +502,4 @@
 * HitboxComponent now uses custom property drawer for hit location and material
 * Hit puffs and entity controllers now use custom property drawer for hit material
 * RpgDefaultValues is now a non-static class and implementes IRpgDefaultValues interface
+* Difficulty multipliers for player movement, attack, etc is now handled in RpgValues calculations
