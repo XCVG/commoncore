@@ -5,6 +5,7 @@ using CommonCore.RpgGame.State;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace CommonCore.RpgGame
@@ -28,7 +29,7 @@ namespace CommonCore.RpgGame
             InventoryModel.Load();
             QuestModel.Load();
 
-            RpgValues.SetDefaults(new RpgDefaultValues());
+            SetRpgDefaultValues();
 
             ConditionalModule.Instance.LoadBaseHandlers(); //TODO
 
@@ -64,6 +65,26 @@ namespace CommonCore.RpgGame
             }
         }
 
+        private void SetRpgDefaultValues()
+        {
+            //look for an override class if it exists, this exists to support the legacy scenario of CaliforniumRpgDefaultValues
+            Type overrideType = CCBase.BaseGameTypes
+                .Where(t => t.GetInterface(nameof(IRpgDefaultValues)) != null && t.GetCustomAttributes(false).Any(a => a is RpgDefaultValuesOverrideAttribute))
+                .FirstOrDefault();
+
+            IRpgDefaultValues defaultValues;
+            if(overrideType != null)
+            {
+                Log($"Using RPG default overrides class {overrideType.Name}");
+                defaultValues = (IRpgDefaultValues)Activator.CreateInstance(overrideType);
+            }
+            else
+            {
+                defaultValues = new RpgDefaultValues();
+            }
+
+            RpgValues.SetDefaults(defaultValues);
+        }
 
     }
 }
