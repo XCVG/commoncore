@@ -59,10 +59,6 @@ Space Mono (Assets/UI/Fonts/SpaceMono)
 Crosshair (Assets/UI/Graphics/crosshair)
 	Kenney.nl - Crosshair pack (200x) [CC0]
 	https://opengameart.org/content/crosshair-pack-200%C3%97
-	
-Loading Indicator (Assets/CommonCore/Graphics/loadwheel)
-	CodeAndReload - Loading Wheel (Transparent) [CC0]
-	https://openclipart.org/detail/192512/loading-wheel-transparent
 
 Freedoom assets (Assets/Objects/OpenSource/spriteguy, Assets/Objects/OpenSource/spriterifle, Assets/Objects/OpenSource/spritetorch)
 	Contributors to the Freedoom project
