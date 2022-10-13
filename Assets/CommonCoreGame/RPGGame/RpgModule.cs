@@ -48,13 +48,26 @@ namespace CommonCore.RpgGame
 
         private void LoadGameParams()
         {
+            //load values from in-project def if exists
+            if(CoreUtils.CheckResource<TextAsset>("Data/RPGDefs/rpg_params"))
+            {
+                TextAsset ta = CoreUtils.LoadResource<TextAsset>("Data/RPGDefs/rpg_params");
+                populateGameParams(ta.text);
+            }
+            
+
             //load override if it exists
             string path = Path.Combine(CoreParams.PersistentDataPath, "gameparams.json");
             if (File.Exists(path))
             {
+                populateGameParams(File.ReadAllText(path));
+            }
+
+            void populateGameParams(string paramsString)
+            {
                 try
                 {
-                    TypeUtils.PopulateStaticObject(typeof(GameParams), File.ReadAllText(path), new JsonSerializerSettings() { Converters = CCJsonConverters.Defaults.Converters, NullValueHandling = NullValueHandling.Ignore });
+                    TypeUtils.PopulateStaticObject(typeof(GameParams), paramsString, new JsonSerializerSettings() { Converters = CCJsonConverters.Defaults.Converters, NullValueHandling = NullValueHandling.Ignore });
                     Debug.LogWarning($"Loaded gameparams overrides from file (this may cause moderately weird things to happen)");
                 }
                 catch (Exception e)

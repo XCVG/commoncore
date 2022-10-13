@@ -507,3 +507,4 @@
 * Added new placeholder texture/sprite (NULLA0) and material (DebugPattern)
 * Greatly simplified RpgDefaultValues, mostly fixed with no skill or stat definitions
 * Removed most stat and skill definitions from builtin StatType and SkillType enums
+* GameParams will now be loaded from textasset at Data/RPGDefs/rpg_params in addition to external override file
