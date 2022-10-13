@@ -14,28 +14,10 @@ namespace CommonCore.RpgGame.Rpg
         Undefined, Female, Male, Other
     }
 
-    [Obsolete]
-    public enum DamageType
-    {
-        Normal, Impact, Explosive, Energy, Poison, Thermal, Radiation
-    }
-
-    [Obsolete]
-    public enum DamageEffector
-    {
-        Unspecified, Projectile, Explosion, Melee, Ambient, Internal //matches defaults for now
-    }
-
     [PseudoExtensible]
     public enum StatType
     {
-        Unspecified, Resilience, Dexterity, Erudition, Intuition, Dialectic, Subterfuge, Serendipity
-    }
-
-    [Obsolete]
-    public enum WeaponSkillType
-    {
-        Unspecified, Melee, Archery, Guns
+        Unspecified = 0        
     }
 
     public enum PlayerFlags
@@ -46,20 +28,21 @@ namespace CommonCore.RpgGame.Rpg
     [PseudoExtensible]
     public enum SkillType
     {
-        Unspecified, //needed for weapons
-        Melee, MeleeAlacrity, MeleePrecision, MeleeBrawn,
-        Archery, ArcheryDraw, ArcherySteady,
-        Guns, GunsAccuracy, GunsRapidity,
-        Athletics, AthleticsFurtive, AthleticsFleet,
-        Magic, MagicForce, MagicElemental, MagicDark,
-        Social, SocialExchange, SocialLeverage,
-        Security, SecurityMechanisms, SecurityComputers
+        Unspecified = 0,
+        //below needed for default weapons, may be removed soon
+        Melee = 1, 
+        Archery = 5,
+        Guns = 8,
     }
 
     [PseudoExtensible]
     public enum EquipSlot
     {
-        None, LeftWeapon, RightWeapon, Body, ShieldGenerator
+        None = 0, 
+        LeftWeapon = 1, 
+        RightWeapon = 2,
+        Body = 3, 
+        ShieldGenerator = 4
     }
 
     //character model will have two of these: base and derived

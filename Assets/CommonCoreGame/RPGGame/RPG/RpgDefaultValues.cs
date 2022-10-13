@@ -18,10 +18,7 @@ namespace CommonCore.RpgGame.Rpg
 
         public int PotentialPointsForLevel(int newLevel, CharacterModel character)
         {
-            return (2
-                + (int)(0.5f * (float)character.BaseStats.Stats[(int)StatType.Erudition])
-                + (int)(0.25f * (float)character.BaseStats.Stats[(int)StatType.Intuition])
-                );
+            return 2;
         }
 
         public int SkillGainForPoints(int points)
@@ -57,25 +54,17 @@ namespace CommonCore.RpgGame.Rpg
 
         public float MaxHealth(CharacterModel characterModel)
         {
-            return (100 + characterModel.Level * 10) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerEndurance;
+            return 100 * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerEndurance;
         }
 
         public float MaxEnergy(CharacterModel characterModel)
         {
-            return Mathf.FloorToInt(100
-                + characterModel.DerivedStats.Stats[(int)StatType.Dexterity] * 5.0f
-                + characterModel.DerivedStats.Stats[(int)StatType.Resilience] * 10.0f
-                + characterModel.DerivedStats.Skills[(int)SkillType.Athletics] * 0.5f
-                + characterModel.DerivedStats.Skills[(int)SkillType.AthleticsFleet] * 0.25f) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerEndurance;
+            return 100 * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerEndurance;
         }
 
         public float MaxMagic(CharacterModel characterModel)
         {
-            return Mathf.FloorToInt(100
-                + characterModel.DerivedStats.Stats[(int)StatType.Erudition] * 5.0f
-                + characterModel.DerivedStats.Stats[(int)StatType.Intuition] * 5.0f
-                + characterModel.DerivedStats.Stats[(int)StatType.Serendipity] * 5.0f
-                + characterModel.DerivedStats.Skills[(int)SkillType.Magic] * 0.5f);
+            return 100 * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerEndurance;
         }
 
 
@@ -116,36 +105,18 @@ namespace CommonCore.RpgGame.Rpg
 
         public int AdjustedBuyPrice(CharacterModel character, float value)
         {
-            float adjValue = (value * 2.0f)
-                - (character.DerivedStats.Skills[(int)SkillType.Social] / 200 * value)
-                - (character.DerivedStats.Skills[(int)SkillType.SocialExchange] / 100 * value)
-                - (character.DerivedStats.Skills[(int)SkillType.SocialLeverage] / 200 * value)
-                - (character.DerivedStats.Stats[(int)StatType.Dialectic] / 1000 * value)
-                - (character.DerivedStats.Stats[(int)StatType.Subterfuge] / 1000 * value);
-
-            return Mathf.CeilToInt(Mathf.Max(value, adjValue));
+            return Mathf.FloorToInt(value);
         }
 
         public int AdjustedSellPrice(CharacterModel character, float value)
         {
-            float halfValue = value * 0.5f;
-
-            float adjValue = halfValue
-                + (character.DerivedStats.Skills[(int)SkillType.Social] / 200 * halfValue)
-                + (character.DerivedStats.Skills[(int)SkillType.SocialExchange] / 200 * halfValue)
-                + (character.DerivedStats.Skills[(int)SkillType.SocialLeverage] / 200 * halfValue)
-                + (character.DerivedStats.Stats[(int)StatType.Dialectic] / 1000 * halfValue)
-                + (character.DerivedStats.Stats[(int)StatType.Subterfuge] / 1000 * halfValue);
-
-            return Mathf.FloorToInt(Mathf.Min(adjValue, value));
+            return Mathf.FloorToInt(value);
         }
 
         public void SkillsFromStats(StatsSet baseStats, StatsSet derivedStats)
         {
-            //derive skill values from base stats if you want to; you should never modify baseStats, and ADD to the skills on derivedStats
+            //derive skill values from base stats if you want to; you should never modify baseStats, only ADD to the skills on derivedStats
 
-            //basically for testing; I had no plans to implement this in Ascension III
-            //derivedStats.Skills[(int)SkillType.Melee] += derivedStats.Stats[(int)StatType.Resilience] * 100;
         }
 
         /// <summary>
@@ -242,11 +213,7 @@ namespace CommonCore.RpgGame.Rpg
 
         public float DetectionChance(CharacterModel character, bool isSneaking, bool isRunning)
         {
-
-            float r1 = character.DerivedStats.Skills[(int)SkillType.AthleticsFurtive];
-            float r2 = character.DerivedStats.Skills[(int)SkillType.Athletics] * 0.25f;
-            float r3 = character.DerivedStats.Stats[(int)StatType.Dexterity] * 2f;
-            float rawChance = (100f - (r1 + r2 + r3)) / 100f;
+            float rawChance = 1f;
 
             rawChance *= isSneaking ? 0.5f : 1.0f;
             rawChance *= isRunning ? 1.5f : 1.0f;
@@ -258,11 +225,7 @@ namespace CommonCore.RpgGame.Rpg
 
         public float GetMoveSpeedMultiplier(CharacterModel character)
         {
-            float rawSpeed = 1f
-                + (character.DerivedStats.Stats[(int)StatType.Dexterity] / 50f)
-                + (character.DerivedStats.Skills[(int)SkillType.AthleticsFleet] / 150f)
-                + (character.DerivedStats.Skills[(int)SkillType.Athletics] / 300f);
-            return Mathf.Clamp(rawSpeed, 0.75f, 1.75f) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerAgility;
+            return 1f * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerAgility;
         }
 
         public float GetRunSpeedMultiplier(CharacterModel character)
@@ -272,27 +235,17 @@ namespace CommonCore.RpgGame.Rpg
 
         public float GetRunEnergyRate(CharacterModel character)
         {
-            float rawRate = 1f
-                - (character.DerivedStats.Skills[(int)SkillType.AthleticsFleet] / 500f)
-                - (character.DerivedStats.Skills[(int)SkillType.Athletics] / 500f);
-
-            return Mathf.Min(0.1f, rawRate);
+            return 0.1f;
         }
 
         public float GetJumpVelocityMultiplier(CharacterModel character)
         {
-            float rawMultiplier = 1f
-                + (character.DerivedStats.Stats[(int)StatType.Dexterity] / 100f)
-                + (character.DerivedStats.Skills[(int)SkillType.AthleticsFleet] / 200f)
-                + (character.DerivedStats.Skills[(int)SkillType.Athletics] / 500f);
-
-            return Mathf.Clamp(rawMultiplier, 0.75f, 1.5f) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerAgility;
+            return 1f * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerAgility;
         }
 
         public float GetJumpEnergyUse(CharacterModel character)
         {
-            return 10f
-                - (character.DerivedStats.Skills[(int)SkillType.Athletics] / 50f); //athletics very slightly reduces energy use
+            return 10f;
         }
 
         public float GetAirMoveMultiplier(CharacterModel character)
@@ -302,10 +255,7 @@ namespace CommonCore.RpgGame.Rpg
 
         public float GetIdleEnergyRecoveryRate(CharacterModel character)
         {
-            return 5f
-                + (character.DerivedStats.Stats[(int)StatType.Dexterity] / 2f)
-                + (character.DerivedStats.Stats[(int)StatType.Resilience] / 5f)
-                + (character.DerivedStats.Skills[(int)SkillType.Athletics] / 100f);
+            return 5f;
         }
 
         public float GetMovingEnergyRecoveryRate(CharacterModel character)
@@ -318,189 +268,61 @@ namespace CommonCore.RpgGame.Rpg
         public float GetKickDamageFactor(CharacterModel character)
         {
             //higher is better
-            return Mathf.Clamp(
-                    1.0f
-                    + (character.DerivedStats.Stats[(int)StatType.Resilience] / 20f)
-                    + (character.DerivedStats.Stats[(int)StatType.Dexterity] / 30f)
-                    + (character.DerivedStats.Skills[(int)SkillType.MeleeBrawn] / 100f)
-                    + (character.DerivedStats.Skills[(int)SkillType.Melee] / 200f),
-                0.5f, 3.0f) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerStrength;
+            return 1f * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerStrength;
         }
 
         public float GetKickForceFactor(CharacterModel character)
         {
             //higher is better
-            return Mathf.Clamp(
-                    1.0f
-                    + (character.DerivedStats.Stats[(int)StatType.Resilience] / 20f)
-                    + (character.DerivedStats.Stats[(int)StatType.Dexterity] / 30f)
-                    + (character.DerivedStats.Skills[(int)SkillType.MeleeBrawn] / 100f)
-                    + (character.DerivedStats.Skills[(int)SkillType.Melee] / 200f),
-                0.5f, 2.0f);
+            return 1f;
         }
 
         public float GetKickRateFactor(CharacterModel character)
         {
             //lower is better
-            return Mathf.Clamp(
-                    1.0f
-                    - (character.DerivedStats.Stats[(int)StatType.Resilience] / 20f)
-                    - (character.DerivedStats.Stats[(int)StatType.Dexterity] / 30f)
-                    - (character.DerivedStats.Skills[(int)SkillType.MeleeBrawn] / 100f)
-                    - (character.DerivedStats.Skills[(int)SkillType.Melee] / 200f),
-                0.5f, 2.0f);
+            return 1f;
         }
 
         public float GetWeaponRateFactor(CharacterModel character, WeaponItemModel itemModel)
         {
             //lower is better
-            float factor = 1.0f;
-
-            switch ((SkillType)itemModel.SkillType)
-            {
-                case SkillType.Melee:
-                    factor -= character.DerivedStats.Skills[(int)SkillType.MeleeAlacrity] / 100f;
-                    factor -= character.DerivedStats.Stats[(int)StatType.Dexterity] / 100f;
-                    break;
-                case SkillType.Archery:
-                    factor -= character.DerivedStats.Skills[(int)SkillType.Archery] / 400f; //you can't really increase archery fire rate much
-                    factor -= character.DerivedStats.Stats[(int)StatType.Dexterity] / 100f;
-                    break;
-                case SkillType.Guns:
-                    factor -= character.DerivedStats.Skills[(int)SkillType.GunsRapidity] / 100f;
-                    factor -= character.DerivedStats.Stats[(int)StatType.Dexterity] / 200f;
-                    break;
-            }
-
-            return Mathf.Clamp(factor, 0.5f, 2.0f);
+            return 1f;
         }
 
         public float GetWeaponReloadFactor(CharacterModel character, WeaponItemModel itemModel)
         {
             //lower is better
-            float factor = 1.0f;
-
-            switch ((SkillType)itemModel.SkillType)
-            {
-                case SkillType.Guns:
-                    factor -= character.DerivedStats.Skills[(int)SkillType.GunsRapidity] / 100f;
-                    factor -= character.DerivedStats.Stats[(int)StatType.Dexterity] / 100f;
-                    break;
-            }
-
-            return Mathf.Clamp(factor, 0.5f, 2.0f);
+            return 1f;
         }
 
         public float GetWeaponSpreadFactor(CharacterModel character, WeaponItemModel itemModel)
         {
             //lower is better
-            float factor = 1.0f;
-
-            switch ((SkillType)itemModel.SkillType)
-            {
-                case SkillType.Archery:
-                    factor -= character.DerivedStats.Skills[(int)SkillType.ArcherySteady] / 100f;
-                    factor -= character.DerivedStats.Stats[(int)StatType.Dexterity] / 100f;
-                    break;
-                case SkillType.Guns:
-                    factor -= character.DerivedStats.Skills[(int)SkillType.GunsAccuracy] / 100f;
-                    factor -= character.DerivedStats.Stats[(int)StatType.Dexterity] / 100f;
-                    break;
-            }
-
-            return Mathf.Clamp(factor, 0.25f, 2.0f);
+            return 1f;
         }
 
         public float GetWeaponInstabilityFactor(CharacterModel character, WeaponItemModel itemModel)
         {
             //lower is better
-            float factor = 1.0f;
-
-            switch ((SkillType)itemModel.SkillType)
-            {
-                case SkillType.Archery:
-                    factor -= character.DerivedStats.Skills[(int)SkillType.ArcherySteady] / 100f;
-                    factor -= character.DerivedStats.Stats[(int)StatType.Dexterity] / 100f;
-                    break;
-                case SkillType.Guns:
-                    factor -= character.DerivedStats.Skills[(int)SkillType.GunsAccuracy] / 200f;
-                    factor -= character.DerivedStats.Stats[(int)StatType.Dexterity] / 100f;
-                    break;
-            }
-
-            return Mathf.Clamp(factor, 0.25f, 2.0f);
+            return 1f;
         }
 
         public float GetWeaponRecoveryFactor(CharacterModel character, WeaponItemModel itemModel)
         {
             //higher is better
-            float factor = 1.0f;
-
-            switch ((SkillType)itemModel.SkillType)
-            {
-                case SkillType.Archery:
-                    factor += character.DerivedStats.Skills[(int)SkillType.ArcherySteady] / 100f;
-                    factor += character.DerivedStats.Stats[(int)StatType.Dexterity] / 50f;
-                    break;
-                case SkillType.Guns:
-                    factor += character.DerivedStats.Skills[(int)SkillType.GunsAccuracy] / 200f;
-                    factor += character.DerivedStats.Stats[(int)StatType.Dexterity] / 50f;
-                    break;
-            }
-
-            return Mathf.Clamp(factor, 0.25f, 2.0f);
+            return 1f;
         }
 
         public float GetWeaponDamageFactor(CharacterModel character, WeaponItemModel itemModel)
         {
             //higher is better
-            float factor = 1.0f;
-
-            switch ((SkillType)itemModel.SkillType)
-            {
-                case SkillType.Melee:
-                    factor += character.DerivedStats.Stats[(int)StatType.Resilience] / 20f;
-                    factor += character.DerivedStats.Stats[(int)StatType.Dexterity] / 30f;
-                    factor += character.DerivedStats.Skills[(int)SkillType.MeleeBrawn] / 100f;
-                    factor += character.DerivedStats.Skills[(int)SkillType.Melee] / 200f;
-                    if (!itemModel.CheckFlag(ItemFlag.WeaponNeverRandomize))
-                    {
-                        float invPrecision = Mathf.Clamp(100f - character.DerivedStats.Skills[(int)SkillType.MeleePrecision], 0, 100f);
-                        float precisionMax = invPrecision / 200f;
-                        float randomFactor = UnityEngine.Random.Range(0, precisionMax);
-                        factor -= randomFactor;
-                    }
-                    break;
-                case SkillType.Archery:
-                    factor += character.DerivedStats.Skills[(int)SkillType.ArcheryDraw] / 100f;
-                    factor += character.DerivedStats.Stats[(int)StatType.Resilience] / 50f;
-                    factor += character.DerivedStats.Stats[(int)StatType.Dexterity] / 50f;
-                    break;
-            }
-
-            return Mathf.Clamp(factor, 0.25f, 4.0f) * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerStrength;
+            return 1f * ConfigState.Instance.GetGameplayConfig().Difficulty.PlayerStrength;
         }
 
         public float GetWeaponEnergyCostFactor(CharacterModel character, WeaponItemModel itemModel)
         {
             //lower is better
-            float factor = 1.0f;
-
-            switch ((SkillType)itemModel.SkillType)
-            {
-                case SkillType.Melee:
-                    factor -= character.DerivedStats.Skills[(int)SkillType.MeleePrecision] / 100f;
-                    factor -= character.DerivedStats.Stats[(int)StatType.Dexterity] / 100f;
-                    factor -= character.DerivedStats.Stats[(int)StatType.Resilience] / 100f;
-                    break;
-                case SkillType.Archery:
-                    factor -= character.DerivedStats.Skills[(int)SkillType.Archery] / 200f;
-                    factor -= character.DerivedStats.Skills[(int)SkillType.ArcheryDraw] / 100f;
-                    factor -= character.DerivedStats.Stats[(int)StatType.Dexterity] / 100f;
-                    break;
-            }
-
-            return Mathf.Clamp(factor, 0.25f, 2.0f);
+            return 1f;
         }
     }
 }

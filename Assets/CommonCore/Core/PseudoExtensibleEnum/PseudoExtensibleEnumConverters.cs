@@ -361,6 +361,9 @@ namespace PseudoExtensibleEnum
                     key = Convert.ChangeType(key, effectiveKeyType);
                 }
 
+                if(dictionary.Contains(key))
+                    throw new JsonSerializationException($"Error converting value {reader.Value} to type '{objectType.Name}'. Path '{reader.Path}'. Duplicate keys. Enum type or enum extension is probably malformed with multiple names resolving to the same underlying value ({key})");
+
                 dictionary.Add(key, item.Value.ToObject(valueType, serializer));
             }
 

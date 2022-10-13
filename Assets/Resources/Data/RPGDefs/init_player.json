@@ -29,38 +29,10 @@
 			"Radiation": 0.0
 		},
 		"Stats": {
-			"Resilience": 3,
-			"Dexterity": 3,
-			"Erudition": 3,
-			"Intuition": 3,
-			"Dialectic": 3,
-			"Subterfuge": 3,
-			"Serendipity": 3
+			
 		},
 		"Skills": {
-			"Melee": 10,
-			"MeleeAlacrity": 10,
-			"MeleePrecision": 10,
-			"MeleeBrawn": 10,
-			"Archery": 10,
-			"ArcheryDraw": 10,
-			"ArcherySteady": 10,
-			"Guns": 10,
-			"GunsAccuracy": 10,
-			"GunsRapidity": 10,
-			"Athletics": 10,
-			"AthleticsFurtive": 10,
-			"AthleticsFleet": 10,
-			"Magic": 10,
-			"MagicForce": 10,
-			"MagicElemental": 10,
-			"MagicDark": 10,
-			"Social": 10,
-			"SocialExchange": 10,
-			"SocialLeverage": 10,
-			"Security": 10,
-			"SecurityMechanisms": 10,
-			"SecurityComputers": 10
+			
 		}
 	},
 	"Conditions": [],
