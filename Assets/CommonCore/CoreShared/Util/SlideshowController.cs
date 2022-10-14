@@ -1,28 +1,28 @@
-﻿using CommonCore;
+using CommonCore;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CommonCore.Experimental
+namespace CommonCore.Util
 {
 
-    public class SlideshowControllerEx : MonoBehaviour
+    public class SlideshowController : MonoBehaviour
     {
         private Canvas RootCanvas = null;
         private AspectRatioFitter AspectRatioFitter = null;
         private Image BackgroundImage = null;
         private Image SlideshowImage = null;
 
-        private static SlideshowControllerEx _Instance;
+        private static SlideshowController _Instance;
 
-        public static SlideshowControllerEx GetInstance()
+        public static SlideshowController GetInstance()
         {
             if (_Instance == null)
             {
                 var go = new GameObject("SlideshowExperiment");
                 go.transform.SetParent(CoreUtils.GetUIRoot());
-                _Instance = go.AddComponent<SlideshowControllerEx>();
+                _Instance = go.AddComponent<SlideshowController>();
                 _Instance.Initialize();
             }
 
@@ -94,7 +94,7 @@ namespace CommonCore.Experimental
         private Sprite TryLoadSprite(string imageName)
         {
             var sprite = CoreUtils.LoadResource<Sprite>("Sequences/" + imageName);
-            if(sprite == null)
+            if (sprite == null)
                 sprite = CoreUtils.LoadResource<Sprite>("Dialogue/char/" + imageName);
             if (sprite == null)
                 sprite = CoreUtils.LoadResource<Sprite>("Dialogue/bg/" + imageName);

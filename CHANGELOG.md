@@ -509,3 +509,8 @@
 * Removed most stat and skill definitions from builtin StatType and SkillType enums
 * GameParams will now be loaded from textasset at Data/RPGDefs/rpg_params in addition to external override file
 * Scroll speed in the UI is now multiplied by UIScrollSpeed in config
+* Removed unused/obsolete DragonAIController, RampScript, and ScreenFadeHackScript scripts
+* Moved AdditionalConditionalResolvers into RPGGame and changed namespace to CommonCore.RpgGame.State
+* Moved AnimateQuadScript, AudioClipAssignScript, TextureAssignScript, and TransformCopyScript to CoreShared/Util folder and CommonCore.Util namespace
+* Moved FacingSpriteAssignScript to CommonCore.World module and namespace
+* Recreated SlideshowControllerEx as SlideshowController in CoreShared/Util (CommonCore.Util), this script has a new GUID

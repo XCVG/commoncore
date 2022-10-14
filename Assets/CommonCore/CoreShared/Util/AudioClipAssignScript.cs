@@ -1,7 +1,7 @@
 ﻿using CommonCore.Audio;
 using UnityEngine;
 
-namespace CommonCore.Experimental
+namespace CommonCore.Util
 {
 
     /// <summary>

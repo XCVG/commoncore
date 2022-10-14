@@ -5,10 +5,10 @@ using CommonCore.RpgGame.State;
 using CommonCore.State;
 using System;
 
-namespace CommonCore.Experimental
+namespace CommonCore.RpgGame.State
 {
 
-    //Experimental conditional/microscript resolvers for PlayerFlags and SessionFlags
+    //Additional semi-experimental conditional/microscript resolvers for PlayerFlags and SessionFlags
 
     public class PlayerFlagConditionalResolver : ConditionalResolver
     {
