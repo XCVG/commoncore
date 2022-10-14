@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonCore.Config;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -52,6 +53,7 @@ namespace CommonCore.Input.EventSystems
                 var mic = gameObject.AddComponent<MappedInputComponent>();
                 inputOverride = mic;
                 mic.UseDualInput = UseDualInput;
+                mic.ScrollMultiplier = ConfigState.Instance.UIScrollSpeed;
             }
         }
     }

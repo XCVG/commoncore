@@ -281,6 +281,7 @@ namespace CommonCore.Config
         public float LookSpeed { get; set; } = 1.0f;
         public bool LookInvert { get; set; } = false;
         public float AxisDeadzone { get; set; } = 0.1f;
+        public float UIScrollSpeed { get; set; } = 25f;
         public KeyCode ScreenshotKey { get; set; } = KeyCode.F12;
         public KeyCode QuicksaveKey { get; set; } =
 #if UNITY_WEBGL 

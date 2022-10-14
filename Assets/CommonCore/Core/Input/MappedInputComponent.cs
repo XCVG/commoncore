@@ -14,6 +14,8 @@ namespace CommonCore.Input
 
         [field: SerializeField]
         public bool UseDualInput { get; set; } = false;
+        [field: SerializeField]
+        public float ScrollMultiplier { get; set; } = 1f;
 
         public override float GetAxisRaw(string axisName)
         {
@@ -30,5 +32,7 @@ namespace CommonCore.Input
 
             return MappedInput.GetButtonDown(buttonName);
         }
+
+        public override Vector2 mouseScrollDelta => base.mouseScrollDelta * ScrollMultiplier;
     }
 }
