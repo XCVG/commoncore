@@ -118,6 +118,10 @@ namespace CommonCore.UI
         {
             base.SignalPaint();
 
+            PendingChanges = false;
+            PendingMoreOptionsOnApply = false;
+            PendingRequiresRestart = CommittedRequiresRestart;
+
             PaintValues();
             CallPostRepaintHooks();
         }
