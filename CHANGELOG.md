@@ -514,3 +514,4 @@
 * Moved AnimateQuadScript, AudioClipAssignScript, TextureAssignScript, and TransformCopyScript to CoreShared/Util folder and CommonCore.Util namespace
 * Moved FacingSpriteAssignScript to CommonCore.World module and namespace
 * Recreated SlideshowControllerEx as SlideshowController in CoreShared/Util (CommonCore.Util), this script has a new GUID
+* DialogueController now exposes CurrentScene, CurrentFrameName, and CurrentSceneName properties

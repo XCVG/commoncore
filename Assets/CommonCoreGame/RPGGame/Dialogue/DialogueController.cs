@@ -52,9 +52,9 @@ namespace CommonCore.RpgGame.Dialogue
         public DialogueCameraController CameraController;
         public DialogueNavigator Navigator;
 
-        private string CurrentFrameName;
-        private string CurrentSceneName;
-        private DialogueScene CurrentScene;
+        public string CurrentFrameName { get; private set; }
+        public string CurrentSceneName { get; private set; }
+        public DialogueScene CurrentScene { get; private set; }
         private IReadOnlyDictionary<string, Frame> CurrentSceneFrames { get { return CurrentScene.Frames; } }
 
         //private string CurrentFrameName;
