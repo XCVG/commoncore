@@ -516,3 +516,4 @@
 * Recreated SlideshowControllerEx as SlideshowController in CoreShared/Util (CommonCore.Util), this script has a new GUID
 * DialogueController now exposes CurrentScene, CurrentFrameName, and CurrentSceneName properties
 * Fix PendingChanges not being cleared when config panel is closed
+* Updated Unity to 2020.3.40f1

@@ -4,9 +4,9 @@
 
 ## Introduction
 
-CommonCore (formerly ARES) is a complete Role-Playing Game library for Unity... or will be someday. The intent is to provide a base that allows easy development of everything from quick adventures to epic open-world sagas, as well as being flexible enough to be adapted for mechanically similar genres such as open-world sandbox, shooters, and more.
+CommonCore (formerly ARES) is a framework/library for Unity. The original intent was to create a freely usable framework for RPG and FPS-RPG games that allows easy development of everything from quick adventures to epic open-world sagas. Over time the design goals have been shifted to an internal project providing a flexible base for games across many disparate genres.
 
-CommonCore handles or will handle standard RPG mechanics, game state with saving and loading, the player object, NPCs, dialogue, input, UI, configuration and more. It is (or will be) a complete solution that can be loaded as a template followed immediately by building the actual game. For cases where you don't need all the functionality, it is divided into a separate Core, some modules, and RPGGame so you don't have to use it all (more modularity is planned).
+The full list of features is too long to list here and not well documented (yet). Among other things, CommonCore handles standard RPG mechanics (including levelling, characters with stats/skills, inventory, quests), game state with saving and loading, the player object, NPCs, first-person shooter mechanics, dialogue, input, UI, configuration, pausing/locking, and many miscellaneous utilites. It is meant to be used as a template which a game can be immediately build upon, and has a somewhat modular design so unnecessary components can be excluded (though this is still WIP).
 
 ## Documentation
 
@@ -16,7 +16,7 @@ Some limited documentation is available in the Reference folder. The Documentati
 
 CommonCore supports Unity 2020.3 and will _probably_ work on Unity 2021. The last stable version to support Unity 2019 was 3.1.0, and the last preview version was 4.0.0 Preview 2.
 
-CommonCore is targeted toward standalone platforms using Mono and the .NET 4.x scripting runtime. Other configurations are not the focus and have varying levels of support. IL2CPP is supported with some limitations, and the WebGL and UWP platforms have been somewhat tested (both with their own limitations). Other platforms have not been tested but should work, maybe requiring minor tweaking.
+CommonCore is targeted toward standalone platforms using Mono and the .NET 4.x scripting runtime. Other configurations are not the focus and have varying levels of support. IL2CPP is supported with some limitations, and the WebGL and UWP platforms have been somewhat tested (both with their own limitations). Other platforms have not been tested but might work, maybe requiring minor tweaking.
 
 ## Other Repositories
 
@@ -32,6 +32,6 @@ It is **strongly** recommended that you license derivatives under the MIT Licens
 
 Some open-licensed third-party assets are included in the repository. These are also listed in CREDITS along with their respective licenses. In general, all may be reused and distributed under the same conditions as the code even if the specific license differs.
 
-**Please do not use the Ascension 3 name or Ascension 3 graphics in your own releases. The permissions granted above to not apply to these.** These should be stripped out already so you probably won't have to worry about them. The game data in Resources/, Objects/, and Scenes/ falls under the same license as the code and may be used under the same conditions.
+**Please do not use the Ascension 3 name or Ascension 3 graphics in your own releases. The permissions granted above to not apply to these.** These should be stripped out by now so you probably won't have to worry about them. The game data in Resources/, Objects/, and Scenes/ falls under the same license as the code and may be used under the same conditions.
 
 
