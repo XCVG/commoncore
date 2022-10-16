@@ -469,7 +469,7 @@
 * Removed a lot of unused assets and prefabs left over from Ascension III
 * Moved Aurelia full model, arm and leg viewmodels to Objects/OpenSource/aurelia
 
-# 4.0.0 pNext
+# 4.0.0 Release Candidate 1
 
 * Added DialogueOnAdvance named hook called when dialogue is going to next frame
 * Fixed SlideshowControllerEx not using sprites from Dialogue/char or Dialogue/bg

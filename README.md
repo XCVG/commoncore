@@ -1,5 +1,5 @@
 # CommonCore Framework for Unity
-### Version 4.0.0 _Downwarren_ PREVIEW
+### Version 4.0.0 _Downwarren_
 ### For Unity 2020.3+
 
 ## Introduction
