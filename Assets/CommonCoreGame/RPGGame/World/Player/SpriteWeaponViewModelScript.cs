@@ -1,4 +1,5 @@
-﻿using CommonCore.World;
+﻿using CommonCore.Config;
+using CommonCore.World;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -112,6 +113,15 @@ namespace CommonCore.RpgGame.World
         [SerializeField]
         private string ReloadEffectPrefab = null;
 
+        [SerializeField, Header("Crosshair")]
+        private GameObject NormalCrosshair;
+        [SerializeField]
+        private GameObject AdsCrosshair;
+        [SerializeField, Tooltip("If set, will always show ADS crosshair even if game and weapon settings have crosshair disabled")]
+        private bool ForceAdsCrosshair = true;
+        [SerializeField, Tooltip("If set, will fall back to normal crosshair in ADS mode if ADS crosshair is not available")]
+        private bool FallbackToNormalCrosshair;
+
         //state
         private WeaponFrame[] CurrentFrameSet;
         private int CurrentFrameIndex;
@@ -123,6 +133,8 @@ namespace CommonCore.RpgGame.World
 
         private Canvas WeaponImageCanvas;
         private Camera AttachedCamera;
+
+        private CrosshairState CrosshairState;
 
         private Coroutine EffectDelayedCoroutine;
 
@@ -142,8 +154,9 @@ namespace CommonCore.RpgGame.World
             base.Init(options);
 
             WeaponImageCanvas = WeaponImage.canvas;
+            CrosshairState = ConfigState.Instance.GetGameplayConfig().Crosshair;
 
-            if(BindCanvasToCamera)
+            if (BindCanvasToCamera)
             {
                 BindToCamera();
             }
@@ -156,6 +169,7 @@ namespace CommonCore.RpgGame.World
             HandleAnimation();
             HandleMovebob();
             HandleLighting();
+            HandleCrosshairUpdate();
         }
 
         private void HandleCameraAttachment()
@@ -260,6 +274,57 @@ namespace CommonCore.RpgGame.World
                 c.a = WeaponImage.color.a;
                 WeaponImage.color = c;
             }
+        }
+
+        private void HandleCrosshairUpdate()
+        {
+            if (!HandleCrosshair)
+                return;
+
+            bool inAds = (CurrentFrameSet == ADSFire || CurrentFrameSet == ADSIdle || CurrentFrameSet == ADSRecock);
+
+            bool showNormalCrosshair = false, showAdsCrosshair = false;
+
+            if (inAds && (ForceAdsCrosshair || CrosshairState == CrosshairState.Always || (CrosshairState == CrosshairState.Auto && Options.AdsCrosshair)))
+            {
+                showAdsCrosshair = true;
+            }
+            else if(!inAds && CrosshairState != CrosshairState.Never && (Options.UseCrosshair || CrosshairState == CrosshairState.Always))
+            {
+                showNormalCrosshair = true;
+            }
+
+            if(showAdsCrosshair && AdsCrosshair == null && FallbackToNormalCrosshair)
+            {
+                showAdsCrosshair = false;
+                showNormalCrosshair = true;
+            }
+
+            if(AdsCrosshair != null)
+            {
+                if (showAdsCrosshair && !AdsCrosshair.activeSelf)
+                {
+                    AdsCrosshair.SetActive(true);
+                }
+                else if(!showAdsCrosshair && AdsCrosshair.activeSelf)
+                {
+                    AdsCrosshair.SetActive(false);
+                }
+            }
+
+            if (NormalCrosshair != null)
+            {
+                if (showNormalCrosshair && !NormalCrosshair.activeSelf)
+                {
+                    NormalCrosshair.SetActive(true);
+                }
+                else if (!showNormalCrosshair && NormalCrosshair.activeSelf)
+                {
+                    NormalCrosshair.SetActive(false);
+                }
+            }
+
+
         }
 
         public override (string, float) GetHandAnimation(ViewModelState newState, ViewModelHandednessState handedness)

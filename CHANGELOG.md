@@ -517,3 +517,7 @@
 * DialogueController now exposes CurrentScene, CurrentFrameName, and CurrentSceneName properties
 * Fix PendingChanges not being cleared when config panel is closed
 * Updated Unity to 2020.3.40f1
+
+# 4.0.0
+* Removed redundant crosshair handling from RpgHUDController
+* Implemented crosshair handling support into SpriteWeaponViewModelScript

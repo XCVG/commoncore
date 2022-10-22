@@ -139,7 +139,7 @@ namespace CommonCore.RpgGame.UI
             else if(message is ConfigChangedMessage)
             {
                 SetFadeVisibility();
-                SetCrosshairOverride();
+                //SetCrosshairOverride(); //no longer set here
                 return true;
             }
             else if(message is QdmsKeyValueMessage kvmessage)
