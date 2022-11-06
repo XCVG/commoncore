@@ -215,11 +215,11 @@ namespace CommonCore.RpgGame.World
 
             AttackComponent.Ref()?.Init();
 
-            TryExecuteOnComponents(component => component.Init(this));
-
-            Initialized = true;
+            TryExecuteOnComponents(component => component.Init(this));            
 
             EnterState(CurrentAiState);
+
+            Initialized = true;
 
         }
 

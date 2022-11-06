@@ -521,3 +521,6 @@
 # 4.0.0
 * Removed redundant crosshair handling from RpgHUDController
 * Implemented crosshair handling support into SpriteWeaponViewModelScript
+
+# 4.0.1
+* ActorController now only sets Initialized AFTER entering initial state
