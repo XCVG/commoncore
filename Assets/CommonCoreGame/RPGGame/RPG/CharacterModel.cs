@@ -581,7 +581,7 @@ namespace CommonCore.RpgGame.Rpg
             }
 
             public InventoryItemInstance this[int key] { 
-                get => CharacterModel.Inventory.GetItem(CharacterModel.EquippedIDs[key]);
+                get => CharacterModel.Inventory.GetItem(CharacterModel.EquippedIDs.GetOrDefault(key, 0));
                 set => CharacterModel.EquippedIDs[key] = value.InstanceUID; 
             }
 
