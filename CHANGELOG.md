@@ -525,3 +525,5 @@
 # 4.x.x vNext
 * ActorController now only sets Initialized AFTER entering initial state
 * CharacterModel EquippedDictionaryProxy no longer breaks when trying to retrieve the equipped item in a slot that has no item equipped
+* Quicksaves are now checked for game version and will not load if version mismatched (controlled by EnforceQuicksaveVersionMatching)
+* Warning is now displayed when attempting to manually load a save from a previous game version

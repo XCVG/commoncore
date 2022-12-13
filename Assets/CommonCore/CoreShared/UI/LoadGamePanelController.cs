@@ -1,5 +1,6 @@
 ﻿using CommonCore;
 using CommonCore.State;
+using CommonCore.StringSub;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -160,7 +161,22 @@ namespace CommonCore.UI
             if (SelectedSaveIndex < 0)
                 return;
 
-            SharedUtils.LoadGame(Saves[SelectedSaveIndex].FileName, false);
+            var metadata = SaveUtils.LoadSaveMetadata(Saves[SelectedSaveIndex].FileName);
+
+            if(metadata == null || metadata.GameVersion.GameVersion < CoreParams.GameVersion)
+            {
+                string message = string.Format(Sub.Replace("SaveVersionMismatchMessage", "IGUI_SAVE"), metadata?.GameVersion?.ToString() ?? "unknown", CoreParams.GameVersion);
+                Modal.PushConfirmModal(message, Sub.Replace("SaveVersionMismatch", "IGUI_SAVE"), "Load", "Cancel", "", (status, tag, result) =>
+                {
+                    if(status == ModalStatusCode.Complete && result)
+                        SharedUtils.LoadGame(Saves[SelectedSaveIndex].FileName, false);
+                }, true);
+            }
+            else
+            {
+                SharedUtils.LoadGame(Saves[SelectedSaveIndex].FileName, false);
+            }
+            
         }
 
     }

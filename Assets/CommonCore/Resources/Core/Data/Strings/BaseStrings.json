@@ -15,7 +15,9 @@
     "SaveNotAllowedMessage": "You cannot save here!",
 	"SaveAlreadyExistsMessage": "A save file with this name already exists. Do you want to replace it?",
     "ContinueNoSaveHeading": "No Save Found",
-    "ContinueNoSaveMessage": "There is no game to continue, please start a new game"
+    "ContinueNoSaveMessage": "There is no game to continue, please start a new game",
+	"SaveVersionMismatch": "Save Version Mismatch",
+	"SaveVersionMismatchMessage": "This save is from an older version of the game ({0}). Loading it in this version ({1}) may cause unexpected behaviour! Are you sure you want to continue?"
   },
   "CFG": {
     "AntiAliasing0": "Off",

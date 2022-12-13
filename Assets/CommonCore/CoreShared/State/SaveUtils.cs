@@ -279,6 +279,17 @@ namespace CommonCore.State
 
                 if(File.Exists(saveFilePath))
                 {
+                    if(CoreParams.EnforceQuicksaveVersionMatching)
+                    {
+                        var metadata = SaveUtils.LoadSaveMetadata(saveFilePath);
+                        if(metadata == null || metadata.GameVersion.GameVersion > CoreParams.GameVersion)
+                        {
+                            Debug.LogWarning("Quickload failed (version mismatch)");
+                            ShowSaveIndicator(SaveStatus.LoadError);
+                            return;
+                        }                       
+                    }
+
                     SharedUtils.LoadGame(saveFileName, false);
                 }
                 else
