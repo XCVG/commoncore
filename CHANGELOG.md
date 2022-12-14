@@ -522,7 +522,7 @@
 * Removed redundant crosshair handling from RpgHUDController
 * Implemented crosshair handling support into SpriteWeaponViewModelScript
 
-# 4.x.x vNext
+# 4.1.0
 * ActorController now only sets Initialized AFTER entering initial state
 * CharacterModel EquippedDictionaryProxy no longer breaks when trying to retrieve the equipped item in a slot that has no item equipped
 * Quicksaves are now checked for game version and will not load if version mismatched (controlled by EnforceQuicksaveVersionMatching)
