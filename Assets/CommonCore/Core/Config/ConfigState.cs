@@ -39,7 +39,7 @@ namespace CommonCore.Config
                     if (didMigrate)
                     {
                         Debug.Log("[Config] Config file was migrated successfully");
-                        if (CoreParams.UseMigrationBackups || CoreParams.IsDebug)
+                        if (CoreParams.UseSystemMigrationBackups || CoreParams.IsDebug)
                         {
                             Directory.CreateDirectory(System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups"));
                             File.Copy(Path, System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups", $"config.migrated.{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.json"), true);
@@ -272,7 +272,7 @@ namespace CommonCore.Config
         public bool ShakeEffects { get; set; } = true;
         public bool FlashEffects { get; set; } = true;
         public float GameSpeed { get; set; } = 1; //experimental, must be explicitly handled        
-        public int AutosaveCount { get; set; } = 3;
+        public int AutosaveCount { get; set; } = 5;
         public int Difficulty { get; set; } = 1;
 
         //INPUT CONFIG

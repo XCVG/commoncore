@@ -125,7 +125,7 @@ namespace CommonCore
             if (didMigrate)
             {
                 Debug.Log($"Save file \"{path}\" was migrated successfully");
-                if(CoreParams.UseMigrationBackups || CoreParams.IsDebug)
+                if(CoreParams.UseSaveMigrationBackups || CoreParams.IsDebug)
                 {
                     Directory.CreateDirectory(System.IO.Path.Combine(CoreParams.PersistentDataPath, "migrationbackups"));
                     File.Copy(path, Path.Combine(CoreParams.PersistentDataPath, "migrationbackups", $"{Path.GetFileNameWithoutExtension(path)}.migrated.{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.json"), true);
