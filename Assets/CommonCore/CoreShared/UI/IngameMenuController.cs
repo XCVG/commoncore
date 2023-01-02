@@ -108,7 +108,7 @@ namespace CommonCore.UI
 
         private void CheckMenuOpen()
         {
-            if (LockPauseModule.GetInputLockState() == InputLockType.All)
+            if (LockPauseModule.GetInputLockState() == InputLockType.All || LockPauseModule.GetPauseLockState() == PauseLockType.All)
                 return;
 
             bool menuToggled = UnityEngine.Input.GetKeyDown(KeyCode.Escape) || MappedInput.GetButtonDown(Input.DefaultControls.OpenMenu);
