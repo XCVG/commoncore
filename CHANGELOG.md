@@ -531,3 +531,5 @@
 
 # vNext
 * Fix bug where menu could be toggled when PauseLockState=all
+* Updated Unity to 2020.3.43f1
+* Updated package dependencies
