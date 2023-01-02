@@ -124,6 +124,9 @@ namespace CommonCore.State
         /// Last path this application was started from
         /// </summary>
         public string LastApplicationPath { get; set; } = null;
-        
+
+        [JsonExtensionData]
+        public IDictionary<string, JToken> AdditionalData { get; set; }
+
     }
 }

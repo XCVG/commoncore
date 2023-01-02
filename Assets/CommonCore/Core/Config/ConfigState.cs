@@ -389,6 +389,9 @@ namespace CommonCore.Config
             set => AddonConfigVars = new LazyLooseDictionary(value);
         }
 
+        [JsonExtensionData]
+        public IDictionary<string, JToken> AdditionalData { get; set; }
+
     }
 
 
