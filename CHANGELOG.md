@@ -529,7 +529,7 @@
 * Warning is now displayed when attempting to manually load a save from a previous game version
 * UseMigrationBackups is now split into UseSaveMigrationBackups (affects game saves) and UseSystemMigrationBackups (affects ConfigState and PersistState)
 
-# vNext
+# 4.1.1
 * Fix bug where menu could be toggled when PauseLockState=all
 * Updated Unity to 2020.3.43f1
 * Updated package dependencies
