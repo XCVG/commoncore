@@ -536,4 +536,5 @@
 * PersistState and ConfigState now preserve unknown properties when saving/loading (JsonExtensionData accessible via AdditionalData)
 
 # 5.0.0 pNext
+* Upgraded Unity to 2021.3.18f1
 * Json.NET library is now pulled in as a Unity package instead of included in the project
