@@ -28,7 +28,7 @@ namespace CommonCore.ObjectActions
                 }
             }
 
-            ScriptingModule.Call(Script, new ScriptExecutionContext { Caller = this, Activator = data.Activator.gameObject }, args);
+            ScriptingModule.Call(Script, new ScriptExecutionContext { Caller = this, Activator = data.Activator.Ref()?.gameObject }, args);
 
             if (!Repeatable)
                 Locked = true;
