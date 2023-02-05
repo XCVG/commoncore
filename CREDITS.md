@@ -4,7 +4,8 @@ While CommonCore makes use of many external third-party assets, the base library
 
 Most dependencies are included. A few of them are pulled in automatically as Unity packages:
 
-- Post-Processing Stack (https://docs.unity3d.com/Packages/com.unity.postprocessing@2.1/manual/index.html)
+- Post-Processing Stack (https://docs.unity3d.com/Packages/com.unity.postprocessing@3.2/manual/index.html)
+- Json.NET for Unity (https://docs.unity3d.com/Packages/com.unity.nuget.newtonsoft-json@3.0/manual/index.html)
 
 You can get the extra CommonCore modules at (https://github.com/XCVG/commoncore-modules). Some modules do have third-party dependencies.
 
@@ -16,11 +17,6 @@ These are included under permissive or copyleft licenses. License texts are incl
 
 ## Libraries
 
-Kalle Jillheden - Newtonsoft.Json for Unity
-	https://github.com/jilleJr/Newtonsoft.Json-for-Unity
-	Included as DLL (Assets/Plugins/JsonNet)
-	MIT License
-	
 Microsoft - System.Collections.Immutable
 	https://www.nuget.org/packages/System.Collections.Immutable/
 	Included as DLL (Assets/Plugins/Microsoft)
