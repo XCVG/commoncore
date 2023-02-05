@@ -1,6 +1,6 @@
 # CommonCore Framework for Unity
-### Version 4.1.1 _Downwarren_
-### For Unity 2020.3+
+### Version 5.0.0 _Edgewater_ PREVIEW
+### For Unity 2021.3+
 
 ## Introduction
 
@@ -14,7 +14,7 @@ Some limited documentation is available in the Reference folder. The Documentati
 
 ## Platform Support
 
-CommonCore supports Unity 2020.3 and will _probably_ work on Unity 2021. The last stable version to support Unity 2019 was 3.1.0, and the last preview version was 4.0.0 Preview 2.
+CommonCore supports Unity 2021.3 and will _probably_ work on Unity 2022. The last version to support Unity 2020 is 4.x _Downwarren_.
 
 CommonCore is targeted toward standalone platforms using Mono and the .NET 4.x scripting runtime. Other configurations are not the focus and have varying levels of support. IL2CPP is supported with some limitations, and the WebGL and UWP platforms have been somewhat tested (both with their own limitations). Other platforms have not been tested but might work, maybe requiring minor tweaking.
 

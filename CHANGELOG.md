@@ -534,3 +534,5 @@
 * Updated Unity to 2020.3.43f1
 * Updated package dependencies
 * PersistState and ConfigState now preserve unknown properties when saving/loading (JsonExtensionData accessible via AdditionalData)
+
+# 5.0.0 pNext
