@@ -267,8 +267,8 @@ namespace CommonCore.RpgGame.World
 
         private void SetInitialViewModels()
         {
-            WeaponComponent.HandleWeaponChange(EquipSlot.LeftWeapon, true);
-            WeaponComponent.HandleWeaponChange(EquipSlot.RightWeapon, true);
+            WeaponComponent.Ref()?.HandleWeaponChange(EquipSlot.LeftWeapon, true);
+            WeaponComponent.Ref()?.HandleWeaponChange(EquipSlot.RightWeapon, true);
         }
 
         private void HandleMessages()
@@ -294,7 +294,7 @@ namespace CommonCore.RpgGame.World
                             {
                                 if (kvm.HasValue<int>("Slot"))
                                 {
-                                    WeaponComponent.HandleWeaponChange((EquipSlot)kvm.GetValue<int>("Slot"), false);
+                                    WeaponComponent.Ref()?.HandleWeaponChange((EquipSlot)kvm.GetValue<int>("Slot"), false);
 
                                     var arim = kvm.GetValue<InventoryItemInstance>("InventoryItemInstance")?.ItemModel as ArmorItemModel;
                                     if (arim != null && arim.Shields != null)
@@ -495,7 +495,7 @@ namespace CommonCore.RpgGame.World
                     r.enabled = true;
             }
 
-            WeaponComponent.SetVisibility(!(visibility == ModelVisibility.Visible)); //invert because that sets the visibility of the first-person models
+            WeaponComponent.Ref()?.SetVisibility(!(visibility == ModelVisibility.Visible)); //invert because that sets the visibility of the first-person models
         }
 
         private void PushViewChangeMessage(PlayerViewType newView)

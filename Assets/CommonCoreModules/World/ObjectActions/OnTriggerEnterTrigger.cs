@@ -28,16 +28,21 @@ namespace CommonCore.ObjectActions
             if (Triggered)
                 return;
 
+            var otherGameObject = other.gameObject;
+            var entity = other.gameObject.GetEntity();
+            if (entity != null)
+                otherGameObject = entity.gameObject;
+
             //reject not-player if we're not allowing not-player
-            if (OnPlayerOnly && !other.gameObject.IsPlayer())
+            if (OnPlayerOnly && !otherGameObject.IsPlayer())
                 return;
 
             //reject non-actors if we're not allowing not-actor
-            if (OnActorsOnly && !other.gameObject.IsActor())
+            if (OnActorsOnly && !otherGameObject.IsActor())
                 return;
 
             //execute special
-            var activator = other.GetComponent<BaseController>();
+            var activator = entity;
             var data = new ActionInvokerData() { Activator = activator, Caller = this };
             Special.Invoke(data);
 

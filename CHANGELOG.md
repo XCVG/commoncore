@@ -541,3 +541,6 @@
 # 5.0.0 pNext
 * Upgraded Unity to 2021.3.18f1
 * Json.NET library is now pulled in as a Unity package instead of included in the project
+* PlayerWeaponComponent is now treated as optional by PlayerController
+* OnTriggerEnterTrigger can now handle collisions/triggers with a hitbox anywhere on an entity
+* MaxHealth of DestroyableThingController is now public

@@ -15,7 +15,7 @@ namespace CommonCore.World
     {
 
         [Header("Destroyable Options"), SerializeField]
-        private float MaxHealth = 10;        
+        public float MaxHealth = 10;        
         public bool Invincible = false;
         public bool IsTarget = false;
         public string Faction;
