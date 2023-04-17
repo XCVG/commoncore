@@ -537,3 +537,4 @@
 
 # 4.x.y vNext
 * Fix ScriptExecuteSpecial breaking when no activator is passed
+* Fix item conditional failing if no option/optionvalue is specified (should test for player-has-item)
