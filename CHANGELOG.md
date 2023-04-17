@@ -535,8 +535,9 @@
 * Updated package dependencies
 * PersistState and ConfigState now preserve unknown properties when saving/loading (JsonExtensionData accessible via AdditionalData)
 
-# 4.x.y vNext
+# 4.1.2
 * Fix ScriptExecuteSpecial breaking when no activator is passed
+* Fix item conditional failing if no option/optionvalue is specified (should test for player-has-item)
 
 # 5.0.0 pNext
 * Upgraded Unity to 2021.3.18f1
@@ -544,3 +545,4 @@
 * PlayerWeaponComponent is now treated as optional by PlayerController
 * OnTriggerEnterTrigger can now handle collisions/triggers with a hitbox anywhere on an entity
 * MaxHealth of DestroyableThingController is now public
+

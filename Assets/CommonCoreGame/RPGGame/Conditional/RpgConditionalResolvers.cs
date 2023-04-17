@@ -48,7 +48,7 @@ namespace CommonCore.RpgGame.State
                     Debug.LogWarning($"{nameof(RpgConditionalResolver)}.Resolve warning: Consume item is not supported in CommonCore");
 
                 int qty = GameState.Instance.PlayerRpgState.Inventory.CountItem(Conditional.Target);
-                if (Conditional.Option == ConditionOption.Unknown || Conditional.Option == ConditionOption.Consume || Conditional.OptionValue == null)
+                if (Conditional.Option == null || Conditional.Option == ConditionOption.Unknown || Conditional.Option == ConditionOption.Consume || Conditional.OptionValue == null)
                 {                    
                     if (qty < 1)
                         return false;
