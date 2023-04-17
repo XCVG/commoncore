@@ -1,10 +1,10 @@
 # CommonCore Framework for Unity
-### Version 4.1.1 _Downwarren_
+### Version 4.1.2 _Downwarren_
 ### For Unity 2020.3+
 
 ## Introduction
 
-CommonCore (formerly ARES) is a framework/library for Unity. The original intent was to create a freely usable framework for RPG and FPS-RPG games that allows easy development of everything from quick adventures to epic open-world sagas. Over time the design goals have been shifted to an internal project providing a flexible base for games across many disparate genres.
+CommonCore (formerly ARES) is a framework/library for Unity. The original intent was to create a freely usable framework for RPG and FPS-RPG games that allows easy development of everything from quick adventures to epic open-world sagas. Over time the design goals have been shifted to an internal project providing a flexible base for games acrossk many disparate genres.
 
 The full list of features is too long to list here and not well documented (yet). Among other things, CommonCore handles standard RPG mechanics (including levelling, characters with stats/skills, inventory, quests), game state with saving and loading, the player object, NPCs, first-person shooter mechanics, dialogue, input, UI, configuration, pausing/locking, and many miscellaneous utilites. It is meant to be used as a template which a game can be immediately build upon, and has a somewhat modular design so unnecessary components can be excluded (though this is still WIP).
 

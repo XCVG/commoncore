@@ -21,7 +21,7 @@ namespace CommonCore
         public static Version GameVersion { get; private set; } //auto-set from Unity settings
 
         //*****system version info
-        public static Version VersionCode { get; private set; } = new Version(4, 1, 1);
+        public static Version VersionCode { get; private set; } = new Version(4, 1, 2);
         public static string VersionName { get; private set; } = "Downwarren";
         public static Version UnityVersion { get; private set; } //auto-set
         public static string UnityVersionName { get; private set; } //auto-set

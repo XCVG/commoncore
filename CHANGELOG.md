@@ -535,6 +535,6 @@
 * Updated package dependencies
 * PersistState and ConfigState now preserve unknown properties when saving/loading (JsonExtensionData accessible via AdditionalData)
 
-# 4.x.y vNext
+# 4.1.2
 * Fix ScriptExecuteSpecial breaking when no activator is passed
 * Fix item conditional failing if no option/optionvalue is specified (should test for player-has-item)
