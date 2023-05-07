@@ -147,30 +147,30 @@ namespace CommonCore.RpgGame.UI
                 switch (kvmessage.Flag)
                 {
                     case "RpgEquipmentChanged":
-                        if(kvmessage.GetValue<CharacterModel>("CharacterModel").IsPlayer)
+                        if(kvmessage.GetItemOfType<CharacterModel>("CharacterModel").IsPlayer)
                             UpdateWeaponDisplay();
                         break;
                     case "PlayerHasTarget":
-                        SetTargetMessage(kvmessage.GetValue<string>("Target"));
+                        SetTargetMessage(kvmessage.GetItemOfType<string>("Target"));
                         break;
                     case "PlayerTookDamage":
                         {
-                            float damageToShields = kvmessage.GetValue<float>("DamageToShields");
+                            float damageToShields = kvmessage.GetItemOfType<float>("DamageToShields");
                             if (damageToShields > 0)
                                 HandleShieldsHit(damageToShields);
                         }
                         break;
                     case "RpgBossHealthUpdate":
                         if(HandleBossHealth)
-                            UpdateTargetOverrideHealth(kvmessage.GetValue<string>("Target"), kvmessage.GetValue<float>("Health"));
+                            UpdateTargetOverrideHealth(kvmessage.GetItemOfType<string>("Target"), kvmessage.GetItemOfType<float>("Health"));
                         break;
                     case "RpgBossAwake":
                         if(HandleBossHealth)
-                            SetTargetOverride(kvmessage.GetValue<string>("Target"));
+                            SetTargetOverride(kvmessage.GetItemOfType<string>("Target"));
                         break;
                     case "RpgBossDead":
                         if(HandleBossHealth)
-                            ClearTargetOverride(kvmessage.GetValue<string>("Target"));
+                            ClearTargetOverride(kvmessage.GetItemOfType<string>("Target"));
                         break;
                 }
 
@@ -251,7 +251,7 @@ namespace CommonCore.RpgGame.UI
 
             //I think this is redundant now (?)
 
-            var newView = ((QdmsKeyValueMessage)(message)).GetValue<PlayerViewType>("ViewType");
+            var newView = ((QdmsKeyValueMessage)(message)).GetItemOfType<PlayerViewType>("ViewType");
             if (newView == PlayerViewType.ForceFirst || newView == PlayerViewType.PreferFirst)
                 Crosshair.gameObject.SetActive(true);
             else if(newView == PlayerViewType.ForceThird || newView == PlayerViewType.PreferThird)
@@ -742,14 +742,14 @@ namespace CommonCore.RpgGame.UI
             }                
             else if(qMessage.Flag == "RpgQuestStarted")
             {
-                var qRawName = qMessage.GetValue<string>("Quest");
+                var qRawName = qMessage.GetItemOfType<string>("Quest");
                 var qDef = QuestModel.GetDef(qRawName);
                 string questName = qDef == null ? qRawName : qDef.NiceName;
                 AppendHudMessage(string.Format("Quest Started: {0}", questName));
             }
             else if(qMessage.Flag == "RpgQuestEnded")
             {
-                var qRawName = qMessage.GetValue<string>("Quest");
+                var qRawName = qMessage.GetItemOfType<string>("Quest");
                 var qDef = QuestModel.GetDef(qRawName);
                 string questName = qDef == null ? qRawName : qDef.NiceName;
                 AppendHudMessage(string.Format("Quest Ended: {0}", questName));

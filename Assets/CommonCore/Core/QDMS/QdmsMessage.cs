@@ -60,32 +60,41 @@ namespace CommonCore.Messaging
 
         }
 
-        public bool HasValue(string key)
+        public bool ContainsKey(string key)
         {
             return _Dictionary.ContainsKey(key);
         }
 
-        public bool HasValue<T>(string key)
+        [Obsolete("Use ContainsKey instead")]
+        public bool HasValue(string key)
+        {
+            return ContainsKey(key);
+        }
+
+        public bool ContainsKeyForType<T>(string key)
         {
             object rawValue = null;
             bool exists = _Dictionary.TryGetValue(key, out rawValue);
             return (exists && rawValue is T);
         }
 
-        public T GetValue<T>(string key)
+        [Obsolete("Use ContainsKeyForType instead")]
+        public bool HasValue<T>(string key)
+        {
+            return ContainsKeyForType<T>(key);
+        }
+
+        public T GetItemOfType<T>(string key)
         {
             if (_Dictionary.ContainsKey(key))
                 return (T)_Dictionary[key];
             return default(T);
         }
 
-        [Obsolete] //why did this ever exist
-        public Type GetType(string key)
+        [Obsolete("Use GetItemOfType instead")]
+        public T GetValue<T>(string key)
         {
-            if (_Dictionary.ContainsKey(key))
-                return _Dictionary[key].GetType();
-
-            return null;
+            return GetItemOfType<T>(key);
         }
 
         public object this[string i]
@@ -93,7 +102,13 @@ namespace CommonCore.Messaging
             get { return _Dictionary[i]; }
         }
 
+        [Obsolete("Use EnumerateEntries instead")]
         public IEnumerable<KeyValuePair<string, object>> EnumerateValues()
+        {
+            return EnumerateEntries();
+        }
+
+        public IEnumerable<KeyValuePair<string, object>> EnumerateEntries()
         {
             return _Dictionary.ToArray();
         }

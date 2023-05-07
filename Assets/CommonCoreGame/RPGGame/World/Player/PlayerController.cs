@@ -290,13 +290,13 @@ namespace CommonCore.RpgGame.World
                         {
                             var kvm = message as QdmsKeyValueMessage;
 
-                            if(kvm != null && kvm.GetValue<CharacterModel>("CharacterModel").IsPlayer)
+                            if(kvm != null && kvm.GetItemOfType<CharacterModel>("CharacterModel").IsPlayer)
                             {
-                                if (kvm.HasValue<int>("Slot"))
+                                if (kvm.ContainsKeyForType<int>("Slot"))
                                 {
-                                    WeaponComponent.Ref()?.HandleWeaponChange((EquipSlot)kvm.GetValue<int>("Slot"), false);
+                                    WeaponComponent.Ref()?.HandleWeaponChange((EquipSlot)kvm.GetItemOfType<int>("Slot"), false);
 
-                                    var arim = kvm.GetValue<InventoryItemInstance>("InventoryItemInstance")?.ItemModel as ArmorItemModel;
+                                    var arim = kvm.GetItemOfType<InventoryItemInstance>("InventoryItemInstance")?.ItemModel as ArmorItemModel;
                                     if (arim != null && arim.Shields != null)
                                         ShieldComponent.Ref()?.SignalEquipmentChanged();
                                 }
@@ -308,7 +308,7 @@ namespace CommonCore.RpgGame.World
                         {
                             var kvm = message as QdmsKeyValueMessage;
 
-                            if (kvm != null && kvm.GetValue<CharacterModel>("CharacterModel").IsPlayer)
+                            if (kvm != null && kvm.GetItemOfType<CharacterModel>("CharacterModel").IsPlayer)
                             {
                                 ShieldComponent.Ref()?.SignalStatsUpdated();
                             }                            

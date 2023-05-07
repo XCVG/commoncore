@@ -547,5 +547,7 @@
 * MaxHealth of DestroyableThingController is now public
 * Fixed ActorController using ActorPerception instead of ActorAggression as EffectiveAggression
 * Save version mismatch dialog now shows only game version, not whole version info
+* Renamed methods on QdmsKeyValueMessage: HasValue=>ContainsKey/ContainsKeyForType, GetValue=>GetItemOfType, EnumerateValues=>EnumerateEntries. Old methods remain as obsolete thunks
+* Removed previously deprecated GetType(key) method from QdmsKeyValueMessage
 
 

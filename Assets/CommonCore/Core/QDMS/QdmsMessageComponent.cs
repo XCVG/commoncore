@@ -55,7 +55,7 @@ namespace CommonCore.Messaging
             {
                 messageName = flagMessage.Flag;
                 if (message is QdmsKeyValueMessage kvm)
-                    messageArg = kvm.EnumerateValues().ToDictionary(k => k.Key, v => v.Value);
+                    messageArg = kvm.EnumerateEntries().ToDictionary(k => k.Key, v => v.Value);
             }
             else
             {
