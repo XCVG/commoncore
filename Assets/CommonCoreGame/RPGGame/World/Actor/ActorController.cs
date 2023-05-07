@@ -1012,7 +1012,7 @@ namespace CommonCore.RpgGame.World
                 {
                     case ActorDifficultyHandling.AsActor:
                     case ActorDifficultyHandling.AsFollower:
-                        return ConfigState.Instance.GetGameplayConfig().Difficulty.ActorPerception;
+                        return ConfigState.Instance.GetGameplayConfig().Difficulty.ActorAggression;
                     default:
                         return 1f;
                 }

@@ -545,4 +545,7 @@
 * PlayerWeaponComponent is now treated as optional by PlayerController
 * OnTriggerEnterTrigger can now handle collisions/triggers with a hitbox anywhere on an entity
 * MaxHealth of DestroyableThingController is now public
+* Fixed ActorController using ActorPerception instead of ActorAggression as EffectiveAggression
+* Save version mismatch dialog now shows only game version, not whole version info
+
 
