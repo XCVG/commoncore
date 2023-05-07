@@ -199,7 +199,15 @@ namespace CommonCore.World
         /// </summary>
         public static GameObject FindObjectByTID(string TID)
         {
-            var targetTransform = CoreUtils.GetWorldRoot().transform.FindDeepChild(TID);
+            return FindObjectByTID(CoreUtils.GetWorldRoot().transform, TID);
+        }
+
+        /// <summary>
+        /// Finds an object by thing ID (name)
+        /// </summary>
+        public static GameObject FindObjectByTID(this Transform aParent, string TID)
+        {
+            var targetTransform = aParent.FindDeepChild(TID);
             if (targetTransform != null)
                 return targetTransform.gameObject;
             return null;
@@ -210,7 +218,15 @@ namespace CommonCore.World
         /// </summary>
         public static BaseController FindEntityByTID(string TID)
         {
-            foreach (BaseController c in CoreUtils.GetWorldRoot().gameObject.GetComponentsInChildren<BaseController>(true))
+            return FindEntityByTID(CoreUtils.GetWorldRoot(), TID);
+        }
+
+        /// <summary>
+        /// Finds an entity by thing ID (name)
+        /// </summary>
+        public static BaseController FindEntityByTID(this Transform aParent, string TID)
+        {
+            foreach (BaseController c in aParent.gameObject.GetComponentsInChildren<BaseController>(true))
             {
                 if (c.name == TID)
                 {
@@ -226,8 +242,16 @@ namespace CommonCore.World
         /// </summary>
         public static List<BaseController> FindEntitiesWithFormID(string formID)
         {
+            return FindEntitiesWithFormID(CoreUtils.GetWorldRoot(), formID);
+        }
+
+        /// <summary>
+        /// Finds all entities with form ID (entity name)
+        /// </summary>
+        public static List<BaseController> FindEntitiesWithFormID(this Transform aParent, string formID)
+        {
             List<BaseController> foundObjects = new List<BaseController>();
-            foreach (BaseController c in CoreUtils.GetWorldRoot().gameObject.GetComponentsInChildren<BaseController>(true))
+            foreach (BaseController c in aParent.gameObject.GetComponentsInChildren<BaseController>(true))
             {
                 if (c.FormID == formID)
                 {
@@ -243,8 +267,16 @@ namespace CommonCore.World
         /// </summary>
         public static List<BaseController> FindEntitiesWithTag(string tag)
         {
+            return FindEntitiesWithTag(CoreUtils.GetWorldRoot(), tag);
+        }
+
+        /// <summary>
+        /// Finds all entities with CommonCore tag
+        /// </summary>
+        public static List<BaseController> FindEntitiesWithTag(this Transform aParent, string tag)
+        {
             List<BaseController> foundObjects = new List<BaseController>();
-            foreach (BaseController c in CoreUtils.GetWorldRoot().gameObject.GetComponentsInChildren<BaseController>(true))
+            foreach (BaseController c in aParent.gameObject.GetComponentsInChildren<BaseController>(true))
             {
                 if (c.Tags != null && c.Tags.Count > 0 && c.Tags.Contains(tag))
                 {
@@ -254,7 +286,7 @@ namespace CommonCore.World
 
             return foundObjects;
         }
-        
+
         /// <summary>
         /// Checks if an ITakeDamage is considered alive
         /// </summary>
@@ -317,41 +349,38 @@ namespace CommonCore.World
             return transform != null && IsObjectAlive(transform.gameObject);
         }
 
-        [Obsolete("Use IsDamageableAlive instead")]
-        public static bool IsAlive(this ITakeDamage target)
+        /// <summary>
+        /// Checks if any entity in the set is alive
+        /// </summary>
+        /// <remarks>
+        /// <para>For "is all dead" semantic, use !IsAnyEntityAlive</para>
+        /// </remarks>
+        public static bool IsAnyEntityAlive(IEnumerable<BaseController> entities)
         {
-            return IsDamageableAlive(target);
+            foreach(var entity in entities)
+            {
+                if (entity.IsEntityAlive())
+                    return true;
+            }
+            return false;
         }
 
-        [Obsolete("Use IsEntityAlive instead")]
-        public static bool IsAlive(this BaseController target)
+        /// <summary>
+        /// Checks if any entity in the set is dead
+        /// </summary>
+        /// /// <remarks>
+        /// <para>For "is all alive" semantic, use !IsAnyEntityDead</para>
+        /// </remarks>
+        public static bool IsAnyEntityDead(IEnumerable<BaseController> entities)
         {
-            return IsEntityAlive(target);
+            foreach (var entity in entities)
+            {
+                if (!entity.IsEntityAlive())
+                    return true;
+            }
+            return false;
         }
 
-        [Obsolete("Use IsObjectAlive instead")]
-        public static bool IsAlive(GameObject target)
-        {
-            if (target == null)
-                return false;
-
-            if (!target.gameObject.activeInHierarchy)
-                return false;
-
-            var itd = target.GetComponent<ITakeDamage>();
-            if (itd != null && itd.Health <= 0)
-                return false;
-
-            return true;
-        }
-
-        [Obsolete("Use IsObjectAlive instead")]
-        public static bool IsAlive(Transform target)
-        {
-            return IsAlive(target.gameObject);
-        }
-
-        
         /// <summary>
         /// Sets parameters and loads a different scene
         /// </summary>
@@ -435,12 +464,6 @@ namespace CommonCore.World
         /// Spawn an effect into the world (Effects/*)
         /// </summary>
         public static GameObject SpawnEffect(string effectID, Vector3 position, Vector3 rotation, Transform parent, bool useUniqueId) => SpawnEffect(effectID, position, Quaternion.Euler(rotation), parent, useUniqueId);
-
-        /// <summary>
-        /// Spawn an effect into the world (Effects/*)
-        /// </summary>
-        [Obsolete] //we want to force clients to make a decision about using a unique ID
-        public static GameObject SpawnEffect(string effectID, Vector3 position, Vector3 rotation, Transform parent) => SpawnEffect(effectID, position, rotation, parent, false);
 
         /// <summary>
         /// Returns the entity this transform is attached to, or null if it is not part of an entity

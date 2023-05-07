@@ -549,5 +549,12 @@
 * Save version mismatch dialog now shows only game version, not whole version info
 * Renamed methods on QdmsKeyValueMessage: HasValue=>ContainsKey/ContainsKeyForType, GetValue=>GetItemOfType, EnumerateValues=>EnumerateEntries. Old methods remain as obsolete thunks
 * Removed previously deprecated GetType(key) method from QdmsKeyValueMessage
+* Removed previously deprecated SpawnEffect variant, IsAlive methods from WorldUtils
+* Removed obsolete methods from AddonSupport ForwardedUtils
+* Added variants of FindObjectByTID, FindEntityByTID, FindEntitiesWithFormID, FindEntitiesWithTag that take parent transform
+* Added some SceneUtils methods to proxies in ForwardedUtils
+* Fixed return type of proxied FindDeepChildrenIgnorePlaceholders in ForwardedUtils
+* Removed previously deprecated FindAllGameObjects from SceneUtils
+* Added IsAnyEntityAlive and IsAnyEntityDead convenience methods to WorldUtils
 
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CommonCore.AddonSupport
@@ -261,6 +262,27 @@ namespace CommonCore.AddonSupport
 
         #endregion
 
+        #region SceneUtils
+
+        private const string SceneUtilsTypeName = "CommonCore.SceneUtils";
+
+        public static void DestroyAllChildren(Transform root)
+        {
+            ProxyUtils.InvokeStaticProxied(SceneUtilsTypeName, "DestroyAllChildren");
+        }
+
+        public static Transform FindDeepChild(Transform aParent, string aName)
+        {
+            return (Transform)ProxyUtils.InvokeStaticProxied(SceneUtilsTypeName, "FindDeepChild", aParent, aName);
+        }
+
+        public static List<Transform> FindDeepChildren(Transform aParent, string aName)
+        {
+            return (List<Transform>)ProxyUtils.InvokeStaticProxied(SceneUtilsTypeName, "FindDeepChildren", aParent, aName);
+        }
+
+        #endregion
+
         #region WorldUtils
 
         private const string WorldUtilsTypeName = "CommonCore.World.WorldUtils";
@@ -322,9 +344,9 @@ namespace CommonCore.AddonSupport
         /// <summary>
         /// Finds all children by name, recursively, and ignores placeholders
         /// </summary>
-        public static Transform FindDeepChildrenIgnorePlaceholders(Transform aParent, string aName)
+        public static List<Transform> FindDeepChildrenIgnorePlaceholders(Transform aParent, string aName)
         {
-            return (Transform)ProxyUtils.InvokeStaticProxied(WorldUtilsTypeName, "FindDeepChildrenIgnorePlaceholders", aParent, aName);
+            return (List<Transform>)ProxyUtils.InvokeStaticProxied(WorldUtilsTypeName, "FindDeepChildrenIgnorePlaceholders", aParent, aName);
         }
 
         /// <summary>
@@ -389,18 +411,6 @@ namespace CommonCore.AddonSupport
         public static bool IsObjectAlive(Transform transform)
         {
             return (bool)ProxyUtils.InvokeStaticProxiedEx(WorldUtilsTypeName, "IsObjectAlive", new InvokeStaticProxyOptions() { MatchParameterTypes = true, ParameterMatchTypes = new Type[] { typeof(Transform) } }, transform);
-        }
-
-        [Obsolete]
-        public static bool IsAlive(GameObject target)
-        {
-            return (bool)ProxyUtils.InvokeStaticProxiedEx(WorldUtilsTypeName, "IsAlive", new InvokeStaticProxyOptions() { MatchParameterTypes = true }, target);
-        }
-
-        [Obsolete]
-        public static bool IsAlive(Transform target)
-        {
-            return (bool)ProxyUtils.InvokeStaticProxiedEx(WorldUtilsTypeName, "IsAlive", new InvokeStaticProxyOptions() { MatchParameterTypes = true }, target);
         }
 
         /// <summary>
