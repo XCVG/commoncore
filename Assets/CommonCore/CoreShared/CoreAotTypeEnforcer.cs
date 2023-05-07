@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Utilities;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,5 +17,15 @@ public class CoreAotTypeEnforcer : MonoBehaviour
         AotHelper.EnsureType<VersionConverter>();
         AotHelper.EnsureDictionary<string, object>();
         AotHelper.EnsureList<string>();
+
+        //attempt to preserve Action<T> types
+        AotHelper.Ensure(() =>
+        {
+            Action<string> action1 = (s) => { };
+
+            Action<string, Vector3> action2 = (s, v) => { };
+
+            Action<string, Vector3, Vector3> action3 = (s, v1, v2) => { };
+        });
     }
 }

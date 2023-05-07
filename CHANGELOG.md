@@ -556,5 +556,7 @@
 * Fixed return type of proxied FindDeepChildrenIgnorePlaceholders in ForwardedUtils
 * Removed previously deprecated FindAllGameObjects from SceneUtils
 * Added IsAnyEntityAlive and IsAnyEntityDead convenience methods to WorldUtils
-
+* TextureAssignScript will now try to grab the renderer of the object it's on if it is not set explicitly
+* Removed deprecated CCObject Unity tag from a few entities that still had it
+* Attempt to ensure Action<T> types for IL2CPP platforms
 

@@ -28,6 +28,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4034090214076030}
   m_RootOrder: 0
@@ -67,6 +68,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 114185287438756938}
+        m_TargetAssemblyTypeName: 
         m_MethodName: InteractableExecute
         m_Mode: 0
         m_Arguments:
@@ -93,7 +95,7 @@ GameObject:
   - component: {fileID: 6693986202220038483}
   m_Layer: 0
   m_Name: wm_key_green
-  m_TagString: CCObject
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -108,6 +110,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4587182183806778}
   - {fileID: 8809373927006810172}
@@ -141,11 +144,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EditorFormID: wm_key_green
   EntityTags: []
+  HandleRestorableExtraData: 1
   HitMaterial: 0
+  ThunkPhysicsToRigidbody: 0
   PickupEffect: {fileID: 1520735840525732, guid: e0d47cd200bbc6a4ea5a721fcb8e97bf,
     type: 3}
+  PickupEffectName: 
+  DestroyEffectName: 
   ItemId: key_green
   ItemQuantity: 1
+  UseQuantityLimit: 0
+  AlwaysDestroyOnPickup: 0
   UseWalkoverPickup: 0
   UseInteractPickup: 1
 --- !u!114 &114337768727251248
@@ -203,6 +212,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0.125, z: 0}
   m_LocalScale: {x: 0.4, y: 0.25, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4034090214076030}
   m_RootOrder: 1
@@ -226,9 +236,12 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -240,6 +253,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -252,3 +266,4 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}

@@ -30,7 +30,19 @@ namespace CommonCore.Util
             Texture tex = CoreUtils.LoadResource<Texture2D>(rPath);
 
             if (tex == null)
-                throw new KeyNotFoundException($"Couldn't find a texture for path \"{rPath}\"");
+            {
+                Debug.LogError($"TextureAssignScript on ${gameObject.name} couldn't find a texture for path \"{rPath}\"");
+                return;
+            }                
+
+            if (Renderer == null)
+                Renderer = GetComponent<Renderer>();
+            
+            if(Renderer == null)
+            {
+                Debug.LogError($"TextureAssignScript on ${gameObject.name} couldn't find a renderer");
+                return;
+            }
 
             if(Renderer != null)
             {
