@@ -560,4 +560,5 @@
 * Removed deprecated CCObject Unity tag from a few entities that still had it
 * Attempt to ensure Action<T> types for IL2CPP platforms
 * Replace deprecated Pointer_stringify with UTF8ToString in JS crosscall code
+* Added PopulateObjectFromDictionary utility method to TypeUtils
 

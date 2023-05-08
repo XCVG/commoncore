@@ -609,6 +609,49 @@ namespace CommonCore
         }
 
         /// <summary>
+        /// Populates an object (existing or new) from a dictionary of data
+        /// </summary>
+        public static object PopulateObjectFromDictionary(Type type, IReadOnlyDictionary<string, object> dictionary, object originalObject = null, BindingFlags? bindingFlags = null)
+        {
+            var bFlags = bindingFlags ?? (BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+            if (originalObject == null)
+            {
+                originalObject = Activator.CreateInstance(type);
+            }
+
+            var properties = type.GetProperties(bFlags);
+            foreach(var prop in properties)
+            {
+                if(dictionary.TryGetValue(prop.Name, out var val))
+                {
+                    var cVal = CoerceValue(val, prop.PropertyType);
+                    prop.SetValue(originalObject, cVal);
+                }                
+            }
+
+            var fields = type.GetFields(bFlags);
+            foreach (var field in fields)
+            {
+                if (dictionary.TryGetValue(field.Name, out var val))
+                {
+                    var cVal = CoerceValue(val, field.FieldType);
+                    field.SetValue(originalObject, cVal);
+                }
+            }
+
+            return originalObject;
+        }
+
+        /// <summary>
+        /// Populates an object (existing or new) from a dictionary of data
+        /// </summary>
+        public static T PopulateObjectFromDictionary<T>(IReadOnlyDictionary<string, object> dictionary, T originalObject = default(T), BindingFlags? bindingFlags = null)
+        {
+            return (T)PopulateObjectFromDictionary(typeof(T), dictionary, originalObject, bindingFlags);
+        }
+
+        /// <summary>
         /// Creates a Delegate from a MethodInfo
         /// </summary>
         /// <param name="methodInfo">The MethodInfo representing the method to make a delegate for</param>
