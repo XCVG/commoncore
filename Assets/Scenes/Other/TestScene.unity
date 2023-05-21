@@ -1106,6 +1106,7 @@ GameObject:
   m_Component:
   - component: {fileID: 373540588}
   - component: {fileID: 373540589}
+  - component: {fileID: 373540590}
   m_Layer: 0
   m_Name: thing with note
   m_TagString: Untagged
@@ -1141,6 +1142,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Comment: Hello! I am just a note!
+--- !u!114 &373540590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 373540587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67ae3c3b6b1082b4699ae3701e91fa0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CaseSensitive: 0
+  KeyValues: []
 --- !u!1 &376343723
 GameObject:
   m_ObjectHideFlags: 0
