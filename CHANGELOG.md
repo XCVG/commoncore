@@ -563,3 +563,5 @@
 * Added PopulateObjectFromDictionary utility method to TypeUtils
 * Updated PseudoExtensibleEnum with optional skip-unknown semantic for converters and additional PxEnum APIs
 * DamageResistance and DamageThreshold of ArmorItemModel uses skip-unknown PxEnum conversion
+* Fixed PseudoExtensibleEnum not using context even when available
+* PxEnum Context is now generated for editor scripts when app domain is reloaded

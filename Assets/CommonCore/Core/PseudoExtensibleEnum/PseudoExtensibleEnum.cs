@@ -316,7 +316,7 @@ namespace PseudoExtensibleEnum
             //    throw new ArgumentException($"{enumType.Name} is not a psuedo-extensible enum");
         }
 
-        private static Type[] GetPseudoExtensionsToEnum(Type baseType, bool useContext = false)
+        private static Type[] GetPseudoExtensionsToEnum(Type baseType, bool useContext = true)
         {
             if (baseType.GetCustomAttribute<PseudoExtensibleAttribute>() == null)
             {
