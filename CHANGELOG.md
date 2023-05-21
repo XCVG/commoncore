@@ -567,3 +567,4 @@
 * PxEnum Context is now generated for editor scripts when app domain is reloaded
 * HandleAnyChanged and IgnoreValueChanges are now in base ConfigSubpanelController class
 * Added LineTex(2) and CircularFlare graphics for particle effects etc
+* Fixed DestroyableThingController updating state when game paused

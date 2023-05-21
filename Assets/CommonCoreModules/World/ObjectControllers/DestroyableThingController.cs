@@ -1,4 +1,5 @@
 ﻿using CommonCore.Audio;
+using CommonCore.LockPause;
 using CommonCore.ObjectActions;
 using System;
 using System.Collections;
@@ -117,6 +118,9 @@ namespace CommonCore.World
         public override void Update()
         {
             base.Update();
+
+            if (LockPauseModule.IsPaused())
+                return;
 
             UpdateDeathState();
         }
