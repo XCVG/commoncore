@@ -100,6 +100,7 @@ namespace PseudoExtensibleEnum
     {
         private Type BaseEnumType;
         private bool IgnoreCase = true;
+        private bool SkipUnknownValues = false;
 
         public PxEnumArrayConverter()
         {
@@ -115,6 +116,13 @@ namespace PseudoExtensibleEnum
         {
             BaseEnumType = baseEnumType;
             IgnoreCase = ignoreCase;
+        }
+
+        public PxEnumArrayConverter(Type baseEnumType, bool ignoreCase, bool skipUnknownValues)
+        {
+            BaseEnumType = baseEnumType;
+            IgnoreCase = ignoreCase;
+            SkipUnknownValues = skipUnknownValues;
         }
 
         public override bool CanConvert(Type objectType)
@@ -178,16 +186,25 @@ namespace PseudoExtensibleEnum
                 //check if numeric or string, try to convert with appropriate path
                 if(rawItem is string s)
                 {
-                    object enumValue = PxEnum.Parse(enumType, s);
-                    if(objectType.IsEnum)
+                    if(PxEnum.TryParse(enumType, s, out object enumValue))
                     {
-                        enumValue = Enum.ToObject(objectType, enumValue);
+                        if (objectType.IsEnum)
+                        {
+                            enumValue = Enum.ToObject(objectType, enumValue);
+                        }
+                        else
+                        {
+                            enumValue = Convert.ChangeType(enumValue, objectType);
+                        }
+                        parsedItems.Add(enumValue);
+                        
                     }
                     else
                     {
-                        enumValue = Convert.ChangeType(enumValue, objectType);
+                        if (SkipUnknownValues)
+                            continue;
+                        throw new JsonSerializationException($"Error converting value {rawItem} to type '{objectType.Name}'. Path '{reader.Path}'. Unable to parse string '{s}' to value.");
                     }
-                    parsedItems.Add(enumValue);
                 }
                 else if(PxEnumConverterUtils.IsIntegralType(rawItem.GetType()))
                 {
@@ -261,6 +278,7 @@ namespace PseudoExtensibleEnum
     {
         private Type BaseEnumType;
         private bool IgnoreCase = true;
+        private bool SkipUnknownKeys = false;
 
         public PxEnumObjectConverter()
         {
@@ -276,6 +294,13 @@ namespace PseudoExtensibleEnum
         {
             BaseEnumType = baseEnumType;
             IgnoreCase = ignoreCase;
+        }
+
+        public PxEnumObjectConverter(Type baseEnumType, bool ignoreCase, bool skipUnknownKeys)
+        {
+            BaseEnumType = baseEnumType;
+            IgnoreCase = ignoreCase;
+            SkipUnknownKeys = skipUnknownKeys;
         }
 
         public override bool CanConvert(Type objectType)
@@ -349,7 +374,15 @@ namespace PseudoExtensibleEnum
                 }
                 else
                 {
-                    key = PxEnum.Parse(enumType, item.Key);
+                    if (!PxEnum.TryParse(enumType, item.Key, out key) && SkipUnknownKeys)
+                    {
+                        continue;
+                    }
+                }
+
+                if(key == null)
+                {
+                    throw new JsonSerializationException($"Error converting value {reader.Value} to type '{objectType.Name}'. Path '{reader.Path}'. Unable to parse key '{item.Key}'");
                 }
 
                 if(effectiveKeyType.IsEnum)

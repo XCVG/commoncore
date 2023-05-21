@@ -561,4 +561,5 @@
 * Attempt to ensure Action<T> types for IL2CPP platforms
 * Replace deprecated Pointer_stringify with UTF8ToString in JS crosscall code
 * Added PopulateObjectFromDictionary utility method to TypeUtils
-
+* Updated PseudoExtensibleEnum with optional skip-unknown semantic for converters and additional PxEnum APIs
+* DamageResistance and DamageThreshold of ArmorItemModel uses skip-unknown PxEnum conversion

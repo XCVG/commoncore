@@ -221,6 +221,53 @@ namespace PseudoExtensibleEnum
             return false;
         }
 
+        //the "missing methods" from the base enum API
+
+        /// <summary>
+        /// Converts the string representation of the name or numeric value of one or more enumerated constants to an equivalent enumerated object of either the base or pseudo-extended type.
+        /// </summary>
+        public static T Parse<T>(string value)
+        {
+            return (T)Parse(typeof(T), value, true);
+        }
+
+        /// <summary>
+        /// Converts the string representation of the name or numeric value of one or more enumerated constants to an equivalent enumerated object of either the base or pseudo-extended type.
+        /// </summary>
+        public static T Parse<T>(string value, bool ignoreCase)
+        {
+            if (TryParseInternal(typeof(T), value, ignoreCase, out object result))
+            {
+                return (T)result;
+            }
+
+            throw new ArgumentException();
+        }
+
+        /// <summary>
+        /// Converts the string representation of the name or numeric value of one or more enumerated constants to an equivalent enumerated object of either the base or pseudo-extended type.
+        /// </summary>
+        public static bool TryParse(Type enumType, string value, out object result)
+        {
+            return TryParse(enumType, value, true, out result);
+        }
+
+        /// <summary>
+        /// Converts the string representation of the name or numeric value of one or more enumerated constants to an equivalent enumerated object of either the base or pseudo-extended type.
+        /// </summary>
+        public static bool TryParse(Type enumType, string value, bool ignoreCase, out object result)
+        {
+            if (TryParseInternal(enumType, value, ignoreCase, out object rawResult))
+            {
+                result = rawResult;
+                return true;
+            }
+
+            result = GetDefaultForType(enumType);
+            return false;
+        }
+
+
         private static bool TryParseInternal(Type enumType, string value, bool ignoreCase, out object result)
         {
             ThrowIfTypeInvalid(enumType);
@@ -296,6 +343,15 @@ namespace PseudoExtensibleEnum
                 .Where(t => t.GetCustomAttribute<PseudoExtendAttribute>().BaseType == baseType);
 #endif
             return allExtendTypes.ToArray();
+        }
+
+        private static object GetDefaultForType(Type type)
+        {
+            if (type.IsValueType)
+            {
+                return Activator.CreateInstance(type);
+            }
+            return null;
         }
     }
 }

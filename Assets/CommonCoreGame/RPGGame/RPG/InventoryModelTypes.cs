@@ -693,9 +693,9 @@ namespace CommonCore.RpgGame.Rpg
 
     public class ArmorItemModel : InventoryItemModel
     {
-        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(DefaultDamageTypes))]
+        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(DefaultDamageTypes), true, true)]
         public IReadOnlyDictionary<int, float> DamageResistance { get; protected set; } = new Dictionary<int, float>();
-        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(DefaultDamageTypes))]
+        [JsonProperty, JsonConverter(typeof(PxEnumObjectConverter), typeof(DefaultDamageTypes), true, true)]
         public IReadOnlyDictionary<int, float> DamageThreshold { get; protected set; } = new Dictionary<int, float>();
         [JsonProperty]
         public ShieldParams Shields { get; protected set; }
