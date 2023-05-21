@@ -539,7 +539,7 @@
 * Fix ScriptExecuteSpecial breaking when no activator is passed
 * Fix item conditional failing if no option/optionvalue is specified (should test for player-has-item)
 
-# 5.0.0 pNext
+# 5.0.0 Preview 1
 * Upgraded Unity to 2021.3.18f1
 * Json.NET library is now pulled in as a Unity package instead of included in the project
 * PlayerWeaponComponent is now treated as optional by PlayerController
@@ -573,3 +573,5 @@
 * Added KeyValueStore component. It's slow and awkward and I'm not sure why I wrote it.
 * Added OnConfigChange script hook which is called when config is changed
 * Player RPG stats can be recalculated on difficulty change (controlled via RecalculatePlayerStatsOnConfigChange GameParam)
+
+# 5.0.0 pNext
