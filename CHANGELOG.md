@@ -547,7 +547,7 @@
 * MaxHealth of DestroyableThingController is now public
 * Fixed ActorController using ActorPerception instead of ActorAggression as EffectiveAggression
 * Save version mismatch dialog now shows only game version, not whole version info
-* Renamed methods on QdmsKeyValueMessage: HasValue=>ContainsKey/ContainsKeyForType, GetValue=>GetItemOfType, EnumerateValues=>EnumerateEntries. Old methods remain as obsolete thunks
+* Renamed methods on QdmsKeyValueMessage: HasValue=>ContainsKey/ContainsKeyForType, EnumerateValues=>EnumerateEntries. Old methods remain as obsolete thunks. Note that GetValue=>GetItemOfType, but the latter throws instead of returning default if item of type was not found.
 * Removed previously deprecated GetType(key) method from QdmsKeyValueMessage
 * Removed previously deprecated SpawnEffect variant, IsAlive methods from WorldUtils
 * Removed obsolete methods from AddonSupport ForwardedUtils
@@ -568,3 +568,6 @@
 * HandleAnyChanged and IgnoreValueChanges are now in base ConfigSubpanelController class
 * Added LineTex(2) and CircularFlare graphics for particle effects etc
 * Fixed DestroyableThingController updating state when game paused
+* Added Note component. It's just a thing you can write notes in, it serves no programmatic purpose.
+* TypeUtils.CoerceValue now attempts to use PxEnum to parse enums if target type is a pseudo-extensible enum.
+* Added KeyValueStore component. It's slow and awkward and I'm not sure why I wrote it.

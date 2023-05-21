@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PseudoExtensibleEnum;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -212,6 +213,11 @@ namespace CommonCore
                 {
                     return conversionMethod.Invoke(null, new object[] { value });
                 }
+            }
+
+            if (targetType.IsEnum && targetType.GetCustomAttribute<PseudoExtensibleAttribute>() != null && (value is string || valueType.IsIntegerType()))
+            {
+                return PxEnum.Parse(targetType, value.ToString(), true);
             }
 
             if (targetType.IsEnum && value is string stringValue)

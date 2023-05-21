@@ -60,16 +60,10 @@ namespace CommonCore.Messaging
 
         }
 
-        public bool ContainsKey(string key)
-        {
-            return _Dictionary.ContainsKey(key);
-        }
+        public bool ContainsKey(string key) => _Dictionary.ContainsKey(key);
 
         [Obsolete("Use ContainsKey instead")]
-        public bool HasValue(string key)
-        {
-            return ContainsKey(key);
-        }
+        public bool HasValue(string key) => ContainsKey(key);
 
         public bool ContainsKeyForType<T>(string key)
         {
@@ -79,39 +73,29 @@ namespace CommonCore.Messaging
         }
 
         [Obsolete("Use ContainsKeyForType instead")]
-        public bool HasValue<T>(string key)
-        {
-            return ContainsKeyForType<T>(key);
-        }
+        public bool HasValue<T>(string key) => ContainsKeyForType<T>(key);
 
         public T GetItemOfType<T>(string key)
+        {
+            if (_Dictionary.TryGetValue(key, out object rawValue) && typeof(T).IsAssignableFrom(rawValue.GetType())) //still not quite right because implicit operators, but close enough for golf
+                return (T)rawValue;
+            throw new KeyNotFoundException($"An item with key {key} and type {typeof(T).Name} could not be found in this {nameof(QdmsKeyValueMessage)}");
+        }
+
+        [Obsolete("Use GetItemOfType instead (note slightly different semantics)")]
+        public T GetValue<T>(string key)
         {
             if (_Dictionary.ContainsKey(key))
                 return (T)_Dictionary[key];
             return default(T);
         }
 
-        [Obsolete("Use GetItemOfType instead")]
-        public T GetValue<T>(string key)
-        {
-            return GetItemOfType<T>(key);
-        }
-
-        public object this[string i]
-        {
-            get { return _Dictionary[i]; }
-        }
+        public object this[string i] => _Dictionary[i];
 
         [Obsolete("Use EnumerateEntries instead")]
-        public IEnumerable<KeyValuePair<string, object>> EnumerateValues()
-        {
-            return EnumerateEntries();
-        }
+        public IEnumerable<KeyValuePair<string, object>> EnumerateValues() => EnumerateEntries();
 
-        public IEnumerable<KeyValuePair<string, object>> EnumerateEntries()
-        {
-            return _Dictionary.ToArray();
-        }
+        public IEnumerable<KeyValuePair<string, object>> EnumerateEntries() => _Dictionary.ToArray();
     }
 
 
