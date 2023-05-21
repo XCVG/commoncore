@@ -48,6 +48,7 @@ namespace CommonCore
         public static IReadOnlyCollection<string> HideSkills { get; private set; } = ImmutableHashSet.Create<string>(StringComparer.OrdinalIgnoreCase, "Unspecified", "Magic", "MagicForce", "MagicElemental", "MagicDark" );
 
         public static string DefaultMoneyType { get; private set; } = "Gold"; //"Gold" for backwards compatibility
+        public static bool RecalculatePlayerStatsOnConfigChange { get; private set; } = false;
 
     }
 }

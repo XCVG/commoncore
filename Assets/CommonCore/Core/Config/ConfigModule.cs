@@ -2,6 +2,7 @@
 using CommonCore.DebugLog;
 using CommonCore.Input;
 using CommonCore.Messaging;
+using CommonCore.Scripting;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -130,6 +131,7 @@ namespace CommonCore.Config
 
             //let other things handle it on their own
             QdmsMessageBus.Instance.PushBroadcast(new ConfigChangedMessage());
+            ScriptingModule.CallHooked(ScriptHook.OnConfigChange, this);
 
         }
 

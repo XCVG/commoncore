@@ -35,5 +35,14 @@ namespace CommonCore.RpgGame
         {
             return !MetaState.Instance.SessionFlags.Contains(sessionFlag);
         }
+
+        [CCScript, CCScriptHook(AllowExplicitCalls = false, Hook = ScriptHook.OnConfigChange)]
+        private static void UpdatePlayerModelOnConfigChange()
+        {
+            if(GameParams.RecalculatePlayerStatsOnConfigChange)
+            {
+                GameState.Instance.PlayerRpgState.UpdateStats();
+            }
+        }
     }
 }

@@ -571,3 +571,5 @@
 * Added Note component. It's just a thing you can write notes in, it serves no programmatic purpose.
 * TypeUtils.CoerceValue now attempts to use PxEnum to parse enums if target type is a pseudo-extensible enum.
 * Added KeyValueStore component. It's slow and awkward and I'm not sure why I wrote it.
+* Added OnConfigChange script hook which is called when config is changed
+* Player RPG stats can be recalculated on difficulty change (controlled via RecalculatePlayerStatsOnConfigChange GameParam)
