@@ -565,3 +565,5 @@
 * DamageResistance and DamageThreshold of ArmorItemModel uses skip-unknown PxEnum conversion
 * Fixed PseudoExtensibleEnum not using context even when available
 * PxEnum Context is now generated for editor scripts when app domain is reloaded
+* HandleAnyChanged and IgnoreValueChanges are now in base ConfigSubpanelController class
+* Added LineTex(2) and CircularFlare graphics for particle effects etc

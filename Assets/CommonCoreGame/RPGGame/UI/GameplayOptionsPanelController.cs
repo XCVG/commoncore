@@ -64,8 +64,6 @@ namespace CommonCore.RpgGame.UI
 
         //IGUI_GAMEPLAYOPTIONS
 
-        private bool IgnoreValueChanges = false;
-
         public override void PaintValues()
         {
             IgnoreValueChanges = true;
@@ -146,12 +144,10 @@ namespace CommonCore.RpgGame.UI
             GameSpeedLabel.text = $"{Mathf.RoundToInt(GameSpeedSlider.value * 10)}%";
         }
 
-        public void HandleAnyChanged()
+        //janky thunk for Unity
+        public new void HandleAnyChanged()
         {
-            if (IgnoreValueChanges)
-                return;
-
-            SignalPendingChanges?.Invoke(PendingChangesFlags.None);
+            base.HandleAnyChanged();
         }
 
         private float GetGameSpeedValue()

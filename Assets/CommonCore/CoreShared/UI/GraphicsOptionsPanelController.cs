@@ -51,8 +51,6 @@ namespace CommonCore.UI
         [Header("Options"), SerializeField]
         private float ShadowDistanceSliderScale = 5f;
 
-        private bool IgnoreValueChanges = false;
-
         public override void PaintValues()
         {
             IgnoreValueChanges = true;
@@ -146,10 +144,7 @@ namespace CommonCore.UI
 
         private void MaybeSignalPendingChanges()
         {
-            if (IgnoreValueChanges)
-                return;
-
-            SignalPendingChanges(PendingChangesFlags.None);
+            base.HandleAnyChanged();
         }
 
         private string GetTextForQualityValue(float value)
