@@ -575,3 +575,4 @@
 * Player RPG stats can be recalculated on difficulty change (controlled via RecalculatePlayerStatsOnConfigChange GameParam)
 
 # 5.0.0 pNext
+* Moved PostBuild and PxEnum editor scripts into CommonCore/Editor folder
