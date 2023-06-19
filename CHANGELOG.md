@@ -576,3 +576,6 @@
 
 # 5.0.0 pNext
 * Moved PostBuild and PxEnum editor scripts into CommonCore/Editor folder
+* Added campaign start date and last save date to save metadata
+* Added OnCoreShutdown call to CCModule that gets called before any modules are disposed
+* Added BeforeCoreShutdown script hook called by OnCoreShutdown before any modules are disposed

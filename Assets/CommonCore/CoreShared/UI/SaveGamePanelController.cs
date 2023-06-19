@@ -168,7 +168,7 @@ namespace CommonCore.UI
                     DetailName.text = metadata?.NiceName ?? saveInfo.Value.ShortName;
                     DetailType.text = saveInfo.Value.Type.ToString();
                     DetailLocation.text = metadata?.Location ?? metadata?.LocationRaw ?? "";
-                    DetailDate.text = saveInfo.Value.Date.ToString("yyyy-MM-dd HH:mm");
+                    DetailDate.text = (metadata?.LastSaveDate ?? saveInfo.Value.Date).ToString("yyyy-MM-dd HH:mm");
 
                     if (metadata?.ThumbnailImage != null)
                     {

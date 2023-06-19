@@ -143,7 +143,7 @@ namespace CommonCore.UI
             DetailName.text = metadata?.NiceName ?? selectedSave.ShortName;
             DetailType.text = selectedSave.Type.ToString();
             DetailLocation.text = metadata?.Location ?? metadata?.LocationRaw ?? "";
-            DetailDate.text = selectedSave.Date.ToString("yyyy-MM-dd HH:mm");
+            DetailDate.text = (metadata?.LastSaveDate ?? selectedSave.Date).ToString("yyyy-MM-dd HH:mm");
             SaveNameField.text = Path.GetFileNameWithoutExtension(selectedSave.FileName);
 
             if (metadata?.ThumbnailImage != null)

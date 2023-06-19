@@ -706,8 +706,21 @@ namespace CommonCore
 
             Debug.Log("[Core] Cleaning up CommonCore...");
 
+            //execute pre-shutdown methods
+            foreach (CCModule m in Modules)
+            {
+                try
+                {
+                    m.OnCoreShutdown();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
+            }
+
             //execute quit methods and unload modules
-            foreach(CCModule m in ((IEnumerable<CCModule>)Modules).Reverse())
+            foreach (CCModule m in ((IEnumerable<CCModule>)Modules).Reverse())
             {
                 try
                 {

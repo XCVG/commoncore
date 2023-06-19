@@ -156,7 +156,9 @@ namespace CommonCore.State
                 LocationRaw = SceneManager.GetActiveScene().name,
                 CompanyName = CoreParams.CompanyName,
                 GameName = CoreParams.GameName,
-                GameVersion = CoreParams.GetCurrentVersion()                
+                GameVersion = CoreParams.GetCurrentVersion(),
+                CampaignStartDate = GameState.Instance.CampaignStartDate,
+                LastSaveDate = DateTime.Now
             };
 
             sm.Location = Sub.Exists(sm.LocationRaw, "LOCATION") ? Sub.Replace(sm.LocationRaw, "LOCATION") : null;

@@ -90,6 +90,15 @@ namespace CommonCore.Scripting
             CallHooked(ScriptHook.OnSceneUnload, null);
         }
 
+        public override void OnCoreShutdown()
+        {
+            Log("Calling before-core-shutdown hooks");
+
+            CallHooked(ScriptHook.BeforeCoreShutdown, null);
+
+            Log("Done calling before-core-shutdown hooks");
+        }
+
         public override void Dispose()
         {
             CallHooked(ScriptHook.BeforeApplicationExit, null);

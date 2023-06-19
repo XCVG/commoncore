@@ -193,6 +193,18 @@ namespace CommonCore.TestModule
             Debug.Log($"OnLoadingSceneOpen\n{context}");
         }
 
+        [CCScript, CCScriptHook(Hook = ScriptHook.OnConfigChange)]
+        private static void OnConfigChange(ScriptExecutionContext context)
+        {
+            Debug.Log($"OnConfigChange\n{context}");
+        }
+
+        [CCScript, CCScriptHook(Hook = ScriptHook.BeforeCoreShutdown)]
+        private static void BeforeCoreShutdown(ScriptExecutionContext context)
+        {
+            Debug.Log($"BeforeCoreShutdown\n{context}");
+        }
+
         [CCScript(ClassName = "Test", Name = "HookOrExplicit"), CCScriptHook(Hook = ScriptHook.AfterSceneLoad, AllowExplicitCalls = true)]
         private static void HookOrExplicit(ScriptExecutionContext context)
         {

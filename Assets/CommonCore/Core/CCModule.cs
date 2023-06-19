@@ -20,6 +20,7 @@ namespace CommonCore
         public virtual void OnFrameUpdate() { }
         public virtual void OnSceneUnloaded() { }
         public virtual void OnGameEnd() { }
+        public virtual void OnCoreShutdown() { }
         public virtual void Dispose() { }
 
         /// <summary>

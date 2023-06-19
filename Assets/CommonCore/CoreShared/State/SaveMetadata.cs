@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,6 +23,10 @@ namespace CommonCore.State
         public VersionInfo GameVersion { get; set; }
 
         public byte[] ThumbnailImage { get; set; }
+
+        //new in 5.x
+        public DateTime? CampaignStartDate { get; set; }
+        public DateTime? LastSaveDate { get; set; }
 
         [JsonExtensionData]
         public IDictionary<string, JToken> AdditionalData { get; set; }

@@ -1,4 +1,5 @@
 ﻿using CommonCore.Config;
+using CommonCore.Messaging;
 using CommonCore.World;
 using System;
 using System.Collections;
@@ -138,6 +139,8 @@ namespace CommonCore.RpgGame.World
 
         private Coroutine EffectDelayedCoroutine;
 
+        private QdmsMessageInterface MessageInterface;
+
         public override bool ViewHandlesCrosshair => HandleCrosshair;
 
         public bool HasADSEnterAnim => ADSRaise != null && ADSRaise.Length > 0;
@@ -152,6 +155,9 @@ namespace CommonCore.RpgGame.World
         public override void Init(ViewModelOptions options)
         {
             base.Init(options);
+
+            MessageInterface = new QdmsMessageInterface(this);
+            MessageInterface.SubscribeReceiver(HandleMessage);
 
             WeaponImageCanvas = WeaponImage.canvas;
             CrosshairState = ConfigState.Instance.GetGameplayConfig().Crosshair;
@@ -170,6 +176,12 @@ namespace CommonCore.RpgGame.World
             HandleMovebob();
             HandleLighting();
             HandleCrosshairUpdate();
+        }
+
+        private void HandleMessage(QdmsMessage message)
+        {
+            if(message is QdmsFlagMessage flagMessage && flagMessage.Flag == "ConfigChanged")
+                CrosshairState = ConfigState.Instance.GetGameplayConfig().Crosshair;
         }
 
         private void HandleCameraAttachment()
