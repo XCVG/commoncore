@@ -15,6 +15,7 @@ namespace PseudoExtensibleEnum
     {
         private Type BaseEnumType;
         private bool IgnoreCase = true;
+        private bool TreatUnknownAsNull = false;
 
         public PxEnumConverter()
         {
@@ -30,6 +31,13 @@ namespace PseudoExtensibleEnum
         {
             BaseEnumType = baseEnumType;
             IgnoreCase = ignoreCase;
+        }
+
+        public PxEnumConverter(Type baseEnumType, bool ignoreCase, bool treatUnknownAsNull)
+        {
+            BaseEnumType = baseEnumType;
+            IgnoreCase = ignoreCase;
+            TreatUnknownAsNull = treatUnknownAsNull;
         }
 
         public override bool CanRead => true;
@@ -57,28 +65,47 @@ namespace PseudoExtensibleEnum
 
             var type = BaseEnumType ?? nullableObjectType ?? objectType;
 
-            Func<object> parseFunc;
+            object partiallyParsedValue;
             if(sValue != null)
             {
-                parseFunc = () => PxEnum.Parse(type, sValue, IgnoreCase);
+                //value is a string
+                if(PxEnum.TryParse(type, sValue, IgnoreCase, out partiallyParsedValue))
+                {
+                    //nop; we continue with partiallyParsedValue later
+                }
+                else
+                {
+                    if (TreatUnknownAsNull)
+                    {
+                        if (serializer.NullValueHandling == NullValueHandling.Include)
+                            return objectType.IsValueType ? Activator.CreateInstance(type) : null;
+                        else
+                            return existingValue;
+                    }
+                    else
+                    {
+                        throw new JsonSerializationException($"Error converting value {reader.Value} to type '{objectType.Name}'. Path '{reader.Path}'. Unable to parse string '{sValue}' to value.");
+                    }                        
+                }
             }
             else
             {
+                //value is numeric
                 Type backingType = BaseEnumType != null ? Enum.GetUnderlyingType(BaseEnumType) : (nullableObjectType ?? objectType);
-                parseFunc = () => Convert.ChangeType(lValue.Value, backingType);
+                partiallyParsedValue = Convert.ChangeType(lValue.Value, backingType);
             }
 
             if(nullableObjectType != null)
             {
                 if (nullableObjectType.IsEnum)
-                    return Enum.ToObject(nullableObjectType, parseFunc());
-                return Convert.ChangeType(parseFunc(), nullableObjectType);
+                    return Enum.ToObject(nullableObjectType, partiallyParsedValue);
+                return Convert.ChangeType(partiallyParsedValue, nullableObjectType);
             }
 
             if (objectType.IsEnum)
-                return Enum.ToObject(objectType, parseFunc());
+                return Enum.ToObject(objectType, partiallyParsedValue);
 
-            return Convert.ChangeType(parseFunc(), objectType);
+            return Convert.ChangeType(partiallyParsedValue, objectType);            
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
