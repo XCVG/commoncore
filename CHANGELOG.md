@@ -580,3 +580,4 @@
 * Added OnCoreShutdown call to CCModule that gets called before any modules are disposed
 * Added BeforeCoreShutdown script hook called by OnCoreShutdown before any modules are disposed
 * Added TreatUnknownAsNull option to PxEnumConverter
+* Fixed dropdowns in options not having correct text overflow set
