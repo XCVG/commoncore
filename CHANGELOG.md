@@ -581,3 +581,12 @@
 * Added BeforeCoreShutdown script hook called by OnCoreShutdown before any modules are disposed
 * Added TreatUnknownAsNull option to PxEnumConverter
 * Fixed dropdowns in options not having correct text overflow set
+* Renamed UnparseableConfigVars to UnparseableCustomConfigVars
+* Added JToken.ToValueAuto extension method to TypeUtils
+* Added explicit LocalLow option to PersistentDataPathWindows/WindowsPersistentDataPath
+* Modified BulletScript to allow "prewarming" (calling init and raycast immediately)
+* Added prewarm bullet option to ActorAttackComponent (PrewarmBullet field)
+* Added prewarm bullet optino to player weapons (WeaponPrewarmBullet flag on item model)
+* Improved "FID same as TID" warning message in BaseController (entity base controller)
+* Upgraded Unity minor version to 2021.3.28f1
+* CustomConfigVars now supports primitive types [WIP]

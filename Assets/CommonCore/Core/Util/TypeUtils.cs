@@ -63,6 +63,36 @@ namespace CommonCore
         }
 
         /// <summary>
+        /// Converts a JToken to a primitive value based on JToken type, returns null if conversion is not possible
+        /// </summary>
+        /// <remarks>
+        /// Note that it will return long or int based on size, but will always return float and not double
+        /// </remarks>
+        public static object ToValueAuto(this JToken token)
+        {
+            switch (token.Type)
+            {
+                case JTokenType.Integer:
+                    long lValue = token.ToObject<long>();
+                    if (lValue <= int.MaxValue && lValue >= int.MinValue)
+                        return (int)lValue;
+                    return lValue;
+                case JTokenType.Float:
+                    return token.ToObject<float>();
+                case JTokenType.String:
+                    return token.ToString();
+                case JTokenType.Boolean:
+                    return token.ToObject<bool>();
+                case JTokenType.Date:
+                    return token.ToObject<DateTime>();
+                case JTokenType.Bytes:
+                    return token.ToObject<byte[]>();
+                default:
+                    return null;
+            }
+        }
+
+        /// <summary>
         /// Checks if the Type is a "numeric" type
         /// </summary>
         public static bool IsNumericType(this Type type)

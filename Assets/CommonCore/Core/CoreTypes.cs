@@ -90,7 +90,7 @@ namespace CommonCore
     public enum WindowsPersistentDataPath
     {
         /// <summary>
-        /// Passes through Unity persistentDataPath
+        /// Passes through Unity persistentDataPath (generally LocalLow)
         /// </summary>
         UnityDefault,
         /// <summary>
@@ -113,7 +113,11 @@ namespace CommonCore
         /// <summary>
         /// Uses Saved Games, which is ambiguously recommended but rarely used
         /// </summary>
-        SavedGames
+        SavedGames,
+        /// <summary>
+        /// Uses LocalLow explicitly
+        /// </summary>
+        LocalLow
     }
 
     /// <summary>

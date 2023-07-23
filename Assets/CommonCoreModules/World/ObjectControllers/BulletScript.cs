@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using System;
+using CommonCore.LockPause;
 
 namespace CommonCore.World
 {
@@ -43,36 +44,50 @@ namespace CommonCore.World
         public float OverrideProbeDist = 0;
         public bool EnableRaycasting = true;
         public bool EnableCollision = true;
-        [Tooltip("Warning: EXPERIMENTAL")]
+        [Tooltip("semi-experimental")]
         public bool EnableDeferredHits = false;
+        [Tooltip("semi-experimental")]
+        public bool UseExplicitPauseCheck = false;
 
-        private Rigidbody Rigidbody;
-        private float Elapsed;
+        protected Rigidbody Rigidbody;
+        protected float Elapsed;
 
         public bool DeferredHitBegan { get; protected set; }
         public BulletScriptDestroyType DestroyType { get; protected set; }
         protected float TimeToDeferredHit;
         protected Action DeferredHitAction;
 
+        protected bool Initialized;
+
         void Start()
         {
+            Init();
+
+            RaycastForHit();
+        }
+
+        public void Init()
+        {
+            if (Initialized)
+                return;
+
             gameObject.layer = LayerMask.NameToLayer("Bullet");
             Rigidbody = GetComponent<Rigidbody>();
 
-            if(Rigidbody == null && EnableDeferredHits)
+            if (Rigidbody == null && EnableDeferredHits)
             {
                 EnableDeferredHits = false;
                 Debug.LogWarning("[BulletScript] Deferred hits requires a Rigidbody!");
             }
 
             Origin = transform.position;
-
-            Update(); //seems legit
+            Initialized = true;
         }
 
         private void FixedUpdate()
         {
-            //TODO pause handling?
+            if (UseExplicitPauseCheck && LockPauseModule.IsPaused())
+                return;
 
             //fake gravity
             if (FakeGravity > 0)
@@ -85,7 +100,8 @@ namespace CommonCore.World
 
         private void Update()
         {
-            //TODO pause handling?
+            if (UseExplicitPauseCheck && LockPauseModule.IsPaused())
+                return;
 
             //maybe die
             if (StayTime > 0)
@@ -100,10 +116,10 @@ namespace CommonCore.World
             }
 
             //distance travel check
-            if(MaxDistToTravel > 0 && !DeferredHitBegan)
+            if (MaxDistToTravel > 0 && !DeferredHitBegan)
             {
                 float distance = (Origin - transform.position).magnitude;
-                if(distance > MaxDistToTravel)
+                if (distance > MaxDistToTravel)
                 {
                     Destroy(this.gameObject);
                 }
@@ -115,16 +131,21 @@ namespace CommonCore.World
                 Destroy(this.gameObject);
             }
 
-            if(DeferredHitBegan && TimeToDeferredHit > 0)
+            if (DeferredHitBegan && TimeToDeferredHit > 0)
             {
                 TimeToDeferredHit -= Time.deltaTime;
-                if(TimeToDeferredHit <= 0)
+                if (TimeToDeferredHit <= 0)
                 {
                     //handle deferred hit
                     DeferredHitAction();
                 }
             }
 
+            RaycastForHit();
+        }
+
+        public void RaycastForHit()
+        {
             if (EnableRaycasting && !DeferredHitBegan)
             {
 
@@ -156,7 +177,7 @@ namespace CommonCore.World
                         allDamageIsPierce = false;
                     }
 
-                    if(EnableDeferredHits)
+                    if (EnableDeferredHits)
                     {
                         DeferredHitBegan = true;
                         DeferredHitAction = () => HandleHit(hit.HitCollider.gameObject, hit.Controller, hit.Hitbox, hit.HitLocation, hit.HitMaterial, hit.HitPoint, damageMultiplier, allDamageIsPierce);
@@ -166,16 +187,16 @@ namespace CommonCore.World
                     else
                     {
                         HandleHit(hit.HitCollider.gameObject, hit.Controller, hit.Hitbox, hit.HitLocation, hit.HitMaterial, hit.HitPoint, damageMultiplier, allDamageIsPierce);
-                    }                    
+                    }
                 }
-                else if(hit.Controller == null && hit.HitCollider != null)
+                else if (hit.Controller == null && hit.HitCollider != null)
                 {
                     var hitMaterial = hit.HitMaterial;
                     var colliderHitMaterial = hit.HitCollider.gameObject.GetComponent<ColliderHitMaterial>();
                     if (colliderHitMaterial != null)
                         hitMaterial = colliderHitMaterial.Material;
 
-                    if(EnableDeferredHits)
+                    if (EnableDeferredHits)
                     {
                         DeferredHitBegan = true;
                         DeferredHitAction = () => HandleHit(hit.HitCollider.gameObject, null, null, hit.HitLocation, hitMaterial, hit.HitPoint, 1, false);
@@ -185,7 +206,7 @@ namespace CommonCore.World
                     else
                     {
                         HandleHit(hit.HitCollider.gameObject, null, null, hit.HitLocation, hitMaterial, hit.HitPoint, 1, false);
-                    }                    
+                    }
                 }
             }
         }

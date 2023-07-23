@@ -28,6 +28,17 @@ namespace CommonCore
             return path;
         }
 
+        internal static string GetLocalAppDataLowFolderPath()
+        {
+            var guid = Guid.Parse("A520A1A4-1780-4FF6-BD18-167343C5AF16"); //locallow folder GUID
+            int result = SHGetKnownFolderPath(ref guid, 0, IntPtr.Zero, out string path);
+            if (result != 0)
+            {
+                throw new Win32Exception(result);
+            }
+            return path;
+        }
+
     }
 
 }

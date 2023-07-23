@@ -1282,6 +1282,12 @@ namespace CommonCore.RpgGame.World
             }
 
             bulletRigidbody.velocity = (fireVec * wim.ProjectileVelocity);
+
+            if(wim.CheckFlag(ItemFlag.WeaponPrewarmBullet))
+            {
+                bulletScript.Init();
+                bulletScript.RaycastForHit();
+            }
         }
 
         private void DoReload()

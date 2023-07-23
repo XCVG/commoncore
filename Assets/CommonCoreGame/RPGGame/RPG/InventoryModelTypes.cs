@@ -32,7 +32,7 @@ namespace CommonCore.RpgGame.Rpg
         Unique,
 
         //weapon flags 
-        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponProjectileIsEntity, WeaponNeverRandomize, WeaponNeverHarmFriendly, WeaponAlwaysHarmFriendly, WeaponBurstSingleAnimation, WeaponEffectWaitsForLockTime, WeaponAlwaysUseEffectExplosion, WeaponRecockIgnoreLevelledRate, WeaponRecockSkipOnEmpty,
+        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponProjectileIsEntity, WeaponNeverRandomize, WeaponNeverHarmFriendly, WeaponAlwaysHarmFriendly, WeaponBurstSingleAnimation, WeaponEffectWaitsForLockTime, WeaponAlwaysUseEffectExplosion, WeaponRecockIgnoreLevelledRate, WeaponRecockSkipOnEmpty, WeaponPrewarmBullet,
 
         //WeaponBurstSingleEffect, WeaponBurstRequireFullAmmo, WeaponBurstSucceedWithPartialAmmo, //not supported yet
 

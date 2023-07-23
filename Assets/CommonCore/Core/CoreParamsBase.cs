@@ -209,6 +209,9 @@ namespace CommonCore
                 case WindowsPersistentDataPath.SavedGames:
                     PersistentDataPath = NativeHelpers.GetSavedGamesFolderPath();
                     break;
+                case WindowsPersistentDataPath.LocalLow:
+                    PersistentDataPath = NativeHelpers.GetLocalAppDataLowFolderPath();
+                    break;
                 default:
                     PersistentDataPath = Application.persistentDataPath;
                     break;

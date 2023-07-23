@@ -50,8 +50,7 @@ namespace CommonCore.World
             
             if(FormID == name)
             {
-                Debug.Log("FID: " + FormID + " TID: " + name);
-                Debug.LogWarning("TID is the same as FID (did you forget to assign TID?)");
+                Debug.LogWarning($"[BaseController on {name}] TID is the same as FID (did you forget to assign TID?)");
             }
 
         }

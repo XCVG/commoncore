@@ -28,6 +28,8 @@ namespace CommonCore.RpgGame.World
         public float AttackInterval = 1.0f;
         public float AttackSpread = 0.25f;
         public float BulletSpeed = 100;
+        [Tooltip("If set, will immediately initialize initialize and raycast bullet")]
+        public bool PrewarmBullet = false;
         public ActorHitInfo AttackHit;
         public HitPhysicsInfo AttackPhysics;
         public float AttackRandomFactor = 0;
@@ -252,6 +254,11 @@ namespace CommonCore.RpgGame.World
                     bulletScript.HitInfo = modHit;
                     bulletScript.PhysicsInfo = new HitPhysicsInfo(AttackPhysics);
                     bulletScript.Target = target;
+                    if(PrewarmBullet)
+                    {
+                        bulletScript.Init();
+                        bulletScript.RaycastForHit();
+                    }
                 }
                 else
                 {
