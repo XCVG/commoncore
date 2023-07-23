@@ -590,3 +590,4 @@
 * Improved "FID same as TID" warning message in BaseController (entity base controller)
 * Upgraded Unity minor version to 2021.3.28f1
 * CustomConfigVars now supports primitive types
+* Added HideCrosshairOnPlayerFlags option to SpriteWeaponViewModelScript to hide sprite weapon controlled crosshair

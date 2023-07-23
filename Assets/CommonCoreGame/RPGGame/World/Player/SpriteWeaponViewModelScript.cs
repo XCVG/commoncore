@@ -1,5 +1,6 @@
 ﻿using CommonCore.Config;
 using CommonCore.Messaging;
+using CommonCore.State;
 using CommonCore.World;
 using System;
 using System.Collections;
@@ -122,6 +123,8 @@ namespace CommonCore.RpgGame.World
         private bool ForceAdsCrosshair = true;
         [SerializeField, Tooltip("If set, will fall back to normal crosshair in ADS mode if ADS crosshair is not available")]
         private bool FallbackToNormalCrosshair;
+        [SerializeField, Tooltip("If set, crosshair will be hidden on these player flags"), NonReorderable]
+        private string[] HideCrosshairOnPlayerFlags = new string[] { "HideHud" };
 
         //state
         private WeaponFrame[] CurrentFrameSet;
@@ -311,6 +314,18 @@ namespace CommonCore.RpgGame.World
                 showAdsCrosshair = false;
                 showNormalCrosshair = true;
             }
+
+            if(HideCrosshairOnPlayerFlags.Length > 0)
+            {
+                for (int i = 0; i < HideCrosshairOnPlayerFlags.Length; i++)
+                {
+                    if (GameState.Instance.PlayerFlags.Contains(HideCrosshairOnPlayerFlags[i]))
+                    {
+                        showNormalCrosshair = false;
+                        showAdsCrosshair = false;
+                    }
+                }
+            }            
 
             if(AdsCrosshair != null)
             {
