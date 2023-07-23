@@ -309,11 +309,18 @@ namespace CommonCore.Config
                 {
                     if (kvp.Value == null)
                         continue;
-
-                    JObject subObject = JObject.FromObject(kvp.Value);
-                    var type = kvp.Value.GetType();
-                    subObject.AddFirst(new JProperty("$type", string.Format("{0}, {1}", type.ToString(), type.Assembly.GetName().Name)));
-                    jo.Add(kvp.Key, subObject);
+                    var token = JToken.FromObject(kvp.Value);
+                    if(token.Type == JTokenType.Object)
+                    {
+                        JObject subObject = JObject.FromObject(kvp.Value);
+                        var type = kvp.Value.GetType();
+                        subObject.AddFirst(new JProperty("$type", string.Format("{0}, {1}", type.ToString(), type.Assembly.GetName().Name)));
+                        jo.Add(kvp.Key, subObject);
+                    }
+                    else
+                    {
+                        jo.Add(kvp.Key, token);
+                    }                   
                 }
                 foreach(KeyValuePair<string, JToken> kvp in UnparseableCustomConfigVars)
                 {
@@ -351,6 +358,7 @@ namespace CommonCore.Config
                         if(primitiveValue != null)
                         {
                             CustomConfigVars[kvp.Key] = primitiveValue;
+                            continue;
                         }
 
                         if (item["$type"] == null || string.IsNullOrEmpty(item["$type"].Value<string>()))

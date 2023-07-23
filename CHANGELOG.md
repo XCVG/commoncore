@@ -589,4 +589,4 @@
 * Added prewarm bullet optino to player weapons (WeaponPrewarmBullet flag on item model)
 * Improved "FID same as TID" warning message in BaseController (entity base controller)
 * Upgraded Unity minor version to 2021.3.28f1
-* CustomConfigVars now supports primitive types [WIP]
+* CustomConfigVars now supports primitive types
