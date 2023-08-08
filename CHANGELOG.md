@@ -593,3 +593,4 @@
 * Added HideCrosshairOnPlayerFlags option to SpriteWeaponViewModelScript to hide sprite weapon controlled crosshair
 * Audio channel setting is only applied on start, and changing this setting requires a restart. This works around audio clips being lost by audio system restart
 * Fix TextureAssignScript breaking if only used for RawImage and not Renderer
+* Fix AsyncUtils.ThrowIfStopped breaking when used from another thread

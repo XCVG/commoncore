@@ -146,12 +146,26 @@ namespace CommonCore.Async
         /// <remarks>Use this as a guard so your async methods terminate when they really should not be running anymore</remarks>
         public static void ThrowIfStopped()
         {
-#if UNITY_EDITOR
-            if (!UnityEditor.EditorApplication.isPlaying)
-                throw new InvalidOperationException("Async method aborted because play mode was exited!");
-#endif
             if (CCBase.Terminated)
-                throw new InvalidOperationException("Async method aborted because CommonCore was terminated!");
+                throw new TaskCanceledException("Async method aborted because CommonCore was terminated!");
+
+#if UNITY_EDITOR
+            bool isPlaying = false;
+            if (IsOnMainThread())
+            {
+                isPlaying = UnityEditor.EditorApplication.isPlaying;                    
+            }
+            else
+            {
+                RunOnMainThread(() =>
+                {
+                    isPlaying = UnityEditor.EditorApplication.isPlaying;
+                }).Wait();
+            }
+
+            if(!isPlaying)
+                throw new TaskCanceledException("Async method aborted because play mode was exited!");
+#endif
         }
 
         /// <summary>
