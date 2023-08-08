@@ -282,6 +282,14 @@ namespace CommonCore.UI
             SignalPendingChanges(PendingChangesFlags.RequiresRestart);
         }
 
+        public void OnChannelDropdownChanged()
+        {
+            if (IgnoreValueChanges)
+                return;
+
+            SignalPendingChanges(PendingChangesFlags.RequiresRestart);
+        }
+
         public void OnClickConfirm()
         {
             UpdateValues();

@@ -34,7 +34,7 @@ namespace CommonCore.Config
         public override void OnAllModulesLoaded()
         {
             ConfigState.Save();
-            ApplyConfiguration();
+            ApplyConfiguration(true);
 
             RegisterConfigPanel("GraphicsOptionsPanel", 1000, CoreUtils.LoadResource<GameObject>("UI/GraphicsOptionsPanel"));
         }
@@ -100,18 +100,27 @@ namespace CommonCore.Config
         /// <summary>
         /// Apply the current ConfigState configuration to the game
         /// </summary>
-        public void ApplyConfiguration()
+        public void ApplyConfiguration() => ApplyConfiguration(false);
+
+
+        /// <summary>
+        /// Apply the current ConfigState configuration to the game
+        /// </summary>
+        public void ApplyConfiguration(bool isInitialConfig)
         {
 
             //AUDIO CONFIG
             AudioListener.volume = ConfigState.Instance.SoundVolume;
-            var ac = AudioSettings.GetConfiguration();
+            if(isInitialConfig) //only safe to do this if resources aren't loaded yet
+            {
+                var ac = AudioSettings.GetConfiguration();
 #if UNITY_WSA
-            if ((int)ConfigState.Instance.SpeakerMode == 0)
-                ConfigState.Instance.SpeakerMode = AudioSpeakerMode.Stereo;
+                if ((int)ConfigState.Instance.SpeakerMode == 0)
+                    ConfigState.Instance.SpeakerMode = AudioSpeakerMode.Stereo;
 #endif
-            ac.speakerMode = ConfigState.Instance.SpeakerMode;
-            AudioSettings.Reset(ac);
+                ac.speakerMode = ConfigState.Instance.SpeakerMode;
+                AudioSettings.Reset(ac);
+            }
 
             //VIDEO CONFIG
             QualitySettings.SetQualityLevel(ConfigState.Instance.GraphicsQuality, true);
