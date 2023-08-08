@@ -179,6 +179,15 @@ public static class SharedConsoleCommands
         SharedUtils.EndGame();
     }
 
+    /// <summary>
+    /// Shows game over screen
+    /// </summary>
+    [Command]
+    static void ShowGameOver()
+    {
+        SharedUtils.ShowGameOver();
+    }
+
     //***** SCREENFADE
 
     /// <summary>
