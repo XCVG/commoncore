@@ -38,7 +38,7 @@ namespace CommonCore.Util
             if (Renderer == null)
                 Renderer = GetComponent<Renderer>();
             
-            if(Renderer == null)
+            if(Renderer == null && RawImage == null)
             {
                 Debug.LogError($"TextureAssignScript on ${gameObject.name} couldn't find a renderer");
                 return;
@@ -52,7 +52,10 @@ namespace CommonCore.Util
                     rMat.SetTexture("_EmissionMap", tex);
             }
 
-            if(RawImage != null)
+            if (RawImage == null)
+                RawImage = GetComponent<RawImage>();
+
+            if (RawImage != null)
             {
                 RawImage.texture = tex;
             }
