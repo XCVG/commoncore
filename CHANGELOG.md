@@ -595,3 +595,4 @@
 * Fix TextureAssignScript breaking if only used for RawImage and not Renderer
 * Fix AsyncUtils.ThrowIfStopped breaking when used from another thread
 * Added ShowGameOver console command
+* Added Relative option to GenericRotateScript
