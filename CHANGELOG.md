@@ -597,3 +597,4 @@
 * Added ShowGameOver console command
 * Added Relative option to GenericRotateScript
 * Added CheckParentsForEntity flag and improved entity handling in OnTriggerEnterTrigger/OnTriggerExitTrigger
+* DestroyableThingController is now much more open for deriving and extending

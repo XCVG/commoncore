@@ -22,67 +22,67 @@ namespace CommonCore.World
         public string Faction;
         public Transform TargetPoint;
         [SerializeField]
-        private float Detectability = 1;
+        protected float Detectability = 1;
         //public bool Reversible = false;
         [SerializeField, Tooltip("Works the opposite way of DR; incoming damage for a type is multiplied by damage factor")]
-        private DamageFactorNode[] DamageFactors;
+        protected DamageFactorNode[] DamageFactors;
         [SerializeField]
-        private bool DisableCollidersOnDeath = false;
+        protected bool DisableCollidersOnDeath = false;
         [SerializeField]
-        private bool DeactivateOnDeath = false;
+        protected bool DeactivateOnDeath = false;
         [SerializeField]
-        private bool DestroyOnDeath = false;
+        protected bool DestroyOnDeath = false;
         [SerializeField]
-        private ActionSpecial DeathSpecial = null;
+        protected ActionSpecial DeathSpecial = null;
         [SerializeField, Tooltip("If set, death special will be executed on restore")]
-        private bool RepeatDeathSpecial = false;
+        protected bool RepeatDeathSpecial = false;
         [SerializeField]
-        private bool AllowPushingWhenDead = false;
+        protected bool AllowPushingWhenDead = false;
 
         [Header("Pain State Options")]
         public bool UsePainState = false;
         [SerializeField]
-        private float PainChance = 0;
+        protected float PainChance = 0;
         [SerializeField]
-        private float PainThreshold = 0;
+        protected float PainThreshold = 0;
         [SerializeField, Tooltip("If set to true, will treat PainChance as the minimum damage guaranteeing pain, and scale between PainThreshold and PainChance")]
-        private bool UseRelativePainCalculation = false;
+        protected bool UseRelativePainCalculation = false;
 
 
         [Header("Visual Options"), SerializeField, Tooltip("Will swap between alive and dead objects if one or both are present")]
-        private GameObject AliveObject = null;
+        protected GameObject AliveObject = null;
         [SerializeField]
-        private GameObject DeadObject = null;
+        protected GameObject DeadObject = null;
         [SerializeField]
-        private Transform EffectSpawnPoint = null;
+        protected Transform EffectSpawnPoint = null;
         [SerializeField]
-        private string DeathEffect = null;
+        protected string DeathEffect = null;
         [SerializeField, Tooltip("Pick either play-by-name or play-source. Unless you want both sounds to play.")]
-        private string DeathSoundName = null;
+        protected string DeathSoundName = null;
         [SerializeField]
-        private AudioSource DeathSoundSource = null;
+        protected AudioSource DeathSoundSource = null;
         [SerializeField]
-        private string PainEffect = null;
+        protected string PainEffect = null;
         [SerializeField, Tooltip("Pick either play-by-name or play-source. Unless you want both sounds to play.")]
-        private string PainSoundName = null;
+        protected string PainSoundName = null;
         [SerializeField]
-        private AudioSource PainSoundSource = null;
+        protected AudioSource PainSoundSource = null;
 
         [Header("Animation Options"), SerializeField]
-        private Animator Animator = null;
+        protected Animator Animator = null;
         [SerializeField]
-        private string AliveState = "idle";
+        protected string AliveState = "idle";
         [SerializeField]
-        private string HurtingState = "pain";
+        protected string HurtingState = "pain";
         [SerializeField]
-        private string DyingState = "dying";
+        protected string DyingState = "dying";
         [SerializeField]
-        private string DeadState = "dead";
+        protected string DeadState = "dead";
 
         [Header("Facing Sprite Options"), SerializeField]
-        private DestroyableThingFacingSpriteComponent FacingSpriteComponent = null;
+        protected DestroyableThingFacingSpriteComponent FacingSpriteComponent = null;
         [SerializeField]
-        private bool DisableFacingSpriteOnDeath = false;
+        protected bool DisableFacingSpriteOnDeath = false;
 
         [Header("Debug")]
         public float Health;
@@ -95,11 +95,11 @@ namespace CommonCore.World
 
         float IAmTargetable.Detectability => Detectability;
 
-        Vector3 IAmTargetable.TargetPoint => TargetPoint.Ref()?.position ?? transform.position;
+        Vector3 IAmTargetable.TargetPoint => GetTargetPoint();
 
-        private bool IsDead = false;
-        private bool ForceDeadState = false;
-        private BaseController LastDamageDealer = null;
+        public bool IsDead { get; protected set; } = false;
+        public bool ForceDeadState { get; protected set; } = false;
+        public BaseController LastDamageDealer { get; protected set; } = null;
 
         protected override bool DeferComponentInitToSubclass => true;
         
@@ -125,7 +125,7 @@ namespace CommonCore.World
             UpdateDeathState();
         }
 
-        private void UpdateDeathState()
+        protected virtual void UpdateDeathState()
         {
             if(ForceDeadState)
             {
@@ -246,7 +246,7 @@ namespace CommonCore.World
             }
         }
 
-        public void Kill(bool bypassInvulnerability)
+        public virtual void Kill(bool bypassInvulnerability)
         {
             if (Invincible && !bypassInvulnerability)
                 return;
@@ -254,7 +254,7 @@ namespace CommonCore.World
             Health = 0;
         }
 
-        public void TakeDamage(ActorHitInfo data)
+        public virtual void TakeDamage(ActorHitInfo data)
         {
             LastDamageDealer = data.Originator;
 
@@ -304,7 +304,9 @@ namespace CommonCore.World
 
         }
 
-        private void EnterPainState()
+        protected virtual Vector3 GetTargetPoint() => TargetPoint.Ref()?.position ?? transform.position;
+
+        protected virtual void EnterPainState()
         {
             Transform effectSpawnPoint = EffectSpawnPoint == null ? transform : EffectSpawnPoint;
 
@@ -357,14 +359,14 @@ namespace CommonCore.World
             }
         }        
 
-        private struct DestroyableThingData
+        protected struct DestroyableThingData
         {
             public bool IsDead;
             public float Health;
         }
 
         [Serializable]
-        private struct DamageFactorNode
+        protected struct DamageFactorNode
         {
             public int DamageType;
             public float DamageFactor;
