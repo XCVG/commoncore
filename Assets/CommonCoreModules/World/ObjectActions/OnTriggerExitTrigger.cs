@@ -17,6 +17,7 @@ namespace CommonCore.ObjectActions
         public bool OnActorsOnly = false;
 
         public bool CheckAllCollisions = false;
+        public bool CheckParentsForEntity = true;
 
         void Start()
         {
@@ -28,17 +29,29 @@ namespace CommonCore.ObjectActions
             if (Triggered)
                 return;
 
+            var otherGameObject = other.gameObject;
+            BaseController entity;
+            if (CheckParentsForEntity)
+            {
+                entity = other.gameObject.GetEntity();
+                if (entity != null)
+                    otherGameObject = entity.gameObject;
+            }
+            else
+            {
+                entity = otherGameObject.GetComponent<BaseController>();
+            }
+
             //reject not-player if we're not allowing not-player
-            if (OnPlayerOnly && !other.gameObject.IsPlayer())
+            if (OnPlayerOnly && !otherGameObject.IsPlayer())
                 return;
 
             //reject non-actors if we're not allowing not-actor
-            if (OnActorsOnly && !other.gameObject.IsActor())
+            if (OnActorsOnly && !otherGameObject.IsActor())
                 return;
 
             //execute special
-            var activator = other.GetComponent<BaseController>();
-            var data = new ActionInvokerData() { Activator = activator, Caller = this };
+            var data = new ActionInvokerData() { Activator = entity, Caller = this };
             Special.Invoke(data);
 
             //lock if not repeatable

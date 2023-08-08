@@ -596,3 +596,4 @@
 * Fix AsyncUtils.ThrowIfStopped breaking when used from another thread
 * Added ShowGameOver console command
 * Added Relative option to GenericRotateScript
+* Added CheckParentsForEntity flag and improved entity handling in OnTriggerEnterTrigger/OnTriggerExitTrigger
