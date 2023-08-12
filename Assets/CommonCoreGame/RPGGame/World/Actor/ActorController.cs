@@ -95,7 +95,8 @@ namespace CommonCore.RpgGame.World
         public bool RunOnFlee = true;
 
         [field: SerializeField, Tooltip("For debugging only- changing this may result in unpredicted results")]
-        public Vector3 InitialPosition { get; private set; } //TODO should we save this? I don't think so
+        public Vector3 InitialPosition { get; private set; } //TODO should we save this? I don't think so        
+        public bool InitialPositionSet { get; private set; }
 
         [Header("Wander")]
         public float WanderThreshold = 1.0f;
@@ -104,6 +105,7 @@ namespace CommonCore.RpgGame.World
 
         [Header("Misc")]
         public ActorDifficultyHandling DifficultyHandling = ActorDifficultyHandling.AsActor; //default for historical reasons
+        public bool PersistInitialPosition = false;
 
         private QdmsMessageInterface MessageInterface;
 
@@ -152,11 +154,9 @@ namespace CommonCore.RpgGame.World
             MessageInterface.SubscribeReceiver(HandleMessage);            
         }
 
-        public override void Start() //TODO register into a list for AI and stuff
+        public override void Start()
         {
             base.Start();
-
-            //TODO may remove some warnings, TODO change to Debug.Log
 
             if (AnimationComponent == null)
                 AnimationComponent = GetComponent<ActorAnimationComponentBase>();
@@ -183,7 +183,11 @@ namespace CommonCore.RpgGame.World
             if (AudioComponent == null)
                 CDebug.LogEx(name + " couldn't find AudioComponent", LogLevel.Verbose, this);
 
-            InitialPosition = transform.position;
+            if(!InitialPositionSet)
+            {
+                InitialPosition = transform.position;
+                InitialPositionSet = true;
+            }            
 
             MovementComponent.Init();
 
@@ -955,11 +959,13 @@ namespace CommonCore.RpgGame.World
         public void SetInitialPosition(Vector3 newInitialPosition)
         {
             InitialPosition = newInitialPosition;
+            InitialPositionSet = true;
         }
 
         public void SetInitialPosition()
         {
             InitialPosition = transform.position;
+            InitialPositionSet = true;
         }
 
         public void Kill(bool bypassInvulnerability)
@@ -1105,6 +1111,8 @@ namespace CommonCore.RpgGame.World
             MovementComponent.BeforeCommit(extraData);
             actorData.IsRunning = MovementComponent.IsRunning;
 
+            actorData.InitialPosition = InitialPosition;
+
             if (InteractionComponent != null)
             {
                 actorData.InteractionForceDisabled = InteractionComponent.InteractionDisabledByHit;
@@ -1152,6 +1160,12 @@ namespace CommonCore.RpgGame.World
                     MovementComponent.IsRunning = actorData.IsRunning;
                     if (CurrentAiState == ActorAiState.Dead)
                         MovementComponent.HandleDeath();
+
+                    if(PersistInitialPosition)
+                    {
+                        InitialPosition = actorData.InitialPosition;
+                        InitialPositionSet = true;
+                    }
 
                     if (InteractionComponent != null)
                     {

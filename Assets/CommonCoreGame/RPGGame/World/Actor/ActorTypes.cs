@@ -64,6 +64,7 @@ namespace CommonCore.RpgGame.World
 
         //navigation
         public bool IsRunning { get; set; }
+        public Vector3 InitialPosition { get; set; }
 
         //interaction
         public bool InteractionForceDisabled { get; set; }
