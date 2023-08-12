@@ -601,3 +601,4 @@
 * New init screen with animation, graphics, and tweaks to InitSceneController
 * Minor cleanup to GetEffectiveTheme and PanelController
 * EditorConditional and EditorMicroscript now throws if type is unknown
+* Player prefab name can now be overridden from WorldSceneController or GameState

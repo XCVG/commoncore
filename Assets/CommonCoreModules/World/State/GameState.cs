@@ -27,6 +27,11 @@ namespace CommonCore.State
         /// </summary>
         public PlayerFlagsCollection PlayerFlags { get; private set; } = new PlayerFlagsCollection();
 
+        /// <summary>
+        /// [World] Name of an entity to use for the player object, overriding the default
+        /// </summary>
+        public string PlayerPrefabOverride { get; set; }
+
     }
 
 }

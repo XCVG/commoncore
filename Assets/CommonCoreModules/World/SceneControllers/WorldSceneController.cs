@@ -17,6 +17,7 @@ namespace CommonCore.World
         public bool AutoGameover = true;
         public string SetMusic;
         public Bounds WorldBounds = new Bounds(Vector3.zero, new Vector3(2000f, 2000f, 1000f));
+        public string PlayerPrefabOverride = null;
 
         public SetPlayerFlagsSource TempPlayerFlags { get; private set; } = new SetPlayerFlagsSource();
 
@@ -391,7 +392,7 @@ namespace CommonCore.World
                 if (player == null)
                 {
                     //spawn the player object in
-                    player = Instantiate(CoreUtils.LoadResource<GameObject>("Entities/" + "spec_player"), transform) as GameObject;
+                    player = Instantiate(GetPlayerPrefab(), transform) as GameObject;
                     player.name = "Player";
                     if (mgs.TransitionType == SceneTransitionType.LoadGame)
                     {
@@ -426,7 +427,7 @@ namespace CommonCore.World
             {
                 if(player == null)
                 {
-                    player = Instantiate(CoreUtils.LoadResource<GameObject>("Entities/" + "spec_player"), transform) as GameObject;
+                    player = Instantiate(GetPlayerPrefab(), transform) as GameObject;
                     player.name = "Player";
                 }
                     
@@ -486,6 +487,19 @@ namespace CommonCore.World
 
                 //Debug.LogWarning("No player spawn intent exists!");
             }
+        }
+
+        protected GameObject GetPlayerPrefab()
+        {
+            string prefabName = "Entities/" + "spec_player";
+
+            if (!string.IsNullOrEmpty(GameState.Instance.PlayerPrefabOverride))
+                prefabName = "Entities/" + GameState.Instance.PlayerPrefabOverride;
+
+            if (!string.IsNullOrEmpty(PlayerPrefabOverride))
+                prefabName = "Entities/" + PlayerPrefabOverride;            
+
+            return CoreUtils.LoadResource<GameObject>(prefabName);
         }
 
     }
