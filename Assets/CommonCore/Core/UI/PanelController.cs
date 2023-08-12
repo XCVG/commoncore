@@ -112,10 +112,14 @@ namespace CommonCore.UI
             }
         }
 
-        //TODO probably remove this
         protected string GetEffectiveTheme()
         {
             var menuController = GetComponentInParent<BaseMenuController>();
+            return GetEffectiveTheme(menuController);
+        }
+
+        protected string GetEffectiveTheme(BaseMenuController menuController)
+        {
             if(menuController != null && !string.IsNullOrEmpty(menuController.OverrideTheme))
             {
                 return menuController.OverrideTheme;
@@ -128,7 +132,7 @@ namespace CommonCore.UI
         protected void CallPostInitialPaintHooks()
         {
             var menuController = GetComponentInParent<BaseMenuController>();
-            string theme = (menuController != null && !string.IsNullOrEmpty(menuController.OverrideTheme)) ? menuController.OverrideTheme : CCBase.GetModule<UIModule>().CurrentTheme?.name;
+            string theme = GetEffectiveTheme(menuController);
 
             var data = new IGUIPaintData(IGUIPaintEventType.InitialPaint, this, menuController, theme);
             ScriptingModule.CallHooked(ScriptHook.OnIGUIPaint, this, data);
@@ -137,7 +141,7 @@ namespace CommonCore.UI
         protected void CallPostRepaintHooks()
         {
             var menuController = GetComponentInParent<BaseMenuController>();
-            string theme = (menuController != null && !string.IsNullOrEmpty(menuController.OverrideTheme)) ? menuController.OverrideTheme : CCBase.GetModule<UIModule>().CurrentTheme?.name;
+            string theme = GetEffectiveTheme(menuController);
 
             var data = new IGUIPaintData(IGUIPaintEventType.Repaint, this, menuController, theme);
             ScriptingModule.CallHooked(ScriptHook.OnIGUIPaint, this, data);
