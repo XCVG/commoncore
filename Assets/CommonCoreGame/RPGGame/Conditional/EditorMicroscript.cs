@@ -25,6 +25,13 @@ namespace CommonCore.RpgGame.State
             {
                 return MicroscriptNode.Parse((JObject)CoreUtils.ReadJson(CustomOverride));
             }
+            else
+            {
+                if (Type == MicroscriptType.Unknown)
+                    throw new ArgumentException("EditorMicroscript has Unknown type set");
+                if (Action == MicroscriptAction.Unknown)
+                    throw new ArgumentException("EditorMicroscript has Unknown action set");
+            }
 
             object val = TypeUtils.StringToNumericAuto(Value);
             return new MicroscriptNode(Type, Target, Action, val, DelayType, DelayTime, DelayAbsolute, new JObject());

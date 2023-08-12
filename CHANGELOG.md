@@ -599,3 +599,5 @@
 * Added CheckParentsForEntity flag and improved entity handling in OnTriggerEnterTrigger/OnTriggerExitTrigger
 * DestroyableThingController is now much more open for deriving and extending
 * New init screen with animation, graphics, and tweaks to InitSceneController
+* Minor cleanup to GetEffectiveTheme and PanelController
+* EditorConditional and EditorMicroscript now throws if type is unknown

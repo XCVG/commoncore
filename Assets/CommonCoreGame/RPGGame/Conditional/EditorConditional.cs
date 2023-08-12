@@ -21,6 +21,11 @@ namespace CommonCore.RpgGame.State
             {
                 return Conditional.Parse((JObject)CoreUtils.ReadJson(CustomOverride));
             }
+            else
+            {
+                if (Type == ConditionType.Unknown)
+                    throw new ArgumentException("EditorConditional has Unknown type set");
+            }
 
             ConditionOption? opt = null;
             if (Type == ConditionType.Item || Type == ConditionType.Quest || Type == ConditionType.ActorValue)
