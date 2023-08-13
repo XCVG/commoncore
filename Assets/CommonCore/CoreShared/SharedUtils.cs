@@ -88,7 +88,7 @@ namespace CommonCore
 
             TryGetSceneController().Ref()?.ExitScene(); //run scene exit routine if a scene controller exists
 
-            SceneManager.LoadScene(CoreParams.LoadingScene); //TODO put loading scene name somewhere            
+            CoreUtils.LoadScene(CoreParams.LoadingScene); //TODO put loading scene name somewhere            
             
         }
 
@@ -107,7 +107,7 @@ namespace CommonCore
             mgs.LoadSave = saveName;
             mgs.TransitionType = SceneTransitionType.LoadGame;
 
-            SceneManager.LoadScene(CoreParams.LoadingScene);
+            CoreUtils.LoadScene(CoreParams.LoadingScene);
         }
 
         /// <summary>
