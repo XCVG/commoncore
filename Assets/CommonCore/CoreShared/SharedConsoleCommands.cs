@@ -86,7 +86,7 @@ public static class SharedConsoleCommands
         MetaState.Instance.LoadSave = name;
         MetaState.Instance.Intents.Clear();
 
-        SceneManager.LoadScene(CoreParams.LoadingScene); //TODO put loading scene name somewhere
+        CoreUtils.LoadScene(CoreParams.LoadingScene); //TODO put loading scene name somewhere
         
     }
 
@@ -155,7 +155,7 @@ public static class SharedConsoleCommands
     [Command]
     static void WarpDirect(string scene)
     {
-        SceneManager.LoadScene(scene);
+        CoreUtils.LoadScene(scene);
     }
 
     /// <summary>

@@ -99,7 +99,7 @@ namespace CommonCore.State
         {
             yield return null;
 
-            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(MetaState.Instance.NextScene, LoadSceneMode.Single);
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(CoreUtils.GetActualSceneName(MetaState.Instance.NextScene), LoadSceneMode.Single);
 
             if (asyncLoad == null)
             {
@@ -122,12 +122,12 @@ namespace CommonCore.State
             {
                 GameState.Clear();
                 MetaState.Instance.Clear();                
-                SceneManager.LoadScene(CoreParams.MainMenuScene);
+                CoreUtils.LoadScene(CoreParams.MainMenuScene);
             }
             else
             {
                 MetaState.Instance.NextScene = MetaState.Instance.PreviousScene;
-                SceneManager.LoadScene(CoreParams.LoadingScene);
+                CoreUtils.LoadScene(CoreParams.LoadingScene);
             }
         }
 

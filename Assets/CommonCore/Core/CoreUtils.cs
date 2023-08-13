@@ -21,6 +21,8 @@ namespace CommonCore
     {
         internal static LegacyResourceManager ResourceManager {get; set;}
 
+        private static Dictionary<string, string> SceneRemaps = new Dictionary<string, string>();
+
         /// <summary>
         /// Load a resource, respecting virtual/redirected paths
         /// </summary>
@@ -297,6 +299,50 @@ namespace CommonCore
 
             GarbageCollector.GCMode = oldMode;
 #endif
+        }
+
+        /// <summary>
+        /// Loads a scene, using overrides if present
+        /// </summary>
+        public static void LoadScene(string sceneName)
+        {
+            SceneManager.LoadScene(GetActualSceneName(sceneName));
+        }
+
+        /// <summary>
+        /// Returns overriden scene name, or the original scene name if no override exists
+        /// </summary>
+        public static string GetActualSceneName(string sceneName)
+        {
+            if(SceneRemaps.TryGetValue(sceneName, out string overrideName))
+                return overrideName;
+
+            return sceneName;
+        }
+
+        /// <summary>
+        /// Adds a scene override to the scene remappings
+        /// </summary>
+        public static void AddSceneOverride(string originalScene, string overrideScene)
+        {
+            SceneRemaps[originalScene] = overrideScene;
+        }
+
+        /// <summary>
+        /// Removes a scene override by the original scene name
+        /// </summary>
+        public static void RemoveSceneOverride(string sceneName)
+        {
+            if(SceneRemaps.ContainsKey(sceneName))
+                SceneRemaps.Remove(sceneName);
+        }
+
+        /// <summary>
+        /// Returns all existing overrides (Key=target scene, Value=override)
+        /// </summary>
+        public static IEnumerable<KeyValuePair<string, string>> EnumerateSceneOverrides()
+        {
+            return SceneRemaps.ToArray();
         }
 
     }

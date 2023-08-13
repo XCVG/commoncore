@@ -83,7 +83,7 @@ namespace CommonCore.RpgGame.Dialogue
         static void TestDialogueStandalone(string dialogue)
         {
             DialogueController.CurrentDialogue = dialogue;
-            SceneManager.LoadScene("DialogueScene");
+            CoreUtils.LoadScene("DialogueScene");
         }
 
         [Command(alias = "Test", className = "Dialogue")]

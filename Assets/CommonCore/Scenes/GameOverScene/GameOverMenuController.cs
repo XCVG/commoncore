@@ -121,7 +121,7 @@ namespace CommonCore.UI
         public void HandleReturnButtonClicked()
         {
             if (UseDirectReturn)
-                SceneManager.LoadScene(MetaState.Instance.NextScene);
+                CoreUtils.LoadScene(MetaState.Instance.NextScene);
             else
                 SharedUtils.ChangeScene(MetaState.Instance.NextScene);
         }
