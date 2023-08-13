@@ -20,9 +20,17 @@ public class PersistStateUnifiedMigration : Migration<PersistState>
 
     public override JObject Migrate(JObject inputObject, MigrationContext context)
     {
+        context.MigrationHasChanges = false;
+
         //set last migrated version
+        var oldVersion = inputObject["LastMigratedVersion"].ToObject<VersionInfo>(context.JsonSerializer);
         var version = CoreParams.GetCurrentVersion();
-        inputObject["LastMigratedVersion"] = JObject.FromObject(version, context.JsonSerializer);
+        if(oldVersion != version)
+        {
+            inputObject["LastMigratedVersion"] = JObject.FromObject(version, context.JsonSerializer);
+            context.MigrationHasChanges = true;
+        }
+        
 
         return inputObject;
     }

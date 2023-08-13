@@ -71,9 +71,10 @@ namespace CommonCore.Migrations
 
                     if (migration != null)
                     {
-                        currentObject = migration.Migrate(currentObject, new MigrationContext() { JsonSerializer = JsonSerializer.Create(CoreParams.DefaultJsonSerializerSettings) });
+                        var context = new MigrationContext() { JsonSerializer = JsonSerializer.Create(CoreParams.DefaultJsonSerializerSettings) };
+                        currentObject = migration.Migrate(currentObject, context);
                         appliedMigrations.Add(migration.GetType());
-                        didMigrate = true;
+                        didMigrate = context.MigrationHasChanges;
                     }
                     else
                     {

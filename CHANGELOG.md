@@ -605,3 +605,5 @@
 * Added PersistInitialPosition option to ActorController to save InitialPosition
 * Resource manifest generation now includes sub-assets
 * Add scene override redirection APIs to CoreUtils
+* Migrations can now indicate whether they actually made changes or not through MigrationHasChanges flag in context object
+* PersistStateUnifiedMigration and ConfigStateUnifiedMigration signal MigrationHasChanges

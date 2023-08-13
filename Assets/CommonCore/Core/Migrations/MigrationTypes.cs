@@ -10,6 +10,7 @@ namespace CommonCore.Migrations
     public class MigrationContext
     {
         public JsonSerializer JsonSerializer { get; internal set; }
+        public bool MigrationHasChanges { get; set; } = true; //set to true for backwards compatibility
     }
 
     public class MigrationFailedException : Exception
