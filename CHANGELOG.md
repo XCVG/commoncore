@@ -574,7 +574,7 @@
 * Added OnConfigChange script hook which is called when config is changed
 * Player RPG stats can be recalculated on difficulty change (controlled via RecalculatePlayerStatsOnConfigChange GameParam)
 
-# 5.0.0 pNext
+# 5.0.0 Preview 2
 * Moved PostBuild and PxEnum editor scripts into CommonCore/Editor folder
 * Added campaign start date and last save date to save metadata
 * Added OnCoreShutdown call to CCModule that gets called before any modules are disposed
@@ -607,3 +607,5 @@
 * Add scene override redirection APIs to CoreUtils
 * Migrations can now indicate whether they actually made changes or not through MigrationHasChanges flag in context object
 * PersistStateUnifiedMigration and ConfigStateUnifiedMigration signal MigrationHasChanges
+
+# vNext
