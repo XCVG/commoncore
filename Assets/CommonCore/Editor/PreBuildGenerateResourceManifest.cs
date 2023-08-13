@@ -8,6 +8,7 @@ using UnityEditor.Build.Reporting;
 using UnityEngine;
 using Newtonsoft.Json;
 using UnityEditor;
+using UnityEditor.VersionControl;
 
 /// <summary>
 /// Generates a resource manifest after a build
@@ -64,7 +65,11 @@ public class PreBuildGenerateResourceManifest : IPreprocessBuildWithReport //TOD
         {
             if (Path.GetExtension(file).Equals(".meta", StringComparison.OrdinalIgnoreCase))
                 continue;
-            folderModel.Items.Add(new ResourceItemModel() { Name = Path.GetFileNameWithoutExtension(file), Type = GetAssetType(file) });
+            var types = GetAllAssetTypes(file);
+            foreach (var type in types)
+            {
+                folderModel.Items.Add(new ResourceItemModel() { Name = Path.GetFileNameWithoutExtension(file), Type = type });
+            }            
         }
 
         return folderModel;
@@ -82,6 +87,33 @@ public class PreBuildGenerateResourceManifest : IPreprocessBuildWithReport //TOD
             return "";
         }
 
+    }
+
+    private IEnumerable<string> GetAllAssetTypes(string assetPath)
+    {
+        HashSet<string> types = new HashSet<string>();
+        string shortenedPath = "Assets/" + assetPath.Substring(Application.dataPath.Length).Replace('\\', '/');
+        try
+        {
+            string mainType = AssetDatabase.GetMainAssetTypeAtPath(shortenedPath).ToString();
+            if(mainType == "UnityEngine.GameObject")
+            {
+                types.Add(mainType);
+            }
+            else
+            {
+                var assets = AssetDatabase.LoadAllAssetsAtPath(shortenedPath);
+                foreach (var asset in assets)
+                {
+                    types.Add(asset.GetType().FullName);
+                }
+            }            
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"Error loading types for asset \"{assetPath}\"\n {e.GetType().Name}: {e.Message}");
+        }
+        return types;
     }
 
     private IEnumerable<ResourceFolderModel> MergeFolderModels(IEnumerable<ResourceFolderModel> models)

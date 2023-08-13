@@ -603,3 +603,4 @@
 * EditorConditional and EditorMicroscript now throws if type is unknown
 * Player prefab name can now be overridden from WorldSceneController or GameState
 * Added PersistInitialPosition option to ActorController to save InitialPosition
+* Resource manifest generation now includes sub-assets
