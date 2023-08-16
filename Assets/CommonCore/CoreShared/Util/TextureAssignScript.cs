@@ -37,10 +37,13 @@ namespace CommonCore.Util
 
             if (Renderer == null)
                 Renderer = GetComponent<Renderer>();
+
+            if (RawImage == null && Renderer == null)
+                RawImage = GetComponent<RawImage>();
             
             if(Renderer == null && RawImage == null)
             {
-                Debug.LogError($"TextureAssignScript on ${gameObject.name} couldn't find a renderer");
+                Debug.LogError($"TextureAssignScript on ${gameObject.name} couldn't find a Renderer or RawImage");
                 return;
             }
 

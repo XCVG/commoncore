@@ -574,6 +574,7 @@ MonoBehaviour:
   WorldBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 1000, y: 1000, z: 500}
+  PlayerPrefabOverride: 
 --- !u!114 &175064702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1682,6 +1683,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: DemoSpriteGuy
+      objectReference: {fileID: 0}
+    - target: {fileID: 5737222755212715997, guid: 899eb38042ad0c34fb80b6eeb6ae9374,
+        type: 3}
+      propertyPath: PersistInitialPosition
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 899eb38042ad0c34fb80b6eeb6ae9374, type: 3}
