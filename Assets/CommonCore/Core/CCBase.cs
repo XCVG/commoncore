@@ -696,6 +696,12 @@ namespace CommonCore
 
         internal static void OnApplicationQuit()
         {
+            if(Terminated)
+            {
+                Debug.LogWarning("[Core] tried to call OnApplicationExit but core is already shut down");
+                return;
+            }
+
             //call OnGameEnd if we are in a game
             Type thunkType = BaseGameTypes.FirstOrDefault(t => t.Name == "GameStateExistsThunk");
             IReadOnlyValueThunk<bool> gameStateExistsThunk = Activator.CreateInstance(thunkType) as IReadOnlyValueThunk<bool>;

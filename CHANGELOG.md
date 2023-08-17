@@ -608,4 +608,6 @@
 * Migrations can now indicate whether they actually made changes or not through MigrationHasChanges flag in context object
 * PersistStateUnifiedMigration and ConfigStateUnifiedMigration signal MigrationHasChanges
 
-# vNext
+# 5.0.0
+
+* OnApplicationQuit now has a check so it won't run again if core is already shut down
