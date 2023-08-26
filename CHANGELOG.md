@@ -611,3 +611,4 @@
 # 5.0.0
 
 * OnApplicationQuit now has a check so it won't run again if core is already shut down
+* Removed obsolete/redundant LoadClean command
