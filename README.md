@@ -1,5 +1,5 @@
 # CommonCore Framework for Unity
-### Version 5.0.0 _Edgewater_ PREVIEW
+### Version 5.0.0 _Edgewater_
 ### For Unity 2021.3+
 
 ## Introduction
@@ -12,9 +12,41 @@ The full list of features is too long to list here and not well documented (yet)
 
 Some limited documentation is available in the Reference folder. The Documentation folder, perhaps confusingly, contains documentation and license information for third-party components.
 
+## Features
+
+**Core Services**
+
+* Module system/modular architecture with well-defined startup sequence and events
+* Dynamic resource manager with runtime loading and addon support
+* Pause/lock management
+* Broadcast tessaging system (QDMS) for loosely coupling components, primarily used for UI
+* "Scripting" system for running bits of code by name or by hook
+* String substitution, lookup, and macro system
+* Command console integration currently set up for DevConsole 2 but adaptable to other implementations if desired
+* Config system with persistence, extensibility, and built-in handling for basic settings
+* Miscellaneous utilities and helper functions to make coding a little easier
+
+**Mechanical Building Blocks**
+
+* A defined flow of scenes that handles everything up to getting into your game itself
+* Abstracted input system that can be extended with custom mapper implementations without changing game logic, and including a keyboard/mouse mapper that allows rebinding
+* State management for building save/load systems providing extensible state objects with well-defined lifetimes and means of serializing and deserializing them
+* Game world building blocks including bullet controllers and collision utility functions, the concepts of players, actors, and general entities and utility functions for working with them
+* Action/Trigger components for building out generic world interactions between the player and other objects and mutating game state, with several premade components including some that integrate with RPG systems
+* Theme engine for styling the user interface without changing every single object, plus a few other UI utilities including message modals
+
+**Fully Realized Game Systems** 
+
+* Full menu systems including an in-game menu, all open for customization and extension
+* FPS-style player controller handling movement, actions, damage and weapons, with support for 2D and 3D weapon graphics and tight integration with RPG systems, extensible and divided into components
+* Actor/NPC logic handling movement, attacks, damage and interactions, with support for navmesh, 2D and 3D world models, extensible and divided into components
+* Full set of RPG mechanics including inventory, quests, leveling, stats/skills, open for extension, integrated with other components and ready to integrate into more
+* Data-driven WRPG-style dialogue system with plenty of flexibility, integration with RPG systems and campaign state, and built for extensibility if you want to go beyond
+* Saving and loading of world state including actors and player, integrated with state objects and saving of RPG state, and extensible to your own data
+
 ## Platform Support
 
-CommonCore supports Unity 2021.3 and will _probably_ work on Unity 2022. The last version to support Unity 2020 is 4.x _Downwarren_.
+CommonCore 5.x supports Unity 2021.3 and will _probably_ work on Unity 2022. The last version to support Unity 2020 is 4.x _Downwarren_.
 
 CommonCore is targeted toward standalone platforms using Mono and the .NET 4.x scripting runtime. Other configurations are not the focus and have varying levels of support. IL2CPP is supported with some limitations, and the WebGL and UWP platforms have been somewhat tested (both with their own limitations). Other platforms have not been tested but might work, maybe requiring minor tweaking.
 
