@@ -43,8 +43,17 @@ public class ConfigStateUnifiedMigration : Migration<ConfigState>
             context.MigrationHasChanges = true;
         }
 
+        //migrate VNX config, if it exists (5.x with VNX->6.0.0)
+        if (!inputObject["CustomConfigVars"].IsNullOrEmpty() &&
+            ((JObject)inputObject["CustomConfigVars"]).ContainsKey("VnxConfig") &&
+            ((JObject)inputObject["CustomConfigVars"]["VnxConfig"]).ContainsKey("$type"))
+        {
+            ((JObject)inputObject["CustomConfigVars"]["VnxConfig"])["$type"] = JToken.FromObject("CommonCore.RpgGame.Dialogue.VnConfig, Assembly-CSharp");
+            context.MigrationHasChanges = true;
+        }
+
         //migrate graphics quality from Unity to ConfigState (3.1.0 -> 4.0.0)
-        if(inputObject["GraphicsQuality"].IsNullOrEmpty())
+        if (inputObject["GraphicsQuality"].IsNullOrEmpty())
         {
             var qualityLevel = QualitySettings.GetQualityLevel();
             inputObject["GraphicsQuality"] = qualityLevel;

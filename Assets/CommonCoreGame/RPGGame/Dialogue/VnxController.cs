@@ -16,7 +16,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Vnx
+namespace CommonCore.RpgGame.Dialogue
 {
     public class VnxController : MonoBehaviour
     {

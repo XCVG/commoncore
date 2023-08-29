@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 
-namespace Vnx
+namespace CommonCore.RpgGame.Dialogue
 {
 
     public class VnOptions

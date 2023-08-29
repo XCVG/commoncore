@@ -18,7 +18,6 @@ using CommonCore.Scripting;
 using System.Linq;
 using CommonCore.Config;
 using CommonCore.RpgGame.Rpg;
-using Vnx;
 
 namespace CommonCore.RpgGame.Dialogue
 {

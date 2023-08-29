@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Vnx
+namespace CommonCore.RpgGame.Dialogue
 {
     public class VnxOptionsPanelController : ConfigSubpanelController
     {
@@ -14,8 +14,6 @@ namespace Vnx
 
         public Toggle AdvanceBeepToggle;
         public Toggle CharacterFadeToggle;
-
-        private bool IgnoreValueChanges = false;
 
         public override void PaintValues()
         {
@@ -48,14 +46,6 @@ namespace Vnx
                 TypeSpeedText.text = (int)(val * 100f) + "%";
             else
                 TypeSpeedText.text = "Disabled";
-        }
-
-        public void HandleAnyChanged()
-        {
-            if (IgnoreValueChanges)
-                return;
-
-            SignalPendingChanges?.Invoke(PendingChangesFlags.None);
         }
 
         private float CalculateTypeSpeed()
