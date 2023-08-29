@@ -50,7 +50,7 @@ namespace CommonCore.RpgGame.Dialogue
         private bool UseTypeOn = false;
         private string FrameText = null;
 
-        private void Start()
+        public void Init()
         {
             if(!GameParams.DialogueUseVnx)
             {

@@ -81,14 +81,33 @@ namespace CommonCore.RpgGame.Dialogue
             //if (AutoPauseGame)
             //    LockPauseModule.PauseGame(this.gameObject);
 
+            if (VnxController == null && GameParams.DialogueUseVnx)
+            {
+                VnxController = GetComponent<VnxController>();
+                if(VnxController != null)
+                {
+                    Debug.LogWarning($"[Dialogue] DialogueController missing VnxController reference but VnxController was found");
+                    VnxController.DialogueController = this;
+                }
+                else
+                {
+                    Debug.LogError($"[Dialogue] DialogueController missing VnxController reference and VnxController could not be found");
+                }
+            }
+
             DefaultPanelHeight = ChoicePanel.rect.height; //ordering of this wrt ApplyThemeToPanel may matter later
 
             ApplyThemeToPanel();
 
             Trace = new DialogueTrace();
 
-            if (VnxController != null && VnxController.enabled)
-                VnxController.OnDialogueOpen(this);
+            if (VnxController != null)
+            {
+                VnxController.Init();
+                if(VnxController.enabled)
+                    VnxController.OnDialogueOpen(this);
+            }
+                
             ScriptingModule.CallNamedHooked("DialogueOnOpen", this);            
 
             SetPlayerFlags();
@@ -119,7 +138,7 @@ namespace CommonCore.RpgGame.Dialogue
             if (CCBase.Terminated)
                 return; //nop, game is ended anyway and there's nothing we can meaningfully do
 
-            if(VnxController != null && VnxController.enabled)
+            if(VnxController != null && VnxController.enabled && GameParams.DialogueUseVnx)
                 VnxController.OnDialogueClose();
             ScriptingModule.CallNamedHooked("DialogueOnClose", this);
             CurrentDialogue = null;
@@ -178,7 +197,7 @@ namespace CommonCore.RpgGame.Dialogue
             if (f is BlankFrame)
             {
                 CurrentFrameObject = f;
-                if (VnxController != null && VnxController.enabled)
+                if (VnxController != null && VnxController.enabled && GameParams.DialogueUseVnx)
                     VnxController.OnDialoguePresent(CurrentFrameObject);
                 ScriptingModule.CallNamedHooked("DialogueOnPresent", this, CurrentFrameObject);
                 TryCallScript(f?.Scripts?.OnPresent, f);                
@@ -545,7 +564,7 @@ namespace CommonCore.RpgGame.Dialogue
 
             CurrentFrameObject = f;
 
-            if (VnxController != null && VnxController.enabled)
+            if (VnxController != null && VnxController.enabled && GameParams.DialogueUseVnx)
                 VnxController.OnDialoguePresent(CurrentFrameObject);
             ScriptingModule.CallNamedHooked("DialogueOnPresent", this, CurrentFrameObject);
             TryCallScript(f?.Scripts?.OnPresent, f);
@@ -668,7 +687,7 @@ namespace CommonCore.RpgGame.Dialogue
         {
             var nextLoc = ParseLocation(next);
 
-            if (VnxController != null && VnxController.enabled)
+            if (VnxController != null && VnxController.enabled && GameParams.DialogueUseVnx)
                 VnxController.OnDialogueAdvance(nextLoc);
             ScriptingModule.CallNamedHooked("DialogueOnAdvance", this, nextLoc);
 
