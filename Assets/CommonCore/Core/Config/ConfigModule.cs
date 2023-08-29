@@ -130,7 +130,11 @@ namespace CommonCore.Config
             }
 
             if(!CoreParams.IsEditor && CoreParams.Platform != RuntimePlatform.WebGLPlayer)
-                Screen.SetResolution(ConfigState.Instance.Resolution.x, ConfigState.Instance.Resolution.y, ConfigState.Instance.FullScreen, ConfigState.Instance.RefreshRate);
+            {
+                var refreshRate = new RefreshRate() { numerator = (uint)ConfigState.Instance.RefreshRate, denominator = 1 };
+                Screen.SetResolution(ConfigState.Instance.Resolution.x, ConfigState.Instance.Resolution.y, ConfigState.Instance.FullScreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed, refreshRate);
+            }
+                
 
             QualitySettings.vSyncCount = ConfigState.Instance.VsyncCount;
             Application.targetFrameRate = ConfigState.Instance.MaxFrames;

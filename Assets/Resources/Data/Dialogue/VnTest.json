@@ -1,0 +1,86 @@
+{
+	"position": "character",
+	"default": "started1",
+	"options": {
+	  "panelHeight": "half"
+	},
+	"frames": {
+		"started1": {
+			"type": "choice",
+			"text": "Choose some VNX features to test",
+			"options": {
+			  "panelHeight": "full",
+			  "hideNameText": true
+			},
+			"choices": [
+			  {
+				"text": "VN stuff",
+				"next": "this.vn1"
+			  },
+			  {
+				"text": "Long dialogue",
+				"next": "this.long1"
+			  },
+			  {
+				"text": "Exit",
+				"next": "meta.return"
+			  }
+			],
+			"vnOptions": {
+				"clearStage": true
+			}
+		},
+		"long1": {
+			"type": "text",
+			"nameText": "Steve",
+			"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas id leo cursus, iaculis eros eu, faucibus urna. Aenean fringilla, eros et malesuada vulputate, nisl orci finibus felis, finibus hendrerit felis elit non magna. Donec ipsum lectus, fringilla aliquam facilisis eu, ultrices a nisl.",
+			"next": "started1",
+			"options": {
+			  "panelHeight": "half"
+			},
+			"vnStage": {
+				"steve": {
+					"image": "teststeve",
+					"x": -500,
+					"y": 0
+				}
+			}
+		},
+		"vn1": {
+			"type": "text",
+			"nameText": "Steve",
+			"text": "VN stuff!",
+			"next": "vn2",
+			"options": {
+			  "panelHeight": "half"
+			},
+			"vnStage": {
+				"steve": {
+					"image": "teststeve",
+					"x": -500,
+					"y": 0
+				}
+			}
+		},
+		"vn2": {
+			"type": "text",
+			"nameText": "Not Steve",
+			"text": "Another guy!",
+			"next": "started1",
+			"options": {
+			  "panelHeight": "half"
+			},
+			"vnStage": {
+				"steve": {
+					"fade": true
+				},
+				"notsteve": {
+					"image": "teststeve",
+					"x": 500,
+					"y": 0,
+					"flip": true
+				}
+			}
+		}
+	}
+}

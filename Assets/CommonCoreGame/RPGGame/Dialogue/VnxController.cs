@@ -36,8 +36,6 @@ namespace Vnx
         [Header("Options")]
         public string BeepSoundName = "DialogueBeep";
 
-        public static VnxController Instance;
-
         private AudioPlayer AudioPlayer;
 
         private Dictionary<string, VnActor> Actors = new Dictionary<string, VnActor>();
@@ -52,13 +50,15 @@ namespace Vnx
         private bool UseTypeOn = false;
         private string FrameText = null;
 
-        private void Awake()
-        {
-            Instance = this;
-        }
-
         private void Start()
         {
+            if(!GameParams.DialogueUseVnx)
+            {
+                enabled = false;
+                return;
+            }
+
+            Stage.gameObject.SetActive(true);
             AudioPlayer = CCBase.GetModule<AudioModule>().AudioPlayer;
         }
 

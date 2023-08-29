@@ -18,6 +18,7 @@ using CommonCore.Scripting;
 using System.Linq;
 using CommonCore.Config;
 using CommonCore.RpgGame.Rpg;
+using Vnx;
 
 namespace CommonCore.RpgGame.Dialogue
 {
@@ -34,6 +35,7 @@ namespace CommonCore.RpgGame.Dialogue
         public bool ApplyTheme = true;
         public string OverrideTheme;
 
+        public VnxController VnxController;
         public RectTransform ChoicePanel;
         public RectTransform NameTextPanel;
         public Text TextTitle;
@@ -86,7 +88,9 @@ namespace CommonCore.RpgGame.Dialogue
 
             Trace = new DialogueTrace();
 
-            ScriptingModule.CallNamedHooked("DialogueOnOpen", this);
+            if (VnxController != null && VnxController.enabled)
+                VnxController.OnDialogueOpen(this);
+            ScriptingModule.CallNamedHooked("DialogueOnOpen", this);            
 
             SetPlayerFlags();
 
@@ -116,6 +120,8 @@ namespace CommonCore.RpgGame.Dialogue
             if (CCBase.Terminated)
                 return; //nop, game is ended anyway and there's nothing we can meaningfully do
 
+            if(VnxController != null && VnxController.enabled)
+                VnxController.OnDialogueClose();
             ScriptingModule.CallNamedHooked("DialogueOnClose", this);
             CurrentDialogue = null;
             LockPauseModule.UnpauseGame(this.gameObject);
@@ -173,6 +179,8 @@ namespace CommonCore.RpgGame.Dialogue
             if (f is BlankFrame)
             {
                 CurrentFrameObject = f;
+                if (VnxController != null && VnxController.enabled)
+                    VnxController.OnDialoguePresent(CurrentFrameObject);
                 ScriptingModule.CallNamedHooked("DialogueOnPresent", this, CurrentFrameObject);
                 TryCallScript(f?.Scripts?.OnPresent, f);                
                 OnChoiceButtonClick(0);
@@ -538,6 +546,8 @@ namespace CommonCore.RpgGame.Dialogue
 
             CurrentFrameObject = f;
 
+            if (VnxController != null && VnxController.enabled)
+                VnxController.OnDialoguePresent(CurrentFrameObject);
             ScriptingModule.CallNamedHooked("DialogueOnPresent", this, CurrentFrameObject);
             TryCallScript(f?.Scripts?.OnPresent, f);
 
@@ -659,6 +669,8 @@ namespace CommonCore.RpgGame.Dialogue
         {
             var nextLoc = ParseLocation(next);
 
+            if (VnxController != null && VnxController.enabled)
+                VnxController.OnDialogueAdvance(nextLoc);
             ScriptingModule.CallNamedHooked("DialogueOnAdvance", this, nextLoc);
 
             if (string.IsNullOrEmpty(nextLoc.Key) || nextLoc.Key == "this" || nextLoc.Key == CurrentSceneName)

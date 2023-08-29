@@ -615,3 +615,4 @@
 
 # 6.0.0 pNext
 
+- Visual Novel Extensions (VNX) is now included with RPGGame
