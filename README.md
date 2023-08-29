@@ -46,7 +46,7 @@ Some limited documentation is available in the Reference folder. The Documentati
 
 ## Platform Support
 
-CommonCore 5.x targets Unity 2022.3. The last version to support Unity 2021 is 5.x _Edgewater_ and the last version to support Unity 2020 is 4.x _Downwarren_.
+CommonCore 6.x targets Unity 2022.3. The last version to support Unity 2021 is 5.0.0 and the last version to support Unity 2020 is 4.1.2.
 
 CommonCore is targeted toward standalone platforms using Mono and the .NET 4.x scripting runtime. Other configurations are not the focus and have varying levels of support. IL2CPP is supported with some limitations, and the WebGL and UWP platforms have been somewhat tested (both with their own limitations). Other platforms have not been tested but might work, maybe requiring minor tweaking.
 
