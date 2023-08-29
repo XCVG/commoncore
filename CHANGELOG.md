@@ -612,3 +612,6 @@
 
 * OnApplicationQuit now has a check so it won't run again if core is already shut down
 * Removed obsolete/redundant LoadClean command
+
+# 6.0.0 pNext
+

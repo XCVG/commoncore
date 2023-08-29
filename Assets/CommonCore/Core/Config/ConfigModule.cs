@@ -173,7 +173,7 @@ namespace CommonCore.Config
 
             //texture scale
             var textureScale = (int)ConfigState.Instance.TextureScale;
-            QualitySettings.masterTextureLimit = textureScale;
+            QualitySettings.globalTextureMipmapLimit = textureScale;
 
             //texture filtering
             var textureFiltering = ConfigState.Instance.AnisotropicFiltering;
