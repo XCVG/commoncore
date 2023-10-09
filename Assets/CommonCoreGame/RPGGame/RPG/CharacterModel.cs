@@ -306,7 +306,9 @@ namespace CommonCore.RpgGame.Rpg
             if (!item.Equipped)
                 throw new InvalidOperationException();
 
-            int slot = InventoryModel.GetItemSlot(item.ItemModel);
+            int slot = Equipped.GetKeyForValue(item);
+            if (slot == 0)
+                slot = InventoryModel.GetItemSlot(item.ItemModel);
 
             if (slot != (int)EquipSlot.None)
             {

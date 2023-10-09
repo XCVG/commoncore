@@ -616,4 +616,5 @@
 # 6.0.0 pNext
 
 - Visual Novel Extensions (VNX) is now included with RPGGame
+- Fix UnequipItem equipping items from the slot defined in item instead of the slot the item is actually in
 - Use new API for setting screen resolution [WIP]
