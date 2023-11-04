@@ -617,4 +617,5 @@
 
 - Visual Novel Extensions (VNX) is now included with RPGGame
 - Fix UnequipItem equipping items from the slot defined in item instead of the slot the item is actually in
+- Add integrated handling for custom main menus including ShowMainMenu console command to show base menu
 - Use new API for setting screen resolution [WIP]

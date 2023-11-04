@@ -18,6 +18,10 @@ namespace CommonCore.UI
     /// </summary>
     public class MainMenuController : BaseMenuController
     {
+        [Header("Custom Menu")]
+        public GameObject CustomMenuContainer;
+        public bool UseCustomMenu;
+
         [Header("Panel")]
         public GameObject CurrentPanel;
         public GameObject LoadPanel;
@@ -29,6 +33,7 @@ namespace CommonCore.UI
         public Button LoadButton;
 
         [Header("Special")]
+        public GameObject DefaultMenuContainer;
         public GameObject MessageModal;
         public Text SystemText;
 
@@ -54,6 +59,8 @@ namespace CommonCore.UI
 
             ScriptingModule.CallHooked(ScriptHook.AfterMainMenuCreate, this);
             HandleCommandLineArgs();
+
+            HandleCustomMenu();
         }
 
         public override void Update()
@@ -197,6 +204,47 @@ namespace CommonCore.UI
                 Debug.LogError($"Failed to load save specified in command line ({e.GetType().Name}:{e.Message})");
                 if (ConfigState.Instance.UseVerboseLogging)
                     Debug.LogException(e);
+            }
+        }
+
+        public void HandleCustomMenu()
+        {
+            if (UseCustomMenu)
+            {
+                if(MetaState.Instance.SessionFlags.Contains("ShowMainMenu") || ConfigState.Instance.HasCustomFlag("ShowMainMenu"))
+                {
+                    CustomMenuContainer.gameObject.SetActive(false);
+                    DefaultMenuContainer.gameObject.SetActive(true);
+
+                    return;
+                }
+
+                if(CustomMenuContainer == null)
+                {
+                    Debug.LogWarning("Custom menu is enabled, but no custom menu container could be found.");
+                    DefaultMenuContainer.gameObject.SetActive(true);
+                    return;
+                }
+
+                if(DefaultMenuContainer.activeSelf && !CustomMenuContainer.activeSelf)
+                {
+                    Debug.LogWarning("It is recommended that default menu container be set inactive if a custom menu is used");
+                }
+
+                if (DefaultMenuContainer.activeSelf)
+                    DefaultMenuContainer.SetActive(false);
+
+                if (!CustomMenuContainer.activeSelf)
+                    CustomMenuContainer.SetActive(true);
+
+            }
+            else
+            {
+                if (CustomMenuContainer != null && CustomMenuContainer.activeSelf)
+                    CustomMenuContainer.SetActive(false);
+
+                if (DefaultMenuContainer != null && !DefaultMenuContainer.activeSelf)
+                    DefaultMenuContainer.SetActive(true);                
             }
         }
 

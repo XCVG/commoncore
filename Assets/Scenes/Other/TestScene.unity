@@ -4431,9 +4431,9 @@ MonoBehaviour:
   Repeatable: 1
   AllowInvokeWhenDisabled: 0
   Microscripts:
-  - Type: 6
+  - Type: 7
     Target: Test.NoArgs
-    Action: 0
+    Action: 1
     Value: 
     DelayType: 2
     DelayTime: 5

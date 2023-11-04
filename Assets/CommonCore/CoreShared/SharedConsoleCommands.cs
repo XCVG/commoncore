@@ -2,6 +2,7 @@
 using CommonCore.Console;
 using CommonCore.DebugLog;
 using CommonCore.State;
+using CommonCore.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -172,6 +173,24 @@ public static class SharedConsoleCommands
     static void ShowGameOver()
     {
         SharedUtils.ShowGameOver();
+    }
+
+    /// <summary>
+    /// Shows default main menu
+    /// </summary>
+    [Command]
+    public static void ShowMainMenu()
+    {
+        var mainMenuController = CoreUtils.GetUIRoot().GetComponentInChildren<MainMenuController>();
+        if (mainMenuController != null)
+        {
+            MetaState.Instance.SessionFlags.Add("ShowMainMenu");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+        else
+        {
+            ConsoleModule.WriteLine($"{nameof(ShowMainMenu)} must be invoked from the main menu screen. Use {nameof(EndGame)} or {nameof(WarpDirect)} {CoreParams.MainMenuScene} to go to the main menu first.");
+        }
     }
 
     //***** SCREENFADE
