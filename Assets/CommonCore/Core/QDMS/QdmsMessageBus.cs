@@ -47,14 +47,7 @@ namespace CommonCore.Messaging
 
         public void PushBroadcast(QdmsMessage msg)
         {
-            PushBroadcast(msg, null);
-        }
-
-        public void PushBroadcast(QdmsMessage msg, object sender)
-        {
-            msg.Sender = sender;
-
-            foreach(IQdmsMessageReceiver r in Receivers)
+            foreach (IQdmsMessageReceiver r in Receivers)
             {
                 if (r != null && r.IsValid)
                 {
@@ -68,6 +61,13 @@ namespace CommonCore.Messaging
                     }
                 }
             }
+        }
+
+        public void PushBroadcast(QdmsMessage msg, object sender)
+        {
+            msg.Sender = sender;
+
+            PushBroadcast(msg);
         }
 
         public void RegisterReceiver(IQdmsMessageReceiver receiver)

@@ -120,7 +120,9 @@ namespace CommonCore.World
         [Command]
         static void Spawn(string fid)
         {
-            WorldUtils.SpawnEntity(fid, null, (WorldUtils.GetPlayerObject().transform.position + (WorldUtils.GetPlayerObject().transform.forward * 1.0f)), Vector3.zero, null);
+            var obj = WorldUtils.SpawnEntity(fid, null, (WorldUtils.GetPlayerObject().transform.position + (WorldUtils.GetPlayerObject().transform.forward * 1.0f)), Vector3.zero, null);
+            SelectedTID = obj.name;
+            SelectedObject = obj;
         }
 
         [Command]
