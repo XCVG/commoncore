@@ -8,6 +8,8 @@ using CommonCore.World;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
+
 namespace CommonCore.RpgGame.World
 {
     [RequireComponent(typeof(PlayerController))]
@@ -44,8 +46,10 @@ namespace CommonCore.RpgGame.World
         private float SlopeSlideSpeed = 6f;
         [SerializeField]
         private float PhysicsMass = 100f;
+        [SerializeField, FormerlySerializedAs("PushImpulseMultiplier")]
+        private float GroundedPushImpulseMultiplier = 10f;
         [SerializeField]
-        private float PushImpulseMultiplier = 10f;
+        private float InAirPushImpulseMultiplier = 0.25f;
 
         [SerializeField, Header("Movement Values")]
         private float MaxBrakeAcceleration = 1000f;
@@ -898,7 +902,7 @@ namespace CommonCore.RpgGame.World
             if (GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoPhysics))
                 return;
 
-            Velocity += PushImpulseMultiplier * impulse / PhysicsMass;
+            Velocity += (IsGrounded ? GroundedPushImpulseMultiplier : InAirPushImpulseMultiplier) * impulse / PhysicsMass;
         }
 
         /// <summary>

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace CommonCore.RpgGame.Rpg
 {
@@ -151,6 +152,7 @@ namespace CommonCore.RpgGame.Rpg
                 byte[] idBytes = BitConverter.GetBytes((ulong)DateTime.UtcNow.Ticks);
                 idBytes[0] = (byte)(CoreUtils.Random.Next(byte.MinValue, byte.MaxValue));
                 InstanceUID = (long)BitConverter.ToUInt64(idBytes, 0);
+                Debug.LogWarning($"InventoryItemInstance had InstanceUID set from time based counter (UID {InstanceUID}, model {ItemModel?.Name})");
             }
         }
 

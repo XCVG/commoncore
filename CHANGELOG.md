@@ -620,5 +620,6 @@
 - Add integrated handling for custom main menus including ShowMainMenu console command to show base menu
 - Spawn console command now sets spawned entity as selected
 - PushBroadcast no longer sets sender to null even if sender was set
-- 
+- Use of time-based counter to generate UID in ResetUID is now logged
+- PlayerMovementComponent now uses separate multiplier for push impulse when in the air
 - Use new API for setting screen resolution [WIP]
