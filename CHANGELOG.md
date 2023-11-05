@@ -623,3 +623,10 @@
 - Use of time-based counter to generate UID in ResetUID is now logged
 - PlayerMovementComponent now uses separate multiplier for push impulse when in the air
 - Uses new API for setting screen resolution and checks to see if refresh rate is available before setting
+- Fix audio channel selection not showing correctly in UI after setting change
+- Rearranged Basic Options to clean up alignment, group settings more logically, and fit in new settings
+- Disabled settings (monitor, resolution, fullscreen) now shown as disabled on platforms where not available
+- Added Scroll Speed slider to settings UI
+- Added Refresh Rate slider to settings UI
+- Fix resolution dropdown showing incorrectly if first resolution is chosen
+- MappedInputModule now updates scroll speed of MappedInputComponent on config change

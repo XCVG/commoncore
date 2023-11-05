@@ -36,6 +36,7 @@ namespace CommonCore.UI
         public Button ConfigureInputButton;
         public Slider LookSpeedSlider;
         public Toggle LookYToggle;
+        public Slider ScrollSpeedSlider;
 
         [Header("Graphics")]
         public GameObject ResolutionGroup;
@@ -61,6 +62,7 @@ namespace CommonCore.UI
         public Text BrightnessLabel;
         public GameObject MonitorGroup;
         public Dropdown MonitorDropdown;
+        public Dropdown RefreshRateDropdown;
 
         [Header("Sound")]
         public Slider SoundVolumeSlider;
@@ -73,6 +75,7 @@ namespace CommonCore.UI
         //backing data for dropdowns
         private List<string> InputMappers = null;
         private List<Vector2Int> Resolutions = null;
+        private List<int> RefreshRates = null;
 
         //backing data for status text
         private bool PendingChanges = false;
@@ -137,22 +140,39 @@ namespace CommonCore.UI
             ConfigureInputButton.interactable = iIndex >= 0; //enable configure button
 
             LookSpeedSlider.value = ConfigState.Instance.LookSpeed;
+            ScrollSpeedSlider.value = Mathf.RoundToInt(ConfigState.Instance.UIScrollSpeed);
             LookYToggle.isOn = ConfigState.Instance.LookInvert;
 
             if (AllowResolutionSelection)
             {
                 //Resolutions = new List<Resolution>(Screen.resolutions);
-                Resolutions = GetDeduplicatedResolutionList(Screen.resolutions);
+                var resolutions = Screen.resolutions;
+                Resolutions = GetDeduplicatedResolutionList(resolutions);
                 ResolutionDropdown.ClearOptions();
                 ResolutionDropdown.AddOptions(Resolutions.Select(r => $"{r.x} x {r.y}").ToList());
                 int rIndex = Resolutions.IndexOf(ConfigState.Instance.Resolution);
-                ResolutionDropdown.value = rIndex > 0 ? rIndex : Resolutions.Count - 1;
+                ResolutionDropdown.value = rIndex >= 0 ? rIndex : Resolutions.Count - 1;
+
                 FullscreenToggle.isOn = ConfigState.Instance.FullScreen;
+
+                RefreshRates = GetDeduplicatedRefreshRateList(resolutions);
+                RefreshRateDropdown.ClearOptions();
+                RefreshRateDropdown.AddOptions(RefreshRates.Select(r => $"{r}").ToList());
+                int tIndex = RefreshRates.IndexOf(ConfigState.Instance.RefreshRate);
+                ResolutionDropdown.value = tIndex > 0 ? rIndex : RefreshRates.Count - 1;
             }
             else
             {
-                ResolutionGroup.SetActive(false);
-                FullscreenGroup.SetActive(false);
+                ResolutionDropdown.ClearOptions();
+                ResolutionDropdown.AddOptions(new List<string>() { "Default Resolution" });
+                ResolutionDropdown.interactable = false;
+
+                FullscreenToggle.isOn = Screen.fullScreen;
+                FullscreenToggle.interactable = false;
+
+                RefreshRateDropdown.ClearOptions();
+                RefreshRateDropdown.AddOptions(new List<string>() { "Default Refresh Rate" });
+                RefreshRateDropdown.interactable = false;
             }
 
             if (AllowMonitorSelection)
@@ -164,7 +184,10 @@ namespace CommonCore.UI
             }
             else
             {
-                MonitorGroup.SetActive(false);
+                MonitorDropdown.ClearOptions();
+                MonitorDropdown.AddOptions(new List<string>() { "Default Display" });
+                MonitorDropdown.value = 0;
+                MonitorDropdown.interactable = false;
             }
             
             FramerateSlider.value = Math.Max(0, ConfigState.Instance.MaxFrames);
@@ -188,7 +211,7 @@ namespace CommonCore.UI
             var cList = new List<string>(Enum.GetNames(typeof(AudioSpeakerMode)));
             ChannelDropdown.ClearOptions();
             ChannelDropdown.AddOptions(cList);
-            ChannelDropdown.value = cList.IndexOf(AudioSettings.GetConfiguration().speakerMode.ToString());
+            ChannelDropdown.value = cList.IndexOf(ConfigState.Instance.SpeakerMode.ToString());
             
 
             //handle subpanels
@@ -350,10 +373,12 @@ namespace CommonCore.UI
             ConfigState.Instance.InputMapper = InputMappers[InputDropdown.value];
             ConfigState.Instance.LookSpeed = LookSpeedSlider.value;
             ConfigState.Instance.LookInvert = LookYToggle.isOn;
+            ConfigState.Instance.UIScrollSpeed = ScrollSpeedSlider.value;
 
-            if(AllowResolutionSelection)
+            if (AllowResolutionSelection)
             {
                 ConfigState.Instance.Resolution = Resolutions[ResolutionDropdown.value];
+                ConfigState.Instance.RefreshRate = RefreshRates[RefreshRateDropdown.value];
                 ConfigState.Instance.FullScreen = FullscreenToggle.isOn;
             }            
 
@@ -396,6 +421,21 @@ namespace CommonCore.UI
         private List<Vector2Int> GetDeduplicatedResolutionList(IEnumerable<Resolution> resolutions)
         {
             return resolutions.Select(r => new Vector2Int(r.width, r.height)).Distinct().ToList();
+        }
+
+        private List<int> GetDeduplicatedRefreshRateList(IEnumerable<Resolution> resolutions)
+        {
+            List<int> refreshRates = new List<int>();
+
+            refreshRates.AddRange(resolutions.Select(r => (int)Math.Round((double)r.refreshRateRatio.numerator / (double)r.refreshRateRatio.denominator)).Distinct());
+
+            if(refreshRates.Count == 0)
+            {
+                Debug.LogWarning("No valid refresh rates found. Adding 60 as an option, but it may not work");
+                refreshRates.Add(60);
+            }
+
+            return refreshRates;
         }
 
         private void SignalPendingChanges(PendingChangesFlags flags)

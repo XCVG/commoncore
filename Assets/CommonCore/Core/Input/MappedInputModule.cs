@@ -1,4 +1,5 @@
 ﻿using CommonCore.Config;
+using CommonCore.Messaging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,9 +26,16 @@ namespace CommonCore.Input.EventSystems
         [SerializeField, Tooltip("If set, will use both mapped and builtin input")]
         private bool UseDualInput = true;
 
+        private MappedInputComponent MappedInputComponent;
+        private QdmsMessageInterface MessageInterface;
+
         protected override void Awake()
         {
-            if(WarnAboutBindings)
+            MessageInterface = new QdmsMessageInterface(this);
+            MessageInterface.ReceiveIfAttachmentInactive = true;
+            MessageInterface.SubscribeReceiver(HandleMessage);
+
+            if (WarnAboutBindings)
             {
                 if(!horizontalAxis.Equals("NavigateX", StringComparison.Ordinal) || !verticalAxis.Equals("NavigateY", StringComparison.Ordinal))
                 {
@@ -54,6 +62,16 @@ namespace CommonCore.Input.EventSystems
                 inputOverride = mic;
                 mic.UseDualInput = UseDualInput;
                 mic.ScrollMultiplier = ConfigState.Instance.UIScrollSpeed;
+                MappedInputComponent = mic;
+            }
+        }
+
+        protected void HandleMessage(QdmsMessage message)
+        {
+            if(message is QdmsFlagMessage flagMessage && flagMessage.Flag == "ConfigChanged")
+            {
+                if(MappedInputComponent != null)
+                    MappedInputComponent.ScrollMultiplier = ConfigState.Instance.UIScrollSpeed;
             }
         }
     }
