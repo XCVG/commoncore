@@ -131,7 +131,7 @@ namespace CommonCore.Config
 
             if(!CoreParams.IsEditor && CoreParams.Platform != RuntimePlatform.WebGLPlayer)
             {
-                var refreshRate = new RefreshRate() { numerator = (uint)ConfigState.Instance.RefreshRate, denominator = 1 };
+                var refreshRate = GetClosestAvailableRefreshRate(ConfigState.Instance.Resolution.x, ConfigState.Instance.Resolution.y, ConfigState.Instance.RefreshRate);
                 Screen.SetResolution(ConfigState.Instance.Resolution.x, ConfigState.Instance.Resolution.y, ConfigState.Instance.FullScreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed, refreshRate);
             }
                 
@@ -190,6 +190,70 @@ namespace CommonCore.Config
             QualitySettings.softParticles = renderQuality.softParticles;
             QualitySettings.softVegetation = renderQuality.softVegetation;
             
+        }
+
+        private static RefreshRate GetClosestAvailableRefreshRate(int width, int height, int refreshRate)
+        {
+            //fall back to just trying to set it to whatever was specified
+            var fallbackRefreshRate = new RefreshRate() { numerator = (uint)ConfigState.Instance.RefreshRate, denominator = 1 };
+            RefreshRate? newRefreshRate = null;
+
+            var resolutions = Screen.resolutions;
+            if (resolutions.Length > 0)
+            {
+                //try to find exact match of resolution and refresh rate
+                foreach(var resolution in resolutions) 
+                { 
+                    if(resolution.height == height && resolution.width ==  width && resolution.refreshRateRatio.Equals(fallbackRefreshRate))
+                    {
+                        newRefreshRate = resolution.refreshRateRatio;
+                        Debug.Log($"Found exact video mode match ({resolution.width}x{resolution.height}@{(double)newRefreshRate.Value.numerator / (double)newRefreshRate.Value.denominator})");
+                        break;
+                    }
+                }
+               
+                if(!newRefreshRate.HasValue)
+                {
+                    //otherwise, find matching refresh rate at any resolution
+                    foreach(var resolution in resolutions)
+                    {
+                        if (resolution.refreshRateRatio.Equals(fallbackRefreshRate))
+                        {
+                            newRefreshRate = resolution.refreshRateRatio;
+                            Debug.Log($"Found exact refresh rate match ({(double)newRefreshRate.Value.numerator / (double)newRefreshRate.Value.denominator})");
+                            break;
+                        }
+                    }
+                }
+
+                if (!newRefreshRate.HasValue)
+                {
+                    double smallestDifference = double.MaxValue;
+                    double desiredRatio = (double)refreshRate;
+                    //else, find the closest available refresh rate
+                    foreach (var resolution in resolutions)
+                    {
+                        double refreshRateRatio = (double)newRefreshRate.Value.numerator / (double)newRefreshRate.Value.denominator;
+                        double diff = Math.Abs(refreshRateRatio - desiredRatio);
+                        if (diff < smallestDifference)
+                        {
+                            smallestDifference = refreshRateRatio;
+                            newRefreshRate = resolution.refreshRateRatio;
+                        }
+                    }
+                }
+            }
+
+            if (newRefreshRate.HasValue && !newRefreshRate.Equals(fallbackRefreshRate))
+            {
+                Debug.LogWarning($"Available refresh rate mismatch (expected {(double)refreshRate}, got {(double)newRefreshRate.Value.numerator / (double)newRefreshRate.Value.denominator})");
+            }
+            else if (!newRefreshRate.HasValue)
+            {
+                Debug.LogWarning("Failed to find any available matching refresh rate, will try to force explicit value");
+            }
+
+            return newRefreshRate ?? fallbackRefreshRate;
         }
 
         /// <summary>

@@ -622,4 +622,4 @@
 - PushBroadcast no longer sets sender to null even if sender was set
 - Use of time-based counter to generate UID in ResetUID is now logged
 - PlayerMovementComponent now uses separate multiplier for push impulse when in the air
-- Use new API for setting screen resolution [WIP]
+- Uses new API for setting screen resolution and checks to see if refresh rate is available before setting
