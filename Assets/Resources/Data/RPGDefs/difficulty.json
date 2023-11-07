@@ -1,0 +1,50 @@
+{
+	"Easy": {
+		"ActorAggression": 0.75,
+		"ActorStrength": 0.75,
+		"ActorPerception": 0.75,
+		"PlayerAgility": 1.1,
+		"PlayerEndurance": 1.5,
+		"PlayerStrength": 1.25,
+		"PlayerSkill": 1.25,
+		"PlayerExperience": 1.5,
+		"EnvironmentLevelBias": 0.75,
+		"EnvironmentEnemyFrequency": 0.75,
+		"EnvironmentLootFrequency": 1.5,
+		"FollowerEndurance": 1.5,
+		"FollowerStrength": 1.2,
+		"FollowerMortality": 0
+	  },
+	"Normal": {
+		"ActorAggression": 1.0,
+		"ActorStrength": 1.0,
+		"ActorPerception": 1.0,
+		"PlayerAgility": 1.0,
+		"PlayerEndurance": 1.0,
+		"PlayerStrength": 1.0,
+		"PlayerSkill": 1.0,
+		"PlayerExperience": 1.0,
+		"EnvironmentLevelBias": 1.0,
+		"EnvironmentEnemyFrequency": 1.0,
+		"EnvironmentLootFrequency": 1.0,
+		"FollowerEndurance": 1.0,
+		"FollowerStrength": 1.0,
+		"FollowerMortality": 1
+	  },
+	"Hard": {		
+		"ActorAggression": 1.2,
+		"ActorStrength": 1.5,
+		"ActorPerception": 1.5,
+		"PlayerAgility": 0.9,
+		"PlayerEndurance": 0.9,
+		"PlayerStrength": 0.9,
+		"PlayerSkill": 0.75,
+		"PlayerExperience": 0.75,
+		"EnvironmentLevelBias": 1.25,
+		"EnvironmentEnemyFrequency": 1.5,
+		"EnvironmentLootFrequency": 0.75,
+		"FollowerEndurance": 0.9,
+		"FollowerStrength": 0.75,
+		"FollowerMortality": 1
+	  }
+}

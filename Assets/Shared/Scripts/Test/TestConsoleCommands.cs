@@ -1,8 +1,10 @@
 ﻿using CommonCore;
 using CommonCore.Async;
 using CommonCore.Audio;
+using CommonCore.Config;
 using CommonCore.DebugLog;
 using CommonCore.LockPause;
+using CommonCore.RpgGame;
 using CommonCore.RpgGame.Rpg;
 using CommonCore.State;
 using CommonCore.UI;
@@ -66,6 +68,13 @@ public static class TestConsoleCommands
     {
         var models = InventoryModel.EnumerateModels();
         DebugUtils.JsonWrite(models, "itemmodels");
+    }
+
+    [Command]
+    public static void DumpCurrentDifficulty()
+    {
+        var diff = ConfigState.Instance.GetGameplayConfig().Difficulty;
+        DebugUtils.JsonWrite(diff, "difficulty");
     }
 
     [Command]

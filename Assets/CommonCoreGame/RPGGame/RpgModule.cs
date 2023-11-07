@@ -19,11 +19,11 @@ namespace CommonCore.RpgGame
     /// </remarks>
     public class RpgModule : CCModule
     {
-        private float Elapsed;
 
         public RpgModule()
         {
             LoadGameParams();
+            DifficultyValues.LoadDefaults();
 
             FactionModel.Load();
             InventoryModel.Load();
