@@ -633,3 +633,4 @@
 - Reworked difficulty system, making DifficultyValues a partial class for extensibility and loading from a JSON file in RPGDefs
 - Fix EditorMicroscript throwing if Action is set to Unknown, even for Exec Type where it is a valid value
 - Add handling for remaps to PrintScenePathList and PrintSceneList
+- Add BackgroundSize option to dialogue files, providing different options to fit the background to screen

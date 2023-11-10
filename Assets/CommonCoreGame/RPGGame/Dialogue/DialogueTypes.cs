@@ -302,6 +302,11 @@ namespace CommonCore.RpgGame.Dialogue
         None, PlayerLookup, PlayerName
     }
 
+    public enum BackgroundSizing
+    {
+        None, Contain, Cover, MatchWidth, MatchHeight, Fill
+    }
+
     /// <summary>
     /// Represents options for a frame
     /// </summary>
@@ -338,6 +343,8 @@ namespace CommonCore.RpgGame.Dialogue
         public bool TraceIncludeNextText => TypeUtils.CoerceValue<bool>(Options.GetOrDefault(nameof(TraceIncludeNextText), false), false);
         public string TraceNextTextSpeaker => Options.GetOrDefault(nameof(TraceNextTextSpeaker), null)?.ToString();
         public string TraceNextTextText => Options.GetOrDefault(nameof(TraceNextTextText), null)?.ToString();
+
+        public BackgroundSizing BackgroundSize => TypeUtils.CoerceValue<BackgroundSizing>(Options.GetOrDefault(nameof(BackgroundSize), BackgroundSizing.Contain), false);
 
         //IReadOnlyDictionary implementation
 

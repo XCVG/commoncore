@@ -255,6 +255,36 @@ namespace CommonCore.RpgGame.Dialogue
                 {
                     BackgroundImage.sprite = sprite;
                     BackgroundImage.gameObject.SetActive(true);
+                    var rt = (RectTransform)BackgroundImage.transform;
+                    var arf = BackgroundImage.GetComponent<AspectRatioFitter>();
+                    switch (f.Options.BackgroundSize)
+                    {
+                        case BackgroundSizing.None:
+                            arf.aspectMode = AspectRatioFitter.AspectMode.None;
+                            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, sprite.rect.width * (100f / sprite.pixelsPerUnit));
+                            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, sprite.rect.height * (100f / sprite.pixelsPerUnit));
+                            break;
+                        case BackgroundSizing.Fill:
+                            arf.aspectMode = AspectRatioFitter.AspectMode.None;
+                            rt.sizeDelta = Vector2.zero;
+                            break;
+                        case BackgroundSizing.Contain:
+                            arf.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+                            arf.aspectRatio = sprite.rect.width / sprite.rect.height;
+                            break;
+                        case BackgroundSizing.Cover:
+                            arf.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
+                            arf.aspectRatio = sprite.rect.width / sprite.rect.height;
+                            break;
+                        case BackgroundSizing.MatchWidth:
+                            arf.aspectMode = AspectRatioFitter.AspectMode.WidthControlsHeight;
+                            arf.aspectRatio = sprite.rect.width / sprite.rect.height;
+                            break;
+                        case BackgroundSizing.MatchHeight:
+                            arf.aspectMode = AspectRatioFitter.AspectMode.HeightControlsWidth;
+                            arf.aspectRatio = sprite.rect.width / sprite.rect.height;
+                            break;
+                    }
                 }
                 else
                 {

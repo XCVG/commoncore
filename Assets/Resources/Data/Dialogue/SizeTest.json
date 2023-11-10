@@ -1,0 +1,57 @@
+{
+	"image": "jen",
+	"nameText": "TEST SIZE",
+	"position": "character",
+	"background": "aspect_test",
+	"default": "test1",
+	"options": {
+		"panelHeight": "half"
+	},
+	"frames": {
+		"test1": {
+			"type": "text",
+			"next": "this.test2",
+			"text": "BG position: default"
+		},
+		"test2": {
+			"type": "text",
+			"next": "this.test3",
+			"text": "BG position: contain (explicitly set)",
+			"options": {
+				"backgroundSize": "contain"
+			}
+		},
+		"test3": {
+			"type": "text",
+			"next": "this.test4",
+			"text": "BG position: cover",
+			"options": {
+				"backgroundSize": "cover"
+			}
+		},
+		"test4": {
+			"type": "text",
+			"next": "this.test5",
+			"text": "BG position: fill",
+			"options": {
+				"backgroundSize": "fill"
+			}
+		},
+		"test5": {
+			"type": "text",
+			"next": "this.test6",
+			"text": "BG position: match width",
+			"options": {
+				"backgroundSize": "matchWidth"
+			}
+		},
+		"test6": {
+			"type": "text",
+			"next": "meta.return",
+			"text": "BG position: match height",
+			"options": {
+				"backgroundSize": "matchHeight"
+			}
+		}
+	}
+}
