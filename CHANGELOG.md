@@ -631,3 +631,4 @@
 - Fix resolution dropdown showing incorrectly if first resolution is chosen
 - MappedInputModule now updates scroll speed of MappedInputComponent on config change
 - Reworked difficulty system, making DifficultyValues a partial class for extensibility and loading from a JSON file in RPGDefs
+- Fix EditorMicroscript throwing if Action is set to Unknown, even for Exec Type where it is a valid value

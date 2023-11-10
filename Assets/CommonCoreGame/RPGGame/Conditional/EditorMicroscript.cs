@@ -29,7 +29,7 @@ namespace CommonCore.RpgGame.State
             {
                 if (Type == MicroscriptType.Unknown)
                     throw new ArgumentException("EditorMicroscript has Unknown type set");
-                if (Action == MicroscriptAction.Unknown)
+                if (Action == MicroscriptAction.Unknown && (Type != MicroscriptType.Exec))
                     throw new ArgumentException("EditorMicroscript has Unknown action set");
             }
 
