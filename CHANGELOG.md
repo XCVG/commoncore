@@ -613,7 +613,7 @@
 * OnApplicationQuit now has a check so it won't run again if core is already shut down
 * Removed obsolete/redundant LoadClean command
 
-# 6.0.0 pNext
+# 6.0.0 Preview 1
 
 - Visual Novel Extensions (VNX) is now included with RPGGame
 - Fix UnequipItem equipping items from the slot defined in item instead of the slot the item is actually in
@@ -635,3 +635,5 @@
 - Add handling for remaps to PrintScenePathList and PrintSceneList
 - Add BackgroundSize option to dialogue files, providing different options to fit the background to screen
 - Add ImageFitMode option to SlideshowController
+
+# 6.0.0 pNext
