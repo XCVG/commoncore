@@ -10,6 +10,7 @@ namespace CommonCore.Util
     public class SlideshowController : MonoBehaviour
     {
         private Canvas RootCanvas = null;
+        private RectTransform ImageRectTransform = null;
         private AspectRatioFitter AspectRatioFitter = null;
         private Image BackgroundImage = null;
         private Image SlideshowImage = null;
@@ -62,6 +63,8 @@ namespace CommonCore.Util
             }
         }
 
+        public SlideshowImageFitMode ImageFitMode { get; set; } = SlideshowImageFitMode.Contain;
+
         public void ShowImage(string imageName)
         {
             if (string.IsNullOrEmpty(imageName))
@@ -81,6 +84,32 @@ namespace CommonCore.Util
             }
 
             AspectRatioFitter.aspectRatio = sprite.bounds.size.x / sprite.bounds.size.y;
+            switch (ImageFitMode)
+            {
+                case SlideshowImageFitMode.None:
+                    AspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.None;
+                    ImageRectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, sprite.rect.width * 1.5f * (100f / sprite.pixelsPerUnit));
+                    ImageRectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, sprite.rect.height * 1.5f * (100f / sprite.pixelsPerUnit));
+                    break;
+                case SlideshowImageFitMode.Contain:
+                    AspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+                    break;
+                case SlideshowImageFitMode.Cover:
+                    AspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
+                    break;
+                case SlideshowImageFitMode.MatchWidth:
+                    AspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.WidthControlsHeight;
+                    break;
+                case SlideshowImageFitMode.MatchHeight:
+                    AspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.HeightControlsWidth;
+                    break;
+                case SlideshowImageFitMode.Fill:
+                    AspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.None;
+                    ImageRectTransform.sizeDelta = Vector2.zero;
+                    break;
+            }
+
+            
             SlideshowImage.sprite = sprite;
             SlideshowImage.color = Color.white;
         }
@@ -139,15 +168,20 @@ namespace CommonCore.Util
             AspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
             AspectRatioFitter.aspectRatio = 16f / 9f;
 
-            var imageRT = (RectTransform)imageObj.transform;
-            imageRT.anchorMin = Vector2.zero;
-            imageRT.anchorMax = Vector2.one;
-            imageRT.pivot = new Vector2(0.5f, 0.5f);
+            ImageRectTransform = (RectTransform)imageObj.transform;
+            ImageRectTransform.anchorMin = Vector2.zero;
+            ImageRectTransform.anchorMax = Vector2.one;
+            ImageRectTransform.pivot = new Vector2(0.5f, 0.5f);
 
             SlideshowImage = imageObj.GetComponent<Image>();
             SlideshowImage.color = new Color(0, 0, 0, 0);
 
             //Debug.Log(RootCanvas.transform.position);
         }
+    }
+
+    public enum SlideshowImageFitMode
+    {
+        None, Contain, Cover, MatchWidth, MatchHeight, Fill
     }
 }
