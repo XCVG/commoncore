@@ -4,7 +4,6 @@ using CommonCore.DebugLog;
 using CommonCore.State;
 using CommonCore.UI;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -30,10 +29,14 @@ public static class SharedConsoleCommands
         try
         {
             var sceneNames = CoreUtils.GetSceneList();
+            var sceneRemaps = new Dictionary<string, string>(CoreUtils.EnumerateSceneOverrides());
             StringBuilder sb = new StringBuilder(sceneNames.Length * 16);
             foreach (var s in sceneNames)
             {
-                sb.AppendLine(s);
+                if (sceneRemaps.TryGetValue(Path.GetFileNameWithoutExtension(s), out string remappedName))
+                    sb.AppendLine($"{s} -> {remappedName}");
+                else
+                    sb.AppendLine(s);
             }
             ConsoleModule.WriteLine(sb.ToString());
         }
@@ -50,10 +53,14 @@ public static class SharedConsoleCommands
         try
         {
             var sceneNames = CoreUtils.GetSceneList();
+            var sceneRemaps = new Dictionary<string, string>(CoreUtils.EnumerateSceneOverrides());
             StringBuilder sb = new StringBuilder(sceneNames.Length * 16);
             foreach (var s in sceneNames)
             {
-                sb.AppendLine(Path.GetFileNameWithoutExtension(s));
+                if (sceneRemaps.TryGetValue(Path.GetFileNameWithoutExtension(s), out string remappedName))
+                    sb.AppendLine($"{Path.GetFileNameWithoutExtension(s)} -> {remappedName}");
+                else
+                    sb.AppendLine(Path.GetFileNameWithoutExtension(s));
             }
             ConsoleModule.WriteLine(sb.ToString());
         }
