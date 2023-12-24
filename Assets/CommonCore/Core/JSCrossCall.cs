@@ -50,8 +50,12 @@ namespace CommonCore
         /// </summary>
         public static void CallJSFunction(string functionName, params object[] args)
         {
+#if UNITY_WEBGL
             string dataStr = JsonConvert.SerializeObject(new { functionName = functionName,  args = args});
             CSCallThunk(dataStr);
+#else
+            throw new NotSupportedException($"{nameof(JSCrossCall)}.{nameof(CallJSFunction)} is not supported on non-WebGL platforms");
+#endif
         }
 
         /// <summary>
@@ -59,8 +63,12 @@ namespace CommonCore
         /// </summary>
         public static void TriggerCanvasEvent(string eventName, IEnumerable<KeyValuePair<string, object>> additionalData)
         {
+#if UNITY_WEBGL
             string dataStr = JsonConvert.SerializeObject(new { eventName = eventName, args = additionalData });
             CSCallThunk(dataStr);
+#else
+            throw new NotSupportedException($"{nameof(JSCrossCall)}.{nameof(TriggerCanvasEvent)} is not supported on non-WebGL platforms");
+#endif
         }
     }
 

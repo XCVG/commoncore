@@ -239,5 +239,11 @@ namespace CommonCore.Console
         {
             ConfigState.Load();
         }
+
+        [Command(alias = "DumpIdbfs", useClassName = false)]
+        private static void DumpIdbfs()
+        {
+            JSCrossCall.CallJSFunction("ccDumpIdbfs", Application.persistentDataPath);
+        }
     }
 }

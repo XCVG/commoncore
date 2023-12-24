@@ -115,5 +115,49 @@
       };
       document.body.appendChild(script);
     </script>
+	<script>
+		function ccDumpIdbfs(rootPath) {
+			let dbRequest = indexedDB.open("/idbfs");
+
+			dbRequest.onerror = (event) => {
+				console.log("error opening idbfs db");
+			};
+
+			dbRequest.onsuccess = (event) => {
+				let db = dbRequest.result;
+
+				let transaction = db.transaction("FILE_DATA", "readonly");
+				let objectStore = transaction.objectStore("FILE_DATA");
+
+				let collection = {};
+				let cursorRequest = objectStore.openCursor();
+				cursorRequest.onerror = function(event) {
+					console.err("error opening cursor for idbfs");
+				};
+				cursorRequest.onsuccess = function(event) {
+					let cursor = event.target.result;
+					if (cursor) {
+						if(!rootPath || cursor.primaryKey.startsWith(rootPath)) {
+							collection[cursor.primaryKey] = cursor.value;
+						}						
+						cursor.continue();
+					}
+					else {
+						cursorIterationDone();
+					}
+				};
+
+				function cursorIterationDone() {
+					let jsonData = JSON.stringify(collection);
+					let blob = new Blob([jsonData], { type: "text/plain" });
+					let a = document.createElement("a");
+					a.download = "idbfs.json";
+					a.href = window.URL.createObjectURL(blob);
+					a.click();
+				}
+				
+			};
+		}
+	</script>
   </body>
 </html>
