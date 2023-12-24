@@ -168,6 +168,22 @@ namespace CommonCore.RpgGame.Dialogue
                     
                 }
             }
+
+            if (!frameObject["vnSpeaker"].IsNullOrEmpty() && !string.IsNullOrEmpty(frameObject["vnSpeaker"].ToString()))
+            {
+                string newSpeaker = frameObject["vnSpeaker"].ToString();
+                foreach (var actorKvp in Actors)
+                {
+                    if(actorKvp.Key.Equals(newSpeaker))
+                    {
+                        actorKvp.Value.Fade = false;
+                    }
+                    else
+                    {
+                        actorKvp.Value.Fade = true;
+                    }
+                }
+            }
         }
 
         private void MutateChoicePanel()
