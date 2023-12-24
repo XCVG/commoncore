@@ -240,10 +240,15 @@ namespace CommonCore.Console
             ConfigState.Load();
         }
 
+#if UNITY_WEBGL
+        /// <summary>
+        /// Console command. Dumps idbfs virtual IndexedDB filesystem to JSON file
+        /// </summary>
         [Command(alias = "DumpIdbfs", useClassName = false)]
         private static void DumpIdbfs()
         {
             JSCrossCall.CallJSFunction("ccDumpIdbfs", Application.persistentDataPath);
         }
+#endif
     }
 }
