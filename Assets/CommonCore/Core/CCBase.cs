@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -23,6 +24,11 @@ namespace CommonCore
         /// A collection of all relevant (ie not system or unity) types available when the game was started
         /// </summary>
         public static ImmutableArray<Type> BaseGameTypes { get; private set; }
+
+        /// <summary>
+        /// A collection of all relevant (ie not system or unity) assemblies loaded when the game was started
+        /// </summary>
+        public static ImmutableArray<Assembly> BaseGameAssemblies { get; private set; }
 
         /// <summary>
         /// Whether the game is being initialized (CommonCore starting up)
@@ -300,11 +306,20 @@ namespace CommonCore
 
         private static void LoadGameTypes()
         {
-            //TODO refine excluded assemblies
-            BaseGameTypes = AppDomain.CurrentDomain.GetAssemblies()
+            //exclude library assemblies; it's not the end of the world if some get included, but it will slow down all subsequent searches
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !(a.FullName.StartsWith("Unity") || a.FullName.StartsWith("System") || a.FullName.StartsWith("netstandard") ||
                             a.FullName.StartsWith("mscorlib") || a.FullName.StartsWith("mono", StringComparison.OrdinalIgnoreCase) ||
-                            a.FullName.StartsWith("Boo") || a.FullName.StartsWith("I18N")))
+                            a.FullName.StartsWith("Boo") || a.FullName.StartsWith("I18N") || a.FullName.StartsWith("Bee") || 
+                            a.FullName.StartsWith("nunit") || a.FullName.StartsWith("JetBrains.Rider") || a.FullName.StartsWith("Newtonsoft.Json,") ||
+                            a.FullName.StartsWith("WaveLoader,") || a.FullName.StartsWith("Humanizer,")))
+                .ToArray();
+
+            Debug.Log(assemblies.ToNiceString(a => a.FullName));
+
+            BaseGameAssemblies = assemblies.ToImmutableArray();
+
+            BaseGameTypes = assemblies
                 .SelectMany((assembly) => assembly.GetTypes())
                 .ToImmutableArray();
 

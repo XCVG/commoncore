@@ -641,3 +641,5 @@
 - Add nice exceptions thrown when trying to call into JS on non-WebGL platform
 - Add DumpIdbfs command that dumps indexeddb virtual filesystem to JSON file
 - Implement vnSpeaker shorthand in dialogue files that fades all except specified
+- Improve filtering of assemblies in CCBase.LoadGameTypes
+- Base game assemblies are now exposed as CCBase.BaseGameAssemblies
