@@ -396,8 +396,8 @@ namespace CommonCore.State
 
             //autosave format will be a_<hash>_<index>
             //since we aren't supporting campaign-unique autosaves, yet, hash will just be 0
-            string campaignId = "0";
-            string filterString = $"a_{campaignId}_";
+            string dummyCampaignId = "0";
+            string filterString = $"a_{dummyCampaignId}_";
 
             string savePath = CoreParams.SavePath;
             DirectoryInfo saveDInfo = new DirectoryInfo(savePath);
@@ -424,32 +424,63 @@ namespace CommonCore.State
             }
 
             //save this autosave
-            string newSaveName = $"a_{campaignId}_{highestSaveId + 1}";
-            SharedUtils.SaveGame(newSaveName, commit, false, CreateDefaultMetadata($"Autosave {highestSaveId + 1}"));
+            string newSaveName = $"a_{dummyCampaignId}_{highestSaveId + 1}";
+            var metadata = CreateDefaultMetadata($"Autosave {highestSaveId + 1}");
+            SharedUtils.SaveGame(newSaveName, commit, false, metadata);
 
             //remove old autosaves
-            //this I think is the broken part
-            knownSaveIds.Sort();
-            int numAutosaves = savesFInfo.Length + 1;
-            if(numAutosaves > ConfigState.Instance.AutosaveCount)
+            string currentCampaignId = metadata.CampaignIdentifier;
+            HashSet<string> keptCampaignIds = new HashSet<string>();
+            int keptSavesForCurrentCampaign = 0;
+            foreach(FileInfo saveF in savesFInfo)
             {
-                int autosavesToDelete = numAutosaves - ConfigState.Instance.AutosaveCount;
-                while(autosavesToDelete > 0)
+                try
                 {
-                    string oldSaveName = $"a_{campaignId}_{knownSaveIds[0]}.json";
-                    try
+                    if (CoreParams.UseCampaignIdentifier && CoreParams.KeepAutosaveForEachCampaign)
                     {
-                        File.Delete(Path.Combine(CoreParams.SavePath, oldSaveName));
-                        
-                    }
-                    catch(Exception e)
-                    {
-                        Debug.LogWarning($"Failed to delete save file: {oldSaveName} ({e.GetType().Name})");
+                        //read metadata, if it's not this campaign id then do a check against keptcampaignids and continue the loop
+                        var jo = (JObject)CoreUtils.ReadExternalJson(saveF.FullName);
+
+                        if (!jo["Metadata"].IsNullOrEmpty())
+                        {
+                            var saveMetadata = CoreUtils.InterpretJson<SaveMetadata>(jo["Metadata"]);
+                            if (saveMetadata.CampaignIdentifier != currentCampaignId)
+                            {
+                                if(!string.IsNullOrEmpty(saveMetadata.CampaignIdentifier))
+                                {
+                                    if(keptCampaignIds.Contains(saveMetadata.CampaignIdentifier))
+                                    {
+                                        File.Delete(saveF.FullName);
+                                    }
+                                    else
+                                    {
+                                        keptCampaignIds.Add(saveMetadata.CampaignIdentifier);
+                                    }
+                                }
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            continue;
+                        }
                     }
 
-                    knownSaveIds.RemoveAt(0);
-                    autosavesToDelete--;
-
+                    //keep n saves for current campaign
+                    if (keptSavesForCurrentCampaign >= ConfigState.Instance.AutosaveCount)
+                    {
+                        File.Delete(saveF.FullName);
+                    }
+                    else
+                    {
+                        keptSavesForCurrentCampaign++;
+                    }
+                }
+                catch(Exception e)
+                {
+                    Debug.LogError($"Error handling save file: {saveF.FullName} ({e.GetType().Name})");
+                    if (ConfigState.Instance.UseVerboseLogging)
+                        Debug.LogException(e);
                 }
             }
 

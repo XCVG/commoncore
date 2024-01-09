@@ -643,3 +643,4 @@
 - Implement vnSpeaker shorthand in dialogue files that fades all except specified
 - Improve filtering of assemblies in CCBase.LoadGameTypes
 - Base game assemblies are now exposed as CCBase.BaseGameAssemblies
+- Implement keeping an autosave of each campaign (controlled by CoreParams.KeepAutosaveForEachCampaign)
