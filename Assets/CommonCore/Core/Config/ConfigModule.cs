@@ -233,7 +233,7 @@ namespace CommonCore.Config
                     //else, find the closest available refresh rate
                     foreach (var resolution in resolutions)
                     {
-                        double refreshRateRatio = (double)newRefreshRate.Value.numerator / (double)newRefreshRate.Value.denominator;
+                        double refreshRateRatio = (double)resolution.refreshRateRatio.numerator / (double)resolution.refreshRateRatio.denominator;
                         double diff = Math.Abs(refreshRateRatio - desiredRatio);
                         if (diff < smallestDifference)
                         {

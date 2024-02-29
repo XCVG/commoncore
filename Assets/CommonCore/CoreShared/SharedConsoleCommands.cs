@@ -153,6 +153,24 @@ public static class SharedConsoleCommands
     }
 
     /// <summary>
+    /// Starts a new game (intended to be used from menu)
+    /// </summary>
+    [Command]
+    static void StartGame()
+    {
+        SharedUtils.StartGame();
+    }
+
+    /// <summary>
+    /// Starts a new game with scene override (intended to be used from menu)
+    /// </summary>
+    [Command]
+    static void StartGame(string scene)
+    {
+        SharedUtils.StartGame(scene);
+    }
+
+    /// <summary>
     /// Reloads the current scene
     /// </summary>
     [Command]

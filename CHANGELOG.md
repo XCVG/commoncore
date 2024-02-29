@@ -644,3 +644,5 @@
 - Improve filtering of assemblies in CCBase.LoadGameTypes
 - Base game assemblies are now exposed as CCBase.BaseGameAssemblies
 - Implement keeping an autosave of each campaign (controlled by CoreParams.KeepAutosaveForEachCampaign)
+- Fix resolution setting breaking if exact refresh rate match could not be found
+- Add StartGame console command with optional scene override
