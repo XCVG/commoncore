@@ -646,3 +646,5 @@
 - Implement keeping an autosave of each campaign (controlled by CoreParams.KeepAutosaveForEachCampaign)
 - Fix resolution setting breaking if exact refresh rate match could not be found
 - Add StartGame console command with optional scene override
+- Option to keep autosave per campaign (controlled through CoreParams)
+- Fix weapons firing ShotsPerBurst instead of ProjectilesPerShot projectiles at once

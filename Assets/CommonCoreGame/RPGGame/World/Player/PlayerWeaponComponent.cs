@@ -1040,7 +1040,7 @@ namespace CommonCore.RpgGame.World
 
                     //this GIANT ASS BLOCK OF CODE fires ONE bullet
                     //some logic is definitely redundant but eh
-                    for(int bulletCount = 0; bulletCount < Math.Max(1, wim.ShotsPerBurst); bulletCount++)
+                    for(int bulletCount = 0; bulletCount < Math.Max(1, wim.ProjectilesPerShot); bulletCount++)
                     {
                         float randomizedDamage = useRandomDamage ? Mathf.Max(Mathf.Min(1, wim.Damage), wim.Damage + UnityEngine.Random.Range(-wim.DamageSpread, wim.DamageSpread)) : wim.Damage;
                         float randomizedPierce = useRandomPierce ? Mathf.Max(Mathf.Min(1, wim.DamagePierce), wim.DamagePierce + UnityEngine.Random.Range(-wim.DamagePierceSpread, wim.DamagePierceSpread)) : wim.DamagePierce;
