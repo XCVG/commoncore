@@ -636,7 +636,7 @@
 - Add BackgroundSize option to dialogue files, providing different options to fit the background to screen
 - Add ImageFitMode option to SlideshowController
 
-# 6.0.0 pNext
+# R6.0
 
 - Add nice exceptions thrown when trying to call into JS on non-WebGL platform
 - Add DumpIdbfs command that dumps indexeddb virtual filesystem to JSON file
