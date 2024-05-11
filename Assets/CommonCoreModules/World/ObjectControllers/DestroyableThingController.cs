@@ -38,6 +38,8 @@ namespace CommonCore.World
         protected bool RepeatDeathSpecial = false;
         [SerializeField]
         protected bool AllowPushingWhenDead = false;
+        [SerializeField]
+        protected bool TakeShieldsOnlyDamage = false;
 
         [Header("Pain State Options")]
         public bool UsePainState = false;
@@ -259,6 +261,11 @@ namespace CommonCore.World
             LastDamageDealer = data.Originator;
 
             float damage = data.Damage + data.DamagePierce;
+
+            if(data.HitFlags.HasFlag(BuiltinHitFlags.DamageOnlyShields) && !TakeShieldsOnlyDamage)
+            {
+                damage = 0;
+            }
 
             if(DamageFactors != null && DamageFactors.Length > 0)
             {

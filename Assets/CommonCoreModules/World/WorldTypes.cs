@@ -168,7 +168,8 @@ namespace CommonCore.World
         AlwaysPain = 1 << 7,
         IgnoreHitLocation = 1 << 8,
         AlwaysExtremeDeath = 1 << 9,
-        NeverExtremeDeath = 1 << 10
+        NeverExtremeDeath = 1 << 10,
+        DamageOnlyShields = 1 << 10
     }
 
     /// <summary>

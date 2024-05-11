@@ -826,6 +826,10 @@ namespace CommonCore.RpgGame.World
             {
                 damageTaken = damageHandlerResult.Value.DamageTaken.Value;
             }
+            else if(data.HitFlags.HasFlag(BuiltinHitFlags.DamageOnlyShields))
+            {
+                damageTaken = 0; //need a handler to handle this
+            }
             else
             {
                 //new way of doing dr/dt

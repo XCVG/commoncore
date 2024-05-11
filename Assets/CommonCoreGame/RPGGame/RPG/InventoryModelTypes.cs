@@ -33,7 +33,7 @@ namespace CommonCore.RpgGame.Rpg
         Unique,
 
         //weapon flags 
-        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponProjectileIsEntity, WeaponNeverRandomize, WeaponNeverHarmFriendly, WeaponAlwaysHarmFriendly, WeaponBurstSingleAnimation, WeaponEffectWaitsForLockTime, WeaponAlwaysUseEffectExplosion, WeaponRecockIgnoreLevelledRate, WeaponRecockSkipOnEmpty, WeaponPrewarmBullet,
+        WeaponTwoHanded, WeaponAutoReload, WeaponNoAmmoUse, WeaponHasADS, WeaponFullAuto, WeaponNoAlert, WeaponHasCharge, WeaponHasRecock, WeaponChargeHold, WeaponShake, WeaponUseCrosshair, WeaponCrosshairInADS, WeaponNoMovebob, WeaponProportionalMovement, WeaponIgnoreLevelledRate, WeaponUnscaledAnimations, WeaponUseFarShootPoint, WeaponProjectileIsEntity, WeaponNeverRandomize, WeaponNeverHarmFriendly, WeaponAlwaysHarmFriendly, WeaponBurstSingleAnimation, WeaponEffectWaitsForLockTime, WeaponAlwaysUseEffectExplosion, WeaponRecockIgnoreLevelledRate, WeaponRecockSkipOnEmpty, WeaponPrewarmBullet, WeaponDamageOnlyShields,
 
         //WeaponBurstSingleEffect, WeaponBurstRequireFullAmmo, WeaponBurstSucceedWithPartialAmmo, //not supported yet
 
@@ -428,6 +428,9 @@ namespace CommonCore.RpgGame.Rpg
 
             if (CheckFlag(ItemFlag.WeaponNeverExtremeDeath))
                 flags |= BuiltinHitFlags.NeverExtremeDeath;
+
+            if (CheckFlag(ItemFlag.WeaponDamageOnlyShields))
+                flags |= BuiltinHitFlags.DamageOnlyShields;
 
             return flags;
         }

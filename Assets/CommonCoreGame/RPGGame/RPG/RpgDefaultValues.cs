@@ -152,6 +152,11 @@ namespace CommonCore.RpgGame.Rpg
             float damage = hitInfo.Damage;
             float damagePierce = hitInfo.DamagePierce;
 
+            if(hitInfo.HitFlags.HasFlag(BuiltinHitFlags.DamageOnlyShields))
+            {
+                return (Mathf.Min(character.Shields, damage + damagePierce), 0, 0);
+            }
+
             if (character.DerivedStats.ShieldParams.MaxShields == 0 || character.Shields == 0 || hitInfo.HitFlags.HasFlag(BuiltinHitFlags.IgnoreShields))
             {
                 if (hitInfo.HitFlags.HasFlag(BuiltinHitFlags.PierceConsiderArmor))
