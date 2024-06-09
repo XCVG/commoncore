@@ -648,5 +648,8 @@
 - Add StartGame console command with optional scene override
 - Option to keep autosave per campaign (controlled through CoreParams)
 - Fix weapons firing ShotsPerBurst instead of ProjectilesPerShot projectiles at once
+
+# rNext
+
 - Add experimental DebugLogSpecial
 - Add DamageOnlyShields hit flag (fully implemented for players and destroyable things, needs a handler for actors)
