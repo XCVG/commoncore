@@ -1080,7 +1080,7 @@ namespace CommonCore.RpgGame.Rpg
         [JsonConstructor]
         protected AmmoItemModel(): base()
         {
-
+            Stackable = true;
         }
 
         public AmmoItemModel(string name, float weight, float value, float maxCondition, int maxQuantity, bool hidden, bool essential, string[] flags, Dictionary<string, object> extraData, ItemScriptNode scripts, string worldModel) :
