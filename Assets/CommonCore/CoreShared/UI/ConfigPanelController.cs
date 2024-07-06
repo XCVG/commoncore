@@ -159,7 +159,7 @@ namespace CommonCore.UI
                 RefreshRateDropdown.ClearOptions();
                 RefreshRateDropdown.AddOptions(RefreshRates.Select(r => $"{r}").ToList());
                 int tIndex = RefreshRates.IndexOf(ConfigState.Instance.RefreshRate);
-                ResolutionDropdown.value = tIndex > 0 ? rIndex : RefreshRates.Count - 1;
+                RefreshRateDropdown.value = tIndex >= 0 ? tIndex : RefreshRates.Count - 1;
             }
             else
             {

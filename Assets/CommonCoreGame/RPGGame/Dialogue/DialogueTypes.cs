@@ -385,9 +385,13 @@ namespace CommonCore.RpgGame.Dialogue
 
     public class FrameScripts
     {
+        [JsonProperty]
         public string BeforePresent { get; private set; }
+        [JsonProperty]
         public string OnPresent { get; private set; }
+        [JsonProperty]
         public string OnChoice { get; private set; }
+        [JsonProperty]
         public string OnUnpresent { get; private set; }
 
         public FrameScripts(FrameScripts baseScripts)
