@@ -649,10 +649,12 @@
 - Option to keep autosave per campaign (controlled through CoreParams)
 - Fix weapons firing ShotsPerBurst instead of ProjectilesPerShot projectiles at once
 
-# rNext
+# R6.1
 
 - Add experimental DebugLogSpecial
 - Add DamageOnlyShields hit flag (fully implemented for players and destroyable things, needs a handler for actors)
 - Fix ammo not getting Stackable flag which breaks ammo handling
 - Fix resolution and refresh rate dropdowns not working in config panel
 - Fix FrameScripts not being parsed
+
+# rNext
