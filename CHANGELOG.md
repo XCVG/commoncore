@@ -658,3 +658,5 @@
 - Fix FrameScripts not being parsed
 
 # rNext
+
+- Add option for Actors to not preferentially target hostile Players

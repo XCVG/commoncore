@@ -85,6 +85,8 @@ namespace CommonCore.RpgGame.World
         public float SearchRadius = 25.0f;
         public int SearchInterval = 70;
         public bool DisableInteractionOnHit = true;
+        [Tooltip("Use old target-player-first logic")]
+        public bool TargetPlayerFirst = true; //true by default for legacy reasons
 
 
         [Header("Interaction")] //TODO move this out into ActorInteractionComponent
@@ -675,34 +677,37 @@ namespace CommonCore.RpgGame.World
 
             var detectionDifficultyFactor = 1f / EffectivePerception;
 
-            //check player first since it's (relatively) cheap
-            if (GameState.Instance.FactionState.GetRelation(Faction, "Player") == FactionRelationStatus.Hostile && !MetaState.Instance.SessionFlags.Contains("NoTarget") && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoTarget))
+            //check player first since it's (relatively) cheap (legacy logic)
+            if(TargetPlayerFirst)
             {
-                var playerObj = WorldUtils.GetPlayerObject();
-                if(playerObj != null && RpgWorldUtils.TargetIsAlive(playerObj.transform))
+                if (GameState.Instance.FactionState.GetRelation(Faction, "Player") == FactionRelationStatus.Hostile && !MetaState.Instance.SessionFlags.Contains("NoTarget") && !GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoTarget))
                 {
-                    PlayerController pc = playerObj.GetComponent<PlayerController>();
-
-                    if((playerObj.transform.position - transform.position).magnitude <= SearchRadius
-                        && UnityEngine.Random.Range(0f, 1f * detectionDifficultyFactor) <= ((IAmTargetable)pc).Detectability)
+                    var playerObj = WorldUtils.GetPlayerObject();
+                    if (playerObj != null && RpgWorldUtils.TargetIsAlive(playerObj.transform))
                     {
-                        if(UseLineOfSight)
+                        PlayerController pc = playerObj.GetComponent<PlayerController>();
+
+                        if ((playerObj.transform.position - transform.position).magnitude <= SearchRadius
+                            && UnityEngine.Random.Range(0f, 1f * detectionDifficultyFactor) <= ((IAmTargetable)pc).Detectability)
                         {
-                            if(CheckLineOfSight(pc))
+                            if (UseLineOfSight)
                             {
+                                if (CheckLineOfSight(pc))
+                                {
+                                    Target = playerObj.transform;
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                //otherwise, close enough
                                 Target = playerObj.transform;
                                 return;
                             }
                         }
-                        else
-                        {
-                            //otherwise, close enough
-                            Target = playerObj.transform;
-                            return;
-                        }
                     }
                 }
-            }            
+            }
 
             //if(TargetNpc)
             {
@@ -740,6 +745,14 @@ namespace CommonCore.RpgGame.World
                     BaseController targetController = potentialTarget as BaseController;
                     if (targetController == null)
                         continue;
+
+                    if(targetController is PlayerController)
+                    {
+                        if(MetaState.Instance.SessionFlags.Contains("NoTarget") || GameState.Instance.PlayerFlags.Contains(PlayerFlags.NoTarget))
+                        {
+                            continue;
+                        }
+                    }
 
                     if(RpgWorldUtils.TargetIsAlive(targetController.transform) 
                         && (targetController.transform.position - transform.position).magnitude <= SearchRadius
