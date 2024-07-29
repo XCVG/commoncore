@@ -718,7 +718,14 @@ namespace CommonCore.RpgGame.World
                 //else if (MeleeEffect != null)
                 //    Instantiate(MeleeEffect, ShootPoint.position, ShootPoint.rotation, ShootPoint);
 
-                QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepFired"));
+                QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("WepFired", new Dictionary<string, object>()
+                    {
+                        { "DidFire", true },
+                        { "IsMelee", true },
+                        { "WeaponItem", wItem },
+                        { "WeaponItemModel", wItem.ItemModel }
+                    }
+                ));
                 if(!string.IsNullOrEmpty(wim?.Scripts?.OnFire))
                     ScriptingModule.Call(wim.Scripts.OnFire, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, wItem, wItem.ItemModel);
             }
@@ -1151,8 +1158,18 @@ namespace CommonCore.RpgGame.World
                         DoReload();
                     }
 
+                    QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("WepFired", new Dictionary<string, object>()
+                        {
+                            { "DidFire", true },
+                            { "IsMelee", false },
+                            { "WeaponItem", wItem },
+                            { "WeaponItemModel", wItem.ItemModel }
+                        }
+                    ));
                     if (!string.IsNullOrEmpty(wim?.Scripts?.OnFire))
                         ScriptingModule.Call(wim.Scripts.OnFire, new ScriptExecutionContext() { Activator = PlayerController.gameObject, Caller = this }, wItem, wItem.ItemModel);
+                                        
+                    return;
 
                 }
                 else
@@ -1163,7 +1180,7 @@ namespace CommonCore.RpgGame.World
             }
 
 
-            QdmsMessageBus.Instance.PushBroadcast(new QdmsFlagMessage("WepFired"));
+            QdmsMessageBus.Instance.PushBroadcast(new QdmsKeyValueMessage("WepFired", "DidFire", false));
 
             
         }
