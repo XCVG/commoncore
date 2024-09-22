@@ -174,7 +174,7 @@ namespace CommonCore.RpgGame.Dialogue
                 string newSpeaker = frameObject["vnSpeaker"].ToString();
                 foreach (var actorKvp in Actors)
                 {
-                    if(actorKvp.Key.Equals(newSpeaker))
+                    if(GameParams.DialogueVnSpeakerCaseSensitive ? actorKvp.Key.Equals(newSpeaker) : actorKvp.Key.Equals(newSpeaker, StringComparison.OrdinalIgnoreCase))
                     {
                         actorKvp.Value.Fade = false;
                     }

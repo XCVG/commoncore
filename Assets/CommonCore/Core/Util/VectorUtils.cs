@@ -75,5 +75,13 @@ namespace CommonCore
                 );
         }
 
+        /// <summary>
+        /// Scales a vector by another vector and returns the result
+        /// </summary>
+        public static Vector3 ScaleBy(this Vector3 vector0, Vector3 vector1)
+        {
+            return new Vector3(vector0.x * vector1.x, vector0.y * vector1.y, vector0.z * vector1.z);
+        }
+
     }
 }

@@ -660,3 +660,8 @@
 # rNext
 
 - Add option for Actors to not preferentially target hostile Players
+- Add more data to WepFired messages
+- ThingPusherController can now activate navigation node reached triggers
+- Add experimental ActivateTaggedEntitesSpecial(Ex)
+- Add ScaleBy function to VectorUtils
+- Add GameParams.DialogueVnSpeakerCaseSensitive option

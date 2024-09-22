@@ -26,6 +26,7 @@ namespace CommonCore
         public static bool DialogueHandleMicroscriptExceptions { get; private set; } = true;
         public static bool DialogueHandleConditionalExceptions { get; private set; } = false;
         public static bool DialogueUseVnx { get; private set; } = true; //will entirely disable VNX if set to false
+        public static bool DialogueVnSpeakerCaseSensitive { get; private set; } = true; //default true for backward compatibility
 
         public static bool UseCustomLeveling { get; private set; } = false;
         public static bool UseDerivedSkills { get; private set; } = true;

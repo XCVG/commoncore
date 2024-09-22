@@ -1,4 +1,5 @@
 using CommonCore.LockPause;
+using CommonCore.ObjectActions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,6 +21,8 @@ namespace CommonCore.World
         public NavigationNode StartNode;
         public NavigationNode TargetNode;
         public LoopOption Loop = LoopOption.Auto;
+        [Tooltip("EXPERIMENTAL, activate NavigationNodeReachedTriggers when hit")]
+        public bool ActivateTriggers = false;
 
         [Header("Dynamics")]
         public float ArriveThreshold = 1f;
@@ -160,6 +163,12 @@ namespace CommonCore.World
 
             if (distToTarget <= threshold)
             {
+                var trigger = TargetNode.GetComponent<NavigationNodeReachedTrigger>();
+                if (ActivateTriggers && trigger != null)
+                {
+                    trigger.Activate(this);
+                }
+
                 if (TargetNode.EndNode || TargetNode.NextNode == null || TargetNode.NextNode == StartNode)
                 {
                     //if it is an end node (either explicitly labelled, nextNode = null or nextNode = startNode)
