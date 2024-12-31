@@ -1,12 +1,12 @@
 # CommonCore Framework for Unity
-### R6.1
+### R6.2
 ### For Unity 2022.3
 
 ## Introduction
 
-CommonCore (formerly ARES) is a framework/library for Unity. The original intent was to create a freely usable framework for RPG and FPS-RPG games that allows easy development of everything from quick adventures to epic open-world sagas. Over time the design goals have been shifted to an internal project providing a flexible base for games across many disparate genres.
+CommonCore (formerly ARES) is a framework/library for Unity. The original intent was to create a freely usable framework for RPG and FPS-RPG games that allows easy development of everything from quick adventures to epic open-world sagas. Over time the design goals have been shifted to an internal project providing a flexible base for games across many disparate genres. It's now in a "good enough" point of feature completion, and the project is in a sort of maintenance mode after years of active development.
 
-The full list of features is too long to list here and not well documented (yet). Among other things, CommonCore handles standard RPG mechanics (including levelling, characters with stats/skills, inventory, quests), game state with saving and loading, the player object, NPCs, first-person shooter mechanics, dialogue, input, UI, configuration, pausing/locking, and many miscellaneous utilites. It is meant to be used as a template which a game can be immediately build upon, and has a somewhat modular design so unnecessary components can be excluded (though this is still WIP).
+The full list of features is too long to list here and not well documented. Among other things, CommonCore handles standard RPG mechanics (including levelling, characters with stats/skills, inventory, quests), game state with saving and loading, the player object, NPCs, first-person shooter mechanics, dialogue, input, UI, configuration, pausing/locking, and many miscellaneous utilites. It is meant to be used as a template which a game can be immediately build upon, and has a somewhat modular design so unnecessary components can be excluded (though this always was kinda WIP).
 
 ## Documentation
 
@@ -41,7 +41,7 @@ Some limited documentation is available in the Reference folder. The Documentati
 * FPS-style player controller handling movement, actions, damage and weapons, with support for 2D and 3D weapon graphics and tight integration with RPG systems, extensible and divided into components
 * Actor/NPC logic handling movement, attacks, damage and interactions, with support for navmesh, 2D and 3D world models, extensible and divided into components
 * Full set of RPG mechanics including inventory, quests, leveling, stats/skills, open for extension, integrated with other components and ready to integrate into more
-* Data-driven WRPG-style dialogue system with plenty of flexibility, integration with RPG systems and campaign state, and built for extensibility if you want to go beyond
+* Data-driven dialogue system with plenty of flexibility, integration with RPG systems and campaign state, and built for extensibility if you want to go beyond
 * Saving and loading of world state including actors and player, integrated with state objects and saving of RPG state, and extensible to your own data
 
 ## Platform Support

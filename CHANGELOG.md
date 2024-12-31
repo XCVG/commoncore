@@ -657,7 +657,7 @@
 - Fix resolution and refresh rate dropdowns not working in config panel
 - Fix FrameScripts not being parsed
 
-# rNext
+# R6.2
 
 - Add option for Actors to not preferentially target hostile Players
 - Add more data to WepFired messages
