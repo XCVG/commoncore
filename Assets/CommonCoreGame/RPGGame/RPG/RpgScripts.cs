@@ -39,7 +39,7 @@ namespace CommonCore.RpgGame
         [CCScript, CCScriptHook(AllowExplicitCalls = false, Hook = ScriptHook.OnConfigChange)]
         private static void UpdatePlayerModelOnConfigChange()
         {
-            if(GameParams.RecalculatePlayerStatsOnConfigChange)
+            if(GameParams.RecalculatePlayerStatsOnConfigChange && GameState.Exists)
             {
                 GameState.Instance.PlayerRpgState.UpdateStats();
             }

@@ -72,7 +72,7 @@ namespace CommonCore.World
         /// <summary>
         /// Sets the sprite on a quad renderer and rescales/repositions based on offsets, scale, and scale options
         /// </summary>
-        public static void SetSpriteOnQuad(Renderer renderer, FacingSpriteSizeMode spriteSizeMode, Vector2 initialRendererScale, float spriteScale, Sprite sprite, bool mirror, bool bright)
+        public static void SetSpriteOnQuad(Renderer renderer, FacingSpriteSizeMode spriteSizeMode, Vector2 initialRendererScale, float spriteScale, Sprite sprite, bool mirror, bool bright, bool alwaysSetXScale)
         {
             //UnityEngine.Profiling.Profiler.BeginSample("SetSpriteOnQuad");
             //this is not the _only_ expensive part, but it is an expensive part
@@ -158,6 +158,14 @@ namespace CommonCore.World
                     renderer.transform.localScale.z);
 
                 renderer.transform.localPosition = new Vector3(newOffset.x, newOffset.y, renderer.transform.localPosition.z);
+            }
+            else if(alwaysSetXScale) //bugfix for situations where sprite can be instantly flipped left to right
+            {                
+                Transform t = renderer.transform;
+                Vector3 lScale = t.localScale;
+                t.localScale = new Vector3(Mathf.Abs(lScale.x) * Mathf.Sign(initialRendererScale.x) * (mirror ? -1 : 1),
+                    lScale.y,
+                    lScale.z);
             }
 
             //UnityEngine.Profiling.Profiler.EndSample();

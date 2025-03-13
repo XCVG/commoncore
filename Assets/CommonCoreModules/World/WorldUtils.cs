@@ -285,7 +285,7 @@ namespace CommonCore.World
             }
 
             return foundObjects;
-        }
+        }        
 
         /// <summary>
         /// Checks if an ITakeDamage is considered alive
@@ -507,6 +507,35 @@ namespace CommonCore.World
                 return true;
 
             return false;
+        }
+
+        /// <summary>
+        /// Executes a function against each entity
+        /// </summary>
+        public static void ForEachEntity(this IEnumerable<BaseController> entities, Action<BaseController> action)
+        {
+            foreach (BaseController c in entities)
+            { action(c); }
+        }
+
+        /// <summary>
+        /// Executes a function against each entity, swallowing errors
+        /// </summary>
+        public static void TryForEachEntity(this IEnumerable<BaseController> entities, Action<BaseController> action)
+        {
+            foreach (BaseController c in entities)
+            {
+                try
+                {
+                    action(c);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Failed to execute action against {c.name} ({ex.GetType().Name}: {ex.Message})");
+                    if(ConfigState.Instance.UseVerboseLogging)
+                        Debug.LogException(ex);                    
+                }
+            }
         }
 
         /// <summary>

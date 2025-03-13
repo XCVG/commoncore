@@ -112,7 +112,7 @@ namespace CommonCore.RpgGame.World
 
         string IAmTargetable.Faction => PredefinedFaction.Player.ToString();
 
-        float IAmTargetable.Detectability => RpgValues.DetectionChance(GameState.Instance.PlayerRpgState, MovementComponent.IsCrouching, MovementComponent.IsRunning);
+        float IAmTargetable.Detectability => RpgValues.DetectionChance(GameState.Instance.PlayerRpgState, MovementComponent.Ref()?.IsCrouching ?? false, MovementComponent.Ref()?.IsRunning ?? false);
 
         Vector3 IAmTargetable.TargetPoint => TargetPoint.Ref()?.position ?? (MovementComponent.Ref()?.CharacterController == null ? null : (Vector3?)transform.TransformPoint(MovementComponent.CharacterController.center)) ?? transform.position;
 

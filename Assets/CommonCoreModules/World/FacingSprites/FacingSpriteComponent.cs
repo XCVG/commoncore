@@ -19,6 +19,8 @@ namespace CommonCore.World
         public FacingSpriteSizeMode SpriteSizeMode = default;
         [Tooltip("If >0, multiplies the sprite size by this value (exact effect depends on size mode)")]
         public float SpriteScale = 0;
+        [Tooltip("Enable in situations where the sprite could be instantaneously flipped left to right")]
+        public bool AlwaysSetXScale = false;
 
         protected Vector2 InitialRendererScale;
 
@@ -90,7 +92,7 @@ namespace CommonCore.World
         protected void SetSpriteOnRenderer(Sprite sprite, bool mirror, bool bright)
         {
             //thunk!
-            FacingSpriteUtils.SetSpriteOnQuad(Attachment, SpriteSizeMode, InitialRendererScale, SpriteScale, sprite, mirror, bright);
+            FacingSpriteUtils.SetSpriteOnQuad(Attachment, SpriteSizeMode, InitialRendererScale, SpriteScale, sprite, mirror, bright, AlwaysSetXScale);
         }
 
     }

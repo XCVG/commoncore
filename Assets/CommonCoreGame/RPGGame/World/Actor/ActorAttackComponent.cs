@@ -248,16 +248,23 @@ namespace CommonCore.RpgGame.World
                     //var bullet = Instantiate<GameObject>(BulletPrefab, shootPos + (shootVec * 0.25f), Quaternion.identity, transform.root);
                     Quaternion bulletRotation = Quaternion.LookRotation(shootVec.normalized, Vector3.up);
                     var bullet = WorldUtils.SpawnEffect(BulletPrefab, shootPos + (shootVec * 0.25f), bulletRotation.eulerAngles, transform.root, false);
-                    var bulletRigidbody = bullet.GetComponent<Rigidbody>();
-                    bulletRigidbody.velocity = (shootVec * BulletSpeed);
-                    var bulletScript = bullet.GetComponent<BulletScript>();
-                    bulletScript.HitInfo = modHit;
-                    bulletScript.PhysicsInfo = new HitPhysicsInfo(AttackPhysics);
-                    bulletScript.Target = target;
-                    if(PrewarmBullet)
+                    if (bullet != null)
                     {
-                        bulletScript.Init();
-                        bulletScript.RaycastForHit();
+                        var bulletRigidbody = bullet.GetComponent<Rigidbody>();
+                        bulletRigidbody.velocity = (shootVec * BulletSpeed);
+                        var bulletScript = bullet.GetComponent<BulletScript>();
+                        bulletScript.HitInfo = modHit;
+                        bulletScript.PhysicsInfo = new HitPhysicsInfo(AttackPhysics);
+                        bulletScript.Target = target;
+                        if (PrewarmBullet)
+                        {
+                            bulletScript.Init();
+                            bulletScript.RaycastForHit();
+                        }
+                    }
+                    else
+                    {
+                        CDebug.LogEx(string.Format("{0} tried to shoot a bullet, but nothing was spawned (does the prefab exist?)", name), LogLevel.Error, this);
                     }
                 }
                 else

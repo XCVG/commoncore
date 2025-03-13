@@ -18,6 +18,8 @@ namespace CommonCore.World
         [Tooltip("If >0, multiplies the sprite size by this value (exact effect depends on size mode)")]
         public float SpriteScale = 0;
         public bool InvertBrightFlag = false;
+        [Tooltip("Enable in situations where the sprite could be instantaneously flipped left to right")]
+        public bool AlwaysSetXScale = false;
 
         [Header("Animation Options")] //these are deliberately public
         public bool Animate = true;
@@ -66,7 +68,7 @@ namespace CommonCore.World
             if (sprite == null)
                 return;
 
-            FacingSpriteUtils.SetSpriteOnQuad(Renderer, SpriteSizeMode, InitialRendererScale, SpriteScale, sprite, false, Frames[CurrentFrame].Bright ^ InvertBrightFlag);
+            FacingSpriteUtils.SetSpriteOnQuad(Renderer, SpriteSizeMode, InitialRendererScale, SpriteScale, sprite, false, Frames[CurrentFrame].Bright ^ InvertBrightFlag, AlwaysSetXScale);
 
             FrameChanged = false;
         }

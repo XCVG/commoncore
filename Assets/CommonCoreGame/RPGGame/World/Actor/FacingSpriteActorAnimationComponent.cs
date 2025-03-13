@@ -28,6 +28,8 @@ namespace CommonCore.RpgGame.World
         [Tooltip("If >0, multiplies the sprite size by this value (exact effect depends on size mode)")]
         public float SpriteScale = 0;
         public bool InvertBrightFlag = false;
+        [Tooltip("Enable in situations where the sprite could be instantaneously flipped left to right")]
+        public bool AlwaysSetXScale = false;
 
         [Header("Animation Options")]
         public bool Animate = true;
@@ -146,13 +148,13 @@ namespace CommonCore.RpgGame.World
 
                 if (!BillboardCorpse && CurrentFrameSet == Dead)
                 {
-                    FacingSpriteUtils.SetSpriteOnQuad(Attachment, SpriteSizeMode, InitialRendererScale, SpriteScale, facingSprite.Front, false, CurrentFrameSet[frameIndex].Bright ^ InvertBrightFlag);
+                    FacingSpriteUtils.SetSpriteOnQuad(Attachment, SpriteSizeMode, InitialRendererScale, SpriteScale, facingSprite.Front, false, CurrentFrameSet[frameIndex].Bright ^ InvertBrightFlag, AlwaysSetXScale);
                 }
                 else
                 {
                     var (sprite, mirror) = facingSprite.GetFacingSprite(facingAngle);
                     //SetSpriteOnRenderer(sprite, mirror);
-                    FacingSpriteUtils.SetSpriteOnQuad(Attachment, SpriteSizeMode, InitialRendererScale, SpriteScale, sprite, mirror, CurrentFrameSet[frameIndex].Bright ^ InvertBrightFlag);
+                    FacingSpriteUtils.SetSpriteOnQuad(Attachment, SpriteSizeMode, InitialRendererScale, SpriteScale, sprite, mirror, CurrentFrameSet[frameIndex].Bright ^ InvertBrightFlag, AlwaysSetXScale);
                 }
             }
         }
