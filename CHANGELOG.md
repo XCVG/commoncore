@@ -673,3 +673,5 @@
 - Fix PlayerController implementation of IAmTargetable.Detectability throwing if no movement component is attached
 - Fix ActorAttackComponent throwing an exception if projectile could not be instantiated (now logs error instead)
 - Add (Try)ForEachEntity extension methods to WorldUtils
+- Update WebGL templates from Unity 2022
+- Fix saving data not working in WebGL
