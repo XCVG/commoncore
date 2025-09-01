@@ -59,6 +59,9 @@ namespace CommonCore.RpgGame.State
             {
                 try
                 {
+                    if (t.IsAbstract)
+                        continue;
+
                     var resolver = (ConditionalResolver)Activator.CreateInstance(t, conditional);
                     if(resolver.CanResolve)
                         return resolver;
@@ -80,6 +83,9 @@ namespace CommonCore.RpgGame.State
             {
                 try
                 {
+                    if (t.IsAbstract)
+                        continue;
+
                     var resolver = (MicroscriptResolver)Activator.CreateInstance(t, microscript);
                     if (resolver.CanResolve)
                         return resolver;
