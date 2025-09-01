@@ -1,0 +1,6 @@
+- Update version number
+    - CoreParams?
+    - Project settings
+    - Changelog
+    - README
+- Update CommonCore Documentation docx in References
