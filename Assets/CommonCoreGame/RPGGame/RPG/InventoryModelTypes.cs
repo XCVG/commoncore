@@ -116,6 +116,8 @@ namespace CommonCore.RpgGame.Rpg
         [JsonProperty, JsonConverter(typeof(InstanceItemConverter))]
         public InventoryItemModel ItemModel { get; private set; }
         [JsonProperty]
+        public IList<string> Flags { get; protected set; } = new List<string>();
+        [JsonProperty]
         public Dictionary<string, object> ExtraData { get; private set; } = new Dictionary<string, object>();
 
         [JsonConstructor]
@@ -163,6 +165,18 @@ namespace CommonCore.RpgGame.Rpg
         public override string ToString()
         {
             return $"{InstanceUID} ({ItemModel}) [{Quantity}]";
+        }
+
+        //checks both instance and model for flags
+        public bool HasFlag(string flag)
+        {            
+            return HasInstanceFlag(flag) || ItemModel.CheckFlag(flag);
+        }
+
+        //checks instance only for flags
+        public bool HasInstanceFlag(string flag)
+        {
+            return Flags.Contains(flag, StringComparer.OrdinalIgnoreCase);
         }
     }
 

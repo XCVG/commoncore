@@ -676,3 +676,4 @@
 - Fix saving data not persisting in WebGL
 - Change default managed code stripping level to Minimal
 - Fix GetResolverFor attempting to create instances of abstract base class
+- Add flags to inventory item instances [experimental]
