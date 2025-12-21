@@ -665,7 +665,7 @@
 - Add ScaleBy function to VectorUtils
 - Add GameParams.DialogueVnSpeakerCaseSensitive option
 
-# Rnext
+# R6.3
 
 - Fix UpdatePlayerModelOnConfigChange throwing an exception if game state doesn't exist
 - Add AlwaysSetXScale flag to FacingSprite components and SetSpriteOnQuad (works around issues with sprite not changing when object is instantaneously flipped)
