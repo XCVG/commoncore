@@ -251,7 +251,7 @@ namespace CommonCore.RpgGame.World
                     if (bullet != null)
                     {
                         var bulletRigidbody = bullet.GetComponent<Rigidbody>();
-                        bulletRigidbody.velocity = (shootVec * BulletSpeed);
+                        bulletRigidbody.linearVelocity = (shootVec * BulletSpeed);
                         var bulletScript = bullet.GetComponent<BulletScript>();
                         bulletScript.HitInfo = modHit;
                         bulletScript.PhysicsInfo = new HitPhysicsInfo(AttackPhysics);

@@ -151,8 +151,8 @@ namespace CommonCore.World
 
                 //raycast
                 bool hasRigidbody = Rigidbody != null;
-                Vector3 forward = hasRigidbody ? Rigidbody.velocity.normalized : transform.forward;
-                float maxDistance = OverrideProbeDist > 0 ? OverrideProbeDist : (hasRigidbody ? Rigidbody.velocity.magnitude / 30f : DefaultProbeDist);
+                Vector3 forward = hasRigidbody ? Rigidbody.linearVelocity.normalized : transform.forward;
+                float maxDistance = OverrideProbeDist > 0 ? OverrideProbeDist : (hasRigidbody ? Rigidbody.linearVelocity.magnitude / 30f : DefaultProbeDist);
                 //var hits = Physics.RaycastAll(transform.position, forward, maxDistance, RaycastLayerMask, QueryTriggerInteraction.Collide);
 
                 //find closest hit
@@ -181,7 +181,7 @@ namespace CommonCore.World
                     {
                         DeferredHitBegan = true;
                         DeferredHitAction = () => HandleHit(hit.HitCollider.gameObject, hit.Controller, hit.Hitbox, hit.HitLocation, hit.HitMaterial, hit.HitPoint, damageMultiplier, allDamageIsPierce);
-                        TimeToDeferredHit = (transform.position - hit.HitPoint).magnitude / Rigidbody.velocity.magnitude;
+                        TimeToDeferredHit = (transform.position - hit.HitPoint).magnitude / Rigidbody.linearVelocity.magnitude;
                         //Debug.Log($"bullet: {transform.position} | target: {hit.HitPoint} | distance: {(transform.position - hit.HitPoint).magnitude} | velocity: {Rigidbody.velocity.magnitude}");
                     }
                     else
@@ -200,7 +200,7 @@ namespace CommonCore.World
                     {
                         DeferredHitBegan = true;
                         DeferredHitAction = () => HandleHit(hit.HitCollider.gameObject, null, null, hit.HitLocation, hitMaterial, hit.HitPoint, 1, false);
-                        TimeToDeferredHit = (transform.position - hit.HitPoint).magnitude / Rigidbody.velocity.magnitude;
+                        TimeToDeferredHit = (transform.position - hit.HitPoint).magnitude / Rigidbody.linearVelocity.magnitude;
                         //Debug.Log($"bullet: {transform.position} | target: {hit.HitPoint} | distance: {(transform.position - hit.HitPoint).magnitude} | velocity: {Rigidbody.velocity.magnitude}");
                     }
                     else
@@ -348,7 +348,7 @@ namespace CommonCore.World
             DestroyType = (otherController is ITakeDamage) ? BulletScriptDestroyType.HitDamageable : BulletScriptDestroyType.HitWorld;
 
             if (HitSpecial != null)
-                HitSpecial.Invoke(new ActionInvokerData() { Activator = HitInfo.Originator, Caller = this, Velocity = Rigidbody.Ref()?.velocity, Position = transform.position, Rotation = transform.rotation });
+                HitSpecial.Invoke(new ActionInvokerData() { Activator = HitInfo.Originator, Caller = this, Velocity = Rigidbody.Ref()?.linearVelocity, Position = transform.position, Rotation = transform.rotation });
 
             Destroy(this.gameObject);
         }

@@ -203,7 +203,7 @@ namespace CommonCore.RpgGame.World //here because we need factions
 					var erb = explosionEffect.GetComponent<Rigidbody>();
 					if(rb != null && erb != null)
                     {
-						erb.velocity = rb.velocity;
+						erb.linearVelocity = rb.linearVelocity;
                     }
                 }
             }

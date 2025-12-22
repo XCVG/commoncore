@@ -43,7 +43,7 @@ namespace CommonCore.World
             Rigidbody rigidbody = GetComponent<Rigidbody>();
             if (rigidbody)
             {
-                data.Velocity = rigidbody.velocity;
+                data.Velocity = rigidbody.linearVelocity;
                 data.AngularVelocity = rigidbody.angularVelocity;
                 data.Mass = rigidbody.mass;
                 data.IsKinematic = rigidbody.isKinematic;
@@ -99,7 +99,7 @@ namespace CommonCore.World
             Rigidbody rigidbody = GetComponent<Rigidbody>();
             if (rigidbody)
             {
-                rigidbody.velocity = data.Velocity;
+                rigidbody.linearVelocity = data.Velocity;
                 rigidbody.angularVelocity = data.AngularVelocity;
                 rigidbody.mass = data.Mass;
                 rigidbody.isKinematic = data.IsKinematic;

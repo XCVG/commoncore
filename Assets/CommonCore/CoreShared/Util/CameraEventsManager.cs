@@ -21,7 +21,7 @@ namespace CommonCore
         [CCScript, CCScriptHook(AllowExplicitCalls = false, Hook = ScriptHook.AfterAddonsLoaded)]
         private static void Setup()
         {
-            if (GraphicsSettings.renderPipelineAsset != null)
+            if (GraphicsSettings.currentRenderPipeline != null)
             {
                 RenderPipelineManager.beginCameraRendering += ((srp, cam) => ExecuteOnPreCull(cam));
             }

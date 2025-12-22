@@ -1298,7 +1298,7 @@ namespace CommonCore.RpgGame.World
                 bulletScript.PhysicsInfo = physicsInfo;
             }
 
-            bulletRigidbody.velocity = (fireVec * wim.ProjectileVelocity);
+            bulletRigidbody.linearVelocity = (fireVec * wim.ProjectileVelocity);
 
             if(wim.CheckFlag(ItemFlag.WeaponPrewarmBullet))
             {
