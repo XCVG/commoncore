@@ -570,7 +570,7 @@ namespace CommonCore.World
 
             //as a last resort, find *any* active camera
             { //do not remove this curly brace
-                var cameras = UnityEngine.Object.FindObjectsOfType<Camera>();
+                var cameras = UnityEngine.Object.FindObjectsByType<Camera>(FindObjectsSortMode.None);
                 if (cameras.Length > 0)
                 {
                     foreach (var camera in cameras)
