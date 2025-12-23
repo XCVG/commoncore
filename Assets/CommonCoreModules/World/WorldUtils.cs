@@ -589,7 +589,7 @@ namespace CommonCore.World
         /// </summary>
         public static void SetAudioListener(AudioListener audioListener)
         {
-            var listeners = UnityEngine.Object.FindObjectsOfType<AudioListener>();
+            var listeners = UnityEngine.Object.FindObjectsByType<AudioListener>(FindObjectsSortMode.None);
             foreach(var listener in listeners)
             {
                 listener.enabled = false;
