@@ -679,3 +679,10 @@
 - Add flags to inventory item instances [experimental]
 
 # R7.next
+
+- Fix incorrect value of DamageOnlyShields hit flag
+- Player movebob and weapon movebob now move to zero if movement component is disabled
+- InitialPosition/InitialPositionSet properties on ActorController are now settable
+- Actors now have InterruptableMoveTo and InterruptableAction states that are interrupted by damage hits and optionally by targets entering range (SeekTargetsInInterruptableScriptedStates flag)
+- Scripted/InterruptableMoveTo actor state have separate run flag (RunInScriptedMoveTo)
+- RunOnChase applying to ScriptedMoveTo actor state is now a global option

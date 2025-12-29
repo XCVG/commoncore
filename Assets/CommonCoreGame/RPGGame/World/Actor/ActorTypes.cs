@@ -19,7 +19,7 @@ namespace CommonCore.RpgGame.World
 
     public enum ActorAiState
     {
-        Idle, Dead, Wandering, Chasing, Hurting, Attacking, Covering, Fleeing, ScriptedMoveTo, ScriptedAction
+        Idle, Dead, Wandering, Chasing, Hurting, Attacking, Covering, Fleeing, ScriptedMoveTo, ScriptedAction, InterruptableMoveTo, InterruptableAction
     }
 
     [Obsolete]

@@ -96,7 +96,7 @@ namespace CommonCore.RpgGame.World
                 WasInADS = false;
             }
 
-            bool movementStopped = !(MovementComponent.IsMoving || (MovementComponent.IsOnSlope && MovementComponent.Velocity.sqrMagnitude > 0)) ||
+            bool movementStopped = !MovementComponent.isActiveAndEnabled || !(MovementComponent.IsMoving || (MovementComponent.IsOnSlope && MovementComponent.Velocity.sqrMagnitude > 0)) ||
                 !MovementComponent.IsGrounded;
 
             if ((TargetPosition - transform.localPosition).magnitude < Threshold)

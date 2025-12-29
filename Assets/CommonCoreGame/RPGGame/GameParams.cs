@@ -35,6 +35,7 @@ namespace CommonCore
 
         public static bool UseFallDamage { get; private set; } = true;
         public static bool UseFriendlyFire { get; private set; } = true; //note that this can be overridden by player weapons and actor attack components
+        public static bool UseRunOnChaseInScriptedStates { get; private set; } = true;
         public static float DamageFlashThreshold { get; private set; } = 0.01f; //very small because health is reported as a fraction
 
         public static bool AllowItemDropOutsideWorldScene { get; private set; } = false;

@@ -87,6 +87,8 @@ namespace CommonCore.RpgGame.World
         public bool DisableInteractionOnHit = true;
         [Tooltip("Use old target-player-first logic")]
         public bool TargetPlayerFirst = true; //true by default for legacy reasons
+        [Tooltip("If set, will seek targets and potentially exist InterruptableMoveTo and InterruptableAction")]
+        public bool SeekTargetsInInterruptableScriptedStates = true;
 
 
         [Header("Interaction")] //TODO move this out into ActorInteractionComponent
@@ -97,8 +99,8 @@ namespace CommonCore.RpgGame.World
         public bool RunOnFlee = true;
 
         [field: SerializeField, Tooltip("For debugging only- changing this may result in unpredicted results")]
-        public Vector3 InitialPosition { get; private set; } //TODO should we save this? I don't think so        
-        public bool InitialPositionSet { get; private set; }
+        public Vector3 InitialPosition { get; set; } //TODO should we save this? I don't think so        
+        public bool InitialPositionSet { get; set; }
 
         [Header("Wander")]
         public float WanderThreshold = 1.0f;
@@ -108,6 +110,7 @@ namespace CommonCore.RpgGame.World
         [Header("Misc")]
         public ActorDifficultyHandling DifficultyHandling = ActorDifficultyHandling.AsActor; //default for historical reasons
         public bool PersistInitialPosition = false;
+        public bool RunInScriptedMoveTo = false;
 
         private QdmsMessageInterface MessageInterface;
 
@@ -382,7 +385,8 @@ namespace CommonCore.RpgGame.World
                     }
                     break;
                 case ActorAiState.ScriptedMoveTo:
-                    if (RunOnChase)
+                case ActorAiState.InterruptableMoveTo:
+                    if (RunInScriptedMoveTo || (RunOnChase && GameParams.UseRunOnChaseInScriptedStates))
                     {
                         MovementComponent.IsRunning = true;
                         AnimationComponent.Ref()?.SetAnimation(ActorAnimState.Running);
@@ -435,6 +439,7 @@ namespace CommonCore.RpgGame.World
                     }                    
                     break;
                 case ActorAiState.ScriptedAction:
+                case ActorAiState.InterruptableAction:
                     //nop
                     break;
                 default:
@@ -530,6 +535,30 @@ namespace CommonCore.RpgGame.World
                     if (MovementComponent.AtTarget) //we made it!
                     {
                         EnterState(ActorAiState.Idle); //don't wander off if you were sent there!
+                    }
+                    break;
+                case ActorAiState.ScriptedAction:
+                    if (Aggressive && SeekTargetsInInterruptableScriptedStates)
+                    {
+                        //search for targets, select target
+                        SelectTarget();
+                        if (Target != null)
+                        {
+                            EnterState(ActorAiState.Chasing);
+                            AudioComponent.Ref()?.PlayAlertSound();
+                        }
+                    }
+                    break;
+                case ActorAiState.InterruptableAction:
+                    if (Aggressive && SeekTargetsInInterruptableScriptedStates)
+                    {
+                        //search for targets, select target
+                        SelectTarget();
+                        if (Target != null)
+                        {
+                            EnterState(ActorAiState.Chasing);
+                            AudioComponent.Ref()?.PlayAlertSound();
+                        }
                     }
                     break;
                 case ActorAiState.Attacking:

@@ -68,7 +68,7 @@ namespace CommonCore.RpgGame.World
 
             //set new target
 
-            if (!(MovementComponent.IsMoving || (MovementComponent.IsOnSlope && MovementComponent.Velocity.sqrMagnitude > 0)) ||
+            if (!MovementComponent.isActiveAndEnabled || !(MovementComponent.IsMoving || (MovementComponent.IsOnSlope && MovementComponent.Velocity.sqrMagnitude > 0)) ||
                 !MovementComponent.IsGrounded ||
                 !PlayerController.PlayerInControl)
             {
