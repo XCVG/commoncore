@@ -39,6 +39,13 @@ namespace CommonCore.Config
             RegisterConfigPanel("GraphicsOptionsPanel", 1000, CoreUtils.LoadResource<GameObject>("UI/GraphicsOptionsPanel"));
         }
 
+        public override void OnAllAddonsLoaded()
+        {
+            //apply late so framerate is maxed during load
+            QualitySettings.vSyncCount = ConfigState.Instance.VsyncCount;
+            Application.targetFrameRate = ConfigState.Instance.MaxFrames;
+        }
+
         public override void Dispose()
         {
             //set safe resolution on exit. Hacky code ahead!
@@ -111,7 +118,7 @@ namespace CommonCore.Config
 
             //AUDIO CONFIG
             AudioListener.volume = ConfigState.Instance.SoundVolume;
-            if(isInitialConfig) //only safe to do this if resources aren't loaded yet
+            if(isInitialConfig) //only safe to do this if external resources aren't loaded yet
             {
                 var ac = AudioSettings.GetConfiguration();
 #if UNITY_WSA
@@ -134,10 +141,14 @@ namespace CommonCore.Config
                 var refreshRate = GetClosestAvailableRefreshRate(ConfigState.Instance.Resolution.x, ConfigState.Instance.Resolution.y, ConfigState.Instance.RefreshRate);
                 Screen.SetResolution(ConfigState.Instance.Resolution.x, ConfigState.Instance.Resolution.y, ConfigState.Instance.FullScreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed, refreshRate);
             }
-                
 
-            QualitySettings.vSyncCount = ConfigState.Instance.VsyncCount;
-            Application.targetFrameRate = ConfigState.Instance.MaxFrames;
+            //will be applied late so framerate is maxed during load
+            if (!isInitialConfig)
+            {
+                QualitySettings.vSyncCount = ConfigState.Instance.VsyncCount;
+                Application.targetFrameRate = ConfigState.Instance.MaxFrames;
+            }
+            
 
             //INPUT CONFIG
             MappedInput.SetMapper(ConfigState.Instance.InputMapper); //safe?

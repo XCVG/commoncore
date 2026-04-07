@@ -146,6 +146,8 @@ namespace CommonCore
                     if (ConfigState.Instance.UseVerboseLogging)
                         Debug.LogException(e);
                 }
+
+                await Task.Yield();
             }
         }
 

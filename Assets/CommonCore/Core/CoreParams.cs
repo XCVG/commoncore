@@ -20,12 +20,14 @@ namespace CommonCore
         //*****basic config settings
         public static bool AutoInit { get; private set; } = true;
         public static ImmutableArray<string> ExplicitModules { get; private set; } = new string[] { "QdmsMessageBus", "ConfigModule", "DebugModule", "AsyncModule", "ScriptingModule", "ConsoleModule" }.ToImmutableArray();
-        private static DataLoadPolicy LoadData = DataLoadPolicy.OnStart;
+        private static DataLoadPolicy LoadData = DataLoadPolicy.OnStart;        
         public static ResourceManagerPolicy DefaultResourceManager { get; private set; } = ResourceManagerPolicy.UseNew;
         public static string PreferredCommandConsole { get; private set; } = "SickDevConsoleImplementation";
 
         public static StartupPolicy EditorStartupPolicy { get; private set; } = StartupPolicy.Asynchronous;
         public static StartupPolicy PlayerStartupPolicy { get; private set; } = StartupPolicy.Asynchronous;
+        public static bool AlwaysLoadWait { get; private set; } = true; //only applicable during async load
+        public static long LoadWaitThreshold { get; private set; } = 1000; //in ms
 
         public static bool LoadAddons { get; private set; } = true; //if set, will allow loading addons if configured in ConfigState
 

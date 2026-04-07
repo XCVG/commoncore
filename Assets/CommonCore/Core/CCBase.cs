@@ -2,6 +2,7 @@
 using CommonCore.ResourceManagement;
 using PseudoExtensibleEnum;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -71,6 +72,10 @@ namespace CommonCore
 
         private static CCMonoBehaviourHook HookScript;
 
+        private static long TimeOfLastLoadWait;
+
+        private static System.Diagnostics.Stopwatch stopwatch;
+
         /// <summary>
         /// Retrieves a loaded module specified by the type parameter
         /// </summary>
@@ -132,6 +137,28 @@ namespace CommonCore
             }
 
             return null;
+        }
+
+        public static bool ReadyForLoadWait()
+        {
+            if (CoreParams.AlwaysLoadWait)
+                return true;
+
+            long ticksSinceLast = DateTime.UtcNow.Ticks - TimeOfLastLoadWait;
+            return ticksSinceLast > (CoreParams.LoadWaitThreshold * TimeSpan.TicksPerMillisecond);
+        }
+
+        public static IEnumerator LoadWait()
+        {
+            TimeOfLastLoadWait = DateTime.UtcNow.Ticks; //not sure if unity Time class is thread safe
+            Debug.Log("load wait at time " + TimeOfLastLoadWait);
+            yield return null;
+        }
+
+        public static async Task LoadWaitAsync()
+        {
+            TimeOfLastLoadWait = DateTime.UtcNow.Ticks;
+            await Task.Yield();
         }
 
         //entry point for early startup
@@ -236,22 +263,33 @@ namespace CommonCore
         public static async void StartupAsync()
         {
             Initializing = true;
-            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            TimeOfLastLoadWait = DateTime.Now.Ticks;
+            stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
+
+            if(Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.OSXEditor || Application.platform == RuntimePlatform.OSXPlayer || Application.platform == RuntimePlatform.LinuxEditor || Application.platform == RuntimePlatform.LinuxPlayer)
+            {
+                QualitySettings.vSyncCount = 0;
+                Application.targetFrameRate = -1;
+            }            
 
             Debug.Log("[Core] Starting up CommonCore asynchronously...");
 
             try
             {
                 await Task.Yield(); //wait for a scene transition if we had to do that
+                Debug.Log($"[Core] initial yield ({stopwatch.Elapsed.TotalMilliseconds:F4} ms)");
 
-                DoInitialSetup();                
+                DoInitialSetup();
 
                 var allModules = GetAllModuleTypes();
+                Debug.Log($"[Core] after getallmoduletypes ({stopwatch.Elapsed.TotalMilliseconds:F4} ms)");
                 await InitializeExplicitModulesAsync(allModules);
+                Debug.Log($"[Core] explicit modules initialized ({stopwatch.Elapsed.TotalMilliseconds:F4} ms)");
                 InitializeResourceManager(); //this will be made async someday I think
                 PrintSystemData(); //we wait until the console is loaded so we can see it in the console
                 await InitializeModulesAsync(allModules);
+                Debug.Log($"[Core] modules initialized ({stopwatch.Elapsed.TotalMilliseconds:F4} ms)");
                 SetupModuleLookupTable();
                 ExecuteAllModulesLoaded();
 
@@ -260,6 +298,7 @@ namespace CommonCore
                 await AddonManager.LoadStreamingAssetsAsync(ExecuteAddonLoaded);
                 await AddonManager.LoadAddonsAsync(ExecuteAddonLoaded);
                 ExecuteAllAddonsLoaded();
+                Debug.Log($"[Core] addons loaded ({stopwatch.Elapsed.TotalMilliseconds:F4} ms)");
 
                 CoreUtils.CollectGarbage(true);
 
@@ -506,6 +545,7 @@ namespace CommonCore
 
         private static async Task InitializeModuleAsync(Type moduleType)
         {
+            System.Diagnostics.Stopwatch sw2 = System.Diagnostics.Stopwatch.StartNew();
             try
             {
                 if (Modules.Find(m => m.GetType() == moduleType) != null)
@@ -514,13 +554,14 @@ namespace CommonCore
                     return;
                 }
                 var module = (CCModule)Activator.CreateInstance(moduleType);
-                await Task.Yield();
+                if(ReadyForLoadWait())
+                    await LoadWaitAsync();
                 if (module is CCAsyncModule aModule)
                 {
                     await aModule.LoadAsync();
                 }
                 Modules.Add(module);
-                Debug.Log("[Core] Successfully loaded module " + moduleType.Name);
+                Debug.Log("[Core] Successfully loaded module " + moduleType.Name + " in (" + sw2.Elapsed.TotalMilliseconds.ToString("F2") + " ms)");
             }
             catch (Exception e)
             {
