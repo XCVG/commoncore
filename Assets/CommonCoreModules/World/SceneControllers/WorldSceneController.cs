@@ -120,6 +120,8 @@ namespace CommonCore.World
             gs.CurrentScene = name;
             Debug.Log("Saving scene: " + name);
 
+            ScriptingModule.CallHooked(ScriptHook.BeforeWorldCommit, this);
+
             //get restorable components
             List<RestorableComponent> rcs = new List<RestorableComponent>();
             rcs.AddRange(transform.gameObject.GetComponentsInChildren<RestorableComponent>());
@@ -170,6 +172,8 @@ namespace CommonCore.World
                 }
             }
 
+            ScriptingModule.CallHooked(ScriptHook.AfterWorldCommit, this, LocalStore);
+
             //purge and copy local data store
             if (gs.LocalDataState.ContainsKey(name))
             {
@@ -191,6 +195,8 @@ namespace CommonCore.World
             //restore local store
             LocalStore = gs.LocalDataState.ContainsKey(name) ? gs.LocalDataState[name] : new Dictionary<string, System.Object>();
 
+            ScriptingModule.CallHooked(ScriptHook.BeforeWorldRestore, LocalStore);
+
             //activate entity placeholders
             ActivateEntityPlaceholders();
 
@@ -202,6 +208,8 @@ namespace CommonCore.World
 
             //restore player
             RestorePlayer(gs);
+
+            ScriptingModule.CallHooked(ScriptHook.AfterWorldRestore, this);
 
         }
 

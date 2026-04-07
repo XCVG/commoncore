@@ -95,10 +95,14 @@ namespace CommonCore.World
     {
         public float Damage;
         public float DamagePierce;
+        [PxEnumProperty(typeof(DefaultDamageTypes))]
         public int DamageType; //up to you to define indices in an enum or static class
+        [PxEnumProperty(typeof(DefaultDamageEffectors))]
         public int DamageEffector; //up to you to define indices in an enum or static class (defaults/examples provided)
         public bool HarmFriendly;
+        [PxEnumProperty(typeof(DefaultHitLocations))]
         public int HitLocation; //up to you to define indices in an enum or static class (defaults/examples provided)
+        [PxEnumProperty(typeof(DefaultHitMaterials))]
         public int HitMaterial; //up to you to define indices in an enum or static class (defaults/examples provided)
         public BaseController Originator;
         public string OriginatorFaction;
@@ -230,7 +234,7 @@ namespace CommonCore.World
     [PseudoExtensible]
     public enum DefaultDamageEffectors
     {
-        Unspecified = 0, Projectile = 1, Explosion = 2, Melee = 3, Ambient = 4, Internal = 5
+        Unspecified = 0, Projectile = 1, Explosion = 2, Melee = 3, Ambient = 4, Internal = 5, Collision = 6
     }
 
     /// <summary>

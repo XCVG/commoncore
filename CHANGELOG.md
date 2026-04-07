@@ -686,3 +686,6 @@
 - Actors now have InterruptableMoveTo and InterruptableAction states that are interrupted by damage hits and optionally by targets entering range (SeekTargetsInInterruptableScriptedStates flag)
 - Scripted/InterruptableMoveTo actor state have separate run flag (RunInScriptedMoveTo)
 - RunOnChase applying to ScriptedMoveTo actor state is now a global option
+- ActorHitInfo now uses PxEnum drawers in inspector
+- Add "Collision" damage effector to default set
+- Add script hooks before and after scene restore and commit (BeforeWorldRestore, AfterWorldRestore, BeforeWorldCommit, AfterWorldCommit)

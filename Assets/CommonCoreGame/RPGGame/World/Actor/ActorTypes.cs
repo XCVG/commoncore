@@ -60,6 +60,7 @@ namespace CommonCore.RpgGame.World
 
         //health 
         public float Health { get; set; }
+        public float MaxHealth { get; set; }
         public bool BeenHit { get; set; }
 
         //navigation

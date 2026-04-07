@@ -1143,6 +1143,7 @@ namespace CommonCore.RpgGame.World
             actorData.TimeInState = TimeInState;
 
             actorData.Health = Health;
+            actorData.MaxHealth = MaxHealth;
             actorData.BeenHit = BeenHit;
 
             if (LastHit.HasValue)
