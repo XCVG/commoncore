@@ -15,6 +15,8 @@ namespace CommonCore.World
         protected bool ReverseBillboard = true;
         [SerializeField, Tooltip("If set, will simulate being billboarded in x/y rather than just x")]
         protected bool BillboardBothAxes = false;
+        [SerializeField, Tooltip("If set, will point parallel to the camera instead of directly toward it")]
+        protected bool BillboardParallel = false;
 
         public FacingSpriteSizeMode SpriteSizeMode = default;
         [Tooltip("If >0, multiplies the sprite size by this value (exact effect depends on size mode)")]
@@ -55,7 +57,14 @@ namespace CommonCore.World
             Vector3 vecToTarget = targetTransform.position - Attachment.transform.position;
             Vector3 flatVecToTarget = new Vector3(vecToTarget.x, 0, vecToTarget.z).normalized;
 
-            UpdateBillboard(vecToTarget, flatVecToTarget);
+            if(BillboardParallel)
+            {
+                Vector3 parallelVecToTarget = targetTransform.forward * -1;
+                Vector3 parallelFlatVecToTarget = new Vector3(parallelVecToTarget.x, 0, parallelVecToTarget.z).normalized;
+                UpdateBillboard(parallelVecToTarget, parallelFlatVecToTarget);
+            }
+            else
+                UpdateBillboard(vecToTarget, flatVecToTarget);
 
             Vector3 flatForwardVec = new Vector3(transform.forward.x, 0, transform.forward.z).normalized;
             Vector3 baseVecToTarget = targetTransform.position - transform.position;

@@ -23,7 +23,9 @@ namespace CommonCore.RpgGame.World
         protected bool BillboardBothAxes = false;
         [SerializeField, Tooltip("If unset, dead state will not use billboard logic")]
         protected bool BillboardCorpse = true;
-        
+        [SerializeField, Tooltip("If set, will point parallel to the camera instead of directly toward it")]
+        protected bool BillboardParallel = false;
+
         public FacingSpriteSizeMode SpriteSizeMode = default;
         [Tooltip("If >0, multiplies the sprite size by this value (exact effect depends on size mode)")]
         public float SpriteScale = 0;
@@ -96,7 +98,14 @@ namespace CommonCore.RpgGame.World
             Vector3 vecToTarget = targetTransform.position - Attachment.transform.position;
             Vector3 flatVecToTarget = new Vector3(vecToTarget.x, 0, vecToTarget.z).normalized;
 
-            UpdateBillboard(vecToTarget, flatVecToTarget);
+            if (BillboardParallel)
+            {
+                Vector3 parallelVecToTarget = targetTransform.forward * -1;
+                Vector3 parallelFlatVecToTarget = new Vector3(parallelVecToTarget.x, 0, parallelVecToTarget.z).normalized;
+                UpdateBillboard(parallelVecToTarget, parallelFlatVecToTarget);
+            }
+            else
+                UpdateBillboard(vecToTarget, flatVecToTarget);
 
             Vector3 flatForwardVec = new Vector3(transform.forward.x, 0, transform.forward.z).normalized;
             Vector3 baseVecToTarget = targetTransform.position - transform.position;

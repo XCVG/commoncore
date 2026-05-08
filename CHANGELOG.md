@@ -689,3 +689,4 @@
 - ActorHitInfo now uses PxEnum drawers in inspector
 - Add "Collision" damage effector to default set
 - Add script hooks before and after scene restore and commit (BeforeWorldRestore, AfterWorldRestore, BeforeWorldCommit, AfterWorldCommit)
+- Add BillboardParallel option (face parallel to camera instead of pointing at camera) to billboard and facing sprite components

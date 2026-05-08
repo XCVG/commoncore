@@ -14,6 +14,8 @@ namespace CommonCore.World
         protected bool Reverse = true;
         [SerializeField, Tooltip("If set, will simulate being billboarded in x/y rather than just x")]
         protected bool BillboardBothAxes = false;
+        [SerializeField, Tooltip("If set, will point parallel to the camera instead of directly toward it")]
+        protected bool BillboardParallel = false;
 
         protected virtual void Start()
         {
@@ -31,7 +33,7 @@ namespace CommonCore.World
             var targetTransform = camera.transform;
 
             Quaternion quatToTarget;
-            Vector3 vecToTarget = targetTransform.position - Attachment.position;
+            Vector3 vecToTarget = BillboardParallel ? (targetTransform.forward * -1) : (targetTransform.position - Attachment.position);
             if (BillboardBothAxes)
             {
                 Vector3 normVecToTarget = vecToTarget.normalized;
