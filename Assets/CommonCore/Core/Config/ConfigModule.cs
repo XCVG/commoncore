@@ -109,8 +109,7 @@ namespace CommonCore.Config
         public void ApplyConfiguration(bool isInitialConfig)
         {
 
-            //AUDIO CONFIG
-            AudioListener.volume = ConfigState.Instance.SoundVolume;
+            //AUDIO CONFIG            
             if(isInitialConfig) //only safe to do this if resources aren't loaded yet
             {
                 var ac = AudioSettings.GetConfiguration();
@@ -121,6 +120,7 @@ namespace CommonCore.Config
                 ac.speakerMode = ConfigState.Instance.SpeakerMode;
                 AudioSettings.Reset(ac);
             }
+            AudioListener.volume = ConfigState.Instance.SoundVolume;
 
             //VIDEO CONFIG
             QualitySettings.SetQualityLevel(ConfigState.Instance.GraphicsQuality, true);
