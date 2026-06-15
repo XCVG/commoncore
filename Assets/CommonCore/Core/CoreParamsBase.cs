@@ -22,7 +22,7 @@ namespace CommonCore
 
         //*****system version info
         public static Version VersionCode { get; private set; } = new Version(7, 0, 0);
-        public static string VersionName { get; private set; } = "Firene";
+        public static string VersionName { get; private set; } = "Goodsprings";
         public static Version UnityVersion { get; private set; } //auto-set
         public static string UnityVersionName { get; private set; } //auto-set
         public static RuntimePlatform Platform { get; private set; } //auto-set
