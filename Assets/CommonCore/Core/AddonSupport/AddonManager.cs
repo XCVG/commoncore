@@ -217,7 +217,7 @@ namespace CommonCore
                 {
                     try
                     {
-                        if (!Path.GetFileNameWithoutExtension(file).Equals(context.Manifest.MainAssembly) && Path.GetExtension(file).Equals(".dll", StringComparison.OrdinalIgnoreCase))
+                        if (!Path.GetFileNameWithoutExtension(file).Equals(context?.Manifest?.MainAssembly ?? "") && Path.GetExtension(file).Equals(".dll", StringComparison.OrdinalIgnoreCase))
                         {
                             //okay to load assembly!
                             var assembly = Assembly.LoadFile(file);
