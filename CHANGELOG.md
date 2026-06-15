@@ -680,6 +680,7 @@
 
 # R7.next
 
+- Target Unity 6.3 LTS
 - Fix incorrect value of DamageOnlyShields hit flag
 - Player movebob and weapon movebob now move to zero if movement component is disabled
 - InitialPosition/InitialPositionSet properties on ActorController are now settable
