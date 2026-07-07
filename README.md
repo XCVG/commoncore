@@ -1,5 +1,5 @@
 # CommonCore Framework for Unity
-### R7.next
+### R7.0
 ### For Unity 6.3
 
 ## Introduction
@@ -46,7 +46,7 @@ Some limited documentation is available in the Reference folder. The Documentati
 
 ## Platform Support
 
-CommonCore R7 targets Unity 6.3 LTS. The last version to support Unity 2022 LTS is CommonCore R6.3; an experimental release is also available for Unity 6.0 LTS.
+CommonCore R7 targets Unity 6.3 LTS. The last version to support Unity 2022 LTS is CommonCore R6; an experimental release is also available for Unity 6.0 LTS.
 
 CommonCore is targeted toward standalone platforms using Mono and the .NET 4.x scripting runtime. Other configurations are not the focus and have varying levels of support. IL2CPP is supported with some limitations, and the WebGL and UWP platforms have been somewhat tested (both with their own limitations). Other platforms have not been tested but might work, maybe requiring minor tweaking.
 

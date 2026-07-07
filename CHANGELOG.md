@@ -678,7 +678,7 @@
 - Fix GetResolverFor attempting to create instances of abstract base class
 - Add flags to inventory item instances [experimental]
 
-# R7.next
+# R7.0
 
 - Target Unity 6.3 LTS
 - Fix incorrect value of DamageOnlyShields hit flag
